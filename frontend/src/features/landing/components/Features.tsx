@@ -3,16 +3,16 @@ import { CalendarDays, Gift, Users } from 'lucide-react';
 const FEATURES = [
   {
     id: 'freebies',
-    title: 'Freebie Tracker',
+    title: 'Freebie Radar',
     description:
-      'Community-submitted swag and giveaways, so you never walk past the booth giving out the good stuff.',
+      'Community-submitted freebies, with the ability to keep track of what you already got!',
     icon: Gift,
   },
   {
     id: 'meetups',
     title: 'Meetups',
     description:
-      'Official and unofficial gatherings with a simple Going/RSVP system and public headcounts.',
+      'Official and unofficial gatherings with a simple Going/RSVP system and public headcounts. Find others who are also attending to share your socials, pictures, etc!',
     icon: Users,
   },
   {
@@ -26,32 +26,40 @@ const FEATURES = [
 
 export function Features() {
   return (
-    <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 md:px-6">
-      <h2 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-50">
-        Everything for your next convention
-      </h2>
-      <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
-        One place to find and organize what matters at the con.
-      </p>
+    <section id="features" className="halftone border-ink relative scroll-mt-20 border-y-2 py-20">
+      <div className="mx-auto max-w-4xl px-4 md:px-6">
+        <h2 className="font-display text-4xl tracking-tight uppercase sm:text-5xl">
+          how it works!
+        </h2>
+        <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
+          Three little things that make every con way less stressful. Pick a convention, plan your
+          day, show up and have fun!
+        </p>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {FEATURES.map((feature) => (
-          <div
-            key={feature.id}
-            id={feature.id}
-            className="scroll-mt-24 rounded-xl border border-zinc-200 bg-white p-6 transition-shadow hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
-          >
-            <div className="bg-accent-soft flex h-11 w-11 items-center justify-center rounded-lg">
-              <feature.icon className="text-accent h-5 w-5" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-              {feature.title}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              {feature.description}
-            </p>
-          </div>
-        ))}
+        <ol className="mt-10">
+          {FEATURES.map((feature, index) => (
+            <li
+              key={feature.id}
+              id={feature.id}
+              className="group border-ink flex scroll-mt-24 flex-col gap-4 border-b-2 border-dashed py-8 transition-colors last:border-b-0 md:flex-row md:items-start md:gap-8"
+            >
+              <span className="font-display text-accent group-hover:text-accent-pop text-5xl leading-none transition-colors md:w-20">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+
+              <div className="border-ink flex h-12 w-12 shrink-0 items-center justify-center rounded-md border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900">
+                <feature.icon className="text-accent h-5 w-5" />
+              </div>
+
+              <div className="flex-1">
+                <h3 className="font-display text-2xl tracking-wide uppercase">{feature.title}</h3>
+                <p className="mt-2 max-w-xl leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {feature.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

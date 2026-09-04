@@ -85,20 +85,22 @@ conmeet.moe/
   - [x] `postgres:16` (with `POSTGRES_DB`, `USER`, `PASSWORD`)
   - [x] `pgadmin` (optional)
   - [x] `redis` (for future caching/sessions)
-- [ ] Run: `docker compose up -d`
-- [ ] Initialize Alembic: `alembic init alembic`
-- [ ] Configure `alembic.ini` and `env.py` for async SQLAlchemy
-- [ ] Create base model (`app/models/base.py`):
-  - `Base = DeclarativeBase`
-  - `TimestampMixin` (created_at, updated_at)
-  - UUID primary keys (using uuid7 or uuid4)
-- [ ] Create User model (`app/models/user.py`):
-  - id, discord_id (unique), username, avatar_url, email
-  - access_token_encrypted, refresh_token_encrypted, token_expires_at
-  - role (user/admin), is_active, created_at
-- [ ] Create Convention model (basic, for Phase 2)
-- [ ] Generate first migration: `alembic revision --autogenerate -m "init"`
-- [ ] Run migration: `alembic upgrade head`
+- [x] Run: `docker compose up -d`
+  - Note: postgres mapped to host port `5433` (5432 taken by native PostgreSQL 17); `DATABASE_URL` uses 5433
+- [x] Initialize Alembic: `alembic init alembic`
+- [x] Configure `alembic.ini` and `env.py` for async SQLAlchemy
+  - Added explicit PG enum create/drop (`create_type=False`) so downgrade is reversible
+- [x] Create base model (`app/models/base.py`):
+  - [x] `Base = DeclarativeBase` (with naming convention)
+  - [x] `TimestampMixin` (created_at, updated_at)
+  - [x] UUID primary keys (uuid4 via `UUIDPrimaryKeyMixin`)
+- [x] Create User model (`app/models/user.py`):
+  - [x] id, discord_id (unique), username, avatar_url, email
+  - [x] access_token_encrypted, refresh_token_encrypted, token_expires_at
+  - [x] role (user/admin), is_active, created_at
+- [x] Create Convention model (basic, for Phase 2)
+- [x] Generate first migration: `alembic revision --autogenerate -m "init"` (`f48464fbc0c8`)
+- [x] Run migration: `alembic upgrade head` (verified full downgrade/upgrade cycle)
 
 ---
 

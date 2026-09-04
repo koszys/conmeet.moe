@@ -1,5 +1,8 @@
+from base64 import urlsafe_b64encode
 from datetime import UTC, datetime, timedelta
+from hashlib import sha256
 
+from cryptography.fernet import Fernet
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -7,6 +10,19 @@ from pydantic import BaseModel
 from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _fernet() -> Fernet:
+    key = urlsafe_b64encode(sha256(settings.jwt_secret_key.get_secret_value().encode()).digest())
+    return Fernet(key)
+
+
+def encrypt_token(value: str) -> str:
+    return _fernet().encrypt(value.encode()).decode()
+
+
+def decrypt_token(value: str) -> str:
+    return _fernet().decrypt(value.encode()).decode()
 
 
 class TokenPayload(BaseModel):

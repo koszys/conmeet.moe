@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     debug: bool = True
     api_v1_prefix: str = "/api/v1"
 
-    database_url: str = "postgresql+asyncpg://conmeet:conmeet@localhost:5432/conmeet"
+    database_url: str = "postgresql+asyncpg://conmeet:conmeet@localhost:5433/conmeet"
 
     auth_cookie_name: str = "conmeet_session"
     auth_cookie_domain: str | None = None

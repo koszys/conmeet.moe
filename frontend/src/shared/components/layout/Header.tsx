@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sparkles, Star, Sun } from 'lucide-react';
 import { useTheme } from '@/app/providers/theme-provider';
 
 const NAV_LINKS = [
@@ -15,23 +15,31 @@ export function Header() {
   return (
     <header className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#0c0c0e]/90">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-        <Link
-          href="/"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-baseline gap-2"
-        >
-          <span className="font-display text-2xl tracking-wide">
-            conmeet<span className="text-accent">.moe</span>
-          </span>
-        </Link>
+        <div className="flex items-center gap-7">
+          <Link
+            href="/"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-2"
+          >
+            <span className="font-display text-2xl tracking-wide">
+              conmeet<span className="text-accent">.moe</span>
+            </span>
+            <Star className="fill-accent-pop text-accent-pop h-3.5 w-3.5 -rotate-12" />
+            <Sparkles className="text-accent h-3 w-3 rotate-12" />
+          </Link>
 
-        <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-zinc-300">
-          {NAV_LINKS.map((link) => (
-            <a key={link.name} href={link.href} className="hover:text-accent-pop transition-colors">
-              {link.name}
-            </a>
-          ))}
-        </nav>
+          <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-zinc-300">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="hover:text-accent-pop transition-colors"
+              >
+                {link.name}
+              </a>
+            ))}
+          </nav>
+        </div>
 
         <button
           type="button"

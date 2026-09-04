@@ -230,5 +230,3 @@ next-env.d.ts
 # Tooling
 .turbo/
 .husky/_
-
-agent/

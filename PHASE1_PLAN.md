@@ -59,23 +59,24 @@ conmeet.moe/
 ---
 
 ## Step 3: Backend Initialization (FastAPI)
-- [ ] Choose package manager: `uv` (recommended) or `poetry`
-- [ ] Run: `uv init backend` (or `poetry new backend`)
-- [ ] Install core dependencies:
-  - `fastapi`, `uvicorn[standard]`, `python-multipart`
-  - `SQLAlchemy[asyncio]`, `alembic`, `asyncpg`
-  - `pydantic[email]`, `pydantic-settings`, `python-jose[cryptography]`, `passlib[bcrypt]`
-  - `python-dotenv`, `httpx`, `python-multipart`
-  - `httpx` for Discord/Google OAuth
-  - `google-auth`, `google-auth-oauthlib` for Google OAuth token verification
-  - `boto3`/`aiobotocore` for R2 (S3-compatible)
-  - `structlog`, `sentry-sdk` (optional)
-- [ ] Create directory structure per plan
-- [ ] Configure `pyproject.toml` with `[tool.uv]` or `[tool.poetry]`
-- [ ] Create `app/core/config.py` using `pydantic-settings` (BaseSettings)
-- [ ] Create `app/core/database.py` with async SQLAlchemy engine + sessionmaker
-- [ ] Create `app/core/security.py` (JWT handlers, password hashing)
-- [ ] Create `app/main.py` with FastAPI app, CORS, lifespan events
+- [x] Choose package manager: `uv` (recommended) or `poetry`
+  - Installed `uv 0.12.9` via Homebrew
+- [x] Run: `uv init backend` (or `poetry new backend`)
+- [x] Install core dependencies:
+  - [x] `fastapi`, `uvicorn[standard]`, `python-multipart`
+  - [x] `SQLAlchemy[asyncio]`, `alembic`, `asyncpg`
+  - [x] `pydantic[email]`, `pydantic-settings`, `python-jose[cryptography]`, `passlib[bcrypt]` (+ pinned `bcrypt<4.1`, `types-python-jose`, `types-passlib`)
+  - [x] `python-dotenv`, `httpx`, `python-multipart`
+  - [x] `httpx` for Discord/Google OAuth
+  - [x] `google-auth`, `google-auth-oauthlib` for Google OAuth token verification
+  - [x] `boto3`/`aiobotocore` for R2 (S3-compatible)
+  - [x] Dev: `ruff`, `pytest`, `pytest-asyncio`, `mypy` (not structlog/sentry - optional)
+- [x] Create directory structure per plan (`app/api/v1/routes`, `app/core`, `app/models`, `app/schemas`, `app/services`, `tests`)
+- [x] Configure `pyproject.toml` with `[tool.uv]` (`package = false`), `[tool.ruff]`, `[tool.mypy]`, `[tool.pytest.ini_options]`
+- [x] Create `app/core/config.py` using `pydantic-settings` (BaseSettings)
+- [x] Create `app/core/database.py` with async SQLAlchemy engine + sessionmaker
+- [x] Create `app/core/security.py` (JWT handlers, password hashing)
+- [x] Create `app/main.py` with FastAPI app, CORS, lifespan events
 
 ---
 

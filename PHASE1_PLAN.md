@@ -31,27 +31,30 @@ conmeet.moe/
 ---
 
 ## Step 1: Monorepo Setup & Tooling
-- [ ] Create directory structure: `/frontend`, `/backend`, `/docker-compose.yml`, `/.github/workflows`
-- [ ] Add root `package.json` with workspaces for shared tooling (lint, format)
-- [ ] Configure ESLint + Prettier + Husky at root level
-- [ ] Add `.editorconfig`, `.nvmrc` (Node 20+), `.python-version` (3.11+)
+- [x] Create directory structure: `/frontend`, `/backend`, `/docker-compose.yml`, `/.github/workflows`
+- [x] Add root `package.json` with workspaces for shared tooling (lint, format)
+- [x] Configure ESLint + Prettier + Husky at root level
+- [x] Add `.editorconfig`, `.nvmrc` (Node 20+), `.python-version` (3.11+)
 
 ---
 
-## Step 2: Frontend Initialization (Next.js 14+ App Router)
-- [ ] Run: `npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm`
-- [ ] Install dependencies:
-  - Core: `next`, `react`, `react-dom`, `typescript`
-  - Auth: `next-auth@beta` (v5) or custom JWT + httpOnly cookies
-  - UI: `@radix-ui/*`, `class-variance-authority`, `clsx`, `tailwind-merge`
-  - Forms: `react-hook-form`, `@hookform/resolvers`, `zod`
-  - API: `@tanstack/react-query`, `axios` or `ky`
-  - Icons: `lucide-react`
-  - Utils: `date-fns`, `zustand` (if needed)
-- [ ] Configure Tailwind CSS v4 or v3 with `tailwind.config.ts`
-- [ ] Set up path aliases in `tsconfig.json` (`@/*`, `@/components/*`, `@/lib/*`)
-- [ ] Create base layout: providers (React Query, Auth), global styles, metadata
-- [ ] Add `middleware.ts` for route protection (auth check)
+## Step 2: Frontend Initialization (Next.js 16 App Router)
+- [x] Run: `npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm`
+  - Installed Next.js 16.3.4 (App Router), React 19, TypeScript 5, Tailwind CSS v4
+- [x] Install dependencies:
+  - [x] Core: `next`, `react`, `react-dom`, `typescript`
+  - [ ] Auth: `next-auth@beta` (v5) or custom JWT + httpOnly cookies — deferred to Step 6
+  - [x] UI: `class-variance-authority`, `clsx`, `tailwind-merge`
+  - [ ] UI: `@radix-ui/*` primitives — add with components as needed
+  - [x] Forms: `react-hook-form`, `@hookform/resolvers`, `zod`
+  - [x] API: `@tanstack/react-query`, `ky`
+  - [x] Icons: `lucide-react`
+  - [x] Utils: `date-fns`, `zustand` (if needed)
+- [x] Configure Tailwind CSS v4 (CSS-first config in `globals.css`)
+- [x] Set up path aliases in `tsconfig.json` (`@/*`)
+- [x] Create base layout: React Query provider, global styles, metadata (`src/components/providers.tsx`)
+- [ ] Add Auth provider — deferred to Step 6
+- [x] Add `proxy.ts` for route protection (Next.js 16 renamed `middleware.ts` → `proxy.ts`)
 
 ---
 
@@ -77,10 +80,10 @@ conmeet.moe/
 ---
 
 ## Step 4: Database Setup (PostgreSQL + SQLAlchemy + Alembic)
-- [ ] Create `docker-compose.yml` with:
-  - `postgres:16` (with `POSTGRES_DB`, `USER`, `PASSWORD`)
-  - `pgadmin` (optional)
-  - `redis` (for future caching/sessions)
+- [x] Create `docker-compose.yml` with:
+  - [x] `postgres:16` (with `POSTGRES_DB`, `USER`, `PASSWORD`)
+  - [x] `pgadmin` (optional)
+  - [x] `redis` (for future caching/sessions)
 - [ ] Run: `docker compose up -d`
 - [ ] Initialize Alembic: `alembic init alembic`
 - [ ] Configure `alembic.ini` and `env.py` for async SQLAlchemy

@@ -1,11 +1,51 @@
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { CONVENTIONS } from '../data/conventions';
+import { getConventionPhase } from '../utils/dates';
+import type { Convention, ConventionPhase } from '../types';
 
-const ACTIVE = CONVENTIONS.filter((convention) => convention.status === 'active');
-const UPCOMING = CONVENTIONS.filter((convention) => convention.status === 'upcoming');
+interface ConventionGroup {
+  phase: ConventionPhase;
+  label: string;
+  chipClassName: string;
+  conventions: Convention[];
+}
 
 export function ConventionGrid() {
+  const now = CONVENTIONS.filter((convention) => getConventionPhase(convention) === 'now');
+  const soon = CONVENTIONS.filter((convention) => getConventionPhase(convention) === 'soon');
+  const later = CONVENTIONS.filter((convention) => getConventionPhase(convention) === 'up');
+
+  const groups: ConventionGroup[] = [
+    {
+      phase: 'now',
+      label: 'HAPPENING NOW',
+      chipClassName: 'bg-accent-pop text-white',
+      conventions: now,
+    },
+    {
+      phase: 'soon',
+      label: 'SOON!',
+      chipClassName: 'bg-accent text-white',
+      conventions: soon,
+    },
+    {
+      phase: 'up',
+      label: 'COMING UP',
+      chipClassName: 'border-2 border-ink text-ink dark:text-zinc-100',
+      conventions: later,
+    },
+  ];
+
+  let index = 0;
+  const sections = groups
+    .filter((group) => group.conventions.length > 0)
+    .map((group) => {
+      const indexStart = index;
+      index += group.conventions.length;
+      return { ...group, indexStart };
+    });
+
   return (
     <section id="conventions" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6">
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
@@ -20,31 +60,25 @@ export function ConventionGrid() {
         </div>
       </div>
 
-      <div className="border-ink mt-12 border-t-2">
-        <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
-          <span className="bg-accent-pop px-2 py-1 text-xs text-white">HAPPENING NOW</span>
-        </h3>
-        <div className="mt-4">
-          {ACTIVE.map((convention, index) => (
-            <ConventionRow key={convention.id} convention={convention} index={index} />
-          ))}
+      {sections.map((group) => (
+        <div key={group.phase} className="border-ink mt-8 border-t-2 first:mt-12">
+          <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
+            <span className={`${group.chipClassName} inline-flex items-center px-2 py-1 text-xs`}>
+              {group.label}
+            </span>
+          </h3>
+          <div className="mt-4">
+            {group.conventions.map((convention, rowIndex) => (
+              <ConventionRow
+                key={convention.id}
+                convention={convention}
+                index={group.indexStart + rowIndex}
+                phase={group.phase}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-
-      <div className="border-ink border-t-2">
-        <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
-          <span className="bg-accent px-2 py-1 text-xs text-white">NEXT UP</span>
-        </h3>
-        <div className="mt-4">
-          {UPCOMING.map((convention, index) => (
-            <ConventionRow
-              key={convention.id}
-              convention={convention}
-              index={ACTIVE.length + index}
-            />
-          ))}
-        </div>
-      </div>
+      ))}
 
       <ConventionRequest />
     </section>

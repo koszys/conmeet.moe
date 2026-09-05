@@ -1,22 +1,25 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ArrowUpRight, MapPin } from 'lucide-react';
-import type { Convention } from '../types';
+import { formatDateRange } from '@/shared/lib/dates';
+import type { Convention, ConventionPhase } from '../types';
 import { cn } from '@/shared/lib/utils';
 
-function formatDateRange(startsAt: string, endsAt: string): string {
-  const start = new Date(startsAt);
-  const end = new Date(endsAt);
+const STAMP: Record<ConventionPhase, string> = {
+  now: 'now!',
+  soon: 'soon!',
+  up: 'up!',
+};
 
-  if (start.getFullYear() === end.getFullYear()) {
-    return `${format(start, 'MMM d')} \u2013 ${format(end, 'MMM d, yyyy')}`;
-  }
-
-  return `${format(start, 'MMM d, yyyy')} \u2013 ${format(end, 'MMM d, yyyy')}`;
-}
-
-export function ConventionRow({ convention, index }: { convention: Convention; index: number }) {
-  const isActive = convention.status === 'active';
+export function ConventionRow({
+  convention,
+  index,
+  phase,
+}: {
+  convention: Convention;
+  index: number;
+  phase: ConventionPhase;
+}) {
   const month = format(new Date(convention.startsAt), 'MMM').toUpperCase();
 
   return (
@@ -53,12 +56,12 @@ export function ConventionRow({ convention, index }: { convention: Convention; i
           <span
             className={cn(
               'font-display border-ink -rotate-6 rounded-[2px] border-2 px-3.5 py-1 text-[11px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)]',
-              isActive
-                ? 'bg-accent-pop text-white'
-                : 'text-ink bg-white dark:bg-zinc-900 dark:text-zinc-100'
+              phase === 'now' && 'bg-accent-pop text-white',
+              phase === 'soon' && 'bg-accent text-white',
+              phase === 'up' && 'text-ink bg-white dark:bg-zinc-900 dark:text-zinc-100'
             )}
           >
-            {isActive ? 'now!' : 'up!'}
+            {STAMP[phase]}
           </span>
           <Link
             href={convention.websiteUrl}

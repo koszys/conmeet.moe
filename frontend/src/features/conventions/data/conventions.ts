@@ -30,6 +30,20 @@ export const CONVENTIONS: Convention[] = [
     status: 'active',
   },
   {
+    id: 'anime-fusion',
+    name: 'Anime Fusion',
+    slug: 'anime-fusion',
+    venue: 'Hyatt Regency Minneapolis',
+    city: 'Minneapolis',
+    country: 'USA',
+    startsAt: '2026-09-18',
+    endsAt: '2026-09-20',
+    websiteUrl: 'https://animefusion.org',
+    description:
+      'A cozy multi-genre convention in the Twin Cities with panels, tabletop gaming, and an indie artist alley.',
+    status: 'upcoming',
+  },
+  {
     id: 'anime-los-angeles',
     name: 'Anime Los Angeles',
     slug: 'anime-los-angeles',

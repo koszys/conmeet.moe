@@ -14,8 +14,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -216,3 +216,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Production
+next-env.d.ts
+
+# Tooling
+.turbo/
+.husky/_

@@ -11,7 +11,7 @@ export function Marquee() {
         {row.map((item, index) => (
           <span
             key={index}
-            className="font-display flex items-center gap-3 px-8 text-xs tracking-[0.3em] uppercase"
+            className="font-display flex items-center gap-3 px-8 text-xs tracking-[0.15em] uppercase"
           >
             {item}
             <Star className="fill-accent-pop text-accent-pop h-3 w-3" />

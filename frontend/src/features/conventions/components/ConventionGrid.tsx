@@ -10,7 +10,7 @@ export function ConventionGrid() {
     <section id="conventions" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6">
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="font-display text-4xl tracking-tight uppercase sm:text-5xl">
+          <h2 className="font-display text-2xl tracking-wide uppercase sm:text-4xl">
             the line-up!
             <span className="text-accent-pop ml-3">✦</span>
           </h2>
@@ -21,8 +21,8 @@ export function ConventionGrid() {
       </div>
 
       <div className="border-ink mt-12 border-t-2">
-        <h3 className="font-display mt-10 flex items-center gap-3 text-2xl tracking-wide uppercase">
-          <span className="bg-accent-pop px-2 py-0.5 text-sm text-white">HAPPENING NOW</span>
+        <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
+          <span className="bg-accent-pop px-2 py-1 text-xs text-white">HAPPENING NOW</span>
         </h3>
         <div className="mt-4">
           {ACTIVE.map((convention, index) => (
@@ -32,8 +32,8 @@ export function ConventionGrid() {
       </div>
 
       <div className="border-ink border-t-2">
-        <h3 className="font-display mt-10 flex items-center gap-3 text-2xl tracking-wide uppercase">
-          <span className="bg-accent px-2 py-0.5 text-sm text-white">NEXT UP</span>
+        <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
+          <span className="bg-accent px-2 py-1 text-xs text-white">NEXT UP</span>
         </h3>
         <div className="mt-4">
           {UPCOMING.map((convention, index) => (

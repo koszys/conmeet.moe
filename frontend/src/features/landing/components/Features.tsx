@@ -28,9 +28,7 @@ export function Features() {
   return (
     <section id="features" className="halftone border-ink relative scroll-mt-20 border-y-2 py-20">
       <div className="mx-auto max-w-4xl px-4 md:px-6">
-        <h2 className="font-display text-4xl tracking-tight uppercase sm:text-5xl">
-          how it works!
-        </h2>
+        <h2 className="font-display text-xl tracking-wide uppercase sm:text-3xl">how it works!</h2>
         <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
           Three little things that make every con way less stressful. Pick a convention, plan your
           day, show up and have fun!
@@ -43,16 +41,18 @@ export function Features() {
               id={feature.id}
               className="group border-ink flex scroll-mt-24 flex-col gap-4 border-b-2 border-dashed py-8 transition-colors last:border-b-0 md:flex-row md:items-start md:gap-8"
             >
-              <span className="font-display text-accent group-hover:text-accent-pop text-5xl leading-none transition-colors md:w-20">
+              <span className="font-display text-accent group-hover:text-accent-pop text-3xl leading-none transition-colors sm:text-4xl md:w-20">
                 {String(index + 1).padStart(2, '0')}
               </span>
 
-              <div className="border-ink flex h-12 w-12 shrink-0 items-center justify-center rounded-md border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900">
+              <div className="border-ink flex h-12 w-12 shrink-0 items-center justify-center rounded-none border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900">
                 <feature.icon className="text-accent h-5 w-5" />
               </div>
 
               <div className="flex-1">
-                <h3 className="font-display text-2xl tracking-wide uppercase">{feature.title}</h3>
+                <h3 className="font-display text-lg tracking-wide uppercase sm:text-xl">
+                  {feature.title}
+                </h3>
                 <p className="mt-2 max-w-xl leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {feature.description}
                 </p>

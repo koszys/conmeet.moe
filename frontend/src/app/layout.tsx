@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, RocknRoll_One } from 'next/font/google';
+import { Geist, Geist_Mono, Press_Start_2P } from 'next/font/google';
 import { Providers } from './providers/providers';
 import './globals.css';
 
@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const rocknRollOne = RocknRoll_One({
+const pressStart2P = Press_Start_2P({
   variable: '--font-display',
   subsets: ['latin'],
   weight: '400',
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${rocknRollOne.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${pressStart2P.variable} h-full antialiased`}
     >
       <head>
         <script

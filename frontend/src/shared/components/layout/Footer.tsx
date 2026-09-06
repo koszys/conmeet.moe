@@ -3,7 +3,7 @@ import Link from 'next/link';
 export function Footer() {
   return (
     <footer className="border-ink border-t-2 py-8">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-zinc-500 md:flex-row md:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-zinc-500 md:flex-row md:px-6 dark:text-zinc-300">
         <p>
           &copy; {new Date().getFullYear()}{' '}
           <span className="font-display tracking-wide">

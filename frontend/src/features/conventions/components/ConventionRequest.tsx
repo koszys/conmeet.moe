@@ -18,7 +18,7 @@ export function ConventionRequest() {
           <Mail className="text-accent-pop h-4 w-4" />
           Submit a request
         </span>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-zinc-600 dark:text-zinc-300">
           Check out{' '}
           <Link
             href="https://fancons.com"

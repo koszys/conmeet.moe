@@ -35,13 +35,13 @@ export function ConventionRow({
           <p className="text-accent mt-1 text-sm font-medium">
             {formatDateRange(convention.startsAt, convention.endsAt)}
           </p>
-          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
             <span>
               {convention.venue}, {convention.city}
             </span>
           </p>
-          <p className="mt-2 hidden max-w-xl text-sm leading-relaxed text-zinc-600 sm:block dark:text-zinc-400">
+          <p className="mt-2 hidden max-w-xl text-sm leading-relaxed text-zinc-600 sm:block dark:text-zinc-300">
             {convention.description}
           </p>
         </div>

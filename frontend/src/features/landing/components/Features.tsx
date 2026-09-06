@@ -29,7 +29,7 @@ export function Features() {
     <section id="features" className="halftone border-ink relative scroll-mt-20 border-y-2 py-20">
       <div className="mx-auto max-w-4xl px-4 md:px-6">
         <h2 className="font-display text-xl tracking-wide uppercase sm:text-3xl">how it works!</h2>
-        <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
+        <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">
           Three little things that make every con way less stressful. Pick a convention, plan your
           day, show up and have fun!
         </p>
@@ -54,7 +54,7 @@ export function Features() {
                 <h3 className="font-display text-lg tracking-wide uppercase sm:text-xl">
                   {feature.title}
                 </h3>
-                <p className="mt-2 max-w-xl leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-2 max-w-xl leading-relaxed text-zinc-600 dark:text-zinc-300">
                   {feature.description}
                 </p>
               </div>

@@ -10,11 +10,11 @@ export function Hero() {
       <div aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-40" />
 
       {/* Desktop side graphics */}
-      <MikuSilhouette className="text-accent pointer-events-none absolute top-1/2 right-12 hidden h-112 w-auto -translate-y-1/2 xl:block" />
+      <MikuSilhouette className="text-accent/50 pointer-events-none absolute top-1/2 right-12 hidden h-112 w-auto -translate-y-1/2 xl:block" />
       <MikuTextVertical className="text-accent-pop pointer-events-none absolute top-1/2 left-16 hidden h-96 w-auto -translate-y-1/2 xl:block" />
 
       {/* Mobile/Tablet watermark silhouette background framing */}
-      <MikuSilhouette className="text-accent/15 dark:text-accent/20 pointer-events-none absolute top-1/2 -right-10 h-96 w-auto -translate-y-1/2 sm:-right-4 xl:hidden" />
+      <MikuSilhouette className="text-accent/50 dark:text-accent/50 pointer-events-none absolute top-1/2 -right-10 h-96 w-auto -translate-y-1/2 sm:-right-4 xl:hidden" />
 
       <Star
         aria-hidden
@@ -39,7 +39,7 @@ export function Hero() {
           conmeet<span className="text-accent">.moe</span>
         </h1>
 
-        <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-zinc-600 sm:mt-8 sm:text-lg dark:text-zinc-400">
+        <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-zinc-600 sm:mt-8 sm:text-lg dark:text-zinc-300">
           A community site for convention goers! Freebies, meetups, and schedules. Many more updates
           to come to make your con life easier.
         </p>

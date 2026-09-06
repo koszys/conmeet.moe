@@ -47,7 +47,7 @@ export function ConventionGrid() {
             the line-up!
             <span className="text-accent-pop ml-3">✦</span>
           </h2>
-          <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
+          <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">
             Only conventions currently on this site are listed here — not every con out there!
           </p>
         </div>

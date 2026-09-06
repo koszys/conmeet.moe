@@ -13,6 +13,14 @@ const NAV_LINKS = [
   { name: 'Line-up', href: '#conventions' },
 ];
 
+function scrollToSection(href: string) {
+  const target = document.querySelector(href);
+  if (!target) return;
+  const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0;
+  const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
 export function Header() {
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -90,7 +98,11 @@ export function Header() {
                 <a
                   key={link.name}
                   href={link.href}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    window.setTimeout(() => scrollToSection(link.href), 330);
+                  }}
                   className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
                 >
                   {link.name}

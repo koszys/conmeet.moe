@@ -76,13 +76,13 @@ export function LedDisplay() {
       className="border-ink bg-accent-soft border-y-2 dark:bg-[#137a7f]/40"
     >
       <div className="mx-auto max-w-6xl px-4 py-5 md:px-6">
-        <div className="border-ink rounded-[6px] border-2 bg-[#0a0a0c] p-4 shadow-[4px_4px_0_var(--ink)] ring-1 ring-white/5 dark:ring-white/10">
+        <div className="border-ink rounded-md border-2 bg-[#0a0a0c] p-4 shadow-[4px_4px_0_var(--ink)] ring-1 ring-white/5 dark:ring-white/10">
           <div className="mb-3 flex items-center justify-between">
-            <span className="font-display text-[10px] tracking-widest text-zinc-500">
+            <span className="font-display text-[10px] tracking-widest text-zinc-400">
               ▮ CONMEET.MOE
             </span>
             <span className="flex items-center gap-3">
-              <span className="font-display text-[10px] tracking-widest text-zinc-600">
+              <span className="font-display text-[10px] tracking-widest text-zinc-400">
                 #LINE-UP
               </span>
               <span aria-hidden className="flex h-3 items-end gap-1">

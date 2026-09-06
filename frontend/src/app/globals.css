@@ -5,13 +5,13 @@
 :root {
   color-scheme: light;
   --background: #ffffff;
-  --foreground: #18181b;
-  --accent: #0891b2;
-  --accent-hover: #0e7490;
-  --accent-soft: #cffafe;
-  --accent-pop: #ec4899;
-  --accent-pop-hover: #db2777;
-  --ink: #17171b;
+  --foreground: #373b3e;
+  --accent: #137a7f;
+  --accent-hover: #0f5f63;
+  --accent-soft: #86cecb;
+  --accent-pop: #e12885;
+  --accent-pop-hover: #be2070;
+  --ink: #373b3e;
 }
 
 @theme inline {
@@ -41,14 +41,14 @@
 
 .dark {
   color-scheme: dark;
-  --background: #0c0c0e;
-  --foreground: #f8fafc;
-  --accent: #22d3ee;
-  --accent-hover: #67e8f9;
-  --accent-soft: #164e63;
-  --accent-pop: #f472b6;
-  --accent-pop-hover: #f9a8d4;
-  --ink: #dcdfe4;
+  --background: #373b3e;
+  --foreground: #bec8d1;
+  --accent: #86cecb;
+  --accent-hover: #9cdad7;
+  --accent-soft: #137a7f;
+  --accent-pop: #e12885;
+  --accent-pop-hover: #f04a97;
+  --ink: #bec8d1;
 }
 
 body {
@@ -64,12 +64,12 @@ body {
 }
 
 .halftone {
-  background-image: radial-gradient(rgba(23, 23, 27, 0.1) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(55, 59, 62, 0.1) 1px, transparent 1px);
   background-size: 10px 10px;
 }
 
 .dark .halftone {
-  background-image: radial-gradient(rgba(248, 250, 252, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(190, 200, 209, 0.12) 1px, transparent 1px);
 }
 
 .scanlines {

@@ -1,4 +1,7 @@
 import { ArrowDown, Sparkles, Star } from 'lucide-react';
+import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
+import { MikuTextVertical } from '@/shared/components/MikuTextVertical';
+import { MikuCombined } from '@/shared/components/MikuCombined';
 
 export function Hero() {
   return (
@@ -6,9 +9,12 @@ export function Hero() {
       <div className="halftone absolute inset-0" aria-hidden />
       <div aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-40" />
 
+      <MikuSilhouette className="text-accent pointer-events-none absolute top-1/2 right-12 hidden h-[28rem] w-auto -translate-y-1/2 xl:block" />
+      <MikuTextVertical className="text-accent-pop pointer-events-none absolute top-1/2 left-16 hidden h-96 w-auto -translate-y-1/2 xl:block" />
+
       <Star
         aria-hidden
-        className="fill-accent-pop text-accent-pop absolute top-16 left-[8%] h-6 w-6 -rotate-12"
+        className="fill-accent-pop text-accent-pop absolute top-16 left-[17%] h-6 w-6 -rotate-12"
       />
       <Sparkles
         aria-hidden
@@ -19,8 +25,8 @@ export function Hero() {
         className="text-accent absolute bottom-40 left-[16%] hidden h-4 w-4 rotate-45 md:block"
       />
 
-      <div className="relative mx-auto max-w-4xl px-4 pt-20 pb-20 text-center md:pt-28 md:pb-28">
-        <h1 className="font-display mt-8 text-2xl leading-[1.2] tracking-wide sm:text-4xl md:text-5xl xl:text-6xl">
+      <div className="relative mx-auto flex max-w-4xl flex-col px-4 pt-20 pb-20 text-center md:pt-28 md:pb-28">
+        <h1 className="font-display mt-4 text-2xl leading-[1.2] tracking-wide sm:text-4xl md:text-5xl xl:text-6xl">
           conmeet<span className="text-accent">.moe</span>
         </h1>
 
@@ -39,11 +45,13 @@ export function Hero() {
           </a>
           <a
             href="#features"
-            className="border-ink font-display text-ink hover:bg-accent-soft inline-flex items-center gap-2 rounded-none border-2 bg-white px-7 py-4 text-xs tracking-wide uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm dark:bg-[#0c0c0e] dark:text-zinc-100"
+            className="border-ink font-display text-ink hover:bg-accent-soft inline-flex items-center gap-2 rounded-none border-2 bg-white px-7 py-4 text-xs tracking-wide uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm dark:bg-[#373b3e] dark:text-zinc-100"
           >
             How it works!
           </a>
         </div>
+
+        <MikuCombined className="text-accent mx-auto mt-10 h-52 w-auto xl:hidden" />
       </div>
     </section>
   );

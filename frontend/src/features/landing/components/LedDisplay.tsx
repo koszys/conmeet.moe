@@ -73,7 +73,7 @@ export function LedDisplay() {
   return (
     <section
       aria-label="Site highlights ticker"
-      className="border-ink bg-accent-soft border-y-2 dark:bg-[#164e63]/40"
+      className="border-ink bg-accent-soft border-y-2 dark:bg-[#137a7f]/40"
     >
       <div className="mx-auto max-w-6xl px-4 py-5 md:px-6">
         <div className="border-ink rounded-[6px] border-2 bg-[#0a0a0c] p-4 shadow-[4px_4px_0_var(--ink)] ring-1 ring-white/5 dark:ring-white/10">

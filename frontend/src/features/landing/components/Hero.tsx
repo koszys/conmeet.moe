@@ -11,7 +11,7 @@ export function Hero() {
 
       {/* Desktop side graphics */}
       <MikuSilhouette className="text-accent/50 pointer-events-none absolute top-1/2 right-12 hidden h-112 w-auto -translate-y-1/2 xl:block" />
-      <MikuTextVertical className="text-accent-pop pointer-events-none absolute top-1/2 left-16 hidden h-96 w-auto -translate-y-1/2 xl:block" />
+      <MikuTextVertical className="text-accent-pop pointer-events-none absolute top-1/2 left-30 hidden h-96 w-auto -translate-y-1/2 xl:block" />
 
       {/* Mobile/Tablet watermark silhouette background framing */}
       <MikuSilhouette className="text-accent/50 dark:text-accent/50 pointer-events-none absolute top-1/2 -right-10 h-96 w-auto -translate-y-1/2 sm:-right-4 xl:hidden" />

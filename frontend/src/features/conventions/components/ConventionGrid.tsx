@@ -37,14 +37,7 @@ export function ConventionGrid() {
     },
   ];
 
-  let index = 0;
-  const sections = groups
-    .filter((group) => group.conventions.length > 0)
-    .map((group) => {
-      const indexStart = index;
-      index += group.conventions.length;
-      return { ...group, indexStart };
-    });
+  const sections = groups.filter((group) => group.conventions.length > 0);
 
   return (
     <section id="conventions" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6">
@@ -54,7 +47,7 @@ export function ConventionGrid() {
             the line-up!
             <span className="text-accent-pop ml-3">✦</span>
           </h2>
-          <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
+          <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">
             Only conventions currently on this site are listed here — not every con out there!
           </p>
         </div>
@@ -68,13 +61,8 @@ export function ConventionGrid() {
             </span>
           </h3>
           <div className="mt-4">
-            {group.conventions.map((convention, rowIndex) => (
-              <ConventionRow
-                key={convention.id}
-                convention={convention}
-                index={group.indexStart + rowIndex}
-                phase={group.phase}
-              />
+            {group.conventions.map((convention) => (
+              <ConventionRow key={convention.id} convention={convention} phase={group.phase} />
             ))}
           </div>
         </div>

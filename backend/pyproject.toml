@@ -2,56 +2,58 @@
 name = "conmeet-backend"
 version = "0.1.0"
 description = "conmeet.moe API - freebies, meetups, and schedules for convention goers"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
-    "alembic>=1.19.2",
-    "asyncpg>=0.31.0",
-    "bcrypt<4.1",
-    "boto3>=1.43.89",
-    "cryptography>=45.0.0",
-    "fastapi>=0.141.1",
-    "google-auth>=2.57.1",
-    "google-auth-oauthlib>=1.4.1",
-    "httpx>=0.28.1",
-    "passlib[bcrypt]>=1.7.4",
-    "pydantic-settings>=2.15.0",
-    "pydantic[email]>=2.13.5",
-    "python-dotenv>=1.2.3",
-    "python-jose[cryptography]>=3.5.0",
-    "python-multipart>=0.0.32",
-    "sqlalchemy[asyncio]>=2.0.52",
-    "uvicorn[standard]>=0.52.4",
+    "django==6.1.*",
+    "djangorestframework>=3.16.0",
+    "djangorestframework-simplejwt>=5.4.0",
+    "django-allauth>=65.0.0",
+    "django-cors-headers>=4.6.0",
+    "django-storages[boto3]>=1.14.5",
+    "Pillow>=11.0.0",
+    "django-imagekit>=6.1.0",
+    "django-quill>=0.1.0",
+    "psycopg[binary]>=3.2.0",
+    "django-environ>=0.11.2",
+    "whitenoise>=6.8.0",
+    "redis>=5.2.0",
+    "uvicorn[standard]>=0.34.0",
+    "gunicorn>=23.0.0",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=2.3.1",
-    "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
-    "ruff>=0.16.6",
-    "types-passlib>=1.7.7.20260211",
-    "types-python-jose>=3.5.0.20260408",
+    "pytest>=8.3.0",
+    "pytest-django>=4.9.0",
+    "factory-boy>=3.3.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "django-stubs>=5.1.0",
 ]
 
 [tool.uv]
 package = false
 
 [tool.ruff]
-src = ["app"]
 line-length = 100
-target-version = "py311"
+target-version = "py314"
+src = ["config"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B", "SIM", "ASYNC"]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
 
 [tool.mypy]
-python_version = "3.11"
-plugins = ["pydantic.mypy"]
+python_version = "3.14"
+plugins = ["mypy_django_plugin.main"]
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
+DJANGO_SETTINGS_MODULE = "config.settings"
 testpaths = ["tests"]

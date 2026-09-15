@@ -1,7 +1,6 @@
+from conventions.models import Convention
 from django.conf import settings
 from django.db import models
-
-from conventions.models import Convention
 
 
 class Vendor(models.Model):
@@ -17,9 +16,7 @@ class Vendor(models.Model):
 
 
 class Freebie(models.Model):
-    vendor = models.ForeignKey(
-        Vendor, on_delete=models.CASCADE, related_name="freebies"
-    )
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="freebies")
     convention = models.ForeignKey(
         Convention,
         on_delete=models.SET_NULL,
@@ -45,18 +42,14 @@ class UserFreebie(models.Model):
         on_delete=models.CASCADE,
         related_name="saved_freebies",
     )
-    freebie = models.ForeignKey(
-        Freebie, on_delete=models.CASCADE, related_name="saved_by"
-    )
+    freebie = models.ForeignKey(Freebie, on_delete=models.CASCADE, related_name="saved_by")
     claimed = models.BooleanField(default=False)
     claimed_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["user", "freebie"], name="unique_user_freebie"
-            )
+            models.UniqueConstraint(fields=["user", "freebie"], name="unique_user_freebie")
         ]
 
     def __str__(self) -> str:

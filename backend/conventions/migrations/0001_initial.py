@@ -5,35 +5,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Convention',
+            name="Convention",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=120)),
-                ('slug', models.SlugField(max_length=120, unique=True)),
-                ('venue_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('city', models.CharField(blank=True, max_length=120, null=True)),
-                ('country', models.CharField(blank=True, max_length=120, null=True)),
-                ('starts_at', models.DateField()),
-                ('ends_at', models.DateField()),
-                ('banner', models.ImageField(blank=True, null=True, upload_to='conventions/banners/')),
-                ('description', django_quill.fields.QuillField(blank=True)),
-                ('website_url', models.URLField(blank=True, max_length=512, null=True)),
-                ('map_url', models.URLField(blank=True, max_length=512, null=True)),
-                ('is_featured', models.BooleanField(default=False)),
-                ('is_active', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=120)),
+                ("slug", models.SlugField(max_length=120, unique=True)),
+                ("venue_name", models.CharField(blank=True, max_length=255, null=True)),
+                ("city", models.CharField(blank=True, max_length=120, null=True)),
+                ("country", models.CharField(blank=True, max_length=120, null=True)),
+                ("starts_at", models.DateField()),
+                ("ends_at", models.DateField()),
+                (
+                    "banner",
+                    models.ImageField(blank=True, null=True, upload_to="conventions/banners/"),
+                ),
+                ("description", django_quill.fields.QuillField(blank=True)),
+                ("website_url", models.URLField(blank=True, max_length=512, null=True)),
+                ("map_url", models.URLField(blank=True, max_length=512, null=True)),
+                ("is_featured", models.BooleanField(default=False)),
+                ("is_active", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ['-starts_at'],
+                "ordering": ["-starts_at"],
             },
         ),
     ]

@@ -1,13 +1,10 @@
 from django.conf import settings
 from django.db import models
-
 from meetups.models import Meetup
 
 
 class Comment(models.Model):
-    meetup = models.ForeignKey(
-        Meetup, on_delete=models.CASCADE, related_name="comments"
-    )
+    meetup = models.ForeignKey(Meetup, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

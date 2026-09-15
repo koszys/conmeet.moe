@@ -20,7 +20,10 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / ".env")
 
 # Security
-SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-secret-change-me")
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="dev-secret-change-me-to-32-plus-bytes-e4a1f9c2",
+)
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
@@ -137,9 +140,7 @@ AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 AWS_S3_CUSTOM_DOMAIN = env("R2_PUBLIC_URL", default=None)
 AWS_QUERYSTRING_AUTH = False
 AWS_DEFAULT_ACL = None
-MEDIA_URL = (
-    f"{AWS_S3_CUSTOM_DOMAIN}/" if AWS_S3_CUSTOM_DOMAIN else "/media/"
-)
+MEDIA_URL = f"{AWS_S3_CUSTOM_DOMAIN}/" if AWS_S3_CUSTOM_DOMAIN else "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 STORAGES = {
     "default": {
@@ -166,20 +167,17 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*"]
 LOGIN_REDIRECT_URL = "/"
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.CustomSocialAccountAdapter"
+ACCOUNT_ADAPTER = "accounts.adapters.CustomAccountAdapter"
 
 # DRF + SimpleJWT
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.AllowAny",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=env("ACCESS_TOKEN_EXPIRE_MINUTES")
-    ),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env("ACCESS_TOKEN_EXPIRE_MINUTES")),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=env("REFRESH_TOKEN_EXPIRE_DAYS")),
     "ROTATE_REFRESH_TOKENS": False,
     "ALGORITHM": "HS256",

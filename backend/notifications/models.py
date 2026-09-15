@@ -16,9 +16,7 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
         related_name="notifications",
     )
-    type = models.CharField(
-        max_length=32, choices=NotificationType.choices
-    )
+    type = models.CharField(max_length=32, choices=NotificationType.choices)
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

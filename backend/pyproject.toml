@@ -43,6 +43,9 @@ src = ["config"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM"]
 
+[tool.ruff.lint.per-file-ignores]
+"*/migrations/*" = ["E501", "E731"]
+
 [tool.mypy]
 python_version = "3.14"
 plugins = ["mypy_django_plugin.main"]
@@ -51,6 +54,11 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["*.admin"]
+disallow_untyped_defs = false
+disable_error_code = ["attr-defined", "no-any-return", "operator"]
 
 [tool.django-stubs]
 django_settings_module = "config.settings"

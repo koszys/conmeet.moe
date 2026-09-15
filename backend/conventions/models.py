@@ -1,5 +1,7 @@
 from django.db import models
 from django_quill.fields import QuillField
+from imagekit.models import ImageSpecField, ProcessedImageField
+from imagekit.processors import ResizeToFill, ResizeToFit
 
 
 class Convention(models.Model):
@@ -10,8 +12,19 @@ class Convention(models.Model):
     country = models.CharField(max_length=120, blank=True, null=True)
     starts_at = models.DateField()
     ends_at = models.DateField()
-    banner = models.ImageField(
-        upload_to="conventions/banners/", blank=True, null=True
+    banner = ProcessedImageField(
+        upload_to="conventions/banners/",
+        blank=True,
+        null=True,
+        processors=[ResizeToFit(1600, 800)],
+        format="WEBP",
+        options={"quality": 85},
+    )
+    banner_thumb = ImageSpecField(
+        source="banner",
+        processors=[ResizeToFill(640, 360)],
+        format="JPEG",
+        options={"quality": 60},
     )
     description = QuillField(blank=True)
     website_url = models.URLField(max_length=512, blank=True, null=True)

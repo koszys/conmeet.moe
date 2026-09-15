@@ -1,9 +1,12 @@
 """API v1 URL patterns (aggregated so config/urls.py stays tiny)."""
 
+from accounts.views import LogoutView, MeView, health
 from django.urls import path
-
-from accounts.views import health
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path("health/", health, name="health"),
+    path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("auth/me/", MeView.as_view(), name="me"),
+    path("auth/logout/", LogoutView.as_view(), name="logout"),
 ]

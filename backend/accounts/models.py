@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill, ResizeToFit
 
 
 class UserRole(models.TextChoices):
@@ -9,8 +11,23 @@ class UserRole(models.TextChoices):
 
 class User(AbstractUser):
     display_name = models.CharField(max_length=64, blank=True)
-    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
-    banner = models.ImageField(upload_to="banners/", blank=True, null=True)
+    avatar = ProcessedImageField(
+        upload_to="avatars/",
+        blank=True,
+        null=True,
+        processors=[ResizeToFill(256, 256)],
+        format="WEBP",
+        options={"quality": 85},
+    )
+    avatar_url = models.CharField(max_length=512, blank=True)
+    banner = ProcessedImageField(
+        upload_to="banners/",
+        blank=True,
+        null=True,
+        processors=[ResizeToFit(1600, 500)],
+        format="WEBP",
+        options={"quality": 85},
+    )
     role = models.CharField(
         max_length=16,
         choices=UserRole.choices,

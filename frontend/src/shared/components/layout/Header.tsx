@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Menu, Moon, Sparkles, Sun, X } from 'lucide-react';
+import { LogOut, Menu, Moon, Sparkles, Sun, UserRound, X } from 'lucide-react';
 import { useTheme } from '@/app/providers/theme-provider';
+import { useAuth } from '@/features/auth/auth-provider';
 import { SocialButton } from '@/shared/components/SocialButton';
 import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
 import { cn } from '@/shared/lib/utils';
@@ -21,8 +22,83 @@ function scrollToSection(href: string) {
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
+function UserMenu() {
+  const { user, loading, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(event: PointerEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [open]);
+
+  if (loading) return null;
+
+  if (!user) {
+    return (
+      <Link
+        href="/login"
+        className="border-ink bg-accent hover:border-accent-pop hover:bg-accent-pop inline-flex h-10 items-center justify-center border-2 px-4 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+      >
+        Log in
+      </Link>
+    );
+  }
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        className="border-ink hover:border-accent-pop hover:text-accent-pop flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
+        aria-label="Account menu"
+        aria-expanded={open}
+      >
+        {user.avatar_url ? (
+          <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <UserRound className="h-4 w-4" />
+        )}
+      </button>
+      {open && (
+        <div className="border-ink absolute right-0 z-50 mt-2 w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
+          <div className="border-ink border-b-2 border-dashed px-4 py-3">
+            <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
+            <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">@{user.username}</p>
+          </div>
+          <Link
+            href="/dashboard"
+            onClick={() => setOpen(false)}
+            className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
+          >
+            Dashboard
+          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              logout();
+            }}
+            className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-xs font-bold tracking-widest uppercase transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Log out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -53,12 +129,17 @@ export function Header() {
                 {link.name}
               </a>
             ))}
+            {user && (
+              <Link href="/dashboard" className="hover:text-accent-pop transition-colors">
+                Dashboard
+              </Link>
+            )}
           </nav>
         </div>
 
         <div className="flex items-center gap-2">
-          <SocialButton platform="discord" disabled className="hidden sm:inline-flex" />
           <SocialButton platform="kofi" className="hidden sm:inline-flex" />
+          <UserMenu />
           <button
             type="button"
             onClick={toggleTheme}
@@ -108,8 +189,25 @@ export function Header() {
                   {link.name}
                 </a>
               ))}
+              {user && (
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors dark:text-zinc-300"
+                >
+                  Dashboard
+                </Link>
+              )}
+              {!user && (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors dark:text-zinc-300"
+                >
+                  Log in
+                </Link>
+              )}
               <div className="mt-4 flex gap-2 sm:hidden">
-                <SocialButton platform="discord" disabled />
                 <SocialButton platform="kofi" />
               </div>
             </div>

@@ -7,57 +7,119 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('conventions', '0001_initial'),
+        ("conventions", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Meetup',
+            name="Meetup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=120)),
-                ('location', models.CharField(blank=True, max_length=255, null=True)),
-                ('starts_at', models.DateTimeField()),
-                ('ends_at', models.DateTimeField()),
-                ('image', models.ImageField(blank=True, null=True, upload_to='meetups/')),
-                ('description', django_quill.fields.QuillField(blank=True)),
-                ('is_official', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('convention', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='meetups', to='conventions.convention')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_meetups', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=120)),
+                ("location", models.CharField(blank=True, max_length=255, null=True)),
+                ("starts_at", models.DateTimeField()),
+                ("ends_at", models.DateTimeField()),
+                ("image", models.ImageField(blank=True, null=True, upload_to="meetups/")),
+                ("description", django_quill.fields.QuillField(blank=True)),
+                ("is_official", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "convention",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="meetups",
+                        to="conventions.convention",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="created_meetups",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['starts_at'],
+                "ordering": ["starts_at"],
             },
         ),
         migrations.CreateModel(
-            name='Going',
+            name="Going",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='going', to=settings.AUTH_USER_MODEL)),
-                ('meetup', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='going', to='meetups.meetup')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="going",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "meetup",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="going",
+                        to="meetups.meetup",
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('user', 'meetup'), name='unique_going')],
+                "constraints": [
+                    models.UniqueConstraint(fields=("user", "meetup"), name="unique_going")
+                ],
             },
         ),
         migrations.CreateModel(
-            name='SavedMeetup',
+            name="SavedMeetup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('meetup', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='saved_by', to='meetups.meetup')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='saved_meetups', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "meetup",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="saved_by",
+                        to="meetups.meetup",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="saved_meetups",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('user', 'meetup'), name='unique_saved_meetup')],
+                "constraints": [
+                    models.UniqueConstraint(fields=("user", "meetup"), name="unique_saved_meetup")
+                ],
             },
         ),
     ]

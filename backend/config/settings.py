@@ -168,6 +168,7 @@ ACCOUNT_SIGNUP_FIELDS = ["email*"]
 LOGIN_REDIRECT_URL = "/"
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.CustomSocialAccountAdapter"
 ACCOUNT_ADAPTER = "accounts.adapters.CustomAccountAdapter"
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 # DRF + SimpleJWT
 REST_FRAMEWORK = {

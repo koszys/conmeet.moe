@@ -50,9 +50,6 @@ function AccountSettingsContent() {
           Same-email logins are linked to this account automatically.
         </p>
       </section>
-      <div className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-8 text-sm text-zinc-400 backdrop-blur-sm dark:bg-[#373b3e]/70 dark:text-zinc-400">
-        Convention schedules, freebies, and meetups land here in Phase 2.
-      </div>
     </main>
   );
 }

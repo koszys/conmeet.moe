@@ -45,7 +45,7 @@ function UserMenu() {
     return (
       <Link
         href="/login"
-        className="border-ink bg-accent hover:border-accent-pop hover:bg-accent-pop inline-flex h-10 items-center justify-center border-2 px-4 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        className="border-ink bg-accent inline-flex h-10 items-center justify-center border-2 px-4 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
       >
         Log in
       </Link>

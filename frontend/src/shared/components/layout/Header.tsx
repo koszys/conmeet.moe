@@ -3,14 +3,21 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Menu, Moon, Sparkles, Sun, UserRound, X } from 'lucide-react';
+import { LogOut, Menu, Moon, Search, Sparkles, Sun, UserRound, X } from 'lucide-react';
 import { useTheme } from '@/app/providers/theme-provider';
 import { useAuth } from '@/features/auth/auth-provider';
 import { SocialButton } from '@/shared/components/SocialButton';
+import { HeaderSearch } from '@/features/conventions/components/HeaderSearch';
 import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { cn } from '@/shared/lib/utils';
 
-function UserMenu() {
+function UserMenu({
+  popupFixed = false,
+  onTrigger,
+}: {
+  popupFixed?: boolean;
+  onTrigger?: () => void;
+}) {
   const { user, loading, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -32,9 +39,11 @@ function UserMenu() {
     return (
       <Link
         href="/login"
-        className="border-ink bg-accent inline-flex h-10 items-center justify-center border-2 px-4 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        aria-label="Login"
+        onClick={onTrigger}
+        className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
       >
-        Log in
+        <UserRound className="h-4 w-4" />
       </Link>
     );
   }
@@ -43,7 +52,10 @@ function UserMenu() {
     <div ref={wrapRef} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          setOpen((value) => !value);
+          onTrigger?.();
+        }}
         className="border-ink hover:border-accent-pop hover:text-accent-pop flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
         aria-label="Account menu"
         aria-expanded={open}
@@ -55,7 +67,12 @@ function UserMenu() {
         )}
       </button>
       {open && (
-        <div className="border-ink absolute right-0 z-50 mt-2 w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
+        <div
+          className={cn(
+            'border-ink z-50 mt-2 w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]',
+            popupFixed ? 'fixed top-16 right-4 z-[60]' : 'absolute right-0'
+          )}
+        >
           <div className="border-ink border-b-2 border-dashed px-4 py-3">
             <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
             <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">@{user.username}</p>
@@ -116,16 +133,19 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
-          <SocialButton platform="kofi" className="hidden sm:inline-flex" />
+          <HeaderSearch />
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[450px]:hidden dark:text-zinc-200"
+            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[500px]:hidden dark:text-zinc-200"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <UserMenu />
+          <SocialButton platform="kofi" className="hidden min-[450px]:inline-flex" />
+          <div className="hidden min-[400px]:block">
+            <UserMenu />
+          </div>
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
@@ -169,16 +189,33 @@ export function Header() {
               >
                 Conventions
               </Link>
-              <div className="mt-4 flex gap-2 sm:hidden">
-                <SocialButton platform="kofi" />
+              <div className="mt-4 flex justify-end gap-2 sm:hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    window.setTimeout(
+                      () => window.dispatchEvent(new CustomEvent('conmeet:open-search')),
+                      300
+                    );
+                  }}
+                  aria-label="Search conventions"
+                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[550px]:inline-flex dark:text-zinc-200"
+                >
+                  <Search className="h-4 w-4" />
+                </button>
                 <button
                   type="button"
                   onClick={toggleTheme}
                   aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[450px]:inline-flex dark:text-zinc-200"
+                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[500px]:inline-flex dark:text-zinc-200"
                 >
                   {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </button>
+                <SocialButton platform="kofi" className="hidden max-[450px]:inline-flex" />
+                <div className="hidden max-[400px]:block">
+                  <UserMenu popupFixed onTrigger={() => setMenuOpen(false)} />
+                </div>
               </div>
             </div>
           </div>

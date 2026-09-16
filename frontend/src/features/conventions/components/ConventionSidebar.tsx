@@ -5,6 +5,7 @@ import { ArrowUpRight, CalendarDays, Gift, Globe, Home, MapPin, Users } from 'lu
 import { formatDateRange } from '@/shared/lib/dates';
 
 import { useConvention } from '../data/api';
+import { ConventionSwitcher } from './ConventionSwitcher';
 
 const COMING_SOON = [
   { label: 'Freebies', icon: Gift },
@@ -23,6 +24,13 @@ export function ConventionSidebar({ slug }: { slug: string }) {
 
   return (
     <aside className="border-ink hidden w-72 shrink-0 border-r-2 md:sticky md:top-16 md:block md:h-[calc(100vh-4rem)] md:self-start md:overflow-y-auto">
+      <div className="border-ink border-b-2 border-dashed p-4">
+        <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
+         Showing
+        </p>
+        <ConventionSwitcher currentSlug={slug} />
+      </div>
+
       <div className="p-4">
         <p className="font-display text-[11px] tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
           {formatDateRange(convention.starts_at, convention.ends_at)}

@@ -6,6 +6,7 @@ import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { formatDateRange } from '@/shared/lib/dates';
 
 import { useConvention } from '../data/api';
+import { ConventionSwitcher } from './ConventionSwitcher';
 
 function DetailSkeleton() {
   return (
@@ -57,6 +58,10 @@ export function ConventionDetail({ slug }: { slug: string }) {
 
       {!isLoading && !isError && convention && (
         <>
+          <div className="border-b-2 px-6 pt-6 md:hidden">
+            <ConventionSwitcher currentSlug={slug} />
+          </div>
+
           <div className="border-ink relative h-44 overflow-hidden border-b-2 bg-accent-soft/40 md:h-64 dark:bg-zinc-900">
             {convention.banner ? (
               <img src={convention.banner} alt="" className="h-full w-full object-cover" />

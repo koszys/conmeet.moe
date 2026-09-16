@@ -5,9 +5,8 @@ from .serializers import ConventionDetailSerializer, ConventionListSerializer
 
 
 class ConventionListView(ListAPIView):
-    queryset = Convention.objects.filter(is_active=True)
+    queryset = Convention.objects.filter(is_active=True).order_by("starts_at")
     serializer_class = ConventionListSerializer
-    ordering = ("starts_at",)
 
 
 class ConventionDetailView(RetrieveAPIView):

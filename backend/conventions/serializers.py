@@ -30,5 +30,13 @@ class ConventionListSerializer(serializers.ModelSerializer):
 
 
 class ConventionDetailSerializer(ConventionListSerializer):
+    description = serializers.SerializerMethodField()
+
     class Meta(ConventionListSerializer.Meta):
         fields = ConventionListSerializer.Meta.fields + ["description", "map_url"]
+
+    def get_description(self, obj: Convention) -> str:
+        value = obj.description
+        if not value:
+            return ""
+        return value.html

@@ -1,7 +1,9 @@
+'use client';
+
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
-import { CONVENTIONS } from '../data/conventions';
-import { getConventionPhase } from '../utils/dates';
+import { useConventions } from '../data/api';
+import { getConventionPhase, isPast } from '../utils/dates';
 import type { Convention, ConventionPhase } from '../types';
 
 interface ConventionGroup {
@@ -11,10 +13,25 @@ interface ConventionGroup {
   conventions: Convention[];
 }
 
+function RowSkeleton() {
+  return (
+    <div className="border-ink flex animate-pulse items-center gap-4 border-b-2 border-dashed px-2 py-6 md:px-4">
+      <div className="border-ink h-14 w-14 bg-zinc-200 dark:bg-zinc-800" />
+      <div className="flex-1 space-y-2.5">
+        <div className="h-4 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
+        <div className="h-3 w-1/4 bg-zinc-200 dark:bg-zinc-800" />
+      </div>
+    </div>
+  );
+}
+
 export function ConventionGrid() {
-  const now = CONVENTIONS.filter((convention) => getConventionPhase(convention) === 'now');
-  const soon = CONVENTIONS.filter((convention) => getConventionPhase(convention) === 'soon');
-  const later = CONVENTIONS.filter((convention) => getConventionPhase(convention) === 'up');
+  const { data = [], isLoading, isError, refetch } = useConventions();
+
+  const visible = data.filter((convention) => !isPast(convention));
+  const now = visible.filter((convention) => getConventionPhase(convention) === 'now');
+  const soon = visible.filter((convention) => getConventionPhase(convention) === 'soon');
+  const later = visible.filter((convention) => getConventionPhase(convention) === 'up');
 
   const groups: ConventionGroup[] = [
     {
@@ -53,20 +70,54 @@ export function ConventionGrid() {
         </div>
       </div>
 
-      {sections.map((group) => (
-        <div key={group.phase} className="border-ink mt-8 border-t-2 first:mt-12">
-          <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
-            <span className={`${group.chipClassName} inline-flex items-center px-2 py-1 text-xs`}>
-              {group.label}
-            </span>
-          </h3>
-          <div className="mt-4">
-            {group.conventions.map((convention) => (
-              <ConventionRow key={convention.id} convention={convention} phase={group.phase} />
-            ))}
-          </div>
+      {isLoading && (
+        <div className="border-ink mt-8 border-t-2 first:mt-12">
+          <RowSkeleton />
+          <RowSkeleton />
+          <RowSkeleton />
         </div>
-      ))}
+      )}
+
+      {isError && (
+        <div className="border-ink bg-accent-soft/50 mt-12 border-2 p-6 text-center shadow-[4px_4px_0_var(--ink)] md:p-8 dark:bg-zinc-900">
+          <h3 className="font-display text-lg tracking-wide uppercase">
+            could not load the line-up!
+          </h3>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+            The conventions list is having a moment. Give it another try?
+          </p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="border-ink bg-accent mt-5 inline-flex cursor-pointer items-center border-2 px-5 py-2.5 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !isError && sections.length === 0 && (
+        <p className="border-ink dark:border-zinc-600 mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:text-zinc-400">
+          No conventions listed right now — check back soon!
+        </p>
+      )}
+
+      {!isLoading &&
+        !isError &&
+        sections.map((group) => (
+          <div key={group.phase} className="border-ink mt-8 border-t-2 first:mt-12">
+            <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
+              <span className={`${group.chipClassName} inline-flex items-center px-2 py-1 text-xs`}>
+                {group.label}
+              </span>
+            </h3>
+            <div className="mt-4">
+              {group.conventions.map((convention) => (
+                <ConventionRow key={convention.id} convention={convention} phase={group.phase} />
+              ))}
+            </div>
+          </div>
+        ))}
 
       <ConventionRequest />
     </section>

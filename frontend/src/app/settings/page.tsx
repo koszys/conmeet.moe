@@ -23,12 +23,12 @@ function AccountSettingsContent() {
         <h1 className="font-display text-3xl tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] md:text-4xl">
           Account Settings
         </h1>
-        <p className="mt-2 font-bold tracking-widest text-zinc-500 uppercase">
+        <p className="mt-2 font-bold tracking-widest text-zinc-400 uppercase">
           Welcome back{user ? `, ${user.display_name || user.username}` : ''}
         </p>
       </div>
       <section className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-8 backdrop-blur-sm dark:bg-[#373b3e]/70">
-        <h2 className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
+        <h2 className="text-sm font-bold tracking-widest text-zinc-400 uppercase">
           Connected accounts
         </h2>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -46,11 +46,11 @@ function AccountSettingsContent() {
             </span>
           ))}
         </div>
-        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-4 text-sm text-zinc-400 dark:text-zinc-400">
           Same-email logins are linked to this account automatically.
         </p>
       </section>
-      <div className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-8 text-sm text-zinc-500 backdrop-blur-sm dark:bg-[#373b3e]/70 dark:text-zinc-400">
+      <div className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-8 text-sm text-zinc-400 backdrop-blur-sm dark:bg-[#373b3e]/70 dark:text-zinc-400">
         Convention schedules, freebies, and meetups land here in Phase 2.
       </div>
     </main>

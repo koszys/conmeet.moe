@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useAuth } from '@/features/auth/auth-provider';
 import { RequireAuth } from '@/features/auth/require-auth';
-import { SpinBackdrop } from '@/shared/components/SpinBackdrop';
+import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
 import { Footer } from '@/shared/components/layout/Footer';
 import { Header } from '@/shared/components/layout/Header';
 import discordLogo from '@/assets/social/discordlogo.png';

@@ -7,7 +7,7 @@ import { LogOut, Menu, Moon, Sparkles, Sun, UserRound, X } from 'lucide-react';
 import { useTheme } from '@/app/providers/theme-provider';
 import { useAuth } from '@/features/auth/auth-provider';
 import { SocialButton } from '@/shared/components/SocialButton';
-import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
+import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { cn } from '@/shared/lib/utils';
 
 const NAV_LINKS = [

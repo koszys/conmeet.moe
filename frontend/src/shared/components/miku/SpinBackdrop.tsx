@@ -1,5 +1,5 @@
 import { Sparkles } from 'lucide-react';
-import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
+import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 
 export function SpinBackdrop() {
   return (

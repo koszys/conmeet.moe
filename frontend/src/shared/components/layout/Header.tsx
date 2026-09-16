@@ -117,8 +117,20 @@ export function Header() {
               isConventionPage && 'max-[900px]:hidden'
             )}
           >
-            <span className="font-display text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl">
-              conmeet<span className="text-accent">.moe</span>
+            <span
+              className={cn(
+                'inline-block max-w-96 overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-in-out',
+                isConventionPage && nav?.sidebarCollapsed && 'max-w-0'
+              )}
+            >
+              <span
+                className={cn(
+                  'font-display inline-block text-base tracking-wide transition-opacity duration-150 ease-in-out [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
+                  isConventionPage && nav?.sidebarCollapsed ? 'opacity-0' : 'opacity-100 delay-300'
+                )}
+              >
+                conmeet<span className="text-accent">.moe</span>
+              </span>
             </span>
             <span className="border-ink bg-accent flex h-9 w-9 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)] transition-transform group-hover:-rotate-12">
               <MikuSilhouette className="h-6 w-auto -rotate-12 text-white" />

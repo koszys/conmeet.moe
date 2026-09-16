@@ -7,8 +7,6 @@ import { Suspense } from 'react';
 import { useAuth } from '@/features/auth/auth-provider';
 import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
-import { Footer } from '@/shared/components/layout/Footer';
-import { Header } from '@/shared/components/layout/Header';
 import { cn } from '@/shared/lib/utils';
 import discordLogo from '@/assets/social/discordlogo.png';
 
@@ -142,20 +140,16 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-1 flex-col">
-      <Header />
-      <Suspense
-        fallback={
-          <main className="flex flex-1 items-center justify-center">
-            <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
-              Loading…
-            </span>
-          </main>
-        }
-      >
-        <LoginContent />
-      </Suspense>
-      <Footer />
-    </div>
+    <Suspense
+      fallback={
+        <main className="flex flex-1 items-center justify-center">
+          <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
+            Loading…
+          </span>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

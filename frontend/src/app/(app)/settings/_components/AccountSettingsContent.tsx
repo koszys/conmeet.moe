@@ -2,10 +2,7 @@
 
 import Image from 'next/image';
 import { useAuth } from '@/features/auth/auth-provider';
-import { RequireAuth } from '@/features/auth/require-auth';
 import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
-import { Footer } from '@/shared/components/layout/Footer';
-import { Header } from '@/shared/components/layout/Header';
 import discordLogo from '@/assets/social/discordlogo.png';
 import { cn } from '@/shared/lib/utils';
 
@@ -40,15 +37,7 @@ const PROVIDERS: Record<
     label: 'Discord',
     backgroundColor: '#5865F2',
     textClassName: '!text-white',
-    icon: (
-      <Image
-        src={discordLogo}
-        alt=""
-        width={16}
-        height={16}
-        className="brightness-0 invert"
-      />
-    ),
+    icon: <Image src={discordLogo} alt="" width={16} height={16} className="brightness-0 invert" />,
   },
   google: {
     label: 'Google',
@@ -58,7 +47,7 @@ const PROVIDERS: Record<
   },
 };
 
-function AccountSettingsContent() {
+export function AccountSettingsContent() {
   const { user } = useAuth();
 
   const providers = user?.providers ?? [];
@@ -116,17 +105,5 @@ function AccountSettingsContent() {
         </p>
       </section>
     </main>
-  );
-}
-
-export default function SettingsPage() {
-  return (
-    <div className="flex flex-1 flex-col">
-      <Header />
-      <RequireAuth>
-        <AccountSettingsContent />
-      </RequireAuth>
-      <Footer />
-    </div>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogOut, Menu, Moon, Search, Sparkles, Sun, UserRound, X } from 'lucide-react';
-import { useTheme } from '@/app/providers/theme-provider';
+import { useTheme } from '@/app/_providers/theme-provider';
 import { useAuth } from '@/features/auth/auth-provider';
 import { SocialButton } from '@/shared/components/SocialButton';
 import { HeaderSearch } from '@/features/conventions/components/HeaderSearch';

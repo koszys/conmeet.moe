@@ -83,7 +83,7 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
                     <span className="truncate text-xs font-bold tracking-widest uppercase">
                       {convention.name}
                     </span>
-                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-300">
                       {[convention.city, convention.country].filter(Boolean).join(', ')} ·{' '}
                       {formatDateRange(convention.starts_at, convention.ends_at)}
                     </span>

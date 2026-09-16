@@ -75,7 +75,7 @@ function UserMenu({
         >
           <div className="border-ink border-b-2 border-dashed px-4 py-3">
             <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
-            <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">@{user.username}</p>
+            <p className="truncate text-xs text-zinc-500 dark:text-zinc-300">@{user.username}</p>
           </div>
           <Link
             href="/settings"

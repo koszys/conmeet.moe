@@ -25,19 +25,19 @@ export function ConventionSidebar({ slug }: { slug: string }) {
   return (
     <aside className="border-ink hidden w-72 shrink-0 border-r-2 md:sticky md:top-16 md:block md:h-[calc(100vh-4rem)] md:self-start md:overflow-y-auto">
       <div className="border-ink border-b-2 border-dashed p-4">
-        <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
+        <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
          Showing
         </p>
         <ConventionSwitcher currentSlug={slug} />
       </div>
 
       <div className="p-4">
-        <p className="font-display text-[11px] tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+        <p className="font-display text-[11px] tracking-wide text-zinc-500 uppercase dark:text-zinc-300">
           {formatDateRange(convention.starts_at, convention.ends_at)}
         </p>
         <p className="font-display mt-1.5 text-sm tracking-wide uppercase">{convention.name}</p>
         {location && (
-          <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-300">
             <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>{location}</span>
           </p>

@@ -80,7 +80,7 @@ function AccountSettingsContent() {
         </h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {providers.length === 0 && (
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+            <span className="text-sm text-zinc-500 dark:text-zinc-300">
               No social accounts linked.
             </span>
           )}
@@ -111,7 +111,7 @@ function AccountSettingsContent() {
             );
           })}
         </div>
-        <p className="mt-4 text-sm text-zinc-400 dark:text-zinc-400">
+        <p className="mt-4 text-sm text-zinc-400 dark:text-zinc-300">
           Same-email logins are linked to this account automatically.
         </p>
       </section>

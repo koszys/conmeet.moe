@@ -121,7 +121,7 @@ export function ConventionGrid({
       )}
 
       {!isLoading && !isError && sections.length === 0 && (
-        <p className="border-ink dark:border-zinc-600 mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:text-zinc-400">
+        <p className="border-ink dark:border-zinc-600 mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:text-zinc-300">
           No conventions listed right now — check back soon!
         </p>
       )}

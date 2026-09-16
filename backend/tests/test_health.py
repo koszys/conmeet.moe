@@ -1,9 +1,10 @@
-from app.main import app
-from fastapi.testclient import TestClient
+import pytest
+from django.test import Client
+
+pytestmark = pytest.mark.django_db
 
 
 def test_health() -> None:
-    with TestClient(app) as client:
-        response = client.get("/api/v1/health")
-        assert response.status_code == 200
-        assert response.json() == {"status": "ok"}
+    resp = Client().get("/api/v1/health/")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok"}

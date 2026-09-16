@@ -15,6 +15,8 @@ interface ConventionNavValue {
   open: boolean;
   toggle: () => void;
   close: () => void;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 const ConventionNavContext = createContext<ConventionNavValue | null>(null);
@@ -26,6 +28,14 @@ export function useConventionNav() {
 export function ConventionNavProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem('conmeet:sidebar-collapsed') === '1';
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem('conmeet:sidebar-collapsed', sidebarCollapsed ? '1' : '0');
+  }, [sidebarCollapsed]);
 
   const slug = useMemo(() => {
     const match = CONVENTION_PATH.exec(pathname ?? '');
@@ -44,8 +54,10 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
       open,
       toggle: () => setOpen((value) => !value),
       close: () => setOpen(false),
+      sidebarCollapsed,
+      setSidebarCollapsed,
     }),
-    [open]
+    [open, sidebarCollapsed]
   );
 
   useEffect(() => {
@@ -75,14 +87,14 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
             aria-hidden="true"
             className={cn(
-              'bg-ink/40 fixed inset-0 z-[55] transition-opacity duration-300 md:hidden',
+              'bg-ink/40 fixed inset-0 z-[55] hidden transition-opacity duration-300 max-[900px]:block',
               open ? 'opacity-100' : 'pointer-events-none opacity-0'
             )}
           />
 
           <div
             className={cn(
-              'fixed inset-y-0 left-0 z-[60] w-72 transition-transform duration-300 ease-in-out md:hidden',
+              'fixed inset-y-0 left-0 z-[60] hidden w-72 transition-transform duration-300 ease-in-out max-[900px]:block',
               open ? 'translate-x-0' : '-translate-x-full'
             )}
           >

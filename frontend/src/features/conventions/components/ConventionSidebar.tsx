@@ -15,9 +15,12 @@ import {
 } from 'lucide-react';
 import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { formatDateRange } from '@/shared/lib/dates';
+import { cn } from '@/shared/lib/utils';
 
 import { useConvention } from '../data/api';
+import { useConventionNav } from './ConventionNavProvider';
 import { ConventionSwitcher } from './ConventionSwitcher';
+import { HeaderSearch } from './HeaderSearch';
 
 const COMING_SOON = [
   { label: 'Freebies', icon: Gift },
@@ -35,6 +38,7 @@ export function ConventionSidebar({
   onClose?: () => void;
 }) {
   const { data: convention } = useConvention(slug);
+  const nav = useConventionNav();
 
   if (!convention) return null;
 
@@ -49,7 +53,12 @@ export function ConventionSidebar({
         <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
           Switch convention
         </p>
-        <ConventionSwitcher currentSlug={slug} />
+        <div className="flex items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <ConventionSwitcher currentSlug={slug} />
+          </div>
+          <HeaderSearch variant="sidebar" />
+        </div>
       </div>
 
       <div className="border-ink border-b-2 border-dashed p-4">
@@ -181,8 +190,51 @@ export function ConventionSidebar({
   }
 
   return (
-    <aside className="border-ink hidden w-72 shrink-0 border-r-2 md:sticky md:top-16 md:block md:h-[calc(100vh-4rem)] md:self-start md:overflow-y-auto">
-      {content}
+    <aside
+      className={cn(
+        'border-ink relative hidden shrink-0 min-[900px]:sticky min-[900px]:top-16 min-[900px]:block min-[900px]:h-[calc(100vh-4rem)] min-[900px]:self-start min-[900px]:overflow-hidden min-[900px]:border-r-2 min-[900px]:transition-[width] min-[900px]:duration-300 min-[900px]:ease-in-out',
+        nav?.sidebarCollapsed ? 'min-[900px]:w-14' : 'min-[900px]:w-72'
+      )}
+    >
+      <div
+        className={cn(
+          'absolute inset-0 overflow-y-auto transition-opacity duration-300',
+          nav?.sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'
+        )}
+      >
+        {content}
+      </div>
+      <div
+        className={cn(
+          'absolute inset-0 transition-opacity duration-300',
+          nav?.sidebarCollapsed ? 'opacity-100' : 'pointer-events-none opacity-0'
+        )}
+      >
+        <nav
+          aria-label="Convention sections"
+          className="flex h-full flex-col items-center gap-1 py-2"
+        >
+          <HeaderSearch variant="sidebar" />
+          <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
+          <Link
+            href={`/conventions/${convention.slug}`}
+            aria-current="page"
+            aria-label="Overview"
+            className="border-ink bg-accent hover:bg-accent-pop flex h-9 w-9 items-center justify-center border-2 text-white"
+          >
+            <Home className="h-4 w-4" />
+          </Link>
+          {COMING_SOON.map(({ label, icon: Icon }) => (
+            <span
+              key={label}
+              title={`${label} (soon)`}
+              className="border-ink flex h-9 w-9 cursor-not-allowed items-center justify-center border-2 text-zinc-400 dark:text-zinc-500"
+            >
+              <Icon className="h-4 w-4" />
+            </span>
+          ))}
+        </nav>
+      </div>
     </aside>
   );
 }

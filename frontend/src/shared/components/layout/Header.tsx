@@ -1,9 +1,22 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Menu, Moon, PanelLeft, Search, Sparkles, Sun, UserRound, X } from 'lucide-react';
+import {
+  LogOut,
+  Menu,
+  Moon,
+  PanelLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+  Sparkles,
+  Sun,
+  UserRound,
+  X,
+} from 'lucide-react';
 import { useTheme } from '@/app/_providers/theme-provider';
 import { useAuth } from '@/features/auth/auth-provider';
 import {
@@ -15,27 +28,8 @@ import { HeaderSearch } from '@/features/conventions/components/HeaderSearch';
 import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { cn } from '@/shared/lib/utils';
 
-function UserMenu({
-  popupFixed = false,
-  onTrigger,
-}: {
-  popupFixed?: boolean;
-  onTrigger?: () => void;
-}) {
-  const { user, loading, logout } = useAuth();
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function onPointerDown(event: PointerEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [open]);
+function AccountButton({ onToggle }: { onToggle: () => void }) {
+  const { user, loading } = useAuth();
 
   if (loading) return null;
 
@@ -44,7 +38,6 @@ function UserMenu({
       <Link
         href="/login"
         aria-label="Login"
-        onClick={onTrigger}
         className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
       >
         <UserRound className="h-4 w-4" />
@@ -53,85 +46,76 @@ function UserMenu({
   }
 
   return (
-    <div ref={wrapRef} className="relative">
-      <button
-        type="button"
-        onClick={() => {
-          setOpen((value) => !value);
-          onTrigger?.();
-        }}
-        className="border-ink hover:border-accent-pop hover:text-accent-pop flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
-        aria-label="Account menu"
-        aria-expanded={open}
-      >
-        {user.avatar_url ? (
-          <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <UserRound className="h-4 w-4" />
-        )}
-      </button>
-      {open && (
-        <div
-          className={cn(
-            'border-ink z-50 mt-2 w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]',
-            popupFixed ? 'fixed top-16 right-4 z-[60]' : 'absolute right-0'
-          )}
-        >
-          <div className="border-ink border-b-2 border-dashed px-4 py-3">
-            <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
-            <p className="truncate text-xs text-zinc-500 dark:text-zinc-300">@{user.username}</p>
-          </div>
-          <Link
-            href="/settings"
-            onClick={() => setOpen(false)}
-            className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
-          >
-            Settings
-          </Link>
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              logout();
-            }}
-            className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-xs font-bold tracking-widest uppercase transition-colors"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Log out
-          </button>
-        </div>
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label="Account menu"
+      className="border-ink hover:border-accent-pop hover:text-accent-pop flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
+    >
+      {user.avatar_url ? (
+        <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+      ) : (
+        <UserRound className="h-4 w-4" />
       )}
-    </div>
+    </button>
   );
 }
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+  const headerUserWrap = useRef<HTMLDivElement | null>(null);
+  const dropdownUserWrap = useRef<HTMLDivElement | null>(null);
+  const accountPopupWrap = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
   const nav = useConventionNav();
   const isConventionPage = isConventionDetailPath(pathname);
   const hideNav = pathname === '/login' || pathname === '/settings';
 
+  useEffect(() => {
+    if (!accountOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      const wraps = [
+        headerUserWrap.current,
+        dropdownUserWrap.current,
+        accountPopupWrap.current,
+      ].filter(Boolean) as HTMLDivElement[];
+      if (wraps.every((wrap) => !wrap.contains(event.target as Node))) {
+        setAccountOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [accountOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [menuOpen]);
+
   return (
-    <header className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90">
-      <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
+    <header
+      ref={headerRef}
+      className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90"
+    >
+      <div className="relative flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-7">
-          {isConventionPage && (
-            <button
-              type="button"
-              onClick={nav?.toggle}
-              aria-label={nav?.open ? 'Close convention menu' : 'Open convention menu'}
-              aria-expanded={nav?.open}
-              className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:hidden dark:text-zinc-200"
-            >
-              <PanelLeft className="h-4 w-4" />
-            </button>
-          )}
           <Link
             href="/"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className={cn('group flex items-center gap-3', isConventionPage && 'max-md:hidden')}
+            className={cn(
+              'group flex items-center gap-3',
+              isConventionPage && 'max-[900px]:hidden'
+            )}
           >
             <span className="font-display text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl">
               conmeet<span className="text-accent">.moe</span>
@@ -141,6 +125,34 @@ export function Header() {
             </span>
             <Sparkles className="text-accent h-3.5 w-3.5 rotate-12 transition-transform group-hover:rotate-45" />
           </Link>
+
+          {isConventionPage && (
+            <>
+              <span aria-hidden className="border-ink hidden h-8 border-l-2 min-[900px]:block" />
+              <button
+                type="button"
+                onClick={() => nav?.setSidebarCollapsed(!nav?.sidebarCollapsed)}
+                aria-label={nav?.sidebarCollapsed ? 'Expand sidebar' : 'Minimize sidebar'}
+                aria-expanded={!nav?.sidebarCollapsed}
+                className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none min-[900px]:inline-flex dark:text-zinc-200"
+              >
+                {nav?.sidebarCollapsed ? (
+                  <PanelLeftOpen className="h-4 w-4" />
+                ) : (
+                  <PanelLeftClose className="h-4 w-4" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={nav?.toggle}
+                aria-label={nav?.open ? 'Close convention menu' : 'Open convention menu'}
+                aria-expanded={nav?.open}
+                className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[900px]:inline-flex dark:text-zinc-200"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </button>
+            </>
+          )}
 
           <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-zinc-300">
             <Link href="/conventions" className="hover:text-accent-pop transition-colors">
@@ -153,7 +165,8 @@ export function Header() {
           <Link
             href="/"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 md:hidden"
+            aria-label="conmeet.moe home"
+            className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 max-[900px]:flex"
           >
             <span className="border-ink bg-accent flex h-9 w-9 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)]">
               <MikuSilhouette className="h-6 w-auto -rotate-12 text-white" />
@@ -163,7 +176,7 @@ export function Header() {
         )}
 
         <div className="flex items-center gap-2">
-          <HeaderSearch />
+          {!isConventionPage && <HeaderSearch />}
           <button
             type="button"
             onClick={toggleTheme}
@@ -173,12 +186,15 @@ export function Header() {
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <SocialButton platform="kofi" className="hidden min-[450px]:inline-flex" />
-          <div className="hidden min-[400px]:block">
-            <UserMenu />
+          <div ref={headerUserWrap} className="hidden min-[400px]:block">
+            <AccountButton onToggle={() => setAccountOpen((value) => !value)} />
           </div>
           <button
             type="button"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={() => {
+              setAccountOpen(false);
+              setMenuOpen((open) => !open);
+            }}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
             className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:hidden dark:text-zinc-200"
@@ -220,20 +236,22 @@ export function Header() {
                 Conventions
               </Link>
               <div className="mt-4 flex justify-end gap-2 sm:hidden">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    window.setTimeout(
-                      () => window.dispatchEvent(new CustomEvent('conmeet:open-search')),
-                      300
-                    );
-                  }}
-                  aria-label="Search conventions"
-                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[550px]:inline-flex dark:text-zinc-200"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+                {!isConventionPage && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      window.setTimeout(
+                        () => window.dispatchEvent(new CustomEvent('conmeet:open-search')),
+                        300
+                      );
+                    }}
+                    aria-label="Search conventions"
+                    className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[550px]:inline-flex dark:text-zinc-200"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={toggleTheme}
@@ -243,14 +261,52 @@ export function Header() {
                   {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </button>
                 <SocialButton platform="kofi" className="hidden max-[450px]:inline-flex" />
-                <div className="hidden max-[400px]:block">
-                  <UserMenu popupFixed onTrigger={() => setMenuOpen(false)} />
+                <div ref={dropdownUserWrap} className="hidden max-[400px]:block">
+                  <AccountButton
+                    onToggle={() => {
+                      setAccountOpen((value) => !value);
+                      setMenuOpen(false);
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </nav>
+
+      {accountOpen &&
+        user &&
+        createPortal(
+          <div
+            ref={accountPopupWrap}
+            className="border-ink fixed top-16 right-4 z-[70] w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]"
+          >
+            <div className="border-ink border-b-2 border-dashed px-4 py-3">
+              <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
+              <p className="truncate text-xs text-zinc-500 dark:text-zinc-300">@{user.username}</p>
+            </div>
+            <Link
+              href="/settings"
+              onClick={() => setAccountOpen(false)}
+              className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
+            >
+              Settings
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setAccountOpen(false);
+                logout();
+              }}
+              className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-xs font-bold tracking-widest uppercase transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Log out
+            </button>
+          </div>,
+          document.body
+        )}
     </header>
   );
 }

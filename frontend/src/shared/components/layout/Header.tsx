@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { LogOut, Menu, Moon, Sparkles, Sun, UserRound, X } from 'lucide-react';
 import { useTheme } from '@/app/providers/theme-provider';
 import { useAuth } from '@/features/auth/auth-provider';
@@ -100,6 +101,8 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const hideNav = pathname === '/login' || pathname === '/settings';
 
   return (
     <header className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90">
@@ -120,15 +123,16 @@ export function Header() {
           </Link>
 
           <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-zinc-300">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="hover:text-accent-pop transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
+            {!hideNav &&
+              NAV_LINKS.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="hover:text-accent-pop transition-colors"
+                >
+                  {link.name}
+                </a>
+              ))}
           </nav>
         </div>
 
@@ -170,20 +174,21 @@ export function Header() {
             )}
           >
             <div className="mx-auto flex max-w-6xl flex-col px-4 py-4">
-              {NAV_LINKS.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMenuOpen(false);
-                    window.setTimeout(() => scrollToSection(link.href), 330);
-                  }}
-                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
-                >
-                  {link.name}
-                </a>
-              ))}
+              {!hideNav &&
+                NAV_LINKS.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMenuOpen(false);
+                      window.setTimeout(() => scrollToSection(link.href), 330);
+                    }}
+                    className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
+                  >
+                    {link.name}
+                  </a>
+                ))}
               {!user && (
                 <Link
                   href="/login"

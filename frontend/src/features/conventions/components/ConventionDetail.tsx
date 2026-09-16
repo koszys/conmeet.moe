@@ -5,7 +5,6 @@ import { formatDateRange } from '@/shared/lib/dates';
 
 import { useConvention } from '../data/api';
 import { getConventionPhase } from '../utils/dates';
-import { ConventionSwitcher } from './ConventionSwitcher';
 
 function DetailSkeleton() {
   return (
@@ -50,12 +49,8 @@ export function ConventionDetail({ slug }: { slug: string }) {
 
       {!isLoading && !isError && convention && (
         <>
-          <div className="border-b-2 px-4 pt-6 sm:px-6 md:hidden">
-            <ConventionSwitcher currentSlug={slug} />
-          </div>
-
-          <div className="border-ink relative h-44 w-full overflow-hidden border-b-2 bg-accent-soft/40 md:h-72 lg:h-80 dark:bg-zinc-900">
-{convention.banner ? (
+          <div className="border-ink bg-accent-soft/40 relative h-44 w-full overflow-hidden border-b-2 md:h-72 lg:h-80 dark:bg-zinc-900">
+            {convention.banner ? (
               <img src={convention.banner} alt="" className="h-full w-full object-cover" />
             ) : (
               <div className="absolute inset-0 flex flex-col items-start justify-center gap-3 px-6 md:px-10">
@@ -65,7 +60,7 @@ export function ConventionDetail({ slug }: { slug: string }) {
                       ? 'bg-accent-pop'
                       : getConventionPhase(convention) === 'soon'
                         ? 'bg-accent'
-                        : 'border-2 border-ink text-ink dark:text-zinc-100'
+                        : 'border-ink text-ink border-2 dark:text-zinc-100'
                   } inline-flex -rotate-3 items-center px-2.5 py-1 text-xs tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)]`}
                 >
                   {getConventionPhase(convention) === 'now'
@@ -98,7 +93,7 @@ export function ConventionDetail({ slug }: { slug: string }) {
             {convention.description && (
               <section className="border-ink py-10">
                 <div
-                  className="space-y-4 text-base leading-relaxed text-zinc-700 lg:text-lg dark:text-zinc-200 [&_a]:text-accent [&_a]:underline [&_a]:decoration-dotted [&_a]:underline-offset-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+                  className="[&_a]:text-accent space-y-4 text-base leading-relaxed text-zinc-700 lg:text-lg dark:text-zinc-200 [&_a]:underline [&_a]:decoration-dotted [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6"
                   dangerouslySetInnerHTML={{ __html: convention.description }}
                 />
               </section>

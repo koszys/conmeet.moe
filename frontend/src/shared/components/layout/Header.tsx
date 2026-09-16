@@ -3,9 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Menu, Moon, Search, Sparkles, Sun, UserRound, X } from 'lucide-react';
+import { LogOut, Menu, Moon, PanelLeft, Search, Sparkles, Sun, UserRound, X } from 'lucide-react';
 import { useTheme } from '@/app/_providers/theme-provider';
 import { useAuth } from '@/features/auth/auth-provider';
+import {
+  isConventionDetailPath,
+  useConventionNav,
+} from '@/features/conventions/components/ConventionNavProvider';
 import { SocialButton } from '@/shared/components/SocialButton';
 import { HeaderSearch } from '@/features/conventions/components/HeaderSearch';
 import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
@@ -105,16 +109,29 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const nav = useConventionNav();
+  const isConventionPage = isConventionDetailPath(pathname);
   const hideNav = pathname === '/login' || pathname === '/settings';
 
   return (
     <header className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
+      <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-7">
+          {isConventionPage && (
+            <button
+              type="button"
+              onClick={nav?.toggle}
+              aria-label={nav?.open ? 'Close convention menu' : 'Open convention menu'}
+              aria-expanded={nav?.open}
+              className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:hidden dark:text-zinc-200"
+            >
+              <PanelLeft className="h-4 w-4" />
+            </button>
+          )}
           <Link
             href="/"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="group flex items-center gap-3"
+            className={cn('group flex items-center gap-3', isConventionPage && 'max-md:hidden')}
           >
             <span className="font-display text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl">
               conmeet<span className="text-accent">.moe</span>
@@ -131,6 +148,19 @@ export function Header() {
             </Link>
           </nav>
         </div>
+
+        {isConventionPage && (
+          <Link
+            href="/"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 md:hidden"
+          >
+            <span className="border-ink bg-accent flex h-9 w-9 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)]">
+              <MikuSilhouette className="h-6 w-auto -rotate-12 text-white" />
+            </span>
+            <Sparkles className="text-accent h-3.5 w-3.5 rotate-12" />
+          </Link>
+        )}
 
         <div className="flex items-center gap-2">
           <HeaderSearch />

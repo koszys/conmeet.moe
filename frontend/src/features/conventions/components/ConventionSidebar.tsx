@@ -2,7 +2,18 @@
 
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { ArrowUpRight, CalendarDays, Gift, Globe, Home, MapPin, Users } from 'lucide-react';
+import {
+  ArrowUpRight,
+  CalendarDays,
+  Gift,
+  Globe,
+  Home,
+  MapPin,
+  Sparkles,
+  Users,
+  X,
+} from 'lucide-react';
+import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { formatDateRange } from '@/shared/lib/dates';
 
 import { useConvention } from '../data/api';
@@ -14,7 +25,15 @@ const COMING_SOON = [
   { label: 'Meetups', icon: Users },
 ];
 
-export function ConventionSidebar({ slug }: { slug: string }) {
+export function ConventionSidebar({
+  slug,
+  variant = 'desktop',
+  onClose,
+}: {
+  slug: string;
+  variant?: 'desktop' | 'drawer';
+  onClose?: () => void;
+}) {
   const { data: convention } = useConvention(slug);
 
   if (!convention) return null;
@@ -24,8 +43,8 @@ export function ConventionSidebar({ slug }: { slug: string }) {
     .filter(Boolean)
     .join(', ');
 
-  return (
-    <aside className="border-ink hidden w-72 shrink-0 border-r-2 md:sticky md:top-16 md:block md:h-[calc(100vh-4rem)] md:self-start md:overflow-y-auto">
+  const content = (
+    <>
       <div className="border-ink border-b-2 border-dashed p-4">
         <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
           Switch convention
@@ -49,7 +68,7 @@ export function ConventionSidebar({ slug }: { slug: string }) {
         </div>
 
         {convention.is_featured && (
-          <span className="border-ink bg-accent-pop font-display mt-3 -rotate-2 inline-block rounded-[2px] border-2 px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+          <span className="border-ink bg-accent-pop font-display mt-3 inline-block -rotate-2 rounded-[2px] border-2 px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)]">
             featured
           </span>
         )}
@@ -62,10 +81,14 @@ export function ConventionSidebar({ slug }: { slug: string }) {
         )}
       </div>
 
-      <nav className="border-ink border-b-2 border-dashed px-2 py-2" aria-label="Convention sections">
+      <nav
+        className="border-ink border-b-2 border-dashed px-2 py-2"
+        aria-label="Convention sections"
+      >
         <Link
           href={`/conventions/${convention.slug}`}
           aria-current="page"
+          onClick={onClose}
           className="border-ink bg-accent hover:bg-accent-pop flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest text-white uppercase"
         >
           <Home className="h-4 w-4" />
@@ -115,12 +138,51 @@ export function ConventionSidebar({ slug }: { slug: string }) {
       <div className="p-4">
         <Link
           href="/conventions"
+          onClick={onClose}
           className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-[11px] font-bold tracking-widest uppercase"
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
           All conventions
         </Link>
       </div>
+    </>
+  );
+
+  if (variant === 'drawer') {
+    return (
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${convention.name} menu`}
+        className="border-ink flex h-full flex-col border-r-2 bg-white dark:bg-[#373b3e]"
+      >
+        <div className="border-ink flex shrink-0 items-center justify-between gap-2 border-b-2 p-4">
+          <Link href="/" onClick={onClose} className="group flex min-w-0 items-center gap-2">
+            <span className="border-ink bg-accent flex h-8 w-8 shrink-0 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)] transition-transform group-hover:-rotate-12">
+              <MikuSilhouette className="h-5 w-auto -rotate-12 text-white" />
+            </span>
+            <span className="font-display truncate text-xs tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)]">
+              conmeet<span className="text-accent">.moe</span>
+            </span>
+            <Sparkles className="text-accent h-3 w-3 rotate-12 transition-transform group-hover:rotate-45" />
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close convention menu"
+            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto">{content}</div>
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="border-ink hidden w-72 shrink-0 border-r-2 md:sticky md:top-16 md:block md:h-[calc(100vh-4rem)] md:self-start md:overflow-y-auto">
+      {content}
     </aside>
   );
 }

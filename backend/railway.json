@@ -1,0 +1,7 @@
+{
+  "healthcheckPath": "/api/v1/health/",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "$schema": "https://railway.com/railway.schema.json"
+}

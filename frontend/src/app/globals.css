@@ -27,6 +27,8 @@
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
   --animate-eq: eq 1.1s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 36s linear infinite;
+  --animate-spin-xslow: spin-slow 60s linear infinite reverse;
 }
 
 @keyframes eq {
@@ -36,6 +38,12 @@
   }
   50% {
     transform: scaleY(1);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
   }
 }
 

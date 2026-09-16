@@ -1,5 +1,3 @@
-import { Footer } from '@/shared/components/layout/Footer';
-import { Header } from '@/shared/components/layout/Header';
 import { ConventionDetail } from '@/features/conventions/components/ConventionDetail';
 
 export default async function ConventionPage({
@@ -9,11 +7,5 @@ export default async function ConventionPage({
 }) {
   const { slug } = await params;
 
-  return (
-    <>
-      <Header />
-      <ConventionDetail slug={slug} />
-      <Footer />
-    </>
-  );
+  return <ConventionDetail slug={slug} />;
 }

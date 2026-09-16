@@ -10,19 +10,6 @@ import { SocialButton } from '@/shared/components/SocialButton';
 import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { cn } from '@/shared/lib/utils';
 
-const NAV_LINKS = [
-  { name: 'How it works', href: '#features' },
-  { name: 'Line-up', href: '#conventions' },
-];
-
-function scrollToSection(href: string) {
-  const target = document.querySelector(href);
-  if (!target) return;
-  const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0;
-  const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
-  window.scrollTo({ top, behavior: 'smooth' });
-}
-
 function UserMenu() {
   const { user, loading, logout } = useAuth();
   const [open, setOpen] = useState(false);
@@ -122,16 +109,9 @@ export function Header() {
           </Link>
 
           <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-zinc-300">
-            {!hideNav &&
-              NAV_LINKS.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="hover:text-accent-pop transition-colors"
-                >
-                  {link.name}
-                </a>
-              ))}
+            <Link href="/conventions" className="hover:text-accent-pop transition-colors">
+              Conventions
+            </Link>
           </nav>
         </div>
 
@@ -182,21 +162,13 @@ export function Header() {
                   Home
                 </Link>
               )}
-              {!hideNav &&
-                NAV_LINKS.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setMenuOpen(false);
-                      window.setTimeout(() => scrollToSection(link.href), 330);
-                    }}
-                    className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
-                  >
-                    {link.name}
-                  </a>
-                ))}
+              <Link
+                href="/conventions"
+                onClick={() => setMenuOpen(false)}
+                className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
+              >
+                Conventions
+              </Link>
               <div className="mt-4 flex gap-2 sm:hidden">
                 <SocialButton platform="kofi" />
                 <button

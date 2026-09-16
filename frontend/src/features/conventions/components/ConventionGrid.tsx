@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../data/api';
@@ -11,6 +13,15 @@ interface ConventionGroup {
   label: string;
   chipClassName: string;
   conventions: Convention[];
+}
+
+interface ConventionGridProps {
+  id?: string;
+  heading?: string;
+  tagline?: string;
+  limitUp?: number;
+  showAllLink?: boolean;
+  showRequest?: boolean;
 }
 
 function RowSkeleton() {
@@ -25,13 +36,21 @@ function RowSkeleton() {
   );
 }
 
-export function ConventionGrid() {
+export function ConventionGrid({
+  id = 'conventions',
+  heading = 'the line-up!',
+  tagline = 'Only conventions currently on this site are listed here — not every con out there!',
+  limitUp,
+  showAllLink = false,
+  showRequest = true,
+}: ConventionGridProps) {
   const { data = [], isLoading, isError, refetch } = useConventions();
 
   const visible = data.filter((convention) => !isPast(convention));
   const now = visible.filter((convention) => getConventionPhase(convention) === 'now');
   const soon = visible.filter((convention) => getConventionPhase(convention) === 'soon');
-  const later = visible.filter((convention) => getConventionPhase(convention) === 'up');
+  const up = visible.filter((convention) => getConventionPhase(convention) === 'up');
+  const later = limitUp ? up.slice(0, limitUp) : up;
 
   const groups: ConventionGroup[] = [
     {
@@ -57,17 +76,24 @@ export function ConventionGrid() {
   const sections = groups.filter((group) => group.conventions.length > 0);
 
   return (
-    <section id="conventions" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6">
+    <section id={id} className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6">
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="font-display text-2xl tracking-wide uppercase sm:text-4xl">
-            the line-up!
+            {heading}
             <span className="text-accent-pop ml-3">✦</span>
           </h2>
-          <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">
-            Only conventions currently on this site are listed here — not every con out there!
-          </p>
+          <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">{tagline}</p>
         </div>
+        {showAllLink && (
+          <Link
+            href="/conventions"
+            className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 border-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase transition-colors dark:bg-zinc-900 dark:text-zinc-100"
+          >
+            See all conventions
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
       </div>
 
       {isLoading && (
@@ -80,9 +106,7 @@ export function ConventionGrid() {
 
       {isError && (
         <div className="border-ink bg-accent-soft/50 mt-12 border-2 p-6 text-center shadow-[4px_4px_0_var(--ink)] md:p-8 dark:bg-zinc-900">
-          <h3 className="font-display text-lg tracking-wide uppercase">
-            could not load the line-up!
-          </h3>
+          <h3 className="font-display text-lg tracking-wide uppercase">could not load the line-up!</h3>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
             The conventions list is having a moment. Give it another try?
           </p>
@@ -119,7 +143,7 @@ export function ConventionGrid() {
           </div>
         ))}
 
-      <ConventionRequest />
+      {showRequest && <ConventionRequest />}
     </section>
   );
 }

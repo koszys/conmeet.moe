@@ -1,7 +1,7 @@
 import { ArrowDown, Sparkles, Star } from 'lucide-react';
-import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
-import { MikuTextVertical } from '@/shared/components/MikuTextVertical';
-import { MikuTextHorizontal } from '@/shared/components/MikuTextHorizontal';
+import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
+import { MikuTextVertical } from '@/shared/components/miku/MikuTextVertical';
+import { MikuTextHorizontal } from '@/shared/components/miku/MikuTextHorizontal';
 
 export function Hero() {
   return (

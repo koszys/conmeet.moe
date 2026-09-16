@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { useAuth } from '@/features/auth/auth-provider';
-import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
-import { SpinBackdrop } from '@/shared/components/SpinBackdrop';
+import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
+import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
 import { Footer } from '@/shared/components/layout/Footer';
 import { Header } from '@/shared/components/layout/Header';
 import { cn } from '@/shared/lib/utils';
@@ -70,7 +70,7 @@ function LoginContent() {
   const error = searchParams.get('error');
 
   return (
-    <main className="bg-ink relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
+    <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
       <SpinBackdrop />
       <div className="border-ink relative z-10 w-full max-w-sm rounded-none border-2 bg-white p-8 shadow-[6px_6px_0_var(--ink)] dark:bg-[#373b3e]">
         <div className="mb-6 flex flex-col items-center gap-2">
@@ -80,7 +80,7 @@ function LoginContent() {
           <h1 className="font-display text-xl tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)]">
             conmeet<span className="text-accent">.moe</span>
           </h1>
-          <p className="text-center text-xs font-bold tracking-widest text-zinc-500 uppercase">
+          <p className="text-center text-xs font-bold tracking-widest text-zinc-400 uppercase">
             Sign in to save meetups, check off freebies, and join the timeline
           </p>
         </div>
@@ -142,7 +142,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex flex-1 flex-col">
       <Header />
       <Suspense
         fallback={

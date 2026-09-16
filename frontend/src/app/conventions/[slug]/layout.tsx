@@ -15,7 +15,7 @@ export default async function ConventionLayout({
   return (
     <div className="flex min-h-full flex-col">
       <Header />
-      <div className="border-ink mx-auto flex w-full max-w-7xl flex-1 md:flex-row">
+      <div className="flex w-full flex-1 md:flex-row">
         <ConventionSidebar slug={slug} />
         <div className="min-w-0 flex-1">{children}</div>
       </div>

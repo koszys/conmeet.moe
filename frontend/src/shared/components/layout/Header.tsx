@@ -99,7 +99,6 @@ function UserMenu() {
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const hideNav = pathname === '/login' || pathname === '/settings';
@@ -138,15 +137,15 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <SocialButton platform="kofi" className="hidden sm:inline-flex" />
-          <UserMenu />
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
+            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[450px]:hidden dark:text-zinc-200"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+          <UserMenu />
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
@@ -166,7 +165,7 @@ export function Header() {
           menuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
         )}
       >
-        <div className="min-h-0 overflow-hidden">
+        <div className={cn('min-h-0', menuOpen ? 'overflow-visible' : 'overflow-hidden')}>
           <div
             className={cn(
               'border-ink border-t-2 bg-white transition-opacity duration-300 dark:bg-[#373b3e]',
@@ -174,6 +173,15 @@ export function Header() {
             )}
           >
             <div className="mx-auto flex max-w-6xl flex-col px-4 py-4">
+              {hideNav && (
+                <Link
+                  href="/"
+                  onClick={() => setMenuOpen(false)}
+                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
+                >
+                  Home
+                </Link>
+              )}
               {!hideNav &&
                 NAV_LINKS.map((link) => (
                   <a
@@ -189,17 +197,16 @@ export function Header() {
                     {link.name}
                   </a>
                 ))}
-              {!user && (
-                <Link
-                  href="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors dark:text-zinc-300"
-                >
-                  Log in
-                </Link>
-              )}
               <div className="mt-4 flex gap-2 sm:hidden">
                 <SocialButton platform="kofi" />
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[450px]:inline-flex dark:text-zinc-200"
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </button>
               </div>
             </div>
           </div>

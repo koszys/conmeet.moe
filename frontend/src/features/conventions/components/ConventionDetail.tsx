@@ -77,19 +77,19 @@ export function ConventionDetail({ slug }: { slug: string }) {
                 <h2 className="font-display text-3xl tracking-wide uppercase [text-shadow:3px_3px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-5xl lg:text-6xl">
                   {convention.name}
                 </h2>
-                {(convention.venue_name || convention.city || convention.country) && (
-                  <p className="flex items-center gap-1.5 text-sm font-bold tracking-widest text-zinc-600 uppercase dark:text-zinc-300">
-                    <MapPin className="h-4 w-4 shrink-0" />
-                    {[
-                      formatDateRange(convention.starts_at, convention.ends_at),
-                      convention.venue_name,
-                      convention.city,
-                      convention.country,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
+                <div className="mt-2 flex flex-col items-start gap-1">
+                  <p className="text-accent text-sm font-medium">
+                    {formatDateRange(convention.starts_at, convention.ends_at)}
                   </p>
-                )}
+                  {(convention.venue_name || convention.city || convention.country) && (
+                    <p className="flex items-center gap-1.5 text-sm font-bold tracking-widest text-zinc-600 uppercase dark:text-zinc-300">
+                      <MapPin className="h-4 w-4 shrink-0" />
+                      {[convention.venue_name, convention.city, convention.country]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>

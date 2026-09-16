@@ -6,6 +6,9 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { useAuth } from '@/features/auth/auth-provider';
 import { MikuSilhouette } from '@/shared/components/MikuSilhouette';
+import { SpinBackdrop } from '@/shared/components/SpinBackdrop';
+import { Footer } from '@/shared/components/layout/Footer';
+import { Header } from '@/shared/components/layout/Header';
 import { cn } from '@/shared/lib/utils';
 import discordLogo from '@/assets/social/discordlogo.png';
 
@@ -67,8 +70,9 @@ function LoginContent() {
   const error = searchParams.get('error');
 
   return (
-    <main className="bg-ink flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
-      <div className="border-ink w-full max-w-sm rounded-none border-2 bg-white p-8 shadow-[6px_6px_0_var(--ink)] dark:bg-[#373b3e]">
+    <main className="bg-ink relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
+      <SpinBackdrop />
+      <div className="border-ink relative z-10 w-full max-w-sm rounded-none border-2 bg-white p-8 shadow-[6px_6px_0_var(--ink)] dark:bg-[#373b3e]">
         <div className="mb-6 flex flex-col items-center gap-2">
           <span className="border-ink bg-accent flex h-12 w-12 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)]">
             <MikuSilhouette className="h-8 w-auto -rotate-12 text-white" />
@@ -87,10 +91,10 @@ function LoginContent() {
               You&apos;re signed in as {user.display_name || user.username}.
             </p>
             <Link
-              href="/dashboard"
+              href="/settings"
               className="border-ink bg-accent hover:border-accent-pop flex w-full items-center justify-center border-2 px-6 py-3 text-sm font-bold tracking-wider text-white uppercase shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
-              Go to Dashboard
+              Go to Settings
             </Link>
             <Link
               href="/"
@@ -138,16 +142,20 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
-            Loading…
-          </span>
-        </main>
-      }
-    >
-      <LoginContent />
-    </Suspense>
+    <div className="flex min-h-full flex-col">
+      <Header />
+      <Suspense
+        fallback={
+          <main className="flex flex-1 items-center justify-center">
+            <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
+              Loading…
+            </span>
+          </main>
+        }
+      >
+        <LoginContent />
+      </Suspense>
+      <Footer />
+    </div>
   );
 }

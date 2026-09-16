@@ -18,6 +18,7 @@ export interface MeUser {
   role: string;
   date_joined: string;
   last_login: string | null;
+  providers: OAuthProvider[];
 }
 
 export type OAuthProvider = 'discord' | 'google';

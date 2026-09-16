@@ -73,11 +73,11 @@ function UserMenu() {
             <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">@{user.username}</p>
           </div>
           <Link
-            href="/dashboard"
+            href="/settings"
             onClick={() => setOpen(false)}
             className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
           >
-            Dashboard
+            Settings
           </Link>
           <button
             type="button"
@@ -129,11 +129,6 @@ export function Header() {
                 {link.name}
               </a>
             ))}
-            {user && (
-              <Link href="/dashboard" className="hover:text-accent-pop transition-colors">
-                Dashboard
-              </Link>
-            )}
           </nav>
         </div>
 
@@ -189,15 +184,6 @@ export function Header() {
                   {link.name}
                 </a>
               ))}
-              {user && (
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMenuOpen(false)}
-                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors dark:text-zinc-300"
-                >
-                  Dashboard
-                </Link>
-              )}
               {!user && (
                 <Link
                   href="/login"

@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
 
     setTokens(accessToken, refreshToken);
     const next = new URLSearchParams(window.location.search).get('next');
-    router.replace(next && next.startsWith('/') ? next : '/dashboard');
+    router.replace(next && next.startsWith('/') ? next : '/settings');
   }, [router]);
 
   return (

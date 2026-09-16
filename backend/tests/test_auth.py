@@ -30,6 +30,19 @@ def test_me_authenticated() -> None:
     assert data["display_name"] == "Cosmo"
     assert data["avatar_url"].endswith(".png")
     assert data["role"] == "user"
+    assert data["providers"] == []
+
+
+def test_me_lists_linked_providers() -> None:
+    user = get_user_model().objects.create_user(username="cosmo", email="cosmo@example.com")
+    from allauth.socialaccount.models import SocialAccount
+
+    SocialAccount.objects.create(user=user, provider="discord", uid="111")
+    SocialAccount.objects.create(user=user, provider="google", uid="222")
+
+    data = _authed_client(user).get("/api/v1/auth/me/").json()
+
+    assert data["providers"] == ["discord", "google"]
 
 
 def test_me_anonymous() -> None:

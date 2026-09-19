@@ -11,7 +11,7 @@ import { getConventionPhase } from '../utils/dates';
 function DetailSkeleton() {
   return (
     <main className="w-full animate-pulse">
-      <div className="border-ink h-44 border-b-2 bg-zinc-100 md:h-64 dark:bg-zinc-900" />
+      <div className="border-ink min-h-40 border-b-2 bg-zinc-100 sm:min-h-48 md:h-56 lg:h-64 dark:bg-zinc-900" />
       <div className="px-6 py-8 md:px-8">
         <div className="h-4 w-40 bg-zinc-200 dark:bg-zinc-800" />
         <div className="mt-6 h-8 w-1/2 bg-zinc-200 dark:bg-zinc-800" />
@@ -51,11 +51,11 @@ export function ConventionDetail({ slug }: { slug: string }) {
 
       {!isLoading && !isError && convention && (
         <>
-          <div className="border-ink bg-accent-soft/40 relative h-44 w-full overflow-hidden border-b-2 md:h-72 lg:h-80 dark:bg-zinc-900">
+          <div className="border-ink bg-accent-soft/40 relative flex min-h-40 w-full flex-col justify-center border-b-2 px-4 py-4 sm:min-h-48 sm:px-6 sm:py-5 md:h-56 md:px-8 lg:h-64 dark:bg-zinc-900">
             {convention.banner ? (
               <img src={convention.banner} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="absolute inset-0 flex flex-col items-start justify-center gap-3 px-6 md:px-10">
+              <div className="flex flex-col items-start justify-center gap-2 sm:gap-2.5">
                 <span
                   className={`font-display ${
                     getConventionPhase(convention) === 'now'
@@ -63,7 +63,7 @@ export function ConventionDetail({ slug }: { slug: string }) {
                       : getConventionPhase(convention) === 'soon'
                         ? 'bg-accent'
                         : 'border-ink text-ink border-2 dark:text-zinc-100'
-                  } inline-flex -rotate-3 items-center px-2.5 py-1 text-xs tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)]`}
+                  } inline-flex -rotate-3 items-center px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs`}
                 >
                   {getConventionPhase(convention) === 'now'
                     ? 'HAPPENING NOW'
@@ -71,19 +71,21 @@ export function ConventionDetail({ slug }: { slug: string }) {
                       ? 'SOON!'
                       : 'COMING UP'}
                 </span>
-                <h2 className="font-display text-3xl tracking-wide uppercase [text-shadow:3px_3px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-5xl lg:text-6xl">
+                <h1 className="font-display text-lg leading-snug tracking-wide break-words uppercase [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl sm:[text-shadow:3px_3px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] md:text-4xl lg:text-5xl">
                   {convention.name}
-                </h2>
-                <div className="mt-2 flex flex-col items-start gap-1">
-                  <p className="text-accent text-sm font-medium">
+                </h1>
+                <div className="mt-0.5 flex flex-col items-start gap-1 sm:mt-1">
+                  <p className="text-accent text-xs font-semibold sm:text-sm sm:font-medium">
                     {formatDateRange(convention.starts_at, convention.ends_at)}
                   </p>
                   {(convention.venue_name || convention.city || convention.country) && (
-                    <p className="flex items-center gap-1.5 text-sm font-bold tracking-widest text-zinc-600 uppercase dark:text-zinc-300">
-                      <MapPin className="h-4 w-4 shrink-0" />
-                      {[convention.venue_name, convention.city, convention.country]
-                        .filter(Boolean)
-                        .join(', ')}
+                    <p className="flex items-start gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase sm:text-sm sm:tracking-widest dark:text-zinc-300">
+                      <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+                      <span className="break-words">
+                        {[convention.venue_name, convention.city, convention.country]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </span>
                     </p>
                   )}
                 </div>

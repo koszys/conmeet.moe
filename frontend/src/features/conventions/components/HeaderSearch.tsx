@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
+import { IconButton } from '@/shared/components/ui/button';
 
 import { useConventions } from '@/features/conventions/data/api';
 
@@ -160,20 +161,18 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
         </div>
       )}
 
-      <button
+      <IconButton
         ref={buttonRef}
-        type="button"
         onClick={toggleSearch}
         aria-label="Search conventions"
         className={cn(
-          'border-ink hover:border-accent-pop hover:text-accent-pop cursor-pointer items-center justify-center border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200',
           variant === 'sidebar'
             ? 'inline-flex h-9 w-9 shadow-[1px_1px_0_var(--ink)]'
             : 'hidden h-10 w-10 min-[550px]:max-[900px]:inline-flex'
         )}
       >
         {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
-      </button>
+      </IconButton>
 
       {variant === 'header' &&
         open &&

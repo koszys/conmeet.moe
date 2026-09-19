@@ -7,6 +7,8 @@ import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../data/api';
 import { getConventionPhase, isPast } from '../utils/dates';
 import type { Convention, ConventionPhase } from '../types';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { cn } from '@/shared/lib/utils';
 
 interface ConventionGroup {
   phase: ConventionPhase;
@@ -106,14 +108,16 @@ export function ConventionGrid({
 
       {isError && (
         <div className="border-ink bg-accent-soft/50 mt-12 border-2 p-6 text-center shadow-[4px_4px_0_var(--ink)] md:p-8 dark:bg-zinc-900">
-          <h3 className="font-display text-lg tracking-wide uppercase">could not load the line-up!</h3>
+          <h3 className="font-display text-lg tracking-wide uppercase">
+            could not load the line-up!
+          </h3>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
             The conventions list is having a moment. Give it another try?
           </p>
           <button
             type="button"
             onClick={() => void refetch()}
-            className="border-ink bg-accent mt-5 inline-flex cursor-pointer items-center border-2 px-5 py-2.5 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            className={cn(CONBLOCK_PRIMARY, 'mt-5 inline-flex items-center px-5 py-2.5')}
           >
             Retry
           </button>
@@ -121,7 +125,7 @@ export function ConventionGrid({
       )}
 
       {!isLoading && !isError && sections.length === 0 && (
-        <p className="border-ink dark:border-zinc-600 mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:text-zinc-300">
+        <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
           No conventions listed right now — check back soon!
         </p>
       )}

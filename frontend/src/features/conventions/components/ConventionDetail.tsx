@@ -2,6 +2,8 @@
 
 import { MapPin } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { cn } from '@/shared/lib/utils';
 
 import { useConvention } from '../data/api';
 import { getConventionPhase } from '../utils/dates';
@@ -39,7 +41,7 @@ export function ConventionDetail({ slug }: { slug: string }) {
             <button
               type="button"
               onClick={() => void refetch()}
-              className="border-ink bg-accent cursor-pointer border-2 px-5 py-2.5 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              className={cn(CONBLOCK_PRIMARY, 'px-5 py-2.5')}
             >
               Retry
             </button>

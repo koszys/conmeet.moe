@@ -4,65 +4,21 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LogOut,
-  Menu,
-  Moon,
-  PanelLeft,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Search,
-  Sparkles,
-  Sun,
-  UserRound,
-  X,
-} from 'lucide-react';
-import { useTheme } from '@/app/_providers/theme-provider';
+import { LogOut, PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useAuth } from '@/features/auth/auth-provider';
 import {
   isConventionDetailPath,
   useConventionNav,
 } from '@/features/conventions/components/ConventionNavProvider';
-import { SocialButton } from '@/shared/components/SocialButton';
-import { HeaderSearch } from '@/features/conventions/components/HeaderSearch';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
+import { BrandMark } from '@/shared/components/brand/BrandMark';
+import { IconButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { HeaderActions } from './header-actions';
+import { MobileMenu } from './mobile-menu';
 
-function AccountButton({ onToggle }: { onToggle: () => void }) {
-  const { user, loading } = useAuth();
-
-  if (loading) return null;
-
-  if (!user) {
-    return (
-      <Link
-        href="/login"
-        aria-label="Login"
-        className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
-      >
-        <UserRound className="h-4 w-4" />
-      </Link>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label="Account menu"
-      className="border-ink hover:border-accent-pop hover:text-accent-pop flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
-    >
-      {user.avatar_url ? (
-        <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
-      ) : (
-        <UserRound className="h-4 w-4" />
-      )}
-    </button>
-  );
-}
+const SCROLL_TO_TOP = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
 export function Header() {
-  const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -111,7 +67,7 @@ export function Header() {
         <div className="flex items-center gap-7">
           <Link
             href="/"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={SCROLL_TO_TOP}
             className={cn(
               'group flex items-center gap-3',
               isConventionPage && 'max-[900px]:hidden'
@@ -132,37 +88,32 @@ export function Header() {
                 conmeet<span className="text-accent">.moe</span>
               </span>
             </span>
-            <span className="border-ink bg-accent flex h-9 w-9 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)] transition-transform group-hover:-rotate-12">
-              <MikuSilhouette className="h-6 w-auto -rotate-12 text-white" />
-            </span>
-            <Sparkles className="text-accent h-3.5 w-3.5 rotate-12 transition-transform group-hover:rotate-45" />
+            <BrandMark className="gap-3" withSparkles />
           </Link>
 
           {isConventionPage && (
             <>
               <span aria-hidden className="border-ink hidden h-8 border-l-2 min-[900px]:block" />
-              <button
-                type="button"
+              <IconButton
                 onClick={() => nav?.setSidebarCollapsed(!nav?.sidebarCollapsed)}
                 aria-label={nav?.sidebarCollapsed ? 'Expand sidebar' : 'Minimize sidebar'}
                 aria-expanded={!nav?.sidebarCollapsed}
-                className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none min-[900px]:inline-flex dark:text-zinc-200"
+                className="hidden min-[900px]:inline-flex"
               >
                 {nav?.sidebarCollapsed ? (
                   <PanelLeftOpen className="h-4 w-4" />
                 ) : (
                   <PanelLeftClose className="h-4 w-4" />
                 )}
-              </button>
-              <button
-                type="button"
+              </IconButton>
+              <IconButton
                 onClick={nav?.toggle}
                 aria-label={nav?.open ? 'Close convention menu' : 'Open convention menu'}
                 aria-expanded={nav?.open}
-                className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[900px]:inline-flex dark:text-zinc-200"
+                className="hidden max-[900px]:inline-flex"
               >
                 <PanelLeft className="h-4 w-4" />
-              </button>
+              </IconButton>
             </>
           )}
 
@@ -176,116 +127,37 @@ export function Header() {
         {isConventionPage && (
           <Link
             href="/"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={SCROLL_TO_TOP}
             aria-label="conmeet.moe home"
-            className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 max-[900px]:flex"
+            className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center max-[900px]:flex"
           >
-            <span className="border-ink bg-accent flex h-9 w-9 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)]">
-              <MikuSilhouette className="h-6 w-auto -rotate-12 text-white" />
-            </span>
-            <Sparkles className="text-accent h-3.5 w-3.5 rotate-12" />
+            <BrandMark className="gap-2" withSparkles />
           </Link>
         )}
 
-        <div className="flex items-center gap-2">
-          {!isConventionPage && <HeaderSearch />}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[500px]:hidden dark:text-zinc-200"
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
-          <SocialButton platform="kofi" className="hidden min-[450px]:inline-flex" />
-          <div ref={headerUserWrap} className="hidden min-[400px]:block">
-            <AccountButton onToggle={() => setAccountOpen((value) => !value)} />
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setAccountOpen(false);
-              setMenuOpen((open) => !open);
-            }}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:hidden dark:text-zinc-200"
-          >
-            {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
-        </div>
+        <HeaderActions
+          isConventionPage={isConventionPage}
+          menuOpen={menuOpen}
+          onMenuToggle={() => {
+            setAccountOpen(false);
+            setMenuOpen((open) => !open);
+          }}
+          onAccountToggle={() => setAccountOpen((value) => !value)}
+          headerUserWrap={headerUserWrap}
+        />
       </div>
 
-      <nav
-        aria-hidden={!menuOpen}
-        className={cn(
-          'grid transition-[grid-template-rows] duration-300 ease-in-out md:hidden',
-          menuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-        )}
-      >
-        <div className={cn('min-h-0', menuOpen ? 'overflow-visible' : 'overflow-hidden')}>
-          <div
-            className={cn(
-              'border-ink border-t-2 bg-white transition-opacity duration-300 dark:bg-[#373b3e]',
-              menuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
-            )}
-          >
-            <div className="mx-auto flex max-w-6xl flex-col px-4 py-4">
-              {hideNav && (
-                <Link
-                  href="/"
-                  onClick={() => setMenuOpen(false)}
-                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
-                >
-                  Home
-                </Link>
-              )}
-              <Link
-                href="/conventions"
-                onClick={() => setMenuOpen(false)}
-                className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
-              >
-                Conventions
-              </Link>
-              <div className="mt-4 flex justify-end gap-2 sm:hidden">
-                {!isConventionPage && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      window.setTimeout(
-                        () => window.dispatchEvent(new CustomEvent('conmeet:open-search')),
-                        300
-                      );
-                    }}
-                    aria-label="Search conventions"
-                    className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[550px]:inline-flex dark:text-zinc-200"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[500px]:inline-flex dark:text-zinc-200"
-                >
-                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                </button>
-                <SocialButton platform="kofi" className="hidden max-[450px]:inline-flex" />
-                <div ref={dropdownUserWrap} className="hidden max-[400px]:block">
-                  <AccountButton
-                    onToggle={() => {
-                      setAccountOpen((value) => !value);
-                      setMenuOpen(false);
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <MobileMenu
+        open={menuOpen}
+        isConventionPage={isConventionPage}
+        hideNav={hideNav}
+        onClose={() => setMenuOpen(false)}
+        onAccountToggle={() => {
+          setAccountOpen((value) => !value);
+          setMenuOpen(false);
+        }}
+        dropdownUserWrap={dropdownUserWrap}
+      />
 
       {accountOpen &&
         user &&

@@ -1,14 +1,9 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import {
-  api,
-  clearTokens,
-  getAccessToken,
-  oauthStartUrl,
-  type MeUser,
-  type OAuthProvider,
-} from '@/shared/lib/api';
+import { api, type MeUser, type OAuthProvider } from '@/shared/lib/api';
+import { clearTokens, getAccessToken } from '@/shared/lib/tokens';
+import { oauthStartUrl } from './lib/oauth';
 
 interface AuthContextValue {
   user: MeUser | null;

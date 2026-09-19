@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setTokens } from '@/shared/lib/api';
+import { setTokens } from '@/shared/lib/tokens';
 
 export default function AuthCallbackPage() {
   const router = useRouter();

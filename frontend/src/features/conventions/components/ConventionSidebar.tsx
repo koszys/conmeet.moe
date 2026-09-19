@@ -13,9 +13,10 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
 import { formatDateRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
+import { BrandMark } from '@/shared/components/brand/BrandMark';
+import { IconButton, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 
 import { useConvention } from '../data/api';
 import { useConventionNav } from './ConventionNavProvider';
@@ -124,7 +125,10 @@ export function ConventionSidebar({
               href={convention.website_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="border-ink bg-accent hover:bg-accent-pop inline-flex items-center justify-center gap-2 border-2 px-4 py-2.5 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex items-center justify-center gap-2 px-4 py-2.5'
+              )}
             >
               <Globe className="h-4 w-4" />
               Official site
@@ -167,22 +171,20 @@ export function ConventionSidebar({
       >
         <div className="border-ink flex shrink-0 items-center justify-between gap-2 border-b-2 p-4">
           <Link href="/" onClick={onClose} className="group flex min-w-0 items-center gap-2">
-            <span className="border-ink bg-accent flex h-8 w-8 shrink-0 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)] transition-transform group-hover:-rotate-12">
-              <MikuSilhouette className="h-5 w-auto -rotate-12 text-white" />
-            </span>
+            <BrandMark size="sm" boxClassName="shrink-0" />
             <span className="font-display truncate text-xs tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)]">
               conmeet<span className="text-accent">.moe</span>
             </span>
             <Sparkles className="text-accent h-3 w-3 rotate-12 transition-transform group-hover:rotate-45" />
           </Link>
-          <button
-            type="button"
+          <IconButton
+            size="sm"
             onClick={onClose}
             aria-label="Close convention menu"
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
+            className="shrink-0"
           >
             <X className="h-4 w-4" />
-          </button>
+          </IconButton>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">{content}</div>
       </aside>

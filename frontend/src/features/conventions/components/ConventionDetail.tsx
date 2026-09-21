@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Globe, MapPin } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
@@ -36,6 +37,10 @@ export function ConventionDetail({
   extraSections?: ConventionSectionConfig[];
 }) {
   const { data: convention, isLoading, isError, refetch } = useConvention(slug);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [slug]);
 
   return (
     <main className="w-full">

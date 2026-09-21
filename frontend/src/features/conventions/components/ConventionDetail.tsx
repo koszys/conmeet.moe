@@ -74,19 +74,24 @@ export function ConventionDetail({
             ) : (
               <div className="flex flex-col items-start justify-center gap-2 sm:gap-2.5">
                 <span
-                  className={`font-display ${
-                    getConventionPhase(convention) === 'now'
-                      ? 'bg-accent-pop'
-                      : getConventionPhase(convention) === 'soon'
-                        ? 'bg-accent'
-                        : 'border-ink text-ink border-2 dark:text-zinc-100'
-                  } inline-flex -rotate-3 items-center px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs`}
+                  className={cn(
+                    'font-display inline-flex -rotate-3 items-center border-2 px-2 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs',
+                    getConventionPhase(convention) === 'now' &&
+                      'border-ink bg-accent-pop text-white',
+                    getConventionPhase(convention) === 'soon' && 'border-ink bg-accent text-white',
+                    getConventionPhase(convention) === 'past' &&
+                      'border-zinc-400 bg-zinc-200 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
+                    getConventionPhase(convention) === 'up' &&
+                      'border-ink text-ink bg-white dark:bg-zinc-900 dark:text-zinc-100'
+                  )}
                 >
                   {getConventionPhase(convention) === 'now'
                     ? 'HAPPENING NOW'
                     : getConventionPhase(convention) === 'soon'
                       ? 'SOON!'
-                      : 'COMING UP'}
+                      : getConventionPhase(convention) === 'past'
+                        ? 'CON ENDED'
+                        : 'COMING UP'}
                 </span>
                 <h1 className="font-display text-lg leading-snug tracking-wide break-words uppercase [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl sm:[text-shadow:3px_3px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] md:text-4xl lg:text-5xl">
                   {convention.name}

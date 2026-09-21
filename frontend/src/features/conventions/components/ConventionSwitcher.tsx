@@ -16,9 +16,7 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const current = data.find((convention) => convention.slug === currentSlug);
-  const options = data.filter(
-    (convention) => convention.slug !== currentSlug && !isPast(convention)
-  );
+  const options = data.filter((convention) => convention.slug !== currentSlug);
 
   useEffect(() => {
     if (!open) return;
@@ -44,7 +42,7 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="border-ink bg-white hover:border-accent-pop text-ink flex w-full cursor-pointer items-center justify-between gap-2 border-2 px-3 py-2.5 text-left text-xs font-bold tracking-widest uppercase dark:bg-zinc-900 dark:text-zinc-100"
+        className="border-ink hover:border-accent-pop text-ink flex w-full cursor-pointer items-center justify-between gap-2 border-2 bg-white px-3 py-2.5 text-left text-xs font-bold tracking-widest uppercase dark:bg-zinc-900 dark:text-zinc-100"
       >
         <span className="truncate">{current?.name ?? '…'}</span>
         <ChevronDown
@@ -53,9 +51,9 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
       </button>
 
       {open && (
-        <div className="border-ink bg-white absolute top-full right-0 z-50 mt-2 w-full min-w-56 border-2 shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
+        <div className="border-ink absolute top-full right-0 z-50 mt-2 w-full min-w-56 border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
           {options.length === 0 ? (
-            <p className="px-3 py-3 text-center text-[10px] uppercase tracking-widest text-zinc-500">
+            <p className="px-3 py-3 text-center text-[10px] tracking-widest text-zinc-500 uppercase">
               No other conventions yet
             </p>
           ) : (
@@ -66,7 +64,7 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
                     type="button"
                     onClick={() => go(current.slug)}
                     aria-current="true"
-                    className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 border-ink border-b-2 border-dashed px-3 py-2.5 text-left text-xs font-bold tracking-widest uppercase"
+                    className="hover:text-accent-pop border-ink flex w-full cursor-pointer items-center gap-2 border-b-2 border-dashed px-3 py-2.5 text-left text-xs font-bold tracking-widest uppercase"
                   >
                     <Check className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{current.name}</span>
@@ -78,14 +76,15 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
                   <button
                     type="button"
                     onClick={() => go(convention.slug)}
-                    className="hover:text-accent-pop flex w-full cursor-pointer flex-col items-start gap-0.5 border-ink border-b-2 border-dashed px-3 py-2.5 text-left last:border-b-0"
+                    className="hover:text-accent-pop border-ink flex w-full cursor-pointer flex-col items-start gap-0.5 border-b-2 border-dashed px-3 py-2.5 text-left last:border-b-0"
                   >
                     <span className="truncate text-xs font-bold tracking-widest uppercase">
                       {convention.name}
                     </span>
-                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-300">
+                    <span className="text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
                       {[convention.city, convention.country].filter(Boolean).join(', ')} ·{' '}
                       {formatDateRange(convention.starts_at, convention.ends_at)}
+                      {isPast(convention) && ' · (Ended)'}
                     </span>
                   </button>
                 </li>

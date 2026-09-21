@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from 'react';
 
-export type ConventionPhase = 'now' | 'soon' | 'up';
+export type ConventionPhase = 'now' | 'soon' | 'up' | 'past';
 
 export interface Convention {
   id: number;

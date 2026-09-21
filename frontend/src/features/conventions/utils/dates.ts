@@ -9,7 +9,11 @@ export function isPast(convention: Convention): boolean {
 }
 
 export function getConventionPhase(convention: Convention): ConventionPhase {
-  if (daysUntil(convention.starts_at) <= 0 && !isPast(convention)) {
+  if (isPast(convention)) {
+    return 'past';
+  }
+
+  if (daysUntil(convention.starts_at) <= 0) {
     return 'now';
   }
 

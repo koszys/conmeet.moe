@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthProvider } from '@/features/auth/auth-provider';
-import { ConventionNavProvider } from '@/features/conventions/components/ConventionNavProvider';
+import { ConventionNavProvider } from '@/features/conventions';
 import { Header } from '@/shared/components/layout/Header';
 import { Footer } from '@/shared/components/layout/Footer';
 import { ThemeProvider } from './theme-provider';

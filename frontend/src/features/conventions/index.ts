@@ -4,6 +4,12 @@ export { ConventionRequest } from './components/ConventionRequest';
 export { ConventionDetail } from './components/ConventionDetail';
 export { ConventionSidebar } from './components/ConventionSidebar';
 export { ConventionSections } from './components/ConventionSections';
+export {
+  ConventionNavProvider,
+  useConventionNav,
+  isConventionDetailPath,
+} from './components/ConventionNavProvider';
+export { HeaderSearch, HeaderSearch as ConventionSearch } from './components/HeaderSearch';
 export { getDefaultConventionSections } from './data/sections';
 export { getConventionPhase, isPast, SOON_DAYS } from './utils/dates';
 export type {

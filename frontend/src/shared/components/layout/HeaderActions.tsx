@@ -5,8 +5,8 @@ import { Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from '@/app/_providers/theme-provider';
 import { SocialButton } from '@/shared/components/SocialButton';
 import { IconButton } from '@/shared/components/ui/button';
-import { HeaderSearch } from '@/features/conventions/components/HeaderSearch';
-import { AccountButton } from './account-button';
+import { HeaderSearch } from '@/features/conventions';
+import { AccountButton } from './AccountButton';
 
 export function HeaderActions({
   isConventionPage,

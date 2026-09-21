@@ -6,15 +6,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogOut, PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useAuth } from '@/features/auth/auth-provider';
-import {
-  isConventionDetailPath,
-  useConventionNav,
-} from '@/features/conventions/components/ConventionNavProvider';
+import { isConventionDetailPath, useConventionNav } from '@/features/conventions';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { IconButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { HeaderActions } from './header-actions';
-import { MobileMenu } from './mobile-menu';
+import { HeaderActions } from './HeaderActions';
+import { MobileMenu } from './MobileMenu';
 
 const SCROLL_TO_TOP = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 

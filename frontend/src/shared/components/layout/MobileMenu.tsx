@@ -7,7 +7,7 @@ import { useTheme } from '@/app/_providers/theme-provider';
 import { SocialButton } from '@/shared/components/SocialButton';
 import { IconButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { AccountButton } from './account-button';
+import { AccountButton } from './AccountButton';
 
 export function MobileMenu({
   open,

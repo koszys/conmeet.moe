@@ -9,6 +9,11 @@ import { cn } from '@/shared/lib/utils';
 import { useConventions } from '../data/api';
 import { isPast } from '../utils/dates';
 
+/**
+ * @deprecated Currently unused.
+ * Replaced by HeaderSearch in ConventionSidebar for searching and switching conventions directly.
+ * Preserved for reference or future dropdown switching needs.
+ */
 export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
   const router = useRouter();
   const { data = [] } = useConventions();

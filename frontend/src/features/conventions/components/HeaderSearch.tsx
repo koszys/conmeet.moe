@@ -3,15 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { Search, X } from 'lucide-react';
+import { MapPin, Search, X } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { IconButton } from '@/shared/components/ui/button';
 
 import { useConventions } from '@/features/conventions/data/api';
-import { isPast } from '../utils/dates';
+import { getConventionPhase, isPast } from '../utils/dates';
 
-const MAX_RESULTS = 6;
+const MAX_RESULTS = 8;
 
 export function HeaderSearch({
   variant = 'header',
@@ -35,12 +35,33 @@ export function HeaderSearch({
   const results = useMemo(() => {
     const q = trimmed.toLowerCase();
     if (q.length < 2) return [];
+
+    const tokens = q.split(/\s+/).filter(Boolean);
+
     return data
-      .filter((convention) => convention.name.toLowerCase().includes(q))
+      .filter((convention) => {
+        const startYear = new Date(convention.starts_at).getFullYear().toString();
+        const endYear = new Date(convention.ends_at).getFullYear().toString();
+        const searchable =
+          `${convention.name} ${startYear} ${endYear} ${convention.slug} ${convention.city ?? ''} ${convention.country ?? ''} ${convention.venue_name ?? ''}`.toLowerCase();
+        return tokens.every((token) => searchable.includes(token));
+      })
       .sort((a, b) => {
         const aStart = a.name.toLowerCase().startsWith(q) ? 0 : 1;
         const bStart = b.name.toLowerCase().startsWith(q) ? 0 : 1;
-        return aStart - bStart || a.name.localeCompare(b.name);
+        if (aStart !== bStart) return aStart - bStart;
+
+        const aPast = isPast(a);
+        const bPast = isPast(b);
+        if (aPast !== bPast) {
+          return aPast ? 1 : -1;
+        }
+
+        if (!aPast) {
+          return new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
+        }
+
+        return new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime();
       })
       .slice(0, MAX_RESULTS);
   }, [data, trimmed]);
@@ -117,28 +138,72 @@ export function HeaderSearch({
 
   const list = (
     <ul className="max-h-72 overflow-y-auto">
-      {results.map((convention, index) => (
-        <li key={convention.id}>
-          <button
-            type="button"
-            onClick={() => select(convention.slug)}
-            onMouseEnter={() => setActiveIndex(index)}
-            className={cn(
-              'flex w-full cursor-pointer flex-col items-start gap-0.5 border-b-2 border-dashed px-3 py-2.5 text-left last:border-b-0',
-              activeIndex === index && 'bg-accent-soft/50'
-            )}
-          >
-            <span className="truncate text-xs font-bold tracking-widest uppercase">
-              {convention.name}
-            </span>
-            <span className="text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
-              {[convention.city, convention.country].filter(Boolean).join(', ')} ·{' '}
-              {formatDateRange(convention.starts_at, convention.ends_at)}
-              {isPast(convention) && ' · (Ended)'}
-            </span>
-          </button>
-        </li>
-      ))}
+      {results.map((convention, index) => {
+        const startYear = new Date(convention.starts_at).getFullYear();
+        const showYearBadge = !convention.name.includes(startYear.toString());
+        const phase = getConventionPhase(convention);
+        const location = [convention.city, convention.country].filter(Boolean).join(', ');
+
+        return (
+          <li key={convention.id}>
+            <button
+              type="button"
+              onClick={() => select(convention.slug)}
+              onMouseEnter={() => setActiveIndex(index)}
+              className={cn(
+                'flex w-full cursor-pointer flex-col items-start gap-1 border-b-2 border-dashed px-3 py-2 text-left transition-colors last:border-b-0',
+                activeIndex === index && 'bg-accent-soft/50'
+              )}
+            >
+              <div className="flex w-full items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <span className="truncate text-xs font-bold tracking-widest uppercase">
+                    {convention.name}
+                  </span>
+                  {showYearBadge && (
+                    <span className="border-ink font-display shrink-0 border px-1 py-0.5 text-[9px] tracking-wider text-zinc-700 dark:border-zinc-500 dark:text-zinc-200">
+                      {startYear}
+                    </span>
+                  )}
+                </div>
+                <span
+                  className={cn(
+                    'font-display shrink-0 border px-1.5 py-0.5 text-[9px] tracking-wider uppercase',
+                    phase === 'now' && 'border-ink bg-accent-pop text-white',
+                    phase === 'soon' && 'border-ink bg-accent text-white',
+                    phase === 'up' &&
+                      'border-ink bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
+                    phase === 'past' &&
+                      'border-zinc-400 bg-zinc-100 text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                  )}
+                >
+                  {phase === 'past'
+                    ? 'ended'
+                    : phase === 'now'
+                      ? 'now'
+                      : phase === 'soon'
+                        ? 'soon'
+                        : 'upcoming'}
+                </span>
+              </div>
+              <span
+                className={cn(
+                  'text-[10px] font-medium tracking-wider',
+                  phase === 'past' ? 'text-zinc-500 dark:text-zinc-400' : 'text-accent'
+                )}
+              >
+                {formatDateRange(convention.starts_at, convention.ends_at)}
+              </span>
+              {location && (
+                <span className="flex items-center gap-1 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
+                  <MapPin className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{location}</span>
+                </span>
+              )}
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 

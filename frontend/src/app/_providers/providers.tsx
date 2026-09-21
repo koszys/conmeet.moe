@@ -1,7 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthProvider } from '@/features/auth/auth-provider';
 import { ConventionNavProvider } from '@/features/conventions/components/ConventionNavProvider';
@@ -11,8 +11,21 @@ import { ThemeProvider } from './theme-provider';
 
 function ScrollToTop() {
   const pathname = usePathname();
+  const isPopStateRef = useRef(false);
 
   useEffect(() => {
+    function onPopState() {
+      isPopStateRef.current = true;
+    }
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    if (isPopStateRef.current) {
+      isPopStateRef.current = false;
+      return;
+    }
     if (!window.location.hash) {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }

@@ -53,7 +53,13 @@ export function ConventionGrid({
   const [tab, setTab] = useState<'upcoming' | 'past'>(initialTab);
 
   const upcoming = data.filter((convention) => !isPast(convention));
-  const past = data.filter((convention) => isPast(convention));
+  const past = data
+    .filter((convention) => isPast(convention))
+    .sort(
+      (a, b) =>
+        new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
+        new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
+    );
 
   const now = upcoming.filter((convention) => getConventionPhase(convention) === 'now');
   const soon = upcoming.filter((convention) => getConventionPhase(convention) === 'soon');

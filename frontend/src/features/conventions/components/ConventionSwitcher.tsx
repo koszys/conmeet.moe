@@ -16,7 +16,17 @@ export function ConventionSwitcher({ currentSlug }: { currentSlug: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const current = data.find((convention) => convention.slug === currentSlug);
-  const options = data.filter((convention) => convention.slug !== currentSlug);
+  const upcomingOptions = data.filter(
+    (convention) => convention.slug !== currentSlug && !isPast(convention)
+  );
+  const pastOptions = data
+    .filter((convention) => convention.slug !== currentSlug && isPast(convention))
+    .sort(
+      (a, b) =>
+        new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
+        new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
+    );
+  const options = [...upcomingOptions, ...pastOptions];
 
   useEffect(() => {
     if (!open) return;

@@ -20,7 +20,6 @@ import { IconButton, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 
 import { useConvention } from '../data/api';
 import { useConventionNav } from './ConventionNavProvider';
-import { ConventionSwitcher } from './ConventionSwitcher';
 import { HeaderSearch } from './HeaderSearch';
 
 const COMING_SOON = [
@@ -52,14 +51,9 @@ export function ConventionSidebar({
     <>
       <div className="border-ink border-b-2 border-dashed p-4">
         <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
-          Switch convention
+          Search conventions
         </p>
-        <div className="flex items-start gap-2">
-          <div className="min-w-0 flex-1">
-            <ConventionSwitcher currentSlug={slug} />
-          </div>
-          <HeaderSearch variant="sidebar" />
-        </div>
+        <HeaderSearch variant="sidebar" onSelect={onClose} />
       </div>
 
       <div className="border-ink border-b-2 border-dashed p-4">
@@ -216,7 +210,7 @@ export function ConventionSidebar({
           aria-label="Convention sections"
           className="flex h-full flex-col items-center gap-1 py-2"
         >
-          <HeaderSearch variant="sidebar" />
+          <HeaderSearch variant="collapsed" />
           <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
           <Link
             href={`/conventions/${convention.slug}`}

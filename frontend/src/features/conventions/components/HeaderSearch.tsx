@@ -9,10 +9,17 @@ import { cn } from '@/shared/lib/utils';
 import { IconButton } from '@/shared/components/ui/button';
 
 import { useConventions } from '@/features/conventions/data/api';
+import { isPast } from '../utils/dates';
 
 const MAX_RESULTS = 6;
 
-export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sidebar' }) {
+export function HeaderSearch({
+  variant = 'header',
+  onSelect,
+}: {
+  variant?: 'header' | 'sidebar' | 'collapsed';
+  onSelect?: () => void;
+}) {
   const router = useRouter();
   const { data = [] } = useConventions();
   const [query, setQuery] = useState('');
@@ -21,6 +28,7 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
   const wrapRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
 
   const trimmed = query.trim();
@@ -55,15 +63,19 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
     function openFromMenu() {
       setOpen(true);
       setQuery('');
+      if (variant === 'sidebar') {
+        inputRef.current?.focus();
+      }
     }
     window.addEventListener('conmeet:open-search', openFromMenu);
     return () => window.removeEventListener('conmeet:open-search', openFromMenu);
-  }, []);
+  }, [variant]);
 
   function select(slug: string) {
     setOpen(false);
     setPos(null);
     setQuery('');
+    onSelect?.();
     router.push(`/conventions/${slug}`);
   }
 
@@ -77,7 +89,7 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
     if (rect) {
       setPos({
         top: Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - 400)),
-        left: Math.max(8, Math.min(rect.left, window.innerWidth - 328)),
+        left: Math.max(8, Math.min(rect.right + 8, window.innerWidth - 328)),
       });
     }
     setOpen(true);
@@ -122,6 +134,7 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
             <span className="text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
               {[convention.city, convention.country].filter(Boolean).join(', ')} ·{' '}
               {formatDateRange(convention.starts_at, convention.ends_at)}
+              {isPast(convention) && ' · (Ended)'}
             </span>
           </button>
         </li>
@@ -136,11 +149,50 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
   );
 
   return (
-    <div ref={wrapRef} className={cn('relative', variant === 'sidebar' && 'shrink-0')}>
+    <div ref={wrapRef} className={cn('relative', variant === 'sidebar' ? 'w-full' : 'shrink-0')}>
+      {variant === 'sidebar' && (
+        <div className="relative w-full">
+          <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setActiveIndex(0);
+              setOpen(event.target.value.trim().length >= 2);
+            }}
+            onFocus={() => setOpen(trimmed.length >= 2)}
+            onKeyDown={onKeyDown}
+            placeholder="Search conventions..."
+            aria-label="Search conventions"
+            className="border-ink focus:border-accent-pop h-9 w-full border-2 bg-white pr-8 pl-9 text-xs tracking-widest text-zinc-700 uppercase placeholder:text-zinc-400 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-zinc-100"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setOpen(false);
+              }}
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+              aria-label="Clear search"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {open && trimmed.length >= 2 && (
+            <div className="border-ink absolute top-full left-0 z-50 mt-1 w-full border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
+              {results.length > 0 ? list : empty}
+            </div>
+          )}
+        </div>
+      )}
+
       {variant === 'header' && (
         <div className="relative hidden min-[900px]:block">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <input
+            ref={inputRef}
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -161,18 +213,27 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
         </div>
       )}
 
-      <IconButton
-        ref={buttonRef}
-        onClick={toggleSearch}
-        aria-label="Search conventions"
-        className={cn(
-          variant === 'sidebar'
-            ? 'inline-flex h-9 w-9 shadow-[1px_1px_0_var(--ink)]'
-            : 'hidden h-10 w-10 min-[550px]:max-[900px]:inline-flex'
-        )}
-      >
-        {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
-      </IconButton>
+      {variant === 'header' && (
+        <IconButton
+          ref={buttonRef}
+          onClick={toggleSearch}
+          aria-label="Search conventions"
+          className="hidden h-10 w-10 min-[550px]:max-[900px]:inline-flex"
+        >
+          {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+        </IconButton>
+      )}
+
+      {variant === 'collapsed' && (
+        <IconButton
+          ref={buttonRef}
+          onClick={toggleSearch}
+          aria-label="Search conventions"
+          className="inline-flex h-9 w-9 shadow-[1px_1px_0_var(--ink)]"
+        >
+          {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+        </IconButton>
+      )}
 
       {variant === 'header' &&
         open &&
@@ -203,7 +264,7 @@ export function HeaderSearch({ variant = 'header' }: { variant?: 'header' | 'sid
           document.body
         )}
 
-      {variant === 'sidebar' &&
+      {variant === 'collapsed' &&
         open &&
         pos &&
         createPortal(

@@ -122,7 +122,7 @@ export function ConventionGrid({
               : 'bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
           )}
         >
-          Upcoming ({upcoming.length})
+          Upcoming
         </button>
         <button
           type="button"
@@ -134,7 +134,7 @@ export function ConventionGrid({
               : 'bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
           )}
         >
-          Past Cons ({past.length})
+          Past Cons
         </button>
       </div>
 

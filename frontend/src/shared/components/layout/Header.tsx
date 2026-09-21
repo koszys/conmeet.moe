@@ -75,13 +75,15 @@ export function Header() {
           >
             <span
               className={cn(
-                'inline-block max-w-96 overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-in-out',
+                'inline-block max-w-96 overflow-hidden whitespace-nowrap',
+                nav?.isMounted && 'transition-[max-width] duration-300 ease-in-out',
                 isConventionPage && nav?.sidebarCollapsed && 'max-w-0'
               )}
             >
               <span
                 className={cn(
-                  'font-display inline-block text-base tracking-wide transition-opacity duration-150 ease-in-out [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
+                  'font-display inline-block text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
+                  nav?.isMounted && 'transition-opacity duration-150 ease-in-out',
                   isConventionPage && nav?.sidebarCollapsed ? 'opacity-0' : 'opacity-100 delay-300'
                 )}
               >

@@ -12,6 +12,7 @@ import { ThemeProvider } from './theme-provider';
 function ScrollToTop() {
   const pathname = usePathname();
   const isPopStateRef = useRef(false);
+  const prevPathnameRef = useRef(pathname);
 
   useEffect(() => {
     function onPopState() {
@@ -22,11 +23,17 @@ function ScrollToTop() {
   }, []);
 
   useEffect(() => {
-    if (isPopStateRef.current) {
-      isPopStateRef.current = false;
+    // If it's the initial mount / page refresh (pathname hasn't changed), do not scroll
+    if (prevPathnameRef.current === pathname) {
       return;
     }
-    if (!window.location.hash) {
+
+    const wasPopState = isPopStateRef.current;
+    isPopStateRef.current = false;
+    prevPathnameRef.current = pathname;
+
+    // Only scroll to top on forward navigation (not on browser back/forward)
+    if (!wasPopState && !window.location.hash) {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
   }, [pathname]);

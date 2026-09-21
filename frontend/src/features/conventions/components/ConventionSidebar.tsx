@@ -188,13 +188,16 @@ export function ConventionSidebar({
   return (
     <aside
       className={cn(
-        'border-ink relative hidden shrink-0 min-[900px]:sticky min-[900px]:top-16 min-[900px]:block min-[900px]:h-[calc(100vh-4rem)] min-[900px]:self-start min-[900px]:overflow-hidden min-[900px]:border-r-2 min-[900px]:transition-[width] min-[900px]:duration-300 min-[900px]:ease-in-out',
+        'border-ink relative hidden shrink-0 min-[900px]:sticky min-[900px]:top-16 min-[900px]:block min-[900px]:h-[calc(100vh-4rem)] min-[900px]:self-start min-[900px]:overflow-hidden min-[900px]:border-r-2',
+        nav?.isMounted &&
+          'min-[900px]:transition-[width] min-[900px]:duration-300 min-[900px]:ease-in-out',
         nav?.sidebarCollapsed ? 'min-[900px]:w-14' : 'min-[900px]:w-72'
       )}
     >
       <div
         className={cn(
-          'absolute inset-0 overflow-y-auto transition-opacity duration-300',
+          'absolute inset-0 overflow-y-auto',
+          nav?.isMounted && 'transition-opacity duration-300',
           nav?.sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'
         )}
       >
@@ -202,7 +205,8 @@ export function ConventionSidebar({
       </div>
       <div
         className={cn(
-          'absolute inset-0 transition-opacity duration-300',
+          'absolute inset-0',
+          nav?.isMounted && 'transition-opacity duration-300',
           nav?.sidebarCollapsed ? 'opacity-100' : 'pointer-events-none opacity-0'
         )}
       >

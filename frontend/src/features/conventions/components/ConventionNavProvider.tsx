@@ -1,6 +1,14 @@
 'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 import { usePathname } from 'next/navigation';
 import { ConventionSidebar } from './ConventionSidebar';
 import { cn } from '@/shared/lib/utils';
@@ -11,12 +19,37 @@ export function isConventionDetailPath(pathname: string | null): boolean {
   return pathname != null && CONVENTION_PATH.test(pathname);
 }
 
+const SIDEBAR_STORAGE_KEY = 'conmeet:sidebar-collapsed';
+const SIDEBAR_EVENT = 'conmeet-sidebar-change';
+
+function getSidebarSnapshot(): boolean {
+  try {
+    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function getSidebarServerSnapshot(): boolean {
+  return false;
+}
+
+function subscribeSidebar(onStoreChange: () => void) {
+  window.addEventListener(SIDEBAR_EVENT, onStoreChange);
+  window.addEventListener('storage', onStoreChange);
+  return () => {
+    window.removeEventListener(SIDEBAR_EVENT, onStoreChange);
+    window.removeEventListener('storage', onStoreChange);
+  };
+}
+
 interface ConventionNavValue {
   open: boolean;
   toggle: () => void;
   close: () => void;
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  isMounted: boolean;
 }
 
 const ConventionNavContext = createContext<ConventionNavValue | null>(null);
@@ -28,14 +61,26 @@ export function useConventionNav() {
 export function ConventionNavProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.localStorage.getItem('conmeet:sidebar-collapsed') === '1';
-  });
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    window.localStorage.setItem('conmeet:sidebar-collapsed', sidebarCollapsed ? '1' : '0');
-  }, [sidebarCollapsed]);
+    setIsMounted(true);
+  }, []);
+
+  const sidebarCollapsed = useSyncExternalStore(
+    subscribeSidebar,
+    getSidebarSnapshot,
+    getSidebarServerSnapshot
+  );
+
+  const setSidebarCollapsed = (collapsed: boolean) => {
+    try {
+      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, collapsed ? '1' : '0');
+      window.dispatchEvent(new Event(SIDEBAR_EVENT));
+    } catch {
+      // Ignore storage write errors (e.g. private browsing)
+    }
+  };
 
   const slug = useMemo(() => {
     const match = CONVENTION_PATH.exec(pathname ?? '');
@@ -56,8 +101,9 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
       close: () => setOpen(false),
       sidebarCollapsed,
       setSidebarCollapsed,
+      isMounted,
     }),
-    [open, sidebarCollapsed]
+    [open, sidebarCollapsed, isMounted]
   );
 
   useEffect(() => {

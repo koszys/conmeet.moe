@@ -139,7 +139,7 @@ export function ConventionGrid({
       </div>
 
       {isLoading && (
-        <div className="border-ink mt-8 border-t-2 first:mt-12">
+        <div className="mt-4">
           <RowSkeleton />
           <RowSkeleton />
           <RowSkeleton />
@@ -171,9 +171,14 @@ export function ConventionGrid({
               No upcoming conventions listed right now — check back soon!
             </p>
           ) : (
-            upcomingSections.map((group) => (
-              <div key={group.phase} className="border-ink mt-8 border-t-2 first:mt-12">
-                <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
+            upcomingSections.map((group, index) => (
+              <div key={group.phase} className={cn('border-ink', index > 0 && 'mt-8 border-t-2')}>
+                <h3
+                  className={cn(
+                    'font-display flex items-center gap-3 text-lg tracking-wide uppercase',
+                    index === 0 ? 'mt-6' : 'mt-10'
+                  )}
+                >
                   <span
                     className={`${group.chipClassName} inline-flex items-center px-2 py-1 text-xs`}
                   >
@@ -202,8 +207,8 @@ export function ConventionGrid({
               No past conventions listed yet.
             </p>
           ) : (
-            <div className="border-ink mt-8 border-t-2 first:mt-12">
-              <h3 className="font-display mt-10 flex items-center gap-3 text-lg tracking-wide uppercase">
+            <div className="border-ink">
+              <h3 className="font-display mt-6 flex items-center gap-3 text-lg tracking-wide uppercase">
                 <span className="border-2 border-zinc-400 bg-zinc-200 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
                   ENDED CONVENTIONS
                 </span>

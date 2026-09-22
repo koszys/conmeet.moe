@@ -67,3 +67,16 @@ export function useToggleClaimFreebie() {
     },
   });
 }
+
+export function useCreateFreebie() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      return api.post('api/v1/freebies/', { body: formData }).json<Freebie>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: freebieKeys.all });
+    },
+  });
+}

@@ -266,11 +266,11 @@ export function FreebieBoard({
         </div>
       </div>
 
-      {/* Grid Content */}
+      {/* Masonry Content */}
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <FreebieSkeleton key={i} />
+            <FreebieSkeleton key={i} withImage={i % 2 === 0} />
           ))}
         </div>
       ) : isError ? (
@@ -314,7 +314,7 @@ export function FreebieBoard({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
           {displayedFreebies.map((freebie) => (
             <FreebieCard key={freebie.id} freebie={freebie} />
           ))}

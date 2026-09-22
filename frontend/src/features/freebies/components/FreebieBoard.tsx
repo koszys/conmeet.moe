@@ -9,10 +9,11 @@ import {
   Check,
   CheckSquare,
   ChevronDown,
-  ChevronsUpDown,
   Gift,
+  LayoutGrid,
   Loader2,
   Plus,
+  Rows3,
   Search,
   X,
 } from 'lucide-react';
@@ -273,23 +274,42 @@ export function FreebieBoard({
             </select>
           ) : null}
 
-          {/* Condense/Expand All Posts Button */}
-          <button
-            type="button"
-            onClick={handleToggleAllCondensed}
-            aria-label={allCondensed ? 'Expand all posts' : 'Condense all posts'}
-            title={allCondensed ? 'Expand all posts' : 'Condense all posts'}
-            className={cn(
-              CONBLOCK,
-              'inline-flex h-10 shrink-0 items-center justify-center gap-1.5 px-3 text-xs font-bold uppercase transition-all',
-              allCondensed
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
-            )}
+          {/* View Density Segmented Toggle (Cards vs Condensed) */}
+          <div
+            className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900"
+            role="group"
+            aria-label="View density"
           >
-            <ChevronsUpDown className="h-3.5 w-3.5" />
-            <span className="hidden md:inline">{allCondensed ? 'Expand' : 'Condense'}</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => allCondensed && handleToggleAllCondensed()}
+              aria-label="Card view"
+              title="Card view (expanded)"
+              className={cn(
+                'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
+                !allCondensed
+                  ? 'bg-accent text-white dark:text-zinc-950'
+                  : 'text-zinc-500 hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+              )}
+            >
+              <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
+            </button>
+            <div className="border-ink border-r-2" />
+            <button
+              type="button"
+              onClick={() => !allCondensed && handleToggleAllCondensed()}
+              aria-label="Compact view"
+              title="Compact view (condensed)"
+              className={cn(
+                'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
+                allCondensed
+                  ? 'bg-accent text-white dark:text-zinc-950'
+                  : 'text-zinc-500 hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+              )}
+            >
+              <Rows3 className="h-4 w-4 stroke-[2.5]" />
+            </button>
+          </div>
         </div>
       </div>
 

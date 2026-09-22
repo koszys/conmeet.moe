@@ -22,7 +22,7 @@ import { useFreebies, useVendors } from '../api/queries';
 import { FreebieCard } from './FreebieCard';
 import { FreebieSkeleton } from './FreebieSkeleton';
 
-type FilterTab = 'all' | 'saved' | 'unclaimed' | 'claimed';
+type FilterTab = 'all' | 'saved';
 
 export function FreebieBoard({
   conventionSlug,
@@ -55,7 +55,7 @@ export function FreebieBoard({
   const { data: vendors } = useVendors(conventionSlug);
 
   function handleTabClick(tab: FilterTab) {
-    if ((tab === 'saved' || tab === 'unclaimed' || tab === 'claimed') && !user) {
+    if (tab === 'saved' && !user) {
       router.push(`/login?next=${encodeURIComponent(pathname)}`);
       return;
     }
@@ -68,26 +68,24 @@ export function FreebieBoard({
       all: allFreebies.filter((f) => !f.is_claimed).length,
       saved: allFreebies.filter((f) => f.is_saved).length,
       unclaimed: allFreebies.filter((f) => f.is_saved && !f.is_claimed).length,
-      claimed: allFreebies.filter((f) => f.is_claimed).length,
+      claimed: allFreebies.filter((f) => f.is_saved && f.is_claimed).length,
     };
   }, [allFreebies]);
 
-  const displayedFreebies = useMemo(() => {
+  const allDrops = useMemo(() => {
     if (!allFreebies) return [];
-    if (activeTab === 'all') {
-      return allFreebies.filter((f) => !f.is_claimed);
-    }
-    if (activeTab === 'saved') {
-      return allFreebies.filter((f) => f.is_saved);
-    }
-    if (activeTab === 'unclaimed') {
-      return allFreebies.filter((f) => f.is_saved && !f.is_claimed);
-    }
-    if (activeTab === 'claimed') {
-      return allFreebies.filter((f) => f.is_claimed);
-    }
-    return allFreebies;
-  }, [allFreebies, activeTab]);
+    return allFreebies.filter((f) => !f.is_claimed);
+  }, [allFreebies]);
+
+  const unclaimedSaved = useMemo(() => {
+    if (!allFreebies) return [];
+    return allFreebies.filter((f) => f.is_saved && !f.is_claimed);
+  }, [allFreebies]);
+
+  const claimedSaved = useMemo(() => {
+    if (!allFreebies) return [];
+    return allFreebies.filter((f) => f.is_saved && f.is_claimed);
+  }, [allFreebies]);
 
   return (
     <div className="space-y-6">
@@ -200,70 +198,6 @@ export function FreebieBoard({
               {counts.saved}
             </span>
           </button>
-
-          {/* Unclaimed */}
-          <button
-            type="button"
-            onClick={() => handleTabClick('unclaimed')}
-            className={cn(
-              'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
-              activeTab === 'unclaimed'
-                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
-            )}
-          >
-            <CheckSquare
-              className={cn(
-                'h-4 w-4 shrink-0',
-                activeTab === 'unclaimed'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
-              )}
-            />
-            <span>Unclaimed</span>
-            <span
-              className={cn(
-                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-                activeTab === 'unclaimed'
-                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
-              )}
-            >
-              {counts.unclaimed}
-            </span>
-          </button>
-
-          {/* Claimed */}
-          <button
-            type="button"
-            onClick={() => handleTabClick('claimed')}
-            className={cn(
-              'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
-              activeTab === 'claimed'
-                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
-            )}
-          >
-            <Check
-              className={cn(
-                'h-4 w-4 shrink-0',
-                activeTab === 'claimed'
-                  ? 'stroke-[3]'
-                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
-              )}
-            />
-            <span>Claimed</span>
-            <span
-              className={cn(
-                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-                activeTab === 'claimed'
-                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
-              )}
-            >
-              {counts.claimed}
-            </span>
-          </button>
         </div>
 
         {/* Search & Vendor Dropdown */}
@@ -315,7 +249,7 @@ export function FreebieBoard({
         </div>
       </div>
 
-      {/* Masonry Content */}
+      {/* Masonry / Content Area */}
       {isLoading ? (
         <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -328,49 +262,122 @@ export function FreebieBoard({
             Failed to load freebies. Please refresh or check connection.
           </p>
         </div>
-      ) : !displayedFreebies || displayedFreebies.length === 0 ? (
+      ) : activeTab === 'all' ? (
+        allDrops.length === 0 ? (
+          <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
+            <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+              <Gift className="text-ink h-7 w-7 dark:text-zinc-100" />
+            </div>
+            <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
+              No Active Freebies Found
+            </h3>
+            <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
+              {debouncedSearch || selectedVendor
+                ? 'No freebies matched your search or vendor filter. Try clearing filters.'
+                : 'No active freebies found for this convention yet. Be the first to share one!'}
+            </p>
+            <div className="mt-6">
+              <Link
+                href={`/conventions/${conventionSlug}/freebies/new`}
+                className={cn(
+                  CONBLOCK_PRIMARY,
+                  'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                )}
+              >
+                <Plus className="h-4 w-4 stroke-[3]" />
+                Submit First Freebie
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+            {allDrops.map((freebie) => (
+              <FreebieCard key={freebie.id} freebie={freebie} />
+            ))}
+          </div>
+        )
+      ) : /* activeTab === 'saved' */
+      counts.saved === 0 ? (
         <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
           <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
-            <Gift className="text-ink h-7 w-7 dark:text-zinc-100" />
+            <Bookmark className="text-ink h-7 w-7 dark:text-zinc-100" />
           </div>
           <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
-            {activeTab === 'saved'
-              ? 'No Saved Freebies Yet'
-              : activeTab === 'unclaimed'
-                ? 'No Unclaimed Freebies'
-                : activeTab === 'claimed'
-                  ? 'No Claimed Freebies Yet'
-                  : 'No Active Freebies Found'}
+            No Saved Freebies Yet
           </h3>
           <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
-            {activeTab === 'saved'
-              ? 'Bookmark freebies to keep track of booths you plan to visit.'
-              : activeTab === 'unclaimed'
-                ? 'You have checked off all your saved freebies!'
-                : activeTab === 'claimed'
-                  ? 'Check off freebies as you visit booths on the convention floor to track what swag you have collected.'
-                  : debouncedSearch || selectedVendor
-                    ? 'No freebies matched your search or vendor filter. Try clearing filters.'
-                    : 'No active freebies found for this convention yet. Be the first to share one!'}
+            Bookmark freebies to build your personal checklist for the convention floor.
           </p>
           <div className="mt-6">
-            <Link
-              href={`/conventions/${conventionSlug}/freebies/new`}
+            <button
+              type="button"
+              onClick={() => setActiveTab('all')}
               className={cn(
-                CONBLOCK_PRIMARY,
+                CONBLOCK,
                 'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
               )}
             >
-              <Plus className="h-4 w-4 stroke-[3]" />
-              Submit First Freebie
-            </Link>
+              <Gift className="h-4 w-4" />
+              Browse All Drops
+            </button>
           </div>
         </div>
       ) : (
-        <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
-          {displayedFreebies.map((freebie) => (
-            <FreebieCard key={freebie.id} freebie={freebie} />
-          ))}
+        <div className="space-y-8">
+          {/* Section 1: To Claim */}
+          <div className="space-y-4">
+            <div className="border-ink flex items-center justify-between border-b pb-2">
+              <div className="flex items-center gap-2">
+                <CheckSquare className="text-accent h-4 w-4" />
+                <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">
+                  To Claim
+                </h2>
+                <span className="border-ink/20 border bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] font-bold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  {unclaimedSaved.length}
+                </span>
+              </div>
+            </div>
+
+            {unclaimedSaved.length > 0 ? (
+              <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+                {unclaimedSaved.map((freebie) => (
+                  <FreebieCard key={freebie.id} freebie={freebie} />
+                ))}
+              </div>
+            ) : (
+              <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
+                <div className="border-ink bg-accent mx-auto flex h-9 w-9 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
+                  <Check className="h-5 w-5 stroke-[3]" />
+                </div>
+                <p className="mt-2 text-xs font-bold text-zinc-800 sm:text-sm dark:text-zinc-200">
+                  All caught up! You&apos;ve claimed all of your saved freebies.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Section 2: Claimed */}
+          {claimedSaved.length > 0 && (
+            <div className="space-y-4 pt-2">
+              <div className="border-ink flex items-center justify-between border-b pb-2">
+                <div className="flex items-center gap-2">
+                  <Check className="text-accent h-4 w-4 stroke-[3]" />
+                  <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">
+                    Claimed
+                  </h2>
+                  <span className="border-ink/20 border bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] font-bold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                    {claimedSaved.length}
+                  </span>
+                </div>
+              </div>
+
+              <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+                {claimedSaved.map((freebie) => (
+                  <FreebieCard key={freebie.id} freebie={freebie} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

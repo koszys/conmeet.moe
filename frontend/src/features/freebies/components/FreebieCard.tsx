@@ -72,7 +72,7 @@ export function FreebieCard({
   return (
     <article
       className={cn(
-        'border-ink group mb-6 flex w-full break-inside-avoid flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-transform hover:-translate-y-0.5 dark:bg-zinc-900',
+        'border-ink group flex w-full flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-transform hover:-translate-y-0.5 dark:bg-zinc-900',
         freebie.is_claimed && 'opacity-90',
         className
       )}

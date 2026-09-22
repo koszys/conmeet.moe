@@ -1,6 +1,6 @@
 export function FreebieSkeleton({ withImage = false }: { withImage?: boolean }) {
   return (
-    <div className="border-ink mb-6 flex w-full animate-pulse break-inside-avoid flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
+    <div className="border-ink flex w-full animate-pulse flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
       {withImage ? (
         <div className="border-ink aspect-video w-full border-b-2 bg-zinc-200 dark:bg-zinc-800" />
       ) : null}

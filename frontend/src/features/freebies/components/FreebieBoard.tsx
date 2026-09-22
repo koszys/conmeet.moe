@@ -158,7 +158,7 @@ export function FreebieBoard({
       <div className="border-ink flex flex-col gap-3 border-b-2 pb-5 lg:flex-row lg:items-center lg:justify-between">
         {/* Filter Tabs - Neo-Brutalist Block Buttons */}
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-          {/* All Drops */}
+          {/* All Freebies */}
           <button
             type="button"
             onClick={() => handleTabClick('all')}
@@ -178,7 +178,7 @@ export function FreebieBoard({
               )}
             />
             <span>
-              All<span className="hidden sm:inline"> Drops</span>
+              All<span className="hidden sm:inline"></span>
             </span>
             <span
               className={cn(
@@ -192,7 +192,7 @@ export function FreebieBoard({
             </span>
           </button>
 
-          {/* Saved */}
+          {/* Saved Freebies */}
           <button
             type="button"
             onClick={() => handleTabClick('saved')}
@@ -387,7 +387,7 @@ export function FreebieBoard({
               )}
             >
               <Gift className="h-4 w-4" />
-              Browse All Drops
+              Browse All
             </button>
           </div>
         </div>

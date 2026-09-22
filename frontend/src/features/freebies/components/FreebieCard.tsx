@@ -79,8 +79,8 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
               {freebie.vendor.name}
             </span>
             {freebie.location ? (
-              <span className="border-ink inline-flex items-center gap-1 border bg-amber-300 px-2 py-0.5 font-mono text-[11px] font-black text-black uppercase dark:bg-amber-400">
-                <MapPin className="h-3 w-3" />
+              <span className="border-ink bg-accent-soft/25 text-ink inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[11px] font-bold uppercase shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100">
+                <MapPin className="text-accent h-3 w-3 shrink-0" />
                 {freebie.location}
               </span>
             ) : null}

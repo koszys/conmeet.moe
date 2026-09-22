@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { useFreebies } from '@/features/freebies';
 import type {
   ConventionSectionConfig,
   ConventionSectionsProps,
@@ -17,9 +18,32 @@ export function ConventionSections({
   extraSections = [],
   className,
 }: ConventionSectionsProps) {
-  const allSections = (explicitSections ?? getDefaultConventionSections(convention)).concat(
-    extraSections
-  );
+  const { data: freebies } = useFreebies({ convention: convention.slug });
+
+  const baseSections = explicitSections ?? getDefaultConventionSections(convention);
+  const allSections = baseSections
+    .map((sec) => {
+      if (sec.id === 'freebies' && freebies && freebies.length > 0) {
+        return {
+          ...sec,
+          activityCountLabel: `${freebies.length} drop${freebies.length === 1 ? '' : 's'} logged`,
+          activities: freebies.slice(0, 3).map((f) => ({
+            id: String(f.id),
+            title: f.name,
+            subtitle: f.vendor.name,
+            meta: f.requirements || undefined,
+            badge: f.location ? { text: f.location, variant: 'accent' as const } : undefined,
+            stat: {
+              value: f.save_count,
+              label: f.save_count === 1 ? 'save' : 'saves',
+            },
+            href: `/conventions/${convention.slug}/freebies`,
+          })),
+        };
+      }
+      return sec;
+    })
+    .concat(extraSections);
 
   return (
     <div className={cn('space-y-6', className)}>

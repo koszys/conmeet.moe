@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import {
   ArrowUpRight,
@@ -23,7 +24,6 @@ import { useConventionNav } from './ConventionNavProvider';
 import { HeaderSearch } from './HeaderSearch';
 
 const COMING_SOON = [
-  { label: 'Freebies', icon: Gift },
   { label: 'Schedule', icon: CalendarDays },
   { label: 'Meetups', icon: Users },
 ];
@@ -37,6 +37,10 @@ export function ConventionSidebar({
   variant?: 'desktop' | 'drawer';
   onClose?: () => void;
 }) {
+  const pathname = usePathname();
+  const isOverview = pathname === `/conventions/${slug}`;
+  const isFreebies = pathname.startsWith(`/conventions/${slug}/freebies`);
+
   const { data: convention } = useConvention(slug);
   const nav = useConventionNav();
 
@@ -86,17 +90,36 @@ export function ConventionSidebar({
       </div>
 
       <nav
-        className="border-ink border-b-2 border-dashed px-2 py-2"
+        className="border-ink flex flex-col border-b-2 border-dashed px-2 py-2"
         aria-label="Convention sections"
       >
         <Link
           href={`/conventions/${convention.slug}`}
-          aria-current="page"
+          aria-current={isOverview ? 'page' : undefined}
           onClick={onClose}
-          className="border-ink bg-accent hover:bg-accent-pop flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest text-white uppercase"
+          className={cn(
+            'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
+            isOverview
+              ? 'bg-accent text-white'
+              : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+          )}
         >
           <Home className="h-4 w-4" />
           Overview
+        </Link>
+        <Link
+          href={`/conventions/${convention.slug}/freebies`}
+          aria-current={isFreebies ? 'page' : undefined}
+          onClick={onClose}
+          className={cn(
+            'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
+            isFreebies
+              ? 'bg-accent text-white'
+              : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+          )}
+        >
+          <Gift className="h-4 w-4" />
+          Freebies
         </Link>
         {COMING_SOON.map(({ label, icon: Icon }) => (
           <span
@@ -218,11 +241,29 @@ export function ConventionSidebar({
           <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
           <Link
             href={`/conventions/${convention.slug}`}
-            aria-current="page"
+            aria-current={isOverview ? 'page' : undefined}
             aria-label="Overview"
-            className="border-ink bg-accent hover:bg-accent-pop flex h-9 w-9 items-center justify-center border-2 text-white"
+            className={cn(
+              'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
+              isOverview
+                ? 'bg-accent text-white'
+                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+            )}
           >
             <Home className="h-4 w-4" />
+          </Link>
+          <Link
+            href={`/conventions/${convention.slug}/freebies`}
+            aria-current={isFreebies ? 'page' : undefined}
+            aria-label="Freebies"
+            className={cn(
+              'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
+              isFreebies
+                ? 'bg-accent text-white'
+                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+            )}
+          >
+            <Gift className="h-4 w-4" />
           </Link>
           {COMING_SOON.map(({ label, icon: Icon }) => (
             <span

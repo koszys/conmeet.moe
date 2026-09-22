@@ -8,6 +8,8 @@ import {
   Bookmark,
   Check,
   CheckSquare,
+  ChevronDown,
+  ChevronsUpDown,
   Gift,
   Loader2,
   Plus,
@@ -38,6 +40,9 @@ export function FreebieBoard({
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [selectedVendor, setSelectedVendor] = useState<number | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
+  const [allCondensed, setAllCondensed] = useState(false);
+  const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
+  const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   // Queries
@@ -200,10 +205,10 @@ export function FreebieBoard({
           </button>
         </div>
 
-        {/* Search & Vendor Dropdown */}
-        <div className="flex flex-1 flex-col gap-2.5 sm:flex-row lg:max-w-md">
+        {/* Search, Vendor Filter, and Density Toggle */}
+        <div className="flex flex-1 flex-wrap items-center gap-2.5 sm:flex-nowrap lg:max-w-xl">
           {/* Search Box */}
-          <div className="relative flex-1">
+          <div className="relative min-w-[200px] flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
@@ -246,6 +251,24 @@ export function FreebieBoard({
               ))}
             </select>
           ) : null}
+
+          {/* Condense/Expand All Posts Button */}
+          <button
+            type="button"
+            onClick={() => setAllCondensed((prev) => !prev)}
+            aria-label={allCondensed ? 'Expand all posts' : 'Condense all posts'}
+            title={allCondensed ? 'Expand all posts' : 'Condense all posts'}
+            className={cn(
+              CONBLOCK,
+              'inline-flex h-10 shrink-0 items-center justify-center gap-1.5 px-3 text-xs font-bold uppercase transition-all',
+              allCondensed
+                ? 'bg-accent text-white dark:text-zinc-950'
+                : 'bg-white text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
+            )}
+          >
+            <ChevronsUpDown className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">{allCondensed ? 'Expand' : 'Condense'}</span>
+          </button>
         </div>
       </div>
 
@@ -292,7 +315,11 @@ export function FreebieBoard({
         ) : (
           <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
             {allDrops.map((freebie) => (
-              <FreebieCard key={freebie.id} freebie={freebie} />
+              <FreebieCard
+                key={`${freebie.id}-${allCondensed ? 'c' : 'e'}`}
+                freebie={freebie}
+                defaultCondensed={allCondensed}
+              />
             ))}
           </div>
         )
@@ -326,7 +353,12 @@ export function FreebieBoard({
         <div className="space-y-8">
           {/* Section 1: To Claim */}
           <div className="space-y-4">
-            <div className="border-ink flex items-center justify-between border-b pb-2">
+            <button
+              type="button"
+              onClick={() => setIsToClaimCollapsed((prev) => !prev)}
+              className="border-ink flex w-full cursor-pointer items-center justify-between border-b pb-2 text-left transition-opacity hover:opacity-80"
+              aria-expanded={!isToClaimCollapsed}
+            >
               <div className="flex items-center gap-2">
                 <CheckSquare className="text-accent h-4 w-4" />
                 <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">
@@ -336,30 +368,48 @@ export function FreebieBoard({
                   {unclaimedSaved.length}
                 </span>
               </div>
-            </div>
+              <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                <ChevronDown
+                  className={cn(
+                    'h-4 w-4 transition-transform duration-200',
+                    isToClaimCollapsed && '-rotate-90'
+                  )}
+                />
+              </div>
+            </button>
 
-            {unclaimedSaved.length > 0 ? (
-              <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
-                {unclaimedSaved.map((freebie) => (
-                  <FreebieCard key={freebie.id} freebie={freebie} />
-                ))}
-              </div>
-            ) : (
-              <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
-                <div className="border-ink bg-accent mx-auto flex h-9 w-9 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                  <Check className="h-5 w-5 stroke-[3]" />
+            {!isToClaimCollapsed &&
+              (unclaimedSaved.length > 0 ? (
+                <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+                  {unclaimedSaved.map((freebie) => (
+                    <FreebieCard
+                      key={`${freebie.id}-${allCondensed ? 'c' : 'e'}`}
+                      freebie={freebie}
+                      defaultCondensed={allCondensed}
+                    />
+                  ))}
                 </div>
-                <p className="mt-2 text-xs font-bold text-zinc-800 sm:text-sm dark:text-zinc-200">
-                  All caught up! You&apos;ve claimed all of your saved freebies.
-                </p>
-              </div>
-            )}
+              ) : (
+                <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
+                  <div className="border-ink bg-accent mx-auto flex h-9 w-9 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
+                    <Check className="h-5 w-5 stroke-[3]" />
+                  </div>
+                  <p className="mt-2 text-xs font-bold text-zinc-800 sm:text-sm dark:text-zinc-200">
+                    All caught up! You&apos;ve claimed all of your saved freebies.
+                  </p>
+                </div>
+              ))}
           </div>
 
           {/* Section 2: Claimed */}
           {claimedSaved.length > 0 && (
             <div className="space-y-4 pt-2">
-              <div className="border-ink flex items-center justify-between border-b pb-2">
+              <button
+                type="button"
+                onClick={() => setIsClaimedCollapsed((prev) => !prev)}
+                className="border-ink flex w-full cursor-pointer items-center justify-between border-b pb-2 text-left transition-opacity hover:opacity-80"
+                aria-expanded={!isClaimedCollapsed}
+              >
                 <div className="flex items-center gap-2">
                   <Check className="text-accent h-4 w-4 stroke-[3]" />
                   <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">
@@ -369,13 +419,27 @@ export function FreebieBoard({
                     {claimedSaved.length}
                   </span>
                 </div>
-              </div>
+                <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                  <ChevronDown
+                    className={cn(
+                      'h-4 w-4 transition-transform duration-200',
+                      isClaimedCollapsed && '-rotate-90'
+                    )}
+                  />
+                </div>
+              </button>
 
-              <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
-                {claimedSaved.map((freebie) => (
-                  <FreebieCard key={freebie.id} freebie={freebie} />
-                ))}
-              </div>
+              {!isClaimedCollapsed && (
+                <div className="columns-1 gap-6 [column-fill:_balance] sm:columns-2 lg:columns-3">
+                  {claimedSaved.map((freebie) => (
+                    <FreebieCard
+                      key={`${freebie.id}-${allCondensed ? 'c' : 'e'}`}
+                      freebie={freebie}
+                      defaultCondensed={allCondensed}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

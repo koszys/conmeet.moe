@@ -1,18 +1,34 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Bookmark, Check, MapPin, Square } from 'lucide-react';
+import { Bookmark, Check, ChevronDown, ChevronUp, MapPin, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
 import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
 
-export function FreebieCard({ freebie, className }: { freebie: Freebie; className?: string }) {
+export function FreebieCard({
+  freebie,
+  className,
+  defaultCondensed = false,
+  condensed: externalCondensed,
+  onToggleCondensed,
+}: {
+  freebie: Freebie;
+  className?: string;
+  defaultCondensed?: boolean;
+  condensed?: boolean;
+  onToggleCondensed?: () => void;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
+
+  const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
+  const isCondensed = externalCondensed !== undefined ? externalCondensed : internalCondensed;
 
   const toggleSave = useToggleSaveFreebie();
   const toggleClaim = useToggleClaimFreebie();
@@ -41,6 +57,16 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
     });
   }
 
+  function handleToggleCondensed(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onToggleCondensed) {
+      onToggleCondensed();
+    } else {
+      setInternalCondensed((prev) => !prev);
+    }
+  }
+
   const imageUrl = freebie.image_thumb || freebie.image;
 
   return (
@@ -52,8 +78,8 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
       )}
     >
       <div>
-        {/* Optional Image Header */}
-        {imageUrl ? (
+        {/* Optional Image Header - only shown when not condensed */}
+        {!isCondensed && imageUrl ? (
           <div className="border-ink relative aspect-video w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800">
             <Image
               src={imageUrl}
@@ -72,24 +98,41 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
           </div>
         ) : null}
 
-        <div className="p-4 sm:p-5">
-          {/* Vendor and Booth Location Row */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-              {freebie.vendor.name}
-            </span>
-            {freebie.location ? (
-              <span className="border-ink bg-accent-soft/25 text-ink inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[11px] font-bold uppercase shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100">
-                <MapPin className="text-accent h-3 w-3 shrink-0" />
-                {freebie.location}
+        <div className={cn('p-4 sm:p-5', isCondensed && 'p-3 sm:p-3.5')}>
+          {/* Vendor, Booth Location, and Collapse Toggle Row */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+              <span className="text-xs font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+                {freebie.vendor.name}
               </span>
-            ) : null}
+              {freebie.location ? (
+                <span className="border-ink bg-accent-soft/25 text-ink inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[11px] font-bold uppercase shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100">
+                  <MapPin className="text-accent h-3 w-3 shrink-0" />
+                  {freebie.location}
+                </span>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleToggleCondensed}
+              aria-label={isCondensed ? 'Expand card' : 'Condense card'}
+              title={isCondensed ? 'Expand card' : 'Condense card'}
+              className="border-ink hover:text-ink shrink-0 cursor-pointer border p-1 text-zinc-500 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              {isCondensed ? (
+                <ChevronDown className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronUp className="h-3.5 w-3.5" />
+              )}
+            </button>
           </div>
 
           {/* Title */}
           <h3
             className={cn(
-              'font-display mt-2.5 text-base tracking-wide uppercase sm:text-lg',
+              'font-display tracking-wide uppercase',
+              isCondensed ? 'mt-1.5 text-sm sm:text-base' : 'mt-2.5 text-base sm:text-lg',
               freebie.is_claimed
                 ? 'text-zinc-500 line-through decoration-zinc-400 decoration-2 dark:text-zinc-400'
                 : 'text-zinc-900 dark:text-zinc-50'
@@ -98,24 +141,29 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             {freebie.name}
           </h3>
 
-          {/* Requirements Box */}
-          {freebie.requirements ? (
-            <div className="border-ink mt-3 border bg-zinc-50 p-2.5 dark:bg-zinc-800/60">
-              <span className="block text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-                How to get it:
-              </span>
-              <p className="mt-0.5 text-xs text-zinc-800 dark:text-zinc-200">
-                {freebie.requirements}
-              </p>
-            </div>
-          ) : null}
+          {/* Expanded-only Content */}
+          {!isCondensed && (
+            <>
+              {/* Requirements Box */}
+              {freebie.requirements ? (
+                <div className="border-ink mt-3 border bg-zinc-50 p-2.5 dark:bg-zinc-800/60">
+                  <span className="block text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+                    How to get it:
+                  </span>
+                  <p className="mt-0.5 text-xs text-zinc-800 dark:text-zinc-200">
+                    {freebie.requirements}
+                  </p>
+                </div>
+              ) : null}
 
-          {/* Description */}
-          {freebie.description ? (
-            <p className="mt-2.5 line-clamp-2 text-xs text-zinc-600 dark:text-zinc-300">
-              {freebie.description}
-            </p>
-          ) : null}
+              {/* Description */}
+              {freebie.description ? (
+                <p className="mt-2.5 line-clamp-2 text-xs text-zinc-600 dark:text-zinc-300">
+                  {freebie.description}
+                </p>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
 

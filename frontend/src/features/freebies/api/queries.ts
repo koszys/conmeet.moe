@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { api } from '@/shared/lib/api';
 import type { Freebie, FreebieFilters, Vendor } from '../types';
 
@@ -16,6 +16,7 @@ export const freebieKeys = {
 export function useFreebies(filters: FreebieFilters = {}) {
   return useQuery({
     queryKey: freebieKeys.list(filters),
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const searchParams = new URLSearchParams();
       if (filters.convention) searchParams.set('convention', filters.convention);

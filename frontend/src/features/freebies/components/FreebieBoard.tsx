@@ -3,18 +3,10 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import {
-  ArrowLeft,
-  Bookmark,
-  CheckSquare,
-  Filter,
-  Gift,
-  Plus,
-  Search,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowLeft, Bookmark, CheckSquare, Gift, Loader2, Plus, Search, X } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { useDebounce } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { useFreebies, useVendors } from '../api/queries';
 import { FreebieCard } from './FreebieCard';
@@ -36,18 +28,20 @@ export function FreebieBoard({
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [selectedVendor, setSelectedVendor] = useState<number | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   // Queries
   const {
     data: freebies,
     isLoading,
+    isFetching,
     isError,
   } = useFreebies({
     convention: conventionSlug,
     vendor: selectedVendor,
     saved: activeTab === 'saved' ? true : undefined,
     unclaimed: activeTab === 'unclaimed' ? true : undefined,
-    q: searchQuery.trim() || undefined,
+    q: debouncedSearch.trim() || undefined,
   });
 
   const { data: vendors } = useVendors(conventionSlug);
@@ -161,8 +155,22 @@ export function FreebieBoard({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search items, booths..."
-              className="border-ink h-10 w-full border-2 bg-white pr-3 pl-9 text-xs font-medium placeholder:text-zinc-400 focus:outline-none dark:bg-zinc-900"
+              className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium placeholder:text-zinc-400 focus:outline-none dark:bg-zinc-900"
             />
+            {isFetching && debouncedSearch ? (
+              <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              </div>
+            ) : searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                aria-label="Clear search"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            ) : null}
           </div>
 
           {/* Vendor Filter */}
@@ -216,7 +224,7 @@ export function FreebieBoard({
               ? 'Bookmark freebies to keep track of booths you plan to visit.'
               : activeTab === 'unclaimed'
                 ? 'You have checked off all your saved freebies!'
-                : searchQuery || selectedVendor
+                : debouncedSearch || selectedVendor
                   ? 'No freebies matched your search or vendor filter. Try clearing filters.'
                   : 'No freebies have been shared for this convention yet. Be the first to share one!'}
           </p>

@@ -16,9 +16,9 @@ export function FreebieSkeleton({ withImage = false }: { withImage?: boolean }) 
           <div className="h-3 w-4/5 bg-zinc-200 dark:bg-zinc-800" />
         </div>
       </div>
-      <div className="border-ink flex items-center gap-2.5 border-t-2 bg-zinc-50 p-3 sm:gap-3 sm:px-4 dark:bg-zinc-800/40">
-        <div className="h-10 flex-1 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-10 w-20 bg-zinc-200 dark:bg-zinc-800" />
+      <div className="border-ink flex items-center gap-2 border-t-2 bg-zinc-50 p-2.5 sm:px-3.5 dark:bg-zinc-800/40">
+        <div className="h-8 flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <div className="h-8 w-14 bg-zinc-200 dark:bg-zinc-800" />
       </div>
     </div>
   );

@@ -64,7 +64,7 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             />
             {freebie.is_claimed && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-                <span className="border-ink border-2 bg-emerald-400 px-3 py-1 font-mono text-xs font-black tracking-widest text-black uppercase shadow-[2px_2px_0_var(--ink)]">
+                <span className="border-ink bg-accent border-2 px-3 py-1 font-mono text-xs font-black tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
                   CLAIMED
                 </span>
               </div>
@@ -120,8 +120,8 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
       </div>
 
       {/* Action Footer */}
-      <div className="border-ink border-t-2 bg-zinc-50 p-3 sm:px-4 dark:bg-zinc-800/40">
-        <div className="flex items-center justify-between gap-2.5 sm:gap-3">
+      <div className="border-ink border-t-2 bg-zinc-50 p-2.5 sm:px-3.5 dark:bg-zinc-800/40">
+        <div className="flex items-center justify-between gap-2">
           {/* Check off / Claim button */}
           <button
             type="button"
@@ -129,20 +129,20 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             disabled={toggleClaim.isPending}
             className={cn(
               CONBLOCK,
-              'flex-1 px-3 py-2 text-xs font-bold uppercase transition-all sm:py-2.5 sm:text-sm',
+              'flex-1 px-2.5 py-1.5 text-xs font-bold uppercase transition-all',
               freebie.is_claimed
-                ? 'border-emerald-600 bg-emerald-400 text-black hover:bg-emerald-300 dark:border-emerald-400'
+                ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
                 : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
             )}
           >
             {freebie.is_claimed ? (
-              <span className="inline-flex items-center justify-center gap-2">
-                <Check className="h-4.5 w-4.5 stroke-[3]" />
+              <span className="inline-flex items-center justify-center gap-1.5">
+                <Check className="h-3.5 w-3.5 stroke-[2.5]" />
                 <span>CLAIMED</span>
               </span>
             ) : (
-              <span className="inline-flex items-center justify-center gap-2 text-zinc-800 dark:text-zinc-200">
-                <Square className="h-4 w-4 stroke-[2.5]" />
+              <span className="inline-flex items-center justify-center gap-1.5 text-zinc-800 dark:text-zinc-200">
+                <Square className="h-3.5 w-3.5 stroke-2" />
                 <span>CHECK OFF</span>
               </span>
             )}
@@ -156,7 +156,7 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             aria-label={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
             className={cn(
               CONBLOCK,
-              'inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm',
+              'inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-bold transition-all',
               freebie.is_saved
                 ? 'bg-accent text-white hover:brightness-110'
                 : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
@@ -164,11 +164,11 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
           >
             <Bookmark
               className={cn(
-                'h-4.5 w-4.5',
+                'h-3.5 w-3.5',
                 freebie.is_saved ? 'fill-current stroke-[2.5]' : 'stroke-2'
               )}
             />
-            <span className="font-mono text-xs sm:text-sm">{freebie.save_count}</span>
+            <span className="font-mono text-xs">{freebie.save_count}</span>
           </button>
         </div>
       </div>

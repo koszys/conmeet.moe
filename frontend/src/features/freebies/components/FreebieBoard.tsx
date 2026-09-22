@@ -78,13 +78,18 @@ export function FreebieBoard({
         </Link>
 
         <div className="mt-3 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <h1 className="font-display mt-2 text-2xl tracking-wide uppercase sm:text-3xl">
-              Freebies
-            </h1>
-            <p className="mt-1 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
-              Community-tracked freebies given away from vendors.
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="border-ink bg-accent-soft/25 flex h-11 w-11 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+              <Gift className="text-ink h-5 w-5 dark:text-zinc-100" />
+            </div>
+            <div>
+              <h1 className="font-display text-2xl tracking-wide uppercase sm:text-3xl">
+                Freebies
+              </h1>
+              <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
+                Community-tracked freebies given away from vendors.
+              </p>
+            </div>
           </div>
 
           <Link
@@ -194,8 +199,8 @@ export function FreebieBoard({
         </div>
       ) : !freebies || freebies.length === 0 ? (
         <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
-          <div className="border-ink mx-auto flex h-14 w-14 items-center justify-center border-2 bg-amber-300 dark:bg-amber-400">
-            <Gift className="h-7 w-7 text-black" />
+          <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+            <Gift className="text-ink h-7 w-7 dark:text-zinc-100" />
           </div>
           <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
             {activeTab === 'saved'

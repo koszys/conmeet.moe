@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Bookmark, Check, CheckSquare, Gift, MapPin, Sparkles, Square } from 'lucide-react';
+import { Bookmark, Check, MapPin, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';

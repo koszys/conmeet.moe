@@ -133,7 +133,7 @@ export function FreebieBoard({
       </div>
 
       {/* Filter Bar & Controls */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="border-ink flex flex-col gap-3 border-b-2 pb-5 lg:flex-row lg:items-center lg:justify-between">
         {/* Filter Tabs - Neo-Brutalist Block Buttons */}
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           {/* All Drops */}

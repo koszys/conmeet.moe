@@ -32,15 +32,13 @@ export function FreebieBoard({
 
   // Queries
   const {
-    data: freebies,
+    data: allFreebies,
     isLoading,
     isFetching,
     isError,
   } = useFreebies({
     convention: conventionSlug,
     vendor: selectedVendor,
-    saved: activeTab === 'saved' ? true : undefined,
-    unclaimed: activeTab === 'unclaimed' ? true : undefined,
     q: debouncedSearch.trim() || undefined,
   });
 
@@ -54,10 +52,25 @@ export function FreebieBoard({
     setActiveTab(tab);
   }
 
-  const savedCount = useMemo(() => {
-    if (!freebies) return 0;
-    return freebies.filter((f) => f.is_saved).length;
-  }, [freebies]);
+  const counts = useMemo(() => {
+    if (!allFreebies) return { all: 0, saved: 0, unclaimed: 0 };
+    return {
+      all: allFreebies.length,
+      saved: allFreebies.filter((f) => f.is_saved).length,
+      unclaimed: allFreebies.filter((f) => f.is_saved && !f.is_claimed).length,
+    };
+  }, [allFreebies]);
+
+  const displayedFreebies = useMemo(() => {
+    if (!allFreebies) return [];
+    if (activeTab === 'saved') {
+      return allFreebies.filter((f) => f.is_saved);
+    }
+    if (activeTab === 'unclaimed') {
+      return allFreebies.filter((f) => f.is_saved && !f.is_claimed);
+    }
+    return allFreebies;
+  }, [allFreebies, activeTab]);
 
   return (
     <div className="space-y-6">
@@ -101,47 +114,106 @@ export function FreebieBoard({
 
       {/* Filter Bar & Controls */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        {/* Filter Tabs */}
-        <div className="border-ink flex w-full border-2 bg-zinc-100 p-1 shadow-[2px_2px_0_var(--ink)] sm:inline-flex sm:w-auto dark:bg-zinc-800">
+        {/* Filter Tabs - Neo-Brutalist Block Buttons */}
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+          {/* All Drops */}
           <button
             type="button"
             onClick={() => handleTabClick('all')}
             className={cn(
-              'flex-1 cursor-pointer justify-center px-2 py-1.5 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
               activeTab === 'all'
-                ? 'border-ink border bg-white text-black shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900 dark:text-white'
-                : 'text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white'
+                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
             )}
           >
-            All Drops
+            <Gift
+              className={cn(
+                'h-3.5 w-3.5 shrink-0',
+                activeTab === 'all'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+              )}
+            />
+            <span>
+              All<span className="hidden sm:inline"> Drops</span>
+            </span>
+            <span
+              className={cn(
+                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                activeTab === 'all'
+                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+              )}
+            >
+              {counts.all}
+            </span>
           </button>
+
+          {/* Saved */}
           <button
             type="button"
             onClick={() => handleTabClick('saved')}
             className={cn(
-              'inline-flex flex-1 cursor-pointer items-center justify-center gap-1 px-2 py-1.5 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:gap-1.5 sm:px-3.5',
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
               activeTab === 'saved'
-                ? 'border-ink border bg-white text-black shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900 dark:text-white'
-                : 'text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white'
+                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
             )}
           >
-            <Bookmark className="h-3 w-3 shrink-0" />
+            <Bookmark
+              className={cn(
+                'h-3.5 w-3.5 shrink-0',
+                activeTab === 'saved'
+                  ? 'fill-current stroke-[2.5]'
+                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+              )}
+            />
             <span>
-              <span className="hidden sm:inline">My </span>Saved
+              <span className="hidden md:inline">My </span>Saved
+            </span>
+            <span
+              className={cn(
+                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                activeTab === 'saved'
+                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+              )}
+            >
+              {counts.saved}
             </span>
           </button>
+
+          {/* Unclaimed */}
           <button
             type="button"
             onClick={() => handleTabClick('unclaimed')}
             className={cn(
-              'inline-flex flex-1 cursor-pointer items-center justify-center gap-1 px-2 py-1.5 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:gap-1.5 sm:px-3.5',
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
               activeTab === 'unclaimed'
-                ? 'border-ink border bg-white text-black shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900 dark:text-white'
-                : 'text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white'
+                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
             )}
           >
-            <CheckSquare className="h-3 w-3 shrink-0" />
+            <CheckSquare
+              className={cn(
+                'h-3.5 w-3.5 shrink-0',
+                activeTab === 'unclaimed'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+              )}
+            />
             <span>Unclaimed</span>
+            <span
+              className={cn(
+                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                activeTab === 'unclaimed'
+                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+              )}
+            >
+              {counts.unclaimed}
+            </span>
           </button>
         </div>
 
@@ -207,7 +279,7 @@ export function FreebieBoard({
             Failed to load freebies. Please refresh or check connection.
           </p>
         </div>
-      ) : !freebies || freebies.length === 0 ? (
+      ) : !displayedFreebies || displayedFreebies.length === 0 ? (
         <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
           <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
             <Gift className="text-ink h-7 w-7 dark:text-zinc-100" />
@@ -243,7 +315,7 @@ export function FreebieBoard({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {freebies.map((freebie) => (
+          {displayedFreebies.map((freebie) => (
             <FreebieCard key={freebie.id} freebie={freebie} />
           ))}
         </div>

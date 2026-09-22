@@ -155,20 +155,17 @@ export function HeaderSearch({
                 activeIndex === index && 'bg-accent-soft/50'
               )}
             >
-              <div className="flex w-full items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate text-xs font-bold tracking-widest uppercase">
-                    {convention.name}
+              {/* Row 1: Title + Year badge + Status chip on larger screens */}
+              <div className="flex w-full flex-wrap items-center gap-1.5">
+                <span className="text-xs font-bold tracking-wide uppercase">{convention.name}</span>
+                {showYearBadge && (
+                  <span className="border-ink font-display shrink-0 border px-1 py-0.5 text-[9px] tracking-wider text-zinc-700 dark:border-zinc-500 dark:text-zinc-200">
+                    {startYear}
                   </span>
-                  {showYearBadge && (
-                    <span className="border-ink font-display shrink-0 border px-1 py-0.5 text-[9px] tracking-wider text-zinc-700 dark:border-zinc-500 dark:text-zinc-200">
-                      {startYear}
-                    </span>
-                  )}
-                </div>
+                )}
                 <span
                   className={cn(
-                    'font-display shrink-0 border px-1.5 py-0.5 text-[9px] tracking-wider uppercase',
+                    'font-display hidden shrink-0 border px-1.5 py-0.5 text-[9px] tracking-wider uppercase sm:inline-flex',
                     phase === 'now' && 'border-ink bg-accent-pop text-white',
                     phase === 'soon' && 'border-ink bg-accent text-white',
                     phase === 'up' &&
@@ -186,16 +183,41 @@ export function HeaderSearch({
                         : 'upcoming'}
                 </span>
               </div>
-              <span
-                className={cn(
-                  'text-[10px] font-medium tracking-wider',
-                  phase === 'past' ? 'text-zinc-500 dark:text-zinc-400' : 'text-accent'
-                )}
-              >
-                {formatDateRange(convention.starts_at, convention.ends_at)}
-              </span>
+
+              {/* Row 2: Date + Status chip on smaller screens */}
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'text-[10px] font-medium tracking-wider',
+                    phase === 'past' ? 'text-zinc-500 dark:text-zinc-400' : 'text-accent'
+                  )}
+                >
+                  {formatDateRange(convention.starts_at, convention.ends_at)}
+                </span>
+                <span
+                  className={cn(
+                    'font-display inline-flex shrink-0 border px-1.5 py-0.5 text-[9px] tracking-wider uppercase sm:hidden',
+                    phase === 'now' && 'border-ink bg-accent-pop text-white',
+                    phase === 'soon' && 'border-ink bg-accent text-white',
+                    phase === 'up' &&
+                      'border-ink bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
+                    phase === 'past' &&
+                      'border-zinc-400 bg-zinc-100 text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                  )}
+                >
+                  {phase === 'past'
+                    ? 'ended'
+                    : phase === 'now'
+                      ? 'now'
+                      : phase === 'soon'
+                        ? 'soon'
+                        : 'upcoming'}
+                </span>
+              </div>
+
+              {/* Row 3: Location */}
               {location && (
-                <span className="flex items-center gap-1 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
+                <span className="flex items-center gap-1 text-[10px] tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
                   <MapPin className="h-3 w-3 shrink-0" />
                   <span className="truncate">{location}</span>
                 </span>
@@ -271,7 +293,7 @@ export function HeaderSearch({
             className="border-ink focus:border-accent-pop w-40 border-2 bg-white py-2 pr-3 pl-9 text-xs tracking-widest text-zinc-700 uppercase placeholder:text-zinc-400 placeholder:normal-case focus:outline-none lg:w-52 dark:bg-zinc-900 dark:text-zinc-100"
           />
           {open && trimmed.length >= 2 && (
-            <div className="border-ink absolute right-0 z-50 mt-2 w-80 border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
+            <div className="border-ink absolute right-0 z-50 mt-2 w-80 border-2 bg-white shadow-[3px_3px_0_var(--ink)] sm:w-96 dark:bg-[#373b3e]">
               {results.length > 0 ? list : empty}
             </div>
           )}
@@ -336,7 +358,7 @@ export function HeaderSearch({
           <div
             ref={panelRef}
             style={{ top: pos.top, left: pos.left }}
-            className="border-ink fixed z-[70] w-80 max-w-[calc(100vw-16px)] border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]"
+            className="border-ink fixed z-[70] w-80 max-w-[calc(100vw-16px)] border-2 bg-white shadow-[3px_3px_0_var(--ink)] sm:w-96 dark:bg-[#373b3e]"
           >
             <div className="relative border-b-2 border-dashed p-2">
               <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-zinc-400" />

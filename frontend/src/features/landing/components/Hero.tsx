@@ -1,9 +1,20 @@
+'use client';
+
 import { ArrowDown, Sparkles, Star } from 'lucide-react';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
-import { MikuTextVertical } from '@/shared/components/miku/MikuTextVertical';
-import { MikuTextHorizontal } from '@/shared/components/miku/MikuTextHorizontal';
+import { MikuSilhouette, MikuTextHorizontal, MikuTextVertical } from '@/shared/components/miku';
 
 export function Hero() {
+  function scrollToSection(id: string) {
+    return (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', `#${id}`);
+      }
+    };
+  }
+
   return (
     <section className="relative overflow-hidden">
       <div className="halftone absolute inset-0" aria-hidden />
@@ -47,6 +58,7 @@ export function Hero() {
         <div className="mt-8 flex flex-col items-center justify-center gap-5 sm:mt-10 sm:flex-row">
           <a
             href="#conventions"
+            onClick={scrollToSection('conventions')}
             className="border-ink bg-accent font-display inline-flex items-center gap-2 rounded-none border-2 px-7 py-4 text-xs tracking-wide text-white uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm"
           >
             Check the line-up
@@ -54,6 +66,7 @@ export function Hero() {
           </a>
           <a
             href="#features"
+            onClick={scrollToSection('features')}
             className="border-ink font-display text-ink hover:bg-accent-soft inline-flex items-center gap-2 rounded-none border-2 bg-white px-7 py-4 text-xs tracking-wide uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm dark:bg-[#373b3e] dark:text-zinc-100"
           >
             How it works!

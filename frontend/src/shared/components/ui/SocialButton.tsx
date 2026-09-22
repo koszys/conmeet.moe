@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { cn } from '@/shared/lib/utils';
+import { CONBLOCK } from '@/shared/components/ui/button';
 import discordLogo from '@/assets/social/discordlogo.png';
 import kofiLogo from '@/assets/social/kofilogo.webp';
 
@@ -47,7 +48,8 @@ export function SocialButton({
       rel="noopener noreferrer"
       aria-label={label}
       className={cn(
-        'border-ink inline-flex h-10 w-10 items-center justify-center rounded-none border-2 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
+        CONBLOCK,
+        'inline-flex h-10 w-10 items-center justify-center rounded-none',
         className
       )}
       style={{ backgroundColor }}

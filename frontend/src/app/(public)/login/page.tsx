@@ -4,11 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { useAuth } from '@/features/auth/auth-provider';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
-import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
-import { Footer } from '@/shared/components/layout/Footer';
-import { Header } from '@/shared/components/layout/Header';
+import { useAuth } from '@/features/auth';
+import { BrandMark } from '@/shared/components/brand/BrandMark';
+import { SpinBackdrop } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import discordLogo from '@/assets/social/discordlogo.png';
 
@@ -74,9 +72,7 @@ function LoginContent() {
       <SpinBackdrop />
       <div className="border-ink relative z-10 w-full max-w-sm rounded-none border-2 bg-white p-8 shadow-[6px_6px_0_var(--ink)] dark:bg-[#373b3e]">
         <div className="mb-6 flex flex-col items-center gap-2">
-          <span className="border-ink bg-accent flex h-12 w-12 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)]">
-            <MikuSilhouette className="h-8 w-auto -rotate-12 text-white" />
-          </span>
+          <BrandMark size="lg" />
           <h1 className="font-display text-xl tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)]">
             conmeet<span className="text-accent">.moe</span>
           </h1>
@@ -142,20 +138,16 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-1 flex-col">
-      <Header />
-      <Suspense
-        fallback={
-          <main className="flex flex-1 items-center justify-center">
-            <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
-              Loading…
-            </span>
-          </main>
-        }
-      >
-        <LoginContent />
-      </Suspense>
-      <Footer />
-    </div>
+    <Suspense
+      fallback={
+        <main className="flex flex-1 items-center justify-center">
+          <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
+            Loading…
+          </span>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

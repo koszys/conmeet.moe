@@ -1,217 +1,195 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Menu, Moon, Sparkles, Sun, UserRound, X } from 'lucide-react';
-import { useTheme } from '@/app/providers/theme-provider';
-import { useAuth } from '@/features/auth/auth-provider';
-import { SocialButton } from '@/shared/components/SocialButton';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
+import { LogOut, PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { useAuth } from '@/features/auth';
+import { isConventionDetailPath, useConventionNav } from '@/features/conventions';
+import { BrandMark } from '@/shared/components/brand/BrandMark';
+import { IconButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { HeaderActions } from './HeaderActions';
+import { MobileMenu } from './MobileMenu';
 
-const NAV_LINKS = [
-  { name: 'How it works', href: '#features' },
-  { name: 'Line-up', href: '#conventions' },
-];
+const SCROLL_TO_TOP = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-function scrollToSection(href: string) {
-  const target = document.querySelector(href);
-  if (!target) return;
-  const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0;
-  const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
-  window.scrollTo({ top, behavior: 'smooth' });
-}
-
-function UserMenu() {
-  const { user, loading, logout } = useAuth();
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+export function Header() {
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+  const headerUserWrap = useRef<HTMLDivElement | null>(null);
+  const dropdownUserWrap = useRef<HTMLDivElement | null>(null);
+  const accountPopupWrap = useRef<HTMLDivElement | null>(null);
+  const pathname = usePathname();
+  const nav = useConventionNav();
+  const isConventionPage = isConventionDetailPath(pathname);
+  const hideNav = pathname === '/login' || pathname === '/settings';
 
   useEffect(() => {
-    if (!open) return;
+    if (!accountOpen) return;
     function onPointerDown(event: PointerEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
-        setOpen(false);
+      const wraps = [
+        headerUserWrap.current,
+        dropdownUserWrap.current,
+        accountPopupWrap.current,
+      ].filter(Boolean) as HTMLDivElement[];
+      if (wraps.every((wrap) => !wrap.contains(event.target as Node))) {
+        setAccountOpen(false);
       }
     }
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [open]);
+  }, [accountOpen]);
 
-  if (loading) return null;
-
-  if (!user) {
-    return (
-      <Link
-        href="/login"
-        className="border-ink bg-accent inline-flex h-10 items-center justify-center border-2 px-4 text-xs font-bold tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-      >
-        Log in
-      </Link>
-    );
-  }
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [menuOpen]);
 
   return (
-    <div ref={wrapRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        className="border-ink hover:border-accent-pop hover:text-accent-pop flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-200"
-        aria-label="Account menu"
-        aria-expanded={open}
-      >
-        {user.avatar_url ? (
-          <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <UserRound className="h-4 w-4" />
-        )}
-      </button>
-      {open && (
-        <div className="border-ink absolute right-0 z-50 mt-2 w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]">
-          <div className="border-ink border-b-2 border-dashed px-4 py-3">
-            <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
-            <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">@{user.username}</p>
-          </div>
-          <Link
-            href="/settings"
-            onClick={() => setOpen(false)}
-            className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
-          >
-            Settings
-          </Link>
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              logout();
-            }}
-            className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-xs font-bold tracking-widest uppercase transition-colors"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Log out
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function Header() {
-  const { theme, toggleTheme } = useTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
-  const hideNav = pathname === '/login' || pathname === '/settings';
-
-  return (
-    <header className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
+    <header
+      ref={headerRef}
+      className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90"
+    >
+      <div className="relative flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-7">
           <Link
             href="/"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="group flex items-center gap-3"
+            onClick={SCROLL_TO_TOP}
+            className={cn(
+              'group flex items-center gap-3',
+              isConventionPage && 'max-[900px]:hidden'
+            )}
           >
-            <span className="font-display text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl">
-              conmeet<span className="text-accent">.moe</span>
+            <span
+              className={cn(
+                'inline-block max-w-96 overflow-hidden whitespace-nowrap',
+                nav?.isMounted && 'transition-[max-width] duration-300 ease-in-out',
+                isConventionPage && nav?.sidebarCollapsed && 'max-w-0'
+              )}
+            >
+              <span
+                className={cn(
+                  'font-display inline-block text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
+                  nav?.isMounted && 'transition-opacity duration-150 ease-in-out',
+                  isConventionPage && nav?.sidebarCollapsed ? 'opacity-0' : 'opacity-100 delay-300'
+                )}
+              >
+                conmeet<span className="text-accent">.moe</span>
+              </span>
             </span>
-            <span className="border-ink bg-accent flex h-9 w-9 -rotate-6 items-center justify-center overflow-hidden rounded-sm border-2 shadow-[2px_2px_0_var(--ink)] transition-transform group-hover:-rotate-12">
-              <MikuSilhouette className="h-6 w-auto -rotate-12 text-white" />
-            </span>
-            <Sparkles className="text-accent h-3.5 w-3.5 rotate-12 transition-transform group-hover:rotate-45" />
+            <BrandMark className="gap-3" withSparkles />
           </Link>
 
+          {isConventionPage && (
+            <>
+              <span aria-hidden className="border-ink hidden h-8 border-l-2 min-[900px]:block" />
+              <IconButton
+                onClick={() => nav?.setSidebarCollapsed(!nav?.sidebarCollapsed)}
+                aria-label={nav?.sidebarCollapsed ? 'Expand sidebar' : 'Minimize sidebar'}
+                aria-expanded={!nav?.sidebarCollapsed}
+                className="hidden min-[900px]:inline-flex"
+              >
+                {nav?.sidebarCollapsed ? (
+                  <PanelLeftOpen className="h-4 w-4" />
+                ) : (
+                  <PanelLeftClose className="h-4 w-4" />
+                )}
+              </IconButton>
+              <IconButton
+                onClick={nav?.toggle}
+                aria-label={nav?.open ? 'Close convention menu' : 'Open convention menu'}
+                aria-expanded={nav?.open}
+                className="hidden max-[900px]:inline-flex"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </IconButton>
+            </>
+          )}
+
           <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-zinc-300">
-            {!hideNav &&
-              NAV_LINKS.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="hover:text-accent-pop transition-colors"
-                >
-                  {link.name}
-                </a>
-              ))}
+            <Link href="/conventions" className="hover:text-accent-pop transition-colors">
+              Conventions
+            </Link>
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
-          <SocialButton platform="kofi" className="hidden sm:inline-flex" />
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[450px]:hidden dark:text-zinc-200"
+        {isConventionPage && (
+          <Link
+            href="/"
+            onClick={SCROLL_TO_TOP}
+            aria-label="conmeet.moe home"
+            className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center max-[900px]:flex"
           >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
-          <UserMenu />
-          <button
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            className="border-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:hidden dark:text-zinc-200"
-          >
-            {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
-        </div>
+            <BrandMark className="gap-2" withSparkles />
+          </Link>
+        )}
+
+        <HeaderActions
+          isConventionPage={isConventionPage}
+          menuOpen={menuOpen}
+          onMenuToggle={() => {
+            setAccountOpen(false);
+            setMenuOpen((open) => !open);
+          }}
+          onAccountToggle={() => setAccountOpen((value) => !value)}
+          headerUserWrap={headerUserWrap}
+        />
       </div>
 
-      <nav
-        aria-hidden={!menuOpen}
-        className={cn(
-          'grid transition-[grid-template-rows] duration-300 ease-in-out md:hidden',
-          menuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-        )}
-      >
-        <div className={cn('min-h-0', menuOpen ? 'overflow-visible' : 'overflow-hidden')}>
+      <MobileMenu
+        open={menuOpen}
+        isConventionPage={isConventionPage}
+        hideNav={hideNav}
+        onClose={() => setMenuOpen(false)}
+        onAccountToggle={() => {
+          setAccountOpen((value) => !value);
+          setMenuOpen(false);
+        }}
+        dropdownUserWrap={dropdownUserWrap}
+      />
+
+      {accountOpen &&
+        user &&
+        createPortal(
           <div
-            className={cn(
-              'border-ink border-t-2 bg-white transition-opacity duration-300 dark:bg-[#373b3e]',
-              menuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
-            )}
+            ref={accountPopupWrap}
+            className="border-ink fixed top-16 right-4 z-[70] w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]"
           >
-            <div className="mx-auto flex max-w-6xl flex-col px-4 py-4">
-              {hideNav && (
-                <Link
-                  href="/"
-                  onClick={() => setMenuOpen(false)}
-                  className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
-                >
-                  Home
-                </Link>
-              )}
-              {!hideNav &&
-                NAV_LINKS.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setMenuOpen(false);
-                      window.setTimeout(() => scrollToSection(link.href), 330);
-                    }}
-                    className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-zinc-300"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-              <div className="mt-4 flex gap-2 sm:hidden">
-                <SocialButton platform="kofi" />
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                  className="border-ink hover:border-accent-pop hover:text-accent-pop hidden h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-zinc-700 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none max-[450px]:inline-flex dark:text-zinc-200"
-                >
-                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                </button>
-              </div>
+            <div className="border-ink border-b-2 border-dashed px-4 py-3">
+              <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
+              <p className="truncate text-xs text-zinc-500 dark:text-zinc-300">@{user.username}</p>
             </div>
-          </div>
-        </div>
-      </nav>
+            <Link
+              href="/settings"
+              onClick={() => setAccountOpen(false)}
+              className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
+            >
+              Settings
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setAccountOpen(false);
+                logout();
+              }}
+              className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-xs font-bold tracking-widest uppercase transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Log out
+            </button>
+          </div>,
+          document.body
+        )}
     </header>
   );
 }

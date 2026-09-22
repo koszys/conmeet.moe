@@ -1,12 +1,21 @@
 import { daysUntil } from '@/shared/lib/dates';
+
 import type { Convention, ConventionPhase } from '../types';
 
 export const SOON_DAYS = 20;
 
+export function isPast(convention: Convention): boolean {
+  return daysUntil(convention.ends_at) < 0;
+}
+
 export function getConventionPhase(convention: Convention): ConventionPhase {
-  if (convention.status === 'active') {
+  if (isPast(convention)) {
+    return 'past';
+  }
+
+  if (daysUntil(convention.starts_at) <= 0) {
     return 'now';
   }
 
-  return daysUntil(convention.startsAt) <= SOON_DAYS ? 'soon' : 'up';
+  return daysUntil(convention.starts_at) <= SOON_DAYS ? 'soon' : 'up';
 }

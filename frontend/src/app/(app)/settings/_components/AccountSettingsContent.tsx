@@ -1,11 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useAuth } from '@/features/auth/auth-provider';
-import { RequireAuth } from '@/features/auth/require-auth';
-import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
-import { Footer } from '@/shared/components/layout/Footer';
-import { Header } from '@/shared/components/layout/Header';
+import { useAuth } from '@/features/auth';
+import { SpinBackdrop } from '@/shared/components/miku';
 import discordLogo from '@/assets/social/discordlogo.png';
 import { cn } from '@/shared/lib/utils';
 
@@ -40,15 +37,7 @@ const PROVIDERS: Record<
     label: 'Discord',
     backgroundColor: '#5865F2',
     textClassName: '!text-white',
-    icon: (
-      <Image
-        src={discordLogo}
-        alt=""
-        width={16}
-        height={16}
-        className="brightness-0 invert"
-      />
-    ),
+    icon: <Image src={discordLogo} alt="" width={16} height={16} className="brightness-0 invert" />,
   },
   google: {
     label: 'Google',
@@ -58,7 +47,7 @@ const PROVIDERS: Record<
   },
 };
 
-function AccountSettingsContent() {
+export function AccountSettingsContent() {
   const { user } = useAuth();
 
   const providers = user?.providers ?? [];
@@ -80,7 +69,7 @@ function AccountSettingsContent() {
         </h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {providers.length === 0 && (
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+            <span className="text-sm text-zinc-500 dark:text-zinc-300">
               No social accounts linked.
             </span>
           )}
@@ -111,22 +100,10 @@ function AccountSettingsContent() {
             );
           })}
         </div>
-        <p className="mt-4 text-sm text-zinc-400 dark:text-zinc-400">
+        <p className="mt-4 text-sm text-zinc-400 dark:text-zinc-300">
           Same-email logins are linked to this account automatically.
         </p>
       </section>
     </main>
-  );
-}
-
-export default function SettingsPage() {
-  return (
-    <div className="flex flex-1 flex-col">
-      <Header />
-      <RequireAuth>
-        <AccountSettingsContent />
-      </RequireAuth>
-      <Footer />
-    </div>
   );
 }

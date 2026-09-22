@@ -2,8 +2,8 @@
 
 import type { RefObject } from 'react';
 import { Menu, Moon, Sun, X } from 'lucide-react';
-import { useTheme } from '@/app/_providers/theme-provider';
-import { SocialButton } from '@/shared/components/SocialButton';
+import { useTheme } from '@/app/_providers';
+import { SocialButton } from '@/shared/components/ui/SocialButton';
 import { IconButton } from '@/shared/components/ui/button';
 import { HeaderSearch } from '@/features/conventions';
 import { AccountButton } from './AccountButton';

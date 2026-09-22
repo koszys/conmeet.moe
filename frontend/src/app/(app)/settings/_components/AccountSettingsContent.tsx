@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useAuth } from '@/features/auth/auth-provider';
-import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
+import { useAuth } from '@/features/auth';
+import { SpinBackdrop } from '@/shared/components/miku';
 import discordLogo from '@/assets/social/discordlogo.png';
 import { cn } from '@/shared/lib/utils';
 

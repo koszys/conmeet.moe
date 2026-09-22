@@ -1,6 +1,6 @@
 import { Sparkles } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
+import { MikuSilhouette } from '@/shared/components/miku';
 
 const BRAND_BOX = {
   sm: 'h-8 w-8',

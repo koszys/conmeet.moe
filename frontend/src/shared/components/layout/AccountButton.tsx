@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { UserRound } from 'lucide-react';
-import { useAuth } from '@/features/auth/auth-provider';
+import { useAuth } from '@/features/auth';
 import { IconButton, iconButtonClasses } from '@/shared/components/ui/button';
 
 export function AccountButton({ onToggle }: { onToggle: () => void }) {

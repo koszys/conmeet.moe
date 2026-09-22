@@ -1,4 +1,4 @@
-import { RequireAuth } from '@/features/auth/require-auth';
+import { RequireAuth } from '@/features/auth';
 import { AccountSettingsContent } from './_components/AccountSettingsContent';
 
 export default function SettingsPage() {

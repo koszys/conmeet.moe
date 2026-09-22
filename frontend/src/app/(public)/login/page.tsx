@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { useAuth } from '@/features/auth/auth-provider';
+import { useAuth } from '@/features/auth';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
-import { SpinBackdrop } from '@/shared/components/miku/SpinBackdrop';
+import { SpinBackdrop } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import discordLogo from '@/assets/social/discordlogo.png';
 

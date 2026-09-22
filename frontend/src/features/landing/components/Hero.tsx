@@ -1,9 +1,7 @@
 'use client';
 
 import { ArrowDown, Sparkles, Star } from 'lucide-react';
-import { MikuSilhouette } from '@/shared/components/miku/MikuSilhouette';
-import { MikuTextVertical } from '@/shared/components/miku/MikuTextVertical';
-import { MikuTextHorizontal } from '@/shared/components/miku/MikuTextHorizontal';
+import { MikuSilhouette, MikuTextHorizontal, MikuTextVertical } from '@/shared/components/miku';
 
 export function Hero() {
   function scrollToSection(id: string) {

@@ -57,14 +57,25 @@ export function FreebieCard({
     });
   }
 
-  function handleToggleCondensed(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
+  function handleToggleCondensed(e?: React.MouseEvent) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (onToggleCondensed) {
       onToggleCondensed();
     } else {
       setInternalCondensed((prev) => !prev);
     }
+  }
+
+  function handleCardBodyClick(e: React.MouseEvent) {
+    // If the user selected text, don't trigger condense
+    const selection = typeof window !== 'undefined' ? window.getSelection() : null;
+    if (selection && selection.toString().length > 0) {
+      return;
+    }
+    handleToggleCondensed(e);
   }
 
   const imageUrl = freebie.image_thumb || freebie.image;
@@ -77,7 +88,12 @@ export function FreebieCard({
         className
       )}
     >
-      <div>
+      {/* Clickable Card Body (Click free space to condense/expand) */}
+      <div
+        onClick={handleCardBodyClick}
+        className="cursor-pointer"
+        title={isCondensed ? 'Click card to expand' : 'Click card to condense'}
+      >
         {/* Optional Image Header - only shown when not condensed */}
         {!isCondensed && imageUrl ? (
           <div className="border-ink relative aspect-video w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800">
@@ -168,7 +184,10 @@ export function FreebieCard({
       </div>
 
       {/* Action Footer */}
-      <div className="border-ink border-t-2 bg-zinc-50 p-2.5 sm:px-3.5 dark:bg-zinc-800/40">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="border-ink border-t-2 bg-zinc-50 p-2.5 sm:px-3.5 dark:bg-zinc-800/40"
+      >
         <div className="flex items-center justify-between gap-2">
           {/* Check off / Claim button */}
           <button

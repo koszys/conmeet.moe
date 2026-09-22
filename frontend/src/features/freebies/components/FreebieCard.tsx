@@ -121,7 +121,7 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
 
       {/* Action Footer */}
       <div className="border-ink border-t-2 bg-zinc-50 p-3 sm:px-4 dark:bg-zinc-800/40">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-2.5 sm:gap-3">
           {/* Check off / Claim button */}
           <button
             type="button"
@@ -129,21 +129,21 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             disabled={toggleClaim.isPending}
             className={cn(
               CONBLOCK,
-              'flex-1 text-xs font-bold uppercase transition-all',
+              'flex-1 px-3 py-2 text-xs font-bold uppercase transition-all sm:py-2.5 sm:text-sm',
               freebie.is_claimed
                 ? 'border-emerald-600 bg-emerald-400 text-black hover:bg-emerald-300 dark:border-emerald-400'
                 : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
             )}
           >
             {freebie.is_claimed ? (
-              <span className="inline-flex items-center gap-1.5">
-                <Check className="h-4 w-4 stroke-[3]" />
-                CLAIMED
+              <span className="inline-flex items-center justify-center gap-2">
+                <Check className="h-4.5 w-4.5 stroke-[3]" />
+                <span>CLAIMED</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
-                <Square className="h-3.5 w-3.5" />
-                CHECK OFF
+              <span className="inline-flex items-center justify-center gap-2 text-zinc-800 dark:text-zinc-200">
+                <Square className="h-4 w-4 stroke-[2.5]" />
+                <span>CHECK OFF</span>
               </span>
             )}
           </button>
@@ -156,14 +156,19 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             aria-label={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
             className={cn(
               CONBLOCK,
-              'inline-flex items-center gap-1.5 px-3 text-xs font-bold transition-all',
+              'inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm',
               freebie.is_saved
                 ? 'bg-accent text-white hover:brightness-110'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
+                : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
             )}
           >
-            <Bookmark className={cn('h-3.5 w-3.5', freebie.is_saved && 'fill-current')} />
-            <span>{freebie.save_count}</span>
+            <Bookmark
+              className={cn(
+                'h-4.5 w-4.5',
+                freebie.is_saved ? 'fill-current stroke-[2.5]' : 'stroke-2'
+              )}
+            />
+            <span className="font-mono text-xs sm:text-sm">{freebie.save_count}</span>
           </button>
         </div>
       </div>

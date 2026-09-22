@@ -121,7 +121,7 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('all')}
             className={cn(
-              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
               activeTab === 'all'
                 ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
                 : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
@@ -129,7 +129,7 @@ export function FreebieBoard({
           >
             <Gift
               className={cn(
-                'h-3.5 w-3.5 shrink-0',
+                'h-4 w-4 shrink-0',
                 activeTab === 'all'
                   ? 'stroke-[2.5]'
                   : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
@@ -155,7 +155,7 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('saved')}
             className={cn(
-              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
               activeTab === 'saved'
                 ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
                 : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
@@ -163,7 +163,7 @@ export function FreebieBoard({
           >
             <Bookmark
               className={cn(
-                'h-3.5 w-3.5 shrink-0',
+                'h-4 w-4 shrink-0',
                 activeTab === 'saved'
                   ? 'fill-current stroke-[2.5]'
                   : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
@@ -189,7 +189,7 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('unclaimed')}
             className={cn(
-              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-2.5 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
               activeTab === 'unclaimed'
                 ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
                 : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
@@ -197,7 +197,7 @@ export function FreebieBoard({
           >
             <CheckSquare
               className={cn(
-                'h-3.5 w-3.5 shrink-0',
+                'h-4 w-4 shrink-0',
                 activeTab === 'unclaimed'
                   ? 'stroke-[2.5]'
                   : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'

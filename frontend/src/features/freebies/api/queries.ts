@@ -23,6 +23,7 @@ export function useFreebies(filters: FreebieFilters = {}) {
       if (filters.vendor) searchParams.set('vendor', String(filters.vendor));
       if (filters.saved) searchParams.set('saved', 'true');
       if (filters.unclaimed) searchParams.set('unclaimed', 'true');
+      if (filters.claimed) searchParams.set('claimed', 'true');
       if (filters.q) searchParams.set('q', filters.q);
 
       const queryStr = searchParams.toString();

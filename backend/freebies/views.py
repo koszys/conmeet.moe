@@ -52,8 +52,9 @@ class FreebieListCreateView(generics.ListCreateAPIView):
 
         saved_param = self.request.query_params.get("saved")
         unclaimed_param = self.request.query_params.get("unclaimed")
+        claimed_param = self.request.query_params.get("claimed")
 
-        if saved_param == "true" or unclaimed_param == "true":
+        if saved_param == "true" or unclaimed_param == "true" or claimed_param == "true":
             user = self.request.user
             if not user.is_authenticated:
                 return qs.none()
@@ -61,6 +62,8 @@ class FreebieListCreateView(generics.ListCreateAPIView):
             user_saved_ids = UserFreebie.objects.filter(user=user)
             if unclaimed_param == "true":
                 user_saved_ids = user_saved_ids.filter(claimed=False)
+            elif claimed_param == "true":
+                user_saved_ids = user_saved_ids.filter(claimed=True)
             qs = qs.filter(id__in=user_saved_ids.values_list("freebie_id", flat=True))
 
         return qs

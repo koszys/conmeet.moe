@@ -154,21 +154,18 @@ export function FreebieCard({ freebie, className }: { freebie: Freebie; classNam
             onClick={handleSave}
             disabled={toggleSave.isPending}
             aria-label={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
+            title={freebie.is_saved ? 'Saved' : 'Save'}
             className={cn(
               CONBLOCK,
-              'inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-bold transition-all',
+              'inline-flex h-8 w-8 shrink-0 items-center justify-center text-xs font-bold transition-all',
               freebie.is_saved
-                ? 'bg-accent text-white hover:brightness-110'
+                ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
                 : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
             )}
           >
             <Bookmark
-              className={cn(
-                'h-3.5 w-3.5',
-                freebie.is_saved ? 'fill-current stroke-[2.5]' : 'stroke-2'
-              )}
+              className={cn('h-4 w-4', freebie.is_saved ? 'fill-current stroke-[2.5]' : 'stroke-2')}
             />
-            <span className="font-mono text-xs">{freebie.save_count}</span>
           </button>
         </div>
       </div>

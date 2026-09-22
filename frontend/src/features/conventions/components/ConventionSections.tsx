@@ -24,19 +24,16 @@ export function ConventionSections({
   const allSections = baseSections
     .map((sec) => {
       if (sec.id === 'freebies' && freebies && freebies.length > 0) {
+        const activeFreebies = freebies.filter((f) => !f.is_claimed);
         return {
           ...sec,
-          activityCountLabel: `${freebies.length} drop${freebies.length === 1 ? '' : 's'} logged`,
-          activities: freebies.slice(0, 3).map((f) => ({
+          activityCountLabel: `${freebies.length} logged`,
+          activities: activeFreebies.slice(0, 3).map((f) => ({
             id: String(f.id),
             title: f.name,
             subtitle: f.vendor.name,
             meta: f.requirements || undefined,
             badge: f.location ? { text: f.location, variant: 'accent' as const } : undefined,
-            stat: {
-              value: f.save_count,
-              label: f.save_count === 1 ? 'save' : 'saves',
-            },
             href: `/conventions/${convention.slug}/freebies`,
           })),
         };

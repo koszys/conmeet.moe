@@ -3,7 +3,17 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ArrowLeft, Bookmark, CheckSquare, Gift, Loader2, Plus, Search, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bookmark,
+  Check,
+  CheckSquare,
+  Gift,
+  Loader2,
+  Plus,
+  Search,
+  X,
+} from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { useDebounce } from '@/shared/hooks';
@@ -12,7 +22,7 @@ import { useFreebies, useVendors } from '../api/queries';
 import { FreebieCard } from './FreebieCard';
 import { FreebieSkeleton } from './FreebieSkeleton';
 
-type FilterTab = 'all' | 'saved' | 'unclaimed';
+type FilterTab = 'all' | 'saved' | 'unclaimed' | 'claimed';
 
 export function FreebieBoard({
   conventionSlug,
@@ -45,7 +55,7 @@ export function FreebieBoard({
   const { data: vendors } = useVendors(conventionSlug);
 
   function handleTabClick(tab: FilterTab) {
-    if ((tab === 'saved' || tab === 'unclaimed') && !user) {
+    if ((tab === 'saved' || tab === 'unclaimed' || tab === 'claimed') && !user) {
       router.push(`/login?next=${encodeURIComponent(pathname)}`);
       return;
     }
@@ -53,21 +63,28 @@ export function FreebieBoard({
   }
 
   const counts = useMemo(() => {
-    if (!allFreebies) return { all: 0, saved: 0, unclaimed: 0 };
+    if (!allFreebies) return { all: 0, saved: 0, unclaimed: 0, claimed: 0 };
     return {
-      all: allFreebies.length,
+      all: allFreebies.filter((f) => !f.is_claimed).length,
       saved: allFreebies.filter((f) => f.is_saved).length,
       unclaimed: allFreebies.filter((f) => f.is_saved && !f.is_claimed).length,
+      claimed: allFreebies.filter((f) => f.is_claimed).length,
     };
   }, [allFreebies]);
 
   const displayedFreebies = useMemo(() => {
     if (!allFreebies) return [];
+    if (activeTab === 'all') {
+      return allFreebies.filter((f) => !f.is_claimed);
+    }
     if (activeTab === 'saved') {
       return allFreebies.filter((f) => f.is_saved);
     }
     if (activeTab === 'unclaimed') {
       return allFreebies.filter((f) => f.is_saved && !f.is_claimed);
+    }
+    if (activeTab === 'claimed') {
+      return allFreebies.filter((f) => f.is_claimed);
     }
     return allFreebies;
   }, [allFreebies, activeTab]);
@@ -121,7 +138,7 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('all')}
             className={cn(
-              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
+              'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
               activeTab === 'all'
                 ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
                 : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
@@ -155,7 +172,7 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('saved')}
             className={cn(
-              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
+              'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
               activeTab === 'saved'
                 ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
                 : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
@@ -189,7 +206,7 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('unclaimed')}
             className={cn(
-              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
+              'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
               activeTab === 'unclaimed'
                 ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
                 : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
@@ -213,6 +230,38 @@ export function FreebieBoard({
               )}
             >
               {counts.unclaimed}
+            </span>
+          </button>
+
+          {/* Claimed */}
+          <button
+            type="button"
+            onClick={() => handleTabClick('claimed')}
+            className={cn(
+              'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
+              activeTab === 'claimed'
+                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
+            )}
+          >
+            <Check
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'claimed'
+                  ? 'stroke-[3]'
+                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+              )}
+            />
+            <span>Claimed</span>
+            <span
+              className={cn(
+                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                activeTab === 'claimed'
+                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+              )}
+            >
+              {counts.claimed}
             </span>
           </button>
         </div>
@@ -289,16 +338,20 @@ export function FreebieBoard({
               ? 'No Saved Freebies Yet'
               : activeTab === 'unclaimed'
                 ? 'No Unclaimed Freebies'
-                : 'No Freebies Found'}
+                : activeTab === 'claimed'
+                  ? 'No Claimed Freebies Yet'
+                  : 'No Active Freebies Found'}
           </h3>
           <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
             {activeTab === 'saved'
               ? 'Bookmark freebies to keep track of booths you plan to visit.'
               : activeTab === 'unclaimed'
                 ? 'You have checked off all your saved freebies!'
-                : debouncedSearch || selectedVendor
-                  ? 'No freebies matched your search or vendor filter. Try clearing filters.'
-                  : 'No freebies have been shared for this convention yet. Be the first to share one!'}
+                : activeTab === 'claimed'
+                  ? 'Check off freebies as you visit booths on the convention floor to track what swag you have collected.'
+                  : debouncedSearch || selectedVendor
+                    ? 'No freebies matched your search or vendor filter. Try clearing filters.'
+                    : 'No active freebies found for this convention yet. Be the first to share one!'}
           </p>
           <div className="mt-6">
             <Link

@@ -204,6 +204,11 @@ def test_filter_saved_and_unclaimed() -> None:
     assert resp_unclaimed.status_code == status.HTTP_200_OK
     assert [x["name"] for x in resp_unclaimed.json()] == ["Swag 1"]
 
+    # Claimed filter returns only f2
+    resp_claimed = client.get(f"/api/v1/freebies/?convention={con.slug}&claimed=true")
+    assert resp_claimed.status_code == status.HTTP_200_OK
+    assert [x["name"] for x in resp_claimed.json()] == ["Swag 2"]
+
 
 def test_vendor_list_filtered_by_convention() -> None:
     con1 = _make_con("Anime NYC", "anime-nyc")

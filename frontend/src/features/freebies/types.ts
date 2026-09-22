@@ -33,6 +33,7 @@ export interface FreebieFilters {
   vendor?: number;
   saved?: boolean;
   unclaimed?: boolean;
+  claimed?: boolean;
   q?: string;
 }
 

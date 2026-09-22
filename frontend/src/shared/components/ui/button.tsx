@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 import { cn } from '@/shared/lib/utils';
 
 export const CONBLOCK =
-  'border-ink border-2 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none';
+  'border-ink cursor-pointer border-2 shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none';
 
 export const CONBLOCK_PRIMARY = cn(
   CONBLOCK,

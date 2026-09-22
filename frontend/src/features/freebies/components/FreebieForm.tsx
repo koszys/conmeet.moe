@@ -184,7 +184,7 @@ export function FreebieForm({
                   type="button"
                   onClick={() => setValue('vendor_name', v.name, { shouldValidate: true })}
                   className={cn(
-                    'border-ink border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
+                    'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
                     selectedVendorName === v.name
                       ? 'bg-accent text-white'
                       : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'

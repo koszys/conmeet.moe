@@ -108,12 +108,12 @@ export function FreebieBoard({
       {/* Filter Bar & Controls */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {/* Filter Tabs */}
-        <div className="border-ink inline-flex border-2 bg-zinc-100 p-1 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+        <div className="border-ink flex w-full border-2 bg-zinc-100 p-1 shadow-[2px_2px_0_var(--ink)] sm:inline-flex sm:w-auto dark:bg-zinc-800">
           <button
             type="button"
             onClick={() => handleTabClick('all')}
             className={cn(
-              'px-3.5 py-1.5 text-xs font-bold uppercase transition-all',
+              'flex-1 cursor-pointer justify-center px-2 py-1.5 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-3.5',
               activeTab === 'all'
                 ? 'border-ink border bg-white text-black shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900 dark:text-white'
                 : 'text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white'
@@ -125,27 +125,29 @@ export function FreebieBoard({
             type="button"
             onClick={() => handleTabClick('saved')}
             className={cn(
-              'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase transition-all',
+              'inline-flex flex-1 cursor-pointer items-center justify-center gap-1 px-2 py-1.5 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:gap-1.5 sm:px-3.5',
               activeTab === 'saved'
                 ? 'border-ink border bg-white text-black shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900 dark:text-white'
                 : 'text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white'
             )}
           >
-            <Bookmark className="h-3 w-3" />
-            My Saved
+            <Bookmark className="h-3 w-3 shrink-0" />
+            <span>
+              <span className="hidden sm:inline">My </span>Saved
+            </span>
           </button>
           <button
             type="button"
             onClick={() => handleTabClick('unclaimed')}
             className={cn(
-              'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase transition-all',
+              'inline-flex flex-1 cursor-pointer items-center justify-center gap-1 px-2 py-1.5 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:gap-1.5 sm:px-3.5',
               activeTab === 'unclaimed'
                 ? 'border-ink border bg-white text-black shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900 dark:text-white'
                 : 'text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white'
             )}
           >
-            <CheckSquare className="h-3 w-3" />
-            Unclaimed
+            <CheckSquare className="h-3 w-3 shrink-0" />
+            <span>Unclaimed</span>
           </button>
         </div>
 
@@ -171,7 +173,7 @@ export function FreebieBoard({
                 setSelectedVendor(e.target.value ? Number(e.target.value) : undefined)
               }
               aria-label="Filter by vendor"
-              className="border-ink h-10 border-2 bg-white px-3 text-xs font-bold uppercase focus:outline-none dark:bg-zinc-900"
+              className="border-ink h-10 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase focus:outline-none dark:bg-zinc-900"
             >
               <option value="">All Vendors ({vendors.length})</option>
               {vendors.map((v) => (

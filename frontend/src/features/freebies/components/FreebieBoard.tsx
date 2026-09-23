@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   ArrowLeft,
   Bookmark,
+  BookmarkX,
   Check,
   CheckSquare,
   ChevronDown,
@@ -44,6 +45,7 @@ export function FreebieBoard({
   const [searchQuery, setSearchQuery] = useState('');
   const [allCondensed, setAllCondensed] = useState(false);
   const [cardOverrides, setCardOverrides] = useState<Record<number, boolean>>({});
+  const [hideSavedInAll, setHideSavedInAll] = useState(false);
   const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
   const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -102,6 +104,16 @@ export function FreebieBoard({
   const allDrops = useMemo(() => {
     if (!allFreebies) return [];
     return allFreebies.filter((f) => !f.is_claimed);
+  }, [allFreebies]);
+
+  const unsavedDrops = useMemo(() => {
+    if (!allFreebies) return [];
+    return allFreebies.filter((f) => !f.is_claimed && !f.is_saved);
+  }, [allFreebies]);
+
+  const savedDrops = useMemo(() => {
+    if (!allFreebies) return [];
+    return allFreebies.filter((f) => !f.is_claimed && f.is_saved);
   }, [allFreebies]);
 
   const unclaimedSaved = useMemo(() => {
@@ -274,6 +286,34 @@ export function FreebieBoard({
             </select>
           ) : null}
 
+          {/* Hide Saved Toggle Button (Only in All Drops) */}
+          {activeTab === 'all' && (
+            <button
+              type="button"
+              onClick={() => setHideSavedInAll((prev) => !prev)}
+              aria-pressed={hideSavedInAll}
+              title={
+                hideSavedInAll ? 'Show bookmarked drops in feed' : 'Hide bookmarked drops from feed'
+              }
+              className={cn(
+                CONBLOCK,
+                'inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 px-3 text-xs font-bold uppercase transition-all',
+                hideSavedInAll
+                  ? 'border-ink bg-accent text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
+                  : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
+              )}
+            >
+              {hideSavedInAll ? (
+                <BookmarkX className="h-4 w-4 stroke-[2.5]" />
+              ) : (
+                <Bookmark className="h-4 w-4 stroke-2" />
+              )}
+              <span className="hidden sm:inline">
+                {hideSavedInAll ? 'Saved Hidden' : 'Hide Saved'}
+              </span>
+            </button>
+          )}
+
           {/* View Density Segmented Toggle (Cards vs Condensed) */}
           <div
             className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900"
@@ -352,18 +392,78 @@ export function FreebieBoard({
               </Link>
             </div>
           </div>
+        ) : hideSavedInAll ? (
+          unsavedDrops.length === 0 ? (
+            <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-8 text-center dark:bg-zinc-900/50">
+              <div className="border-ink bg-accent mx-auto flex h-10 w-10 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
+                <BookmarkX className="h-5 w-5 stroke-[2.5]" />
+              </div>
+              <p className="mt-3 text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                You&apos;ve saved all active drops!
+              </p>
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Switch to My Saved to view your checklist or toggle off &ldquo;Saved Hidden&rdquo;.
+              </p>
+            </div>
+          ) : (
+            <MasonryGrid
+              items={unsavedDrops}
+              renderItem={(freebie) => (
+                <FreebieCard
+                  key={freebie.id}
+                  freebie={freebie}
+                  condensed={isCardCondensed(freebie.id)}
+                  onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                />
+              )}
+            />
+          )
         ) : (
-          <MasonryGrid
-            items={allDrops}
-            renderItem={(freebie) => (
-              <FreebieCard
-                key={freebie.id}
-                freebie={freebie}
-                condensed={isCardCondensed(freebie.id)}
-                onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+          <div className="space-y-8">
+            {/* Unsaved drops(Top) */}
+            {unsavedDrops.length > 0 && (
+              <MasonryGrid
+                items={unsavedDrops}
+                renderItem={(freebie) => (
+                  <FreebieCard
+                    key={freebie.id}
+                    freebie={freebie}
+                    condensed={isCardCondensed(freebie.id)}
+                    onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                  />
+                )}
               />
             )}
-          />
+
+            {/* Saved Drops (Bottom - Separated out of the way) */}
+            {savedDrops.length > 0 && (
+              <div className="space-y-4 pt-2">
+                <div className="border-ink flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center gap-2">
+                    <Bookmark className="text-accent h-4 w-4 fill-current" />
+                    <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">
+                      Saved
+                    </h2>
+                    <span className="border-ink/20 border bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] font-bold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                      {savedDrops.length}
+                    </span>
+                  </div>
+                </div>
+
+                <MasonryGrid
+                  items={savedDrops}
+                  renderItem={(freebie) => (
+                    <FreebieCard
+                      key={freebie.id}
+                      freebie={freebie}
+                      condensed={isCardCondensed(freebie.id)}
+                      onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                    />
+                  )}
+                />
+              </div>
+            )}
+          </div>
         )
       ) : /* activeTab === 'saved' */
       counts.saved === 0 ? (

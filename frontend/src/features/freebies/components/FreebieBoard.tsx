@@ -545,7 +545,7 @@ export function FreebieBoard({
               ))}
           </div>
 
-          {/* Section 2: Claimed Swag */}
+          {/* Section 2: Claimed */}
           {claimedSaved.length > 0 && (
             <div className="space-y-4 pt-2">
               <button

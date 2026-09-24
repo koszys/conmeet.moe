@@ -23,12 +23,19 @@ const ICON_BUTTON =
 
 export interface IconButtonProps extends ComponentProps<'button'> {
   size?: ButtonSize;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 export function iconButtonClasses(size: ButtonSize = 'md', extra?: string) {
   return cn(ICON_BUTTON, BUTTON_SIZES[size], extra);
 }
 
-export function IconButton({ size = 'md', className, type = 'button', ...props }: IconButtonProps) {
-  return <button type={type} className={iconButtonClasses(size, className)} {...props} />;
+export function IconButton({
+  size = 'md',
+  className,
+  type = 'button',
+  ref,
+  ...props
+}: IconButtonProps) {
+  return <button ref={ref} type={type} className={iconButtonClasses(size, className)} {...props} />;
 }

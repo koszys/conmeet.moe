@@ -66,6 +66,26 @@ export function HeaderSearch({
       .slice(0, MAX_RESULTS);
   }, [data, trimmed]);
 
+  function updatePos() {
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (rect) {
+      if (variant === 'collapsed') {
+        const aside = buttonRef.current?.closest('aside');
+        const asideRight = aside ? aside.getBoundingClientRect().right : rect.right;
+        const top = Math.max(12, Math.min(rect.top, window.innerHeight - 380));
+        const left = Math.max(12, Math.min(asideRight + 8, window.innerWidth - 340));
+        setPos({ top, left });
+      } else {
+        setPos({
+          top: Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - 400)),
+          left: Math.max(8, Math.min(rect.right + 8, window.innerWidth - 328)),
+        });
+      }
+    } else if (variant === 'collapsed') {
+      setPos({ top: 72, left: 64 });
+    }
+  }
+
   useEffect(() => {
     if (!open) return;
     function onPointerDown(event: PointerEvent) {
@@ -74,11 +94,25 @@ export function HeaderSearch({
         (panelRef.current && panelRef.current.contains(event.target as Node));
       if (!inside) {
         setOpen(false);
+        setPos(null);
       }
     }
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [open]);
+
+  useEffect(() => {
+    if (!open || variant !== 'collapsed') return;
+    function handleScrollOrResize() {
+      updatePos();
+    }
+    window.addEventListener('resize', handleScrollOrResize);
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handleScrollOrResize);
+      window.removeEventListener('scroll', handleScrollOrResize);
+    };
+  }, [open, variant]);
 
   useEffect(() => {
     function openFromMenu() {
@@ -106,13 +140,7 @@ export function HeaderSearch({
       setPos(null);
       return;
     }
-    const rect = buttonRef.current?.getBoundingClientRect();
-    if (rect) {
-      setPos({
-        top: Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - 400)),
-        left: Math.max(8, Math.min(rect.right + 8, window.innerWidth - 328)),
-      });
-    }
+    updatePos();
     setOpen(true);
     setQuery('');
   }
@@ -171,7 +199,7 @@ export function HeaderSearch({
                     phase === 'up' &&
                       'border-ink bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
                     phase === 'past' &&
-                      'border-zinc-400 bg-zinc-100 text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                      'border-zinc-400 bg-zinc-100 text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'
                   )}
                 >
                   {phase === 'past'
@@ -189,7 +217,7 @@ export function HeaderSearch({
                 <span
                   className={cn(
                     'text-[10px] font-medium tracking-wider',
-                    phase === 'past' ? 'text-zinc-500 dark:text-zinc-400' : 'text-accent'
+                    phase === 'past' ? 'text-zinc-500 dark:text-zinc-300' : 'text-accent'
                   )}
                 >
                   {formatDateRange(convention.starts_at, convention.ends_at)}
@@ -202,7 +230,7 @@ export function HeaderSearch({
                     phase === 'up' &&
                       'border-ink bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
                     phase === 'past' &&
-                      'border-zinc-400 bg-zinc-100 text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                      'border-zinc-400 bg-zinc-100 text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'
                   )}
                 >
                   {phase === 'past'
@@ -217,7 +245,7 @@ export function HeaderSearch({
 
               {/* Row 3: Location */}
               {location && (
-                <span className="flex items-center gap-1 text-[10px] tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+                <span className="flex items-center gap-1 text-[10px] tracking-wide text-zinc-500 uppercase dark:text-zinc-300">
                   <MapPin className="h-3 w-3 shrink-0" />
                   <span className="truncate">{location}</span>
                 </span>
@@ -230,7 +258,7 @@ export function HeaderSearch({
   );
 
   const empty = (
-    <p className="px-3 py-4 text-center text-[11px] tracking-widest text-zinc-500 uppercase">
+    <p className="px-3 py-4 text-center text-[11px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
       No conventions match
     </p>
   );
@@ -358,10 +386,10 @@ export function HeaderSearch({
           <div
             ref={panelRef}
             style={{ top: pos.top, left: pos.left }}
-            className="border-ink fixed z-[70] w-80 max-w-[calc(100vw-16px)] border-2 bg-white shadow-[3px_3px_0_var(--ink)] sm:w-96 dark:bg-[#373b3e]"
+            className="border-ink fixed z-[70] w-80 max-w-[calc(100vw-16px)] border-2 bg-white shadow-[4px_4px_0_var(--ink)] sm:w-96 dark:bg-[#373b3e]"
           >
             <div className="relative border-b-2 border-dashed p-2">
-              <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
               <input
                 autoFocus
                 value={query}
@@ -372,8 +400,21 @@ export function HeaderSearch({
                 onKeyDown={onKeyDown}
                 placeholder="Search conventions..."
                 aria-label="Search conventions"
-                className="border-ink focus:border-accent-pop h-10 w-full border-2 bg-white py-2 pr-3 pl-9 text-xs tracking-widest text-zinc-700 uppercase placeholder:text-zinc-400 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-zinc-100"
+                className="border-ink focus:border-accent-pop h-10 w-full border-2 bg-white py-2 pr-8 pl-9 text-xs tracking-widest text-zinc-700 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
               />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery('');
+                    setActiveIndex(0);
+                  }}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  aria-label="Clear search"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
             {trimmed.length >= 2 && (results.length > 0 ? list : empty)}
           </div>,

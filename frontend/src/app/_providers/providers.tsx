@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthProvider } from '@/features/auth';
-import { ConventionNavProvider } from '@/features/conventions';
+import { ConventionNavProvider, isConventionDetailPath } from '@/features/conventions';
 import { Header } from '@/shared/components/layout/Header';
 import { Footer } from '@/shared/components/layout/Footer';
 import { ThemeProvider } from './ThemeProvider';
@@ -42,6 +42,8 @@ function ScrollToTop() {
 }
 
 export function Providers({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isConventionPage = isConventionDetailPath(pathname);
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -64,7 +66,7 @@ export function Providers({ children }: { children: ReactNode }) {
             <div className="flex min-h-full flex-1 flex-col">
               <Header />
               <main className="flex flex-1 flex-col">{children}</main>
-              <Footer />
+              {!isConventionPage && <Footer />}
             </div>
           </ConventionNavProvider>
         </AuthProvider>

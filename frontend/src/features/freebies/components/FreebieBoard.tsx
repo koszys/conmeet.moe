@@ -82,6 +82,13 @@ export function FreebieBoard({
 
   const { data: vendors } = useVendors(conventionSlug);
 
+  const isFiltered = Boolean(debouncedSearch.trim() || selectedVendor !== undefined);
+
+  function handleClearFilters() {
+    setSearchQuery('');
+    setSelectedVendor(undefined);
+  }
+
   function handleTabClick(tab: FilterTab) {
     if (tab === 'saved' && !user) {
       router.push(`/login?next=${encodeURIComponent(pathname)}`);
@@ -247,7 +254,11 @@ export function FreebieBoard({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search items, booths..."
+              placeholder={
+                activeTab === 'saved'
+                  ? 'Search saved freebies, booths...'
+                  : 'Search items, booths...'
+              }
               className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium placeholder:text-zinc-400 focus:outline-none dark:bg-zinc-900"
             />
             {isFetching && debouncedSearch ? (
@@ -369,27 +380,45 @@ export function FreebieBoard({
         allDrops.length === 0 ? (
           <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
             <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
-              <Gift className="text-ink h-7 w-7 dark:text-zinc-100" />
+              {isFiltered ? (
+                <Search className="text-ink h-7 w-7 dark:text-zinc-100" />
+              ) : (
+                <Gift className="text-ink h-7 w-7 dark:text-zinc-100" />
+              )}
             </div>
             <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
-              No Active Freebies Found
+              {isFiltered ? 'No Matching Freebies Found' : 'No Active Freebies Found'}
             </h3>
             <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
-              {debouncedSearch || selectedVendor
+              {isFiltered
                 ? 'No freebies matched your search or vendor filter. Try clearing filters.'
                 : 'No active freebies found for this convention yet. Be the first to share one!'}
             </p>
-            <div className="mt-6">
-              <Link
-                href={`/conventions/${conventionSlug}/freebies/new`}
-                className={cn(
-                  CONBLOCK_PRIMARY,
-                  'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
-                )}
-              >
-                <Plus className="h-4 w-4 stroke-[3]" />
-                Submit First Freebie
-              </Link>
+            <div className="mt-6 flex justify-center gap-3">
+              {isFiltered ? (
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className={cn(
+                    CONBLOCK,
+                    'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                  )}
+                >
+                  <X className="h-4 w-4" />
+                  Clear Filters
+                </button>
+              ) : (
+                <Link
+                  href={`/conventions/${conventionSlug}/freebies/new`}
+                  className={cn(
+                    CONBLOCK_PRIMARY,
+                    'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                  )}
+                >
+                  <Plus className="h-4 w-4 stroke-[3]" />
+                  Submit First Freebie
+                </Link>
+              )}
             </div>
           </div>
         ) : hideSavedInAll ? (
@@ -399,11 +428,30 @@ export function FreebieBoard({
                 <BookmarkX className="h-5 w-5 stroke-[2.5]" />
               </div>
               <p className="mt-3 text-sm font-bold text-zinc-800 dark:text-zinc-200">
-                You&apos;ve saved all active drops!
+                {isFiltered
+                  ? 'No unsaved drops match your search'
+                  : "You've saved all active drops!"}
               </p>
               <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                Switch to My Saved to view your checklist or toggle off &ldquo;Saved Hidden&rdquo;.
+                {isFiltered
+                  ? 'Matching drops might already be saved or filtered out.'
+                  : 'Switch to My Saved to view your checklist or toggle off \u201cSaved Hidden\u201d.'}
               </p>
+              {isFiltered ? (
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={handleClearFilters}
+                    className={cn(
+                      CONBLOCK,
+                      'inline-flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase'
+                    )}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Clear Filters
+                  </button>
+                </div>
+              ) : null}
             </div>
           ) : (
             <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -466,26 +514,48 @@ export function FreebieBoard({
       counts.saved === 0 ? (
         <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
           <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
-            <Bookmark className="text-ink h-7 w-7 dark:text-zinc-100" />
+            {isFiltered ? (
+              <Search className="text-ink h-7 w-7 dark:text-zinc-100" />
+            ) : (
+              <Bookmark className="text-ink h-7 w-7 dark:text-zinc-100" />
+            )}
           </div>
           <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
-            No Saved Freebies Yet
+            {isFiltered ? 'No Matching Saved Freebies' : 'No Saved Freebies Yet'}
           </h3>
           <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
-            Bookmark freebies to build your personal checklist for the convention floor.
+            {isFiltered
+              ? debouncedSearch
+                ? `No saved freebies match \u201c${debouncedSearch}\u201d. Try clearing your search.`
+                : 'No saved freebies match the selected vendor filter.'
+              : 'Bookmark freebies to build your personal checklist for the convention floor.'}
           </p>
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={() => setActiveTab('all')}
-              className={cn(
-                CONBLOCK,
-                'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
-              )}
-            >
-              <Gift className="h-4 w-4" />
-              Browse All
-            </button>
+          <div className="mt-6 flex justify-center gap-3">
+            {isFiltered ? (
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className={cn(
+                  CONBLOCK,
+                  'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                )}
+              >
+                <X className="h-4 w-4" />
+                Clear Filters
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className={cn(
+                  CONBLOCK,
+                  'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                )}
+              >
+                <Gift className="h-4 w-4" />
+                Browse All
+              </button>
+            )}
           </div>
         </div>
       ) : (
@@ -528,6 +598,23 @@ export function FreebieBoard({
                       onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
                     />
                   ))}
+                </div>
+              ) : isFiltered ? (
+                <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-5 text-center dark:bg-zinc-900/50">
+                  <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                    No unclaimed freebies match{' '}
+                    {debouncedSearch ? (
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                        &ldquo;{debouncedSearch}&rdquo;
+                      </span>
+                    ) : (
+                      'the active filter'
+                    )}
+                    .
+                  </p>
+                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500">
+                    Check the Claimed section below for matching drops.
+                  </p>
                 </div>
               ) : (
                 <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">

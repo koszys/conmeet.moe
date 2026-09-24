@@ -166,7 +166,7 @@ export function FreebieBoard({
               'inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold uppercase sm:text-sm'
             )}
           >
-            <Plus className="h-4 w-4 stroke-[3]" />
+            <Plus className="h-4 w-4 stroke-3" />
             Post a Freebie
           </Link>
         </div>
@@ -415,7 +415,7 @@ export function FreebieBoard({
                     'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
                   )}
                 >
-                  <Plus className="h-4 w-4 stroke-[3]" />
+                  <Plus className="h-4 w-4 stroke-3" />
                   Submit First Freebie
                 </Link>
               )}
@@ -619,7 +619,7 @@ export function FreebieBoard({
               ) : (
                 <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
                   <div className="border-ink bg-accent mx-auto flex h-9 w-9 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                    <Check className="h-5 w-5 stroke-[3]" />
+                    <Check className="h-5 w-5 stroke-3" />
                   </div>
                   <p className="mt-2 text-xs font-bold text-zinc-800 sm:text-sm dark:text-zinc-200">
                     All caught up! You&apos;ve claimed all of your saved freebies.
@@ -638,7 +638,7 @@ export function FreebieBoard({
                 aria-expanded={!isClaimedCollapsed}
               >
                 <div className="flex items-center gap-2">
-                  <Check className="text-accent h-4 w-4 stroke-[3]" />
+                  <Check className="text-accent h-4 w-4 stroke-3" />
                   <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">
                     Claimed
                   </h2>

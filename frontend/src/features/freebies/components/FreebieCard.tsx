@@ -111,7 +111,7 @@ export function FreebieCard({
           {/* Header Row: Vendor Name, Booth Location, Claimed Badge, and Collapse Toggle */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+              <span className="text-[11px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
                 {freebie.vendor.name}
               </span>
               {freebie.location ? (
@@ -135,7 +135,7 @@ export function FreebieCard({
                 onClick={handleToggleCondensed}
                 aria-label={isCondensed ? 'Expand card' : 'Condense card'}
                 title={isCondensed ? 'Expand card' : 'Condense card'}
-                className="border-ink hover:text-ink flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center border text-zinc-500 transition-colors hover:bg-zinc-100 hover:shadow-[1px_1px_0_var(--ink)] dark:hover:bg-zinc-800"
+                className="border-ink hover:text-ink flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center border text-zinc-500 transition-colors hover:bg-zinc-100 hover:shadow-[1px_1px_0_var(--ink)] dark:text-zinc-300 dark:hover:bg-zinc-800"
               >
                 {isCondensed ? (
                   <ChevronDown className="h-3.5 w-3.5" />
@@ -170,10 +170,10 @@ export function FreebieCard({
 
               {uploadDateTime ? (
                 <div
-                  className="mt-1 flex items-center gap-1 font-mono text-[10px] font-semibold text-zinc-400 dark:text-zinc-500"
+                  className="mt-1 flex items-center gap-1 font-mono text-[10px] font-semibold text-zinc-500 dark:text-zinc-300"
                   title={`Uploaded on ${uploadDateTime}`}
                 >
-                  <Clock className="h-3 w-3 shrink-0 text-zinc-400 dark:text-zinc-500" />
+                  <Clock className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-300" />
                   <span>{uploadDateTime}</span>
                 </div>
               ) : null}
@@ -214,7 +214,7 @@ export function FreebieCard({
               {/* Requirements Box */}
               {freebie.requirements ? (
                 <div className="border-ink mt-3 border bg-zinc-50/80 p-2.5 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800/60">
-                  <span className="block text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+                  <span className="block text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
                     How to get it:
                   </span>
                   <p className="mt-0.5 text-xs leading-relaxed font-medium text-zinc-800 dark:text-zinc-200">
@@ -225,7 +225,7 @@ export function FreebieCard({
 
               {/* Description */}
               {freebie.description ? (
-                <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+                <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-200">
                   {freebie.description}
                 </p>
               ) : null}

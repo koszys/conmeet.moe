@@ -138,7 +138,7 @@ export function FreebieBoard({
       <div className="border-ink border-b-2 pb-5">
         <Link
           href={`/conventions/${conventionSlug}`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase hover:underline dark:text-zinc-400"
+          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase hover:underline dark:text-zinc-300 dark:hover:text-white"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to {conventionName || 'Convention'} Overview
@@ -249,7 +249,7 @@ export function FreebieBoard({
         <div className="flex flex-1 flex-wrap items-center gap-2.5 sm:flex-nowrap lg:max-w-xl">
           {/* Search Box */}
           <div className="relative min-w-[200px] flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
             <input
               type="text"
               value={searchQuery}
@@ -259,7 +259,7 @@ export function FreebieBoard({
                   ? 'Search saved freebies, booths...'
                   : 'Search items, booths...'
               }
-              className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium placeholder:text-zinc-400 focus:outline-none dark:bg-zinc-900"
+              className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
             />
             {isFetching && debouncedSearch ? (
               <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400">
@@ -612,7 +612,7 @@ export function FreebieBoard({
                     )}
                     .
                   </p>
-                  <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500">
+                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
                     Check the Claimed section below for matching drops.
                   </p>
                 </div>

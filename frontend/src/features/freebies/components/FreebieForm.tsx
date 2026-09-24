@@ -112,7 +112,7 @@ export function FreebieForm({
       <div className="border-ink border-b-2 pb-5">
         <Link
           href={`/conventions/${conventionSlug}/freebies`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase hover:underline dark:text-zinc-400"
+          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase hover:underline dark:text-zinc-300 dark:hover:text-white"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Freebies Board
@@ -148,7 +148,7 @@ export function FreebieForm({
             type="text"
             placeholder="e.g. Genshin Impact Acrylic Keychain"
             {...register('name')}
-            className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:outline-none dark:bg-zinc-900"
+            className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
           />
           {errors.name ? (
             <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -172,7 +172,7 @@ export function FreebieForm({
             autoComplete="off"
             placeholder="e.g. HoYoverse, Good Smile Company, Artist Alley Table A12"
             {...register('vendor_name')}
-            className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:outline-none dark:bg-zinc-900"
+            className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
           />
           {vendors && vendors.length > 0 ? (
             <datalist id="existing-vendors">
@@ -190,7 +190,7 @@ export function FreebieForm({
           {/* Quick select existing vendors */}
           {vendors && vendors.length > 0 ? (
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
+              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
                 Existing:
               </span>
               {vendors.slice(0, 6).map((v) => {
@@ -226,7 +226,7 @@ export function FreebieForm({
             type="text"
             placeholder="e.g. Booth #1420 (Exhibitor Hall A)"
             {...register('location')}
-            className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:outline-none dark:bg-zinc-900"
+            className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
           />
           {errors.location ? (
             <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -248,7 +248,7 @@ export function FreebieForm({
             rows={2}
             placeholder="e.g. Follow @HoYoverse on X and show badge, or play a 5-minute demo"
             {...register('requirements')}
-            className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium focus:ring-2 focus:outline-none dark:bg-zinc-900"
+            className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
           />
         </div>
 
@@ -265,7 +265,7 @@ export function FreebieForm({
             rows={3}
             placeholder="e.g. Limited to 200 per day! Drops start at 11:00 AM."
             {...register('description')}
-            className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium focus:ring-2 focus:outline-none dark:bg-zinc-900"
+            className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
           />
         </div>
 
@@ -283,7 +283,7 @@ export function FreebieForm({
                 onClick={removeImage}
                 className="border-ink absolute top-2 right-2 flex h-7 w-7 items-center justify-center border-2 bg-rose-500 text-white shadow-[2px_2px_0_var(--ink)] hover:bg-rose-600"
               >
-                <X className="h-4 w-4 stroke-[3]" />
+                <X className="h-4 w-4 stroke-3" />
               </button>
             </div>
           ) : (
@@ -297,7 +297,9 @@ export function FreebieForm({
               <span className="mt-2 text-xs font-bold uppercase">
                 Click or Drag Image to Upload
               </span>
-              <span className="text-[11px] text-zinc-500">PNG, JPG, or WEBP (Max 5MB)</span>
+              <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                PNG, JPG, or WEBP (Max 5MB)
+              </span>
               <input
                 id="image-upload"
                 type="file"

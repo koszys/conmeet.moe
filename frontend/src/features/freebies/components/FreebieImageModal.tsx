@@ -65,7 +65,7 @@ export function FreebieImageModal({
         {/* Modal Header */}
         <div className="border-ink flex items-center justify-between border-b-2 bg-zinc-50 px-4 py-3 dark:bg-zinc-800/80">
           <div className="min-w-0 pr-2">
-            <span className="block truncate text-[11px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+            <span className="block truncate text-[11px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
               {freebie.vendor.name}
             </span>
             <h4
@@ -119,7 +119,7 @@ export function FreebieImageModal({
             )}
 
             {uploadDateTime ? (
-              <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-300">
                 <Clock className="h-3 w-3 shrink-0" />
                 <span>Uploaded {uploadDateTime}</span>
               </div>

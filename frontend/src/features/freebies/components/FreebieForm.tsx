@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -10,8 +10,34 @@ import { ArrowLeft, ImagePlus, Loader2, Plus, Sparkles, Trash2, X } from 'lucide
 import Link from 'next/link';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { useVendors } from '../api/queries';
+import { useFreebies, useVendors } from '../api/queries';
 import { useCreateFreebie } from '../api/mutations';
+
+interface SuggestionVendor {
+  id: number;
+  name: string;
+  isCurrentCon: boolean;
+  knownLocation?: string;
+}
+
+function highlightMatch(text: string, query: string) {
+  const trimmed = query.trim();
+  if (!trimmed) return text;
+  const index = text.toLowerCase().indexOf(trimmed.toLowerCase());
+  if (index === -1) return text;
+  const before = text.slice(0, index);
+  const match = text.slice(index, index + trimmed.length);
+  const after = text.slice(index + trimmed.length);
+  return (
+    <>
+      {before}
+      <span className="bg-accent/15 text-accent dark:bg-accent/25 decoration-accent/40 px-0.5 font-bold underline underline-offset-2 dark:text-teal-300">
+        {match}
+      </span>
+      {after}
+    </>
+  );
+}
 
 const freebieItemSchema = z.object({
   name: z.string().min(2, 'Item name must be at least 2 characters').max(60, 'Max 60 characters'),
@@ -37,7 +63,7 @@ function CharCounter({ current, max }: { current: number; max: number }) {
         isAtLimit
           ? 'font-bold text-rose-500 dark:text-rose-400'
           : isNearLimit
-            ? 'font-bold text-amber-500 dark:text-amber-400'
+            ? 'font-bold text-zinc-700 dark:text-zinc-200'
             : 'text-zinc-400 dark:text-zinc-500'
       )}
     >
@@ -55,11 +81,22 @@ export function FreebieForm({
 }) {
   const router = useRouter();
   const createMutation = useCreateFreebie();
-  const { data: vendors } = useVendors(conventionSlug);
+  const { data: conventionVendors } = useVendors(conventionSlug);
+  const { data: allVendors } = useVendors();
+  const { data: conventionFreebies } = useFreebies({ convention: conventionSlug });
 
   const [itemImages, setItemImages] = useState<Record<string, { file: File; preview: string }>>({});
   const [submittingProgress, setSubmittingProgress] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Auto-suggest and pills state
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [showAllPills, setShowAllPills] = useState(false);
+  const [autoFilledFromVendor, setAutoFilledFromVendor] = useState<string | null>(null);
+
+  const inputWrapRef = useRef<HTMLDivElement>(null);
+  const suggestListRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -85,6 +122,205 @@ export function FreebieForm({
   const selectedVendorName = watch('vendor_name') || '';
   const selectedLocation = watch('location') || '';
   const watchedItems = watch('items') || [];
+
+  // Build map of vendor name -> known booth location at this convention
+  const vendorLocationMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (conventionFreebies) {
+      for (const f of conventionFreebies) {
+        if (f.vendor?.name && f.location?.trim() && !map.has(f.vendor.name.toLowerCase())) {
+          map.set(f.vendor.name.toLowerCase(), f.location.trim());
+        }
+      }
+    }
+    return map;
+  }, [conventionFreebies]);
+
+  // Combine convention vendors and all registered vendors (prioritizing current con)
+  const combinedVendors = useMemo<SuggestionVendor[]>(() => {
+    const seen = new Set<string>();
+    const list: SuggestionVendor[] = [];
+
+    if (conventionVendors) {
+      for (const v of conventionVendors) {
+        const lower = v.name.toLowerCase();
+        if (!seen.has(lower)) {
+          seen.add(lower);
+          list.push({
+            id: v.id,
+            name: v.name,
+            isCurrentCon: true,
+            knownLocation: vendorLocationMap.get(lower),
+          });
+        }
+      }
+    }
+
+    if (allVendors) {
+      for (const v of allVendors) {
+        const lower = v.name.toLowerCase();
+        if (!seen.has(lower)) {
+          seen.add(lower);
+          list.push({
+            id: v.id,
+            name: v.name,
+            isCurrentCon: false,
+            knownLocation: vendorLocationMap.get(lower),
+          });
+        }
+      }
+    }
+
+    return list;
+  }, [conventionVendors, allVendors, vendorLocationMap]);
+
+  // Filter suggestions by typed vendor query
+  const filteredSuggestions = useMemo(() => {
+    const q = selectedVendorName.trim().toLowerCase();
+    if (!q) {
+      return combinedVendors.slice(0, 10);
+    }
+    return combinedVendors.filter((v) => v.name.toLowerCase().includes(q)).slice(0, 15);
+  }, [combinedVendors, selectedVendorName]);
+
+  // Close auto-suggest on outside click
+  useEffect(() => {
+    if (!isSuggestOpen) return;
+    function handlePointerDown(e: PointerEvent) {
+      if (inputWrapRef.current && !inputWrapRef.current.contains(e.target as Node)) {
+        setIsSuggestOpen(false);
+        setHighlightedIndex(-1);
+      }
+    }
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [isSuggestOpen]);
+
+  // Scroll highlighted suggestion item into view
+  useEffect(() => {
+    if (highlightedIndex >= 0 && suggestListRef.current) {
+      const items = suggestListRef.current.querySelectorAll('[data-suggest-item]');
+      const activeItem = items[highlightedIndex] as HTMLElement | undefined;
+      if (activeItem) {
+        activeItem.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [highlightedIndex]);
+
+  // Selection & unselection handler
+  function handleSelectVendor(
+    vendorName: string,
+    options?: { toggleIfSelected?: boolean; advanceFocus?: boolean }
+  ) {
+    const isSelected = selectedVendorName.trim().toLowerCase() === vendorName.trim().toLowerCase();
+
+    if (options?.toggleIfSelected && isSelected) {
+      // Explicit toggle off / Unselect
+      setValue('vendor_name', '', { shouldValidate: true });
+      if (
+        autoFilledFromVendor &&
+        autoFilledFromVendor.toLowerCase() === vendorName.trim().toLowerCase()
+      ) {
+        setValue('location', '', { shouldValidate: true });
+        setAutoFilledFromVendor(null);
+      }
+      setIsSuggestOpen(false);
+      setHighlightedIndex(-1);
+      return;
+    }
+
+    // Select
+    const match = combinedVendors.find(
+      (v) => v.name.toLowerCase() === vendorName.trim().toLowerCase()
+    );
+    const canonicalName = match ? match.name : vendorName.trim();
+
+    setValue('vendor_name', canonicalName, { shouldValidate: true });
+
+    // Auto-fill location if currently blank and known
+    let effectiveLocation = selectedLocation.trim();
+    const knownLoc = vendorLocationMap.get(canonicalName.toLowerCase());
+    if (knownLoc && !effectiveLocation) {
+      setValue('location', knownLoc, { shouldValidate: true });
+      setAutoFilledFromVendor(canonicalName);
+      effectiveLocation = knownLoc;
+    }
+
+    setIsSuggestOpen(false);
+    setHighlightedIndex(-1);
+
+    if (options?.advanceFocus) {
+      requestAnimationFrame(() => {
+        const target = effectiveLocation
+          ? document.getElementById('items.0.name')
+          : document.getElementById('location');
+        if (target) {
+          target.focus();
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    }
+  }
+
+  // Keyboard navigation for suggestions & Enter key advancing
+  function handleVendorKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (!isSuggestOpen) {
+        e.preventDefault();
+        setIsSuggestOpen(true);
+        setHighlightedIndex(0);
+        return;
+      }
+      e.preventDefault();
+      if (e.key === 'ArrowDown') {
+        setHighlightedIndex((prev) => (prev < filteredSuggestions.length - 1 ? prev + 1 : 0));
+      } else {
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : filteredSuggestions.length - 1));
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      if (isSuggestOpen) {
+        e.preventDefault();
+        setIsSuggestOpen(false);
+        setHighlightedIndex(-1);
+      }
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+
+      let vendorToSelect = selectedVendorName.trim();
+
+      if (isSuggestOpen && highlightedIndex >= 0 && filteredSuggestions[highlightedIndex]) {
+        vendorToSelect = filteredSuggestions[highlightedIndex].name;
+      } else if (isSuggestOpen && filteredSuggestions.length > 0) {
+        // If nothing explicitly highlighted, match current text or pick top suggestion
+        const exactMatch = filteredSuggestions.find(
+          (v) => v.name.toLowerCase() === vendorToSelect.toLowerCase()
+        );
+        if (exactMatch) {
+          vendorToSelect = exactMatch.name;
+        } else if (!vendorToSelect) {
+          vendorToSelect = filteredSuggestions[0].name;
+        }
+      }
+
+      if (vendorToSelect) {
+        handleSelectVendor(vendorToSelect, { toggleIfSelected: false, advanceFocus: true });
+      } else {
+        setIsSuggestOpen(false);
+        setHighlightedIndex(-1);
+        const loc = document.getElementById('location');
+        if (loc) {
+          loc.focus();
+          loc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+  }
 
   function handleItemImageChange(fieldId: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -123,7 +359,7 @@ export function FreebieForm({
     setServerError(null);
     try {
       const trimmedVendor = values.vendor_name.trim();
-      const existingMatch = vendors?.find(
+      const existingMatch = combinedVendors.find(
         (v) => v.name.toLowerCase() === trimmedVendor.toLowerCase()
       );
       const canonicalVendorName = existingMatch ? existingMatch.name : trimmedVendor;
@@ -211,54 +447,187 @@ export function FreebieForm({
               </label>
               <CharCounter current={selectedVendorName.length} max={50} />
             </div>
-            <input
-              id="vendor_name"
-              type="text"
-              list="existing-vendors"
-              autoComplete="off"
-              maxLength={50}
-              placeholder="e.g. HoYoverse, Good Smile Company, Artist Table A12"
-              {...register('vendor_name')}
-              className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-            />
-            {vendors && vendors.length > 0 ? (
-              <datalist id="existing-vendors">
-                {vendors.map((v) => (
-                  <option key={v.id} value={v.name} />
-                ))}
-              </datalist>
-            ) : null}
+
+            <div className="relative mt-1.5" ref={inputWrapRef}>
+              <input
+                id="vendor_name"
+                type="text"
+                autoComplete="off"
+                maxLength={50}
+                placeholder="e.g. HoYoverse, Good Smile Company, Artist Table A12"
+                {...register('vendor_name', {
+                  onChange: () => {
+                    if (!isSuggestOpen) setIsSuggestOpen(true);
+                    setHighlightedIndex(-1);
+                    if (autoFilledFromVendor) {
+                      setAutoFilledFromVendor(null);
+                    }
+                  },
+                })}
+                onFocus={() => {
+                  setIsSuggestOpen(true);
+                }}
+                onKeyDown={handleVendorKeyDown}
+                className="border-ink focus:ring-accent h-11 w-full border-2 bg-white px-3 pr-9 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+              />
+
+              {/* Instant Clear Button */}
+              {selectedVendorName ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setValue('vendor_name', '', { shouldValidate: true });
+                    if (autoFilledFromVendor) {
+                      setValue('location', '', { shouldValidate: true });
+                      setAutoFilledFromVendor(null);
+                    }
+                    setIsSuggestOpen(false);
+                    setHighlightedIndex(-1);
+                  }}
+                  className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                  title="Clear vendor name"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : null}
+
+              {/* Neo-brutalist Auto-Suggest Dropdown */}
+              {isSuggestOpen && (
+                <div
+                  ref={suggestListRef}
+                  className="border-ink absolute top-full right-0 left-0 z-30 mt-1 max-h-64 overflow-y-auto border-2 bg-white shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900"
+                >
+                  {filteredSuggestions.length > 0 ? (
+                    <div className="py-1">
+                      <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-1.5 text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:border-zinc-800 dark:text-zinc-400">
+                        <span>
+                          {selectedVendorName.trim() ? 'Matching Vendors' : 'Suggested Vendors'}
+                        </span>
+                        <span>{filteredSuggestions.length} found</span>
+                      </div>
+                      {filteredSuggestions.map((v, idx) => {
+                        const isSelected =
+                          selectedVendorName.trim().toLowerCase() === v.name.toLowerCase();
+                        const isHighlighted = idx === highlightedIndex;
+
+                        return (
+                          <button
+                            key={`${v.id}-${v.name}`}
+                            data-suggest-item="true"
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSelectVendor(v.name, {
+                                toggleIfSelected: false,
+                                advanceFocus: true,
+                              });
+                            }}
+                            onMouseEnter={() => setHighlightedIndex(idx)}
+                            className={cn(
+                              'flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-xs transition-colors',
+                              isSelected ? 'bg-accent/15 dark:bg-accent/25 font-bold' : '',
+                              isHighlighted ? 'bg-zinc-100 dark:bg-zinc-800' : ''
+                            )}
+                          >
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="truncate font-semibold text-zinc-900 dark:text-zinc-100">
+                                {highlightMatch(v.name, selectedVendorName)}
+                              </span>
+                              {isSelected && (
+                                <span className="border-ink border-accent/40 bg-accent/15 text-accent dark:border-accent/40 dark:bg-accent/20 inline-flex items-center gap-1 border px-1.5 py-0.5 text-[9px] font-bold dark:text-teal-300">
+                                  Selected · click to unselect
+                                </span>
+                              )}
+                            </div>
+                            <div className="ml-2 flex shrink-0 items-center gap-1.5">
+                              {v.isCurrentCon ? (
+                                <span className="border-ink bg-accent inline-flex items-center border px-1.5 py-0.5 font-mono text-[9px] font-black text-white uppercase shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950">
+                                  At this con
+                                </span>
+                              ) : (
+                                <span className="border border-zinc-300 px-1.5 py-0.5 font-mono text-[9px] font-bold text-zinc-500 uppercase dark:border-zinc-700 dark:text-zinc-400">
+                                  Known vendor
+                                </span>
+                              )}
+                              {v.knownLocation && (
+                                <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
+                                  {v.knownLocation}
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : selectedVendorName.trim() ? (
+                    <div className="flex items-start gap-2.5 p-3 text-xs">
+                      <div className="border-ink bg-accent flex h-6 w-6 shrink-0 items-center justify-center border text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950">
+                        <Plus className="h-3.5 w-3.5 stroke-3" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-zinc-900 dark:text-zinc-100">
+                          New vendor: &ldquo;{selectedVendorName.trim()}&rdquo;
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                          Will be registered automatically upon posting.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+
             {errors.vendor_name ? (
               <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
                 {errors.vendor_name.message}
               </p>
             ) : null}
 
-            {/* Quick select existing vendors */}
-            {vendors && vendors.length > 0 ? (
-              <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
-                  Existing:
-                </span>
-                {vendors.slice(0, 6).map((v) => {
-                  const isSelected =
-                    selectedVendorName.trim().toLowerCase() === v.name.toLowerCase();
-                  return (
+            {/* Quick select existing vendors with toggle-to-unselect and +X more expansion */}
+            {conventionVendors && conventionVendors.length > 0 ? (
+              <div className="mt-2.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
+                    Existing at this con ({conventionVendors.length}):
+                  </span>
+                  {(showAllPills ? conventionVendors : conventionVendors.slice(0, 8)).map((v) => {
+                    const isSelected =
+                      selectedVendorName.trim().toLowerCase() === v.name.toLowerCase();
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() =>
+                          handleSelectVendor(v.name, {
+                            toggleIfSelected: true,
+                            advanceFocus: !isSelected,
+                          })
+                        }
+                        title={isSelected ? 'Click to unselect' : 'Click to select'}
+                        className={cn(
+                          'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
+                          isSelected
+                            ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
+                            : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                        )}
+                      >
+                        {v.name}
+                        {isSelected ? ' ×' : ''}
+                      </button>
+                    );
+                  })}
+
+                  {conventionVendors.length > 8 ? (
                     <button
-                      key={v.id}
                       type="button"
-                      onClick={() => setValue('vendor_name', v.name, { shouldValidate: true })}
-                      className={cn(
-                        'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
-                        isSelected
-                          ? 'bg-accent text-white'
-                          : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-                      )}
+                      onClick={() => setShowAllPills((prev) => !prev)}
+                      className="cursor-pointer border border-dashed border-zinc-400 px-2 py-0.5 text-[10px] font-bold text-zinc-600 uppercase hover:border-zinc-700 hover:text-zinc-900 dark:border-zinc-600 dark:text-zinc-300 dark:hover:border-zinc-400 dark:hover:text-white"
                     >
-                      {v.name}
+                      {showAllPills ? 'Show less' : `+${conventionVendors.length - 8} more`}
                     </button>
-                  );
-                })}
+                  ) : null}
+                </div>
               </div>
             ) : null}
           </div>
@@ -279,9 +648,31 @@ export function FreebieForm({
               type="text"
               maxLength={50}
               placeholder="e.g. Booth #1420 (Exhibitor Hall A)"
-              {...register('location')}
+              {...register('location', {
+                onChange: () => {
+                  if (autoFilledFromVendor) {
+                    setAutoFilledFromVendor(null);
+                  }
+                },
+              })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const target = document.getElementById('items.0.name');
+                  if (target) {
+                    target.focus();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }
+              }}
               className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
             />
+            {autoFilledFromVendor ? (
+              <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-teal-600 dark:text-teal-400">
+                <Sparkles className="h-3 w-3" /> Auto-filled from previous drops by{' '}
+                {autoFilledFromVendor}
+              </p>
+            ) : null}
             {errors.location ? (
               <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
                 {errors.location.message}
@@ -343,6 +734,16 @@ export function FreebieForm({
                     maxLength={60}
                     placeholder="e.g. Genshin Impact Acrylic Standee"
                     {...register(`items.${index}.name`)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const target = document.getElementById(`items.${index}.requirements`);
+                        if (target) {
+                          target.focus();
+                          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }
+                    }}
                     className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
                   />
                   {itemErrors?.name ? (
@@ -457,7 +858,17 @@ export function FreebieForm({
           {/* Add Another Item Button */}
           <button
             type="button"
-            onClick={() => append({ name: '', requirements: '', description: '' })}
+            onClick={() => {
+              const nextIndex = fields.length;
+              append({ name: '', requirements: '', description: '' });
+              requestAnimationFrame(() => {
+                const target = document.getElementById(`items.${nextIndex}.name`);
+                if (target) {
+                  target.focus();
+                  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              });
+            }}
             className={cn(
               CONBLOCK,
               'border-ink inline-flex w-full cursor-pointer items-center justify-center gap-2 border-2 border-dashed bg-zinc-50 px-4 py-3 text-xs font-bold text-zinc-800 uppercase transition-all hover:bg-zinc-100 dark:bg-zinc-800/60 dark:text-zinc-200 dark:hover:bg-zinc-800'

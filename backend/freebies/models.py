@@ -22,6 +22,12 @@ class Vendor(models.Model):
 
     class Meta:
         ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                models.functions.Lower("name"),
+                name="unique_vendor_name_case_insensitive",
+            )
+        ]
 
     def __str__(self) -> str:
         return self.name

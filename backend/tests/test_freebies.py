@@ -129,6 +129,38 @@ def test_create_freebie_authenticated() -> None:
     assert freebie.created_by == user
 
 
+def test_create_freebie_vendor_case_insensitive() -> None:
+    user = get_user_model().objects.create_user(username="rin", display_name="Kagamine Rin")
+    con = _make_con("Anime Expo", "anime-expo")
+
+    client = _authed_client(user)
+
+    # First freebie with Title Case vendor
+    payload1 = {
+        "name": "Figure Badge",
+        "vendor_name": "Good Smile Company",
+        "convention_slug": "anime-expo",
+    }
+    resp1 = client.post("/api/v1/freebies/", payload1)
+    assert resp1.status_code == status.HTTP_201_CREATED
+    vendor_id = resp1.json()["vendor"]["id"]
+
+    # Second freebie with lowercase vendor name
+    payload2 = {
+        "name": "Nendoroid Strap",
+        "vendor_name": "good smile company",
+        "convention_slug": "anime-expo",
+    }
+    resp2 = client.post("/api/v1/freebies/", payload2)
+    assert resp2.status_code == status.HTTP_201_CREATED
+    assert resp2.json()["vendor"]["id"] == vendor_id
+    assert resp2.json()["vendor"]["name"] == "Good Smile Company"
+
+    # Verify only 1 vendor exists
+    assert Vendor.objects.filter(name__iexact="good smile company").count() == 1
+    assert Vendor.objects.count() == 1
+
+
 def test_create_freebie_unauthenticated_fails() -> None:
     client = APIClient()
     resp = client.post(

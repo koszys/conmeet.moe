@@ -80,9 +80,15 @@ export function FreebieForm({
   async function onSubmit(values: FreebieFormValues) {
     setServerError(null);
     try {
+      const trimmedVendor = values.vendor_name.trim();
+      const existingMatch = vendors?.find(
+        (v) => v.name.toLowerCase() === trimmedVendor.toLowerCase()
+      );
+      const canonicalVendorName = existingMatch ? existingMatch.name : trimmedVendor;
+
       const formData = new FormData();
       formData.append('name', values.name.trim());
-      formData.append('vendor_name', values.vendor_name.trim());
+      formData.append('vendor_name', canonicalVendorName);
       formData.append('convention_slug', conventionSlug);
       if (values.location) formData.append('location', values.location.trim());
       if (values.requirements) formData.append('requirements', values.requirements.trim());
@@ -162,10 +168,19 @@ export function FreebieForm({
           <input
             id="vendor_name"
             type="text"
+            list="existing-vendors"
+            autoComplete="off"
             placeholder="e.g. HoYoverse, Good Smile Company, Artist Alley Table A12"
             {...register('vendor_name')}
             className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium focus:ring-2 focus:outline-none dark:bg-zinc-900"
           />
+          {vendors && vendors.length > 0 ? (
+            <datalist id="existing-vendors">
+              {vendors.map((v) => (
+                <option key={v.id} value={v.name} />
+              ))}
+            </datalist>
+          ) : null}
           {errors.vendor_name ? (
             <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
               {errors.vendor_name.message}
@@ -178,21 +193,25 @@ export function FreebieForm({
               <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
                 Existing:
               </span>
-              {vendors.slice(0, 6).map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => setValue('vendor_name', v.name, { shouldValidate: true })}
-                  className={cn(
-                    'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
-                    selectedVendorName === v.name
-                      ? 'bg-accent text-white'
-                      : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-                  )}
-                >
-                  {v.name}
-                </button>
-              ))}
+              {vendors.slice(0, 6).map((v) => {
+                const isSelected =
+                  selectedVendorName?.trim().toLowerCase() === v.name.toLowerCase();
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => setValue('vendor_name', v.name, { shouldValidate: true })}
+                    className={cn(
+                      'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
+                      isSelected
+                        ? 'bg-accent text-white'
+                        : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                    )}
+                  >
+                    {v.name}
+                  </button>
+                );
+              })}
             </div>
           ) : null}
         </div>

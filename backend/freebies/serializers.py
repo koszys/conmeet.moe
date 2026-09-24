@@ -126,7 +126,9 @@ class FreebieCreateSerializer(serializers.ModelSerializer):
         if convention_from_slug and not validated_data.get("convention"):
             validated_data["convention"] = convention_from_slug
 
-        vendor, _ = Vendor.objects.get_or_create(name=vendor_name)
+        vendor = Vendor.objects.filter(name__iexact=vendor_name).first()
+        if not vendor:
+            vendor = Vendor.objects.create(name=vendor_name)
         validated_data["vendor"] = vendor
         validated_data["created_by"] = self.context["request"].user
 

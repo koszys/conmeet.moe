@@ -25,7 +25,6 @@ import { cn } from '@/shared/lib/utils';
 import { useFreebies, useVendors } from '../api/queries';
 import { FreebieCard } from './FreebieCard';
 import { FreebieSkeleton } from './FreebieSkeleton';
-import { MasonryGrid } from './MasonryGrid';
 
 type FilterTab = 'all' | 'saved';
 
@@ -353,12 +352,13 @@ export function FreebieBoard({
         </div>
       </div>
 
-      {/* Masonry Content Area */}
+      {/* Card Grid Content Area */}
       {isLoading ? (
-        <MasonryGrid
-          items={Array.from({ length: 6 })}
-          renderItem={(_, i) => <FreebieSkeleton key={i} withImage={i % 2 === 0} />}
-        />
+        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <FreebieSkeleton key={i} withImage={i % 2 === 0} />
+          ))}
+        </div>
       ) : isError ? (
         <div className="border-ink border-2 border-dashed bg-rose-50 p-8 text-center dark:bg-rose-950/20">
           <p className="text-sm font-bold text-rose-600 dark:text-rose-400">
@@ -406,33 +406,31 @@ export function FreebieBoard({
               </p>
             </div>
           ) : (
-            <MasonryGrid
-              items={unsavedDrops}
-              renderItem={(freebie) => (
+            <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {unsavedDrops.map((freebie) => (
                 <FreebieCard
                   key={freebie.id}
                   freebie={freebie}
                   condensed={isCardCondensed(freebie.id)}
                   onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
                 />
-              )}
-            />
+              ))}
+            </div>
           )
         ) : (
           <div className="space-y-8">
-            {/* Unsaved drops(Top) */}
+            {/* Unsaved drops (Top) */}
             {unsavedDrops.length > 0 && (
-              <MasonryGrid
-                items={unsavedDrops}
-                renderItem={(freebie) => (
+              <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {unsavedDrops.map((freebie) => (
                   <FreebieCard
                     key={freebie.id}
                     freebie={freebie}
                     condensed={isCardCondensed(freebie.id)}
                     onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
                   />
-                )}
-              />
+                ))}
+              </div>
             )}
 
             {/* Saved Drops (Bottom - Separated out of the way) */}
@@ -450,17 +448,16 @@ export function FreebieBoard({
                   </div>
                 </div>
 
-                <MasonryGrid
-                  items={savedDrops}
-                  renderItem={(freebie) => (
+                <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {savedDrops.map((freebie) => (
                     <FreebieCard
                       key={freebie.id}
                       freebie={freebie}
                       condensed={isCardCondensed(freebie.id)}
                       onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
                     />
-                  )}
-                />
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -522,17 +519,16 @@ export function FreebieBoard({
 
             {!isToClaimCollapsed &&
               (unclaimedSaved.length > 0 ? (
-                <MasonryGrid
-                  items={unclaimedSaved}
-                  renderItem={(freebie) => (
+                <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {unclaimedSaved.map((freebie) => (
                     <FreebieCard
                       key={freebie.id}
                       freebie={freebie}
                       condensed={isCardCondensed(freebie.id)}
                       onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
                     />
-                  )}
-                />
+                  ))}
+                </div>
               ) : (
                 <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
                   <div className="border-ink bg-accent mx-auto flex h-9 w-9 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
@@ -574,17 +570,16 @@ export function FreebieBoard({
               </button>
 
               {!isClaimedCollapsed && (
-                <MasonryGrid
-                  items={claimedSaved}
-                  renderItem={(freebie) => (
+                <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {claimedSaved.map((freebie) => (
                     <FreebieCard
                       key={freebie.id}
                       freebie={freebie}
                       condensed={isCardCondensed(freebie.id)}
                       onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
                     />
-                  )}
-                />
+                  ))}
+                </div>
               )}
             </div>
           )}

@@ -3,12 +3,23 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Bookmark, Check, ChevronDown, ChevronUp, MapPin, Square } from 'lucide-react';
+import {
+  Bookmark,
+  Camera,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  MapPin,
+  Square,
+} from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
 import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
+import { FreebieImageModal } from './FreebieImageModal';
 
 export function FreebieCard({
   freebie,
@@ -28,6 +39,7 @@ export function FreebieCard({
   const { user } = useAuth();
 
   const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
+  const [isImageOpen, setIsImageOpen] = useState(false);
   const isCondensed = externalCondensed !== undefined ? externalCondensed : internalCondensed;
 
   const toggleSave = useToggleSaveFreebie();
@@ -79,6 +91,7 @@ export function FreebieCard({
   }
 
   const imageUrl = freebie.image_thumb || freebie.image;
+  const uploadDateTime = formatDateTime(freebie.created_at);
 
   return (
     <article
@@ -94,28 +107,8 @@ export function FreebieCard({
         className="cursor-pointer"
         title={isCondensed ? 'Click card to expand' : 'Click card to condense'}
       >
-        {/* Optional Image Header - only shown when not condensed */}
-        {!isCondensed && imageUrl ? (
-          <div className="border-ink relative aspect-video w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800">
-            <Image
-              src={imageUrl}
-              alt={freebie.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 33vw"
-            />
-            {freebie.is_claimed && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-                <span className="border-ink bg-accent border-2 px-3 py-1 font-mono text-xs font-black tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                  CLAIMED
-                </span>
-              </div>
-            )}
-          </div>
-        ) : null}
-
         <div className={cn('p-4 sm:p-5', isCondensed && 'p-3 sm:p-3.5')}>
-          {/* Vendor, Booth Location, and Collapse Toggle Row */}
+          {/* Vendor, Booth Location, Upload Date/Time, and Collapse Toggle Row */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 flex-wrap items-center gap-1.5">
               <span className="text-xs font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
@@ -129,33 +122,80 @@ export function FreebieCard({
               ) : null}
             </div>
 
-            <button
-              type="button"
-              onClick={handleToggleCondensed}
-              aria-label={isCondensed ? 'Expand card' : 'Condense card'}
-              title={isCondensed ? 'Expand card' : 'Condense card'}
-              className="border-ink hover:text-ink shrink-0 cursor-pointer border p-1 text-zinc-500 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            >
-              {isCondensed ? (
-                <ChevronDown className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronUp className="h-3.5 w-3.5" />
-              )}
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              {uploadDateTime ? (
+                <span
+                  className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-zinc-400 dark:text-zinc-500"
+                  title={`Uploaded on ${uploadDateTime}`}
+                >
+                  <Clock className="h-3 w-3 shrink-0 text-zinc-400 dark:text-zinc-500" />
+                  <span>{uploadDateTime}</span>
+                </span>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={handleToggleCondensed}
+                aria-label={isCondensed ? 'Expand card' : 'Condense card'}
+                title={isCondensed ? 'Expand card' : 'Condense card'}
+                className="border-ink hover:text-ink shrink-0 cursor-pointer border p-1 text-zinc-500 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              >
+                {isCondensed ? (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronUp className="h-3.5 w-3.5" />
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Title */}
-          <h3
+          {/* Title and Image Thumbnail */}
+          <div
             className={cn(
-              'font-display tracking-wide uppercase',
-              isCondensed ? 'mt-1.5 text-sm sm:text-base' : 'mt-2.5 text-base sm:text-lg',
-              freebie.is_claimed
-                ? 'text-zinc-500 line-through decoration-zinc-400 decoration-2 dark:text-zinc-400'
-                : 'text-zinc-900 dark:text-zinc-50'
+              'flex items-start justify-between gap-2.5',
+              isCondensed ? 'mt-1.5' : 'mt-2.5'
             )}
           >
-            {freebie.name}
-          </h3>
+            <h3
+              className={cn(
+                'font-display min-w-0 flex-1 tracking-wide uppercase',
+                isCondensed ? 'text-sm sm:text-base' : 'text-base sm:text-lg',
+                freebie.is_claimed
+                  ? 'text-zinc-500 line-through decoration-zinc-400 decoration-2 dark:text-zinc-400'
+                  : 'text-zinc-900 dark:text-zinc-50'
+              )}
+            >
+              {freebie.name}
+            </h3>
+
+            {imageUrl ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsImageOpen(true);
+                }}
+                aria-label={`View photo of ${freebie.name}`}
+                title="View photo"
+                className={cn(
+                  'border-ink group/thumb relative shrink-0 cursor-pointer overflow-hidden border-2 bg-zinc-100 shadow-[2px_2px_0_var(--ink)] transition-transform hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--ink)] dark:bg-zinc-800',
+                  isCondensed ? 'h-9 w-9' : 'h-11 w-11'
+                )}
+              >
+                <Image
+                  src={imageUrl}
+                  alt={freebie.name}
+                  fill
+                  className="object-cover transition-opacity group-hover/thumb:opacity-85"
+                  sizes="44px"
+                />
+                <div className="border-ink absolute -right-0.5 -bottom-0.5 flex h-3.5 w-3.5 items-center justify-center border bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
+                  <Camera className="h-2 w-2" />
+                </div>
+              </button>
+            ) : null}
+          </div>
 
           {/* Expanded-only Content */}
           {!isCondensed && (
@@ -236,6 +276,14 @@ export function FreebieCard({
           </button>
         </div>
       </div>
+
+      {imageUrl ? (
+        <FreebieImageModal
+          freebie={freebie}
+          isOpen={isImageOpen}
+          onClose={() => setIsImageOpen(false)}
+        />
+      ) : null}
     </article>
   );
 }

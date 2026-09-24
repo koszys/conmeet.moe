@@ -260,3 +260,83 @@ def test_vendor_list_filtered_by_convention() -> None:
     resp_con1 = client.get("/api/v1/vendors/?convention=anime-nyc")
     assert resp_con1.status_code == status.HTTP_200_OK
     assert [v["name"] for v in resp_con1.json()] == ["GoodSmile"]
+
+
+def test_create_freebie_character_limits_enforced() -> None:
+    user = get_user_model().objects.create_user(username="charlie")
+    client = _authed_client(user)
+
+    # Name exceeding 60 characters
+    resp_name = client.post(
+        "/api/v1/freebies/",
+        {"name": "A" * 61, "vendor_name": "Valid Vendor"},
+    )
+    assert resp_name.status_code == status.HTTP_400_BAD_REQUEST
+    assert "name" in resp_name.json()
+
+    # Vendor exceeding 50 characters
+    resp_vendor = client.post(
+        "/api/v1/freebies/",
+        {"name": "Valid Name", "vendor_name": "V" * 51},
+    )
+    assert resp_vendor.status_code == status.HTTP_400_BAD_REQUEST
+    assert "vendor_name" in resp_vendor.json()
+
+    # Location exceeding 50 characters
+    resp_loc = client.post(
+        "/api/v1/freebies/",
+        {"name": "Valid Name", "vendor_name": "Valid Vendor", "location": "L" * 51},
+    )
+    assert resp_loc.status_code == status.HTTP_400_BAD_REQUEST
+    assert "location" in resp_loc.json()
+
+    # Requirements exceeding 200 characters
+    resp_req = client.post(
+        "/api/v1/freebies/",
+        {"name": "Valid Name", "vendor_name": "Valid Vendor", "requirements": "R" * 201},
+    )
+    assert resp_req.status_code == status.HTTP_400_BAD_REQUEST
+    assert "requirements" in resp_req.json()
+
+    # Description exceeding 300 characters
+    resp_desc = client.post(
+        "/api/v1/freebies/",
+        {"name": "Valid Name", "vendor_name": "Valid Vendor", "description": "D" * 301},
+    )
+    assert resp_desc.status_code == status.HTTP_400_BAD_REQUEST
+    assert "description" in resp_desc.json()
+
+
+def test_create_multiple_freebies_same_vendor() -> None:
+    user = get_user_model().objects.create_user(username="batcher")
+    con = _make_con("Anime NYC", "anime-nyc")
+    client = _authed_client(user)
+
+    # Batch simulation: 3 items from same vendor
+    items = [
+        {"name": "Sticker Sheet", "requirements": "Follow on X", "description": "1 per person"},
+        {"name": "Acrylic Standee", "requirements": "Play demo", "description": "Limited 50/day"},
+        {"name": "Enamel Pin", "requirements": "Fill survey", "description": "While supplies last"},
+    ]
+
+    created_ids = []
+    for item in items:
+        resp = client.post(
+            "/api/v1/freebies/",
+            {
+                "vendor_name": "Kuro Games",
+                "location": "Booth #420",
+                "convention_slug": con.slug,
+                **item,
+            },
+        )
+        assert resp.status_code == status.HTTP_201_CREATED
+        created_ids.append(resp.json()["id"])
+
+    assert len(created_ids) == 3
+    # Verify single vendor created
+    assert Vendor.objects.filter(name="Kuro Games").count() == 1
+    vendor = Vendor.objects.get(name="Kuro Games")
+    # Verify all 3 freebies belong to the same vendor and convention
+    assert Freebie.objects.filter(vendor=vendor, convention=con).count() == 3
+

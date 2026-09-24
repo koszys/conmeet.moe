@@ -90,7 +90,11 @@ class FreebieSerializer(serializers.ModelSerializer):
 
 
 class FreebieCreateSerializer(serializers.ModelSerializer):
-    vendor_name = serializers.CharField(write_only=True, required=True, max_length=120)
+    vendor_name = serializers.CharField(write_only=True, required=True, max_length=50)
+    name = serializers.CharField(max_length=60, required=True)
+    location = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    requirements = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    description = serializers.CharField(max_length=300, required=False, allow_blank=True)
     convention_slug = serializers.CharField(
         write_only=True, required=False, allow_blank=True, allow_null=True, default=None
     )

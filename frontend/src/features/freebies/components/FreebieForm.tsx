@@ -237,13 +237,18 @@ export function FreebieForm({
 
     setValue('vendor_name', canonicalName, { shouldValidate: true });
 
-    // Auto-fill location if currently blank and known
+    // Update location with known booth if available
     let effectiveLocation = selectedLocation.trim();
     const knownLoc = vendorLocationMap.get(canonicalName.toLowerCase());
-    if (knownLoc && !effectiveLocation) {
+    if (knownLoc) {
       setValue('location', knownLoc, { shouldValidate: true });
       setAutoFilledFromVendor(canonicalName);
       effectiveLocation = knownLoc;
+    } else if (autoFilledFromVendor) {
+      // If previous location was auto-filled from an earlier vendor and new vendor has no known location, clear it
+      setValue('location', '', { shouldValidate: true });
+      setAutoFilledFromVendor(null);
+      effectiveLocation = '';
     }
 
     setIsSuggestOpen(false);
@@ -303,7 +308,7 @@ export function FreebieForm({
         );
         if (exactMatch) {
           vendorToSelect = exactMatch.name;
-        } else if (!vendorToSelect) {
+        } else {
           vendorToSelect = filteredSuggestions[0].name;
         }
       }
@@ -456,11 +461,19 @@ export function FreebieForm({
                 maxLength={50}
                 placeholder="e.g. HoYoverse, Good Smile Company, Artist Table A12"
                 {...register('vendor_name', {
-                  onChange: () => {
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                     if (!isSuggestOpen) setIsSuggestOpen(true);
                     setHighlightedIndex(-1);
-                    if (autoFilledFromVendor) {
-                      setAutoFilledFromVendor(null);
+                    const val = e.target.value.trim();
+                    const match = combinedVendors.find(
+                      (v) => v.name.toLowerCase() === val.toLowerCase()
+                    );
+                    if (match) {
+                      const knownLoc = vendorLocationMap.get(match.name.toLowerCase());
+                      if (knownLoc) {
+                        setValue('location', knownLoc, { shouldValidate: true });
+                        setAutoFilledFromVendor(match.name);
+                      }
                     }
                   },
                 })}

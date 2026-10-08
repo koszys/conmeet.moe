@@ -7,6 +7,7 @@ import { AuthProvider } from '@/features/auth';
 import { ConventionNavProvider, isConventionDetailPath } from '@/features/conventions';
 import { Header } from '@/shared/components/layout/Header';
 import { Footer } from '@/shared/components/layout/Footer';
+import { ScrollToTopButton } from '@/shared/components/layout/ScrollToTopButton';
 import { ThemeProvider } from './ThemeProvider';
 
 function ScrollToTop() {
@@ -68,6 +69,7 @@ export function Providers({ children }: { children: ReactNode }) {
               <main className="flex flex-1 flex-col">{children}</main>
               {!isConventionPage && <Footer />}
             </div>
+            <ScrollToTopButton />
           </ConventionNavProvider>
         </AuthProvider>
       </QueryClientProvider>

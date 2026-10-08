@@ -2,9 +2,9 @@
 
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Trash2 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
 import type { FreebieItemFormValues, MultiFreebieFormValues } from './schema';
 import { CharCounter } from './CharCounter';
+import { BoothLocationField } from './BoothLocationField';
 import { ItemImageUpload } from './ItemImageUpload';
 
 interface FreebieItemCardProps {
@@ -18,7 +18,8 @@ interface FreebieItemCardProps {
   register: UseFormRegister<MultiFreebieFormValues>;
   setValue: UseFormSetValue<MultiFreebieFormValues>;
   onRemoveItem: (index: number) => void;
-  onImageChange: (fieldId: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageFileSelect?: (fieldId: string, file: File) => void;
+  onImageChange?: (fieldId: string, e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove: (fieldId: string) => void;
 }
 
@@ -33,6 +34,7 @@ export function FreebieItemCard({
   register,
   setValue,
   onRemoveItem,
+  onImageFileSelect,
   onImageChange,
   onImageRemove,
 }: FreebieItemCardProps) {
@@ -82,7 +84,7 @@ export function FreebieItemCard({
               }
             }
           }}
-          className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+          className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
         />
         {itemErrors?.name ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -92,82 +94,23 @@ export function FreebieItemCard({
       </div>
 
       {/* Booth / Hall Location */}
-      <div>
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor={`items.${index}.location`}
-            className="font-display block text-xs tracking-wider uppercase"
-          >
-            Booth / Hall Location <span className="text-accent">*</span>
-          </label>
-          <CharCounter current={(itemVal.location || '').length} max={50} />
-        </div>
-        <input
-          id={`items.${index}.location`}
-          type="text"
-          maxLength={50}
-          placeholder="e.g. Booth #1420, Hall B #204"
-          {...register(`items.${index}.location`)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              const target = document.getElementById(`items.${index}.requirements`);
-              if (target) {
-                target.focus();
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
+      <BoothLocationField
+        id={`items.${index}.location`}
+        value={itemVal.location || ''}
+        onChange={(val) => setValue(`items.${index}.location`, val, { shouldValidate: true })}
+        knownBooths={vendorLocations}
+        error={itemErrors?.location?.message}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const target = document.getElementById(`items.${index}.requirements`);
+            if (target) {
+              target.focus();
+              target.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-          }}
-          className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-        />
-
-        {/* Known Booths Pill Selector for this item */}
-        {vendorLocations && vendorLocations.length > 0 && (
-          <div className="mt-2 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-                Known booth{vendorLocations.length > 1 ? 's' : ''} ({vendorLocations.length}):
-              </span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">Click to select</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {vendorLocations.map((booth) => {
-                const isSelected =
-                  (itemVal.location || '').trim().toLowerCase() === booth.toLowerCase();
-
-                return (
-                  <button
-                    key={booth}
-                    type="button"
-                    onClick={() => {
-                      const updated = isSelected ? '' : booth;
-                      setValue(`items.${index}.location`, updated, { shouldValidate: true });
-                    }}
-                    title={
-                      isSelected ? 'Click to unselect this booth' : 'Click to select this booth'
-                    }
-                    className={cn(
-                      'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold transition-all',
-                      isSelected
-                        ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
-                        : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-                    )}
-                  >
-                    {booth}
-                    {isSelected ? ' ×' : ''}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {itemErrors?.location ? (
-          <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
-            {itemErrors.location.message}
-          </p>
-        ) : null}
-      </div>
+          }
+        }}
+      />
 
       {/* Requirements / How to Get It */}
       <div>
@@ -223,11 +166,21 @@ export function FreebieItemCard({
 
       {/* Photo Upload for Item */}
       <ItemImageUpload
-        fieldId={fieldId}
-        itemIndex={index}
-        currentImage={currentImage}
-        onImageChange={onImageChange}
-        onImageRemove={onImageRemove}
+        id={`image-upload-${fieldId}`}
+        label={`Photo of Item #${index + 1} (Optional)`}
+        previewUrl={currentImage?.preview}
+        onFileSelect={(file) => {
+          if (onImageFileSelect) {
+            onImageFileSelect(fieldId, file);
+          } else if (onImageChange) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            onImageChange(fieldId, {
+              target: { files: dt.files },
+            } as unknown as React.ChangeEvent<HTMLInputElement>);
+          }
+        }}
+        onRemove={() => onImageRemove(fieldId)}
       />
     </div>
   );

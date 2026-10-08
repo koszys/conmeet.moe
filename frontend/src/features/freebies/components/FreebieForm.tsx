@@ -61,17 +61,21 @@ export function FreebieForm({
     setValue,
   });
 
+  function handleItemImageFile(fieldId: string, file: File) {
+    if (itemImages[fieldId]) {
+      URL.revokeObjectURL(itemImages[fieldId].preview);
+    }
+    const url = URL.createObjectURL(file);
+    setItemImages((prev) => ({
+      ...prev,
+      [fieldId]: { file, preview: url },
+    }));
+  }
+
   function handleItemImageChange(fieldId: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
-      if (itemImages[fieldId]) {
-        URL.revokeObjectURL(itemImages[fieldId].preview);
-      }
-      const url = URL.createObjectURL(file);
-      setItemImages((prev) => ({
-        ...prev,
-        [fieldId]: { file, preview: url },
-      }));
+      handleItemImageFile(fieldId, file);
     }
   }
 
@@ -206,6 +210,7 @@ export function FreebieForm({
                 register={register}
                 setValue={setValue}
                 onRemoveItem={handleRemoveItem}
+                onImageFileSelect={handleItemImageFile}
                 onImageChange={handleItemImageChange}
                 onImageRemove={removeItemImage}
               />

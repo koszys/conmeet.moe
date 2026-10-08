@@ -2,6 +2,8 @@ export * from './schema';
 export * from './CharCounter';
 export * from './ItemImageUpload';
 export * from './VendorSuggestDropdown';
+export * from './VendorPicker';
+export * from './BoothLocationField';
 export * from './VendorSection';
 export * from './FreebieItemCard';
 export * from './useVendorSuggestions';

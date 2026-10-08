@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { RotateCw, Sparkles, X } from 'lucide-react';
+import { RotateCw, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import type { MultiFreebieFormValues } from './schema';
 import { CharCounter } from './CharCounter';
@@ -14,7 +14,6 @@ interface VendorSectionProps {
   setValue: UseFormSetValue<MultiFreebieFormValues>;
   errors: FieldErrors<MultiFreebieFormValues>;
   selectedVendorName: string;
-  selectedLocation: string;
   suggestions: ReturnType<typeof useVendorSuggestions>;
 }
 
@@ -23,7 +22,6 @@ export function VendorSection({
   setValue,
   errors,
   selectedVendorName,
-  selectedLocation,
   suggestions,
 }: VendorSectionProps) {
   const [showAllPills, setShowAllPills] = useState(false);
@@ -42,23 +40,19 @@ export function VendorSection({
     inputWrapRef,
     suggestListRef,
     handleSelectVendor,
-    handleToggleLocation,
     handleVendorKeyDown,
     refreshVendors,
     isRefreshingVendors,
   } = suggestions;
 
-  const currentVendorLocations =
-    vendorLocationsMap.get(selectedVendorName.trim().toLowerCase()) || [];
-
   return (
     <div className="border-ink space-y-4 border-2 bg-white p-4 shadow-[3px_3px_0_var(--ink)] sm:p-5 dark:bg-zinc-900">
       <div className="border-ink border-b-2 border-dashed pb-2">
         <h2 className="font-display text-xs tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
-          Booth & Vendor Details
+          Vendor Details
         </h2>
         <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-          Shared across all freebies posted in this entry.
+          All freebies below will be posted under this vendor.
         </p>
       </div>
 
@@ -92,7 +86,7 @@ export function VendorSection({
                 if (match) {
                   const knownLocs = vendorLocationsMap.get(match.name.toLowerCase()) || [];
                   if (knownLocs.length > 0) {
-                    setValue('location', knownLocs[0], { shouldValidate: true });
+                    setValue('items.0.location', knownLocs[0], { shouldValidate: true });
                     setAutoFilledFromVendor(match.name);
                   }
                 }
@@ -112,7 +106,7 @@ export function VendorSection({
               onClick={() => {
                 setValue('vendor_name', '', { shouldValidate: true });
                 if (autoFilledFromVendor) {
-                  setValue('location', '', { shouldValidate: true });
+                  setValue('items.0.location', '', { shouldValidate: true });
                   setAutoFilledFromVendor(null);
                 }
                 setIsSuggestOpen(false);
@@ -203,91 +197,6 @@ export function VendorSection({
               ) : null}
             </div>
           </div>
-        ) : null}
-      </div>
-
-      {/* Booth Location */}
-      <div>
-        <div className="flex items-center justify-between">
-          <label htmlFor="location" className="font-display block text-xs tracking-wider uppercase">
-            Booth / Hall Location
-          </label>
-          <CharCounter current={selectedLocation.length} max={150} />
-        </div>
-        <input
-          id="location"
-          type="text"
-          maxLength={150}
-          placeholder="e.g. Booth #1420, Hall B #204"
-          {...register('location', {
-            onChange: () => {
-              if (autoFilledFromVendor) {
-                setAutoFilledFromVendor(null);
-              }
-            },
-          })}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              const target = document.getElementById('items.0.name');
-              if (target) {
-                target.focus();
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            }
-          }}
-          className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-        />
-
-        {/* Known Booths Pill Selector */}
-        {currentVendorLocations.length > 0 && (
-          <div className="mt-2 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-                Known booth{currentVendorLocations.length > 1 ? 's' : ''} for{' '}
-                {selectedVendorName.trim()} ({currentVendorLocations.length}):
-              </span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                Click to select or combine
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {currentVendorLocations.map((booth) => {
-                const currentParts = selectedLocation.split(',').map((s) => s.trim().toLowerCase());
-                const isSelected = currentParts.includes(booth.toLowerCase());
-
-                return (
-                  <button
-                    key={booth}
-                    type="button"
-                    onClick={() => handleToggleLocation(booth)}
-                    title={isSelected ? 'Click to remove this booth' : 'Click to add this booth'}
-                    className={cn(
-                      'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold transition-all',
-                      isSelected
-                        ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
-                        : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-                    )}
-                  >
-                    {isSelected ? '✓ ' : '+ '}
-                    {booth}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {autoFilledFromVendor ? (
-          <p className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-teal-600 dark:text-teal-400">
-            <Sparkles className="h-3 w-3" /> Auto-filled from previous drops by{' '}
-            {autoFilledFromVendor}
-          </p>
-        ) : null}
-        {errors.location ? (
-          <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
-            {errors.location.message}
-          </p>
         ) : null}
       </div>
     </div>

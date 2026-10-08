@@ -42,8 +42,7 @@ export function FreebieForm({
     resolver: zodResolver(multiFreebieSchema),
     defaultValues: {
       vendor_name: '',
-      location: '',
-      items: [{ name: '', requirements: '', description: '' }],
+      items: [{ name: '', location: '', requirements: '', description: '' }],
     },
   });
 
@@ -53,13 +52,12 @@ export function FreebieForm({
   });
 
   const selectedVendorName = watch('vendor_name') || '';
-  const selectedLocation = watch('location') || '';
   const watchedItems = watch('items') || [];
 
   const suggestions = useVendorSuggestions({
     conventionSlug,
     selectedVendorName,
-    selectedLocation,
+    firstItemLocation: watchedItems[0]?.location || '',
     setValue,
   });
 
@@ -104,7 +102,6 @@ export function FreebieForm({
         (v) => v.name.toLowerCase() === trimmedVendor.toLowerCase()
       );
       const canonicalVendorName = existingMatch ? existingMatch.name : trimmedVendor;
-      const canonicalLocation = values.location?.trim() || '';
 
       const total = values.items.length;
       for (let i = 0; i < total; i++) {
@@ -118,7 +115,7 @@ export function FreebieForm({
         formData.append('name', item.name.trim());
         formData.append('vendor_name', canonicalVendorName);
         formData.append('convention_slug', conventionSlug);
-        if (canonicalLocation) formData.append('location', canonicalLocation);
+        if (item.location?.trim()) formData.append('location', item.location.trim());
         if (item.requirements?.trim()) formData.append('requirements', item.requirements.trim());
         if (item.description?.trim()) formData.append('description', item.description.trim());
         if (imageFile) formData.append('image', imageFile);
@@ -172,7 +169,6 @@ export function FreebieForm({
           setValue={setValue}
           errors={errors}
           selectedVendorName={selectedVendorName}
-          selectedLocation={selectedLocation}
           suggestions={suggestions}
         />
 
@@ -185,10 +181,17 @@ export function FreebieForm({
           </div>
 
           {fields.map((field, index) => {
-            const itemVal = watchedItems[index] || { name: '', requirements: '', description: '' };
+            const itemVal = watchedItems[index] || {
+              name: '',
+              location: '',
+              requirements: '',
+              description: '',
+            };
             const fieldId = field.id;
             const currentImg = itemImages[fieldId];
             const itemErrors = errors.items?.[index];
+            const vendorLocations =
+              suggestions.vendorLocationsMap.get(selectedVendorName.trim().toLowerCase()) || [];
 
             return (
               <FreebieItemCard
@@ -199,7 +202,9 @@ export function FreebieForm({
                 itemVal={itemVal}
                 itemErrors={itemErrors}
                 currentImage={currentImg}
+                vendorLocations={vendorLocations}
                 register={register}
+                setValue={setValue}
                 onRemoveItem={handleRemoveItem}
                 onImageChange={handleItemImageChange}
                 onImageRemove={removeItemImage}
@@ -212,7 +217,8 @@ export function FreebieForm({
             type="button"
             onClick={() => {
               const nextIndex = fields.length;
-              append({ name: '', requirements: '', description: '' });
+              const prevLocation = watchedItems[fields.length - 1]?.location || '';
+              append({ name: '', location: prevLocation, requirements: '', description: '' });
               requestAnimationFrame(() => {
                 const target = document.getElementById(`items.${nextIndex}.name`);
                 if (target) {

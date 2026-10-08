@@ -1,7 +1,8 @@
 'use client';
 
-import type { FieldErrors, UseFormRegister } from 'react-hook-form';
+import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Trash2 } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
 import type { FreebieItemFormValues, MultiFreebieFormValues } from './schema';
 import { CharCounter } from './CharCounter';
 import { ItemImageUpload } from './ItemImageUpload';
@@ -10,10 +11,12 @@ interface FreebieItemCardProps {
   fieldId: string;
   index: number;
   totalItems: number;
-  itemVal: { name?: string; requirements?: string; description?: string };
+  itemVal: { name?: string; location?: string; requirements?: string; description?: string };
   itemErrors?: FieldErrors<FreebieItemFormValues>;
   currentImage?: { file: File; preview: string };
+  vendorLocations?: string[];
   register: UseFormRegister<MultiFreebieFormValues>;
+  setValue: UseFormSetValue<MultiFreebieFormValues>;
   onRemoveItem: (index: number) => void;
   onImageChange: (fieldId: string, e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageRemove: (fieldId: string) => void;
@@ -26,7 +29,9 @@ export function FreebieItemCard({
   itemVal,
   itemErrors,
   currentImage,
+  vendorLocations,
   register,
+  setValue,
   onRemoveItem,
   onImageChange,
   onImageRemove,
@@ -70,7 +75,7 @@ export function FreebieItemCard({
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              const target = document.getElementById(`items.${index}.requirements`);
+              const target = document.getElementById(`items.${index}.location`);
               if (target) {
                 target.focus();
                 target.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -82,6 +87,98 @@ export function FreebieItemCard({
         {itemErrors?.name ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
             {itemErrors.name.message}
+          </p>
+        ) : null}
+      </div>
+
+      {/* Booth / Hall Location */}
+      <div>
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor={`items.${index}.location`}
+            className="font-display block text-xs tracking-wider uppercase"
+          >
+            Booth / Hall Location
+          </label>
+          <CharCounter current={(itemVal.location || '').length} max={150} />
+        </div>
+        <input
+          id={`items.${index}.location`}
+          type="text"
+          maxLength={150}
+          placeholder="e.g. Booth #1420, Hall B #204"
+          {...register(`items.${index}.location`)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const target = document.getElementById(`items.${index}.requirements`);
+              if (target) {
+                target.focus();
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }
+          }}
+          className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+        />
+
+        {/* Known Booths Pill Selector for this item */}
+        {vendorLocations && vendorLocations.length > 0 && (
+          <div className="mt-2 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+                Known booth{vendorLocations.length > 1 ? 's' : ''} ({vendorLocations.length}):
+              </span>
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                Click to select or combine
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {vendorLocations.map((booth) => {
+                const currentParts = (itemVal.location || '')
+                  .split(',')
+                  .map((s) => s.trim().toLowerCase());
+                const isSelected = currentParts.includes(booth.toLowerCase());
+
+                return (
+                  <button
+                    key={booth}
+                    type="button"
+                    onClick={() => {
+                      const parts = (itemVal.location || '')
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                      const exists = parts.some((p) => p.toLowerCase() === booth.toLowerCase());
+                      let updated: string;
+                      if (exists) {
+                        updated = parts
+                          .filter((p) => p.toLowerCase() !== booth.toLowerCase())
+                          .join(', ');
+                      } else {
+                        updated = parts.length > 0 ? `${parts.join(', ')}, ${booth}` : booth;
+                      }
+                      setValue(`items.${index}.location`, updated, { shouldValidate: true });
+                    }}
+                    title={isSelected ? 'Click to remove this booth' : 'Click to add this booth'}
+                    className={cn(
+                      'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold transition-all',
+                      isSelected
+                        ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
+                        : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                    )}
+                  >
+                    {isSelected ? '✓ ' : '+ '}
+                    {booth}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {itemErrors?.location ? (
+          <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
+            {itemErrors.location.message}
           </p>
         ) : null}
       </div>

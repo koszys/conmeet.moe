@@ -15,15 +15,15 @@ export interface SuggestionVendor {
 interface UseVendorSuggestionsProps {
   conventionSlug: string;
   selectedVendorName: string;
-  selectedLocation: string;
   setValue: UseFormSetValue<MultiFreebieFormValues>;
+  firstItemLocation?: string;
 }
 
 export function useVendorSuggestions({
   conventionSlug,
   selectedVendorName,
-  selectedLocation,
   setValue,
+  firstItemLocation = '',
 }: UseVendorSuggestionsProps) {
   const {
     data: conventionVendors,
@@ -151,37 +151,6 @@ export function useVendorSuggestions({
     }
   }, [highlightedIndex]);
 
-  // Toggle or select a booth location pill
-  function handleToggleLocation(booth: string) {
-    const trimmed = booth.trim();
-    if (!trimmed) return;
-
-    const currentParts = selectedLocation
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const matchIndex = currentParts.findIndex(
-      (part) => part.toLowerCase() === trimmed.toLowerCase()
-    );
-
-    let nextLocation = '';
-    if (matchIndex >= 0) {
-      currentParts.splice(matchIndex, 1);
-      nextLocation = currentParts.join(', ');
-    } else {
-      currentParts.push(trimmed);
-      nextLocation = currentParts.join(', ');
-    }
-
-    setValue('location', nextLocation, { shouldValidate: true });
-    if (nextLocation) {
-      setAutoFilledFromVendor(selectedVendorName.trim() || null);
-    } else {
-      setAutoFilledFromVendor(null);
-    }
-  }
-
   // Selection & unselection handler
   function handleSelectVendor(
     vendorName: string,
@@ -196,7 +165,7 @@ export function useVendorSuggestions({
         autoFilledFromVendor &&
         autoFilledFromVendor.toLowerCase() === vendorName.trim().toLowerCase()
       ) {
-        setValue('location', '', { shouldValidate: true });
+        setValue('items.0.location', '', { shouldValidate: true });
         setAutoFilledFromVendor(null);
       }
       setIsSuggestOpen(false);
@@ -212,19 +181,16 @@ export function useVendorSuggestions({
 
     setValue('vendor_name', canonicalName, { shouldValidate: true });
 
-    // Update location with known booth if available
-    let effectiveLocation = selectedLocation.trim();
+    // Auto-fill first item's location if currently empty and known
     const knownLocs = vendorLocationsMap.get(canonicalName.toLowerCase()) || [];
     if (knownLocs.length > 0) {
-      const primaryLoc = knownLocs[0];
-      setValue('location', primaryLoc, { shouldValidate: true });
-      setAutoFilledFromVendor(canonicalName);
-      effectiveLocation = primaryLoc;
+      if (!firstItemLocation.trim() || autoFilledFromVendor) {
+        setValue('items.0.location', knownLocs[0], { shouldValidate: true });
+        setAutoFilledFromVendor(canonicalName);
+      }
     } else if (autoFilledFromVendor) {
-      // If previous location was auto-filled from an earlier vendor and new vendor has no known location, clear it
-      setValue('location', '', { shouldValidate: true });
+      setValue('items.0.location', '', { shouldValidate: true });
       setAutoFilledFromVendor(null);
-      effectiveLocation = '';
     }
 
     setIsSuggestOpen(false);
@@ -232,9 +198,7 @@ export function useVendorSuggestions({
 
     if (options?.advanceFocus) {
       requestAnimationFrame(() => {
-        const target = effectiveLocation
-          ? document.getElementById('items.0.name')
-          : document.getElementById('location');
+        const target = document.getElementById('items.0.name');
         if (target) {
           target.focus();
           target.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -293,7 +257,7 @@ export function useVendorSuggestions({
       } else {
         setIsSuggestOpen(false);
         setHighlightedIndex(-1);
-        const loc = document.getElementById('location');
+        const loc = document.getElementById('items.0.name');
         if (loc) {
           loc.focus();
           loc.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -316,7 +280,6 @@ export function useVendorSuggestions({
     inputWrapRef,
     suggestListRef,
     handleSelectVendor,
-    handleToggleLocation,
     handleVendorKeyDown,
     refreshVendors,
     isRefreshingVendors,

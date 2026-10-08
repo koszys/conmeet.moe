@@ -202,7 +202,7 @@ export function FreebieItemCard({
             htmlFor={`items.${index}.description`}
             className="font-display block text-xs tracking-wider uppercase"
           >
-            Additional Details / Notes
+            Additional Notes
           </label>
           <CharCounter current={(itemVal.description || '').length} max={300} />
         </div>

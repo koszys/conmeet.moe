@@ -128,38 +128,24 @@ export function FreebieItemCard({
               <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
                 Known booth{vendorLocations.length > 1 ? 's' : ''} ({vendorLocations.length}):
               </span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                Click to select or combine
-              </span>
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">Click to select</span>
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
               {vendorLocations.map((booth) => {
-                const currentParts = (itemVal.location || '')
-                  .split(',')
-                  .map((s) => s.trim().toLowerCase());
-                const isSelected = currentParts.includes(booth.toLowerCase());
+                const isSelected =
+                  (itemVal.location || '').trim().toLowerCase() === booth.toLowerCase();
 
                 return (
                   <button
                     key={booth}
                     type="button"
                     onClick={() => {
-                      const parts = (itemVal.location || '')
-                        .split(',')
-                        .map((s) => s.trim())
-                        .filter(Boolean);
-                      const exists = parts.some((p) => p.toLowerCase() === booth.toLowerCase());
-                      let updated: string;
-                      if (exists) {
-                        updated = parts
-                          .filter((p) => p.toLowerCase() !== booth.toLowerCase())
-                          .join(', ');
-                      } else {
-                        updated = parts.length > 0 ? `${parts.join(', ')}, ${booth}` : booth;
-                      }
+                      const updated = isSelected ? '' : booth;
                       setValue(`items.${index}.location`, updated, { shouldValidate: true });
                     }}
-                    title={isSelected ? 'Click to remove this booth' : 'Click to add this booth'}
+                    title={
+                      isSelected ? 'Click to unselect this booth' : 'Click to select this booth'
+                    }
                     className={cn(
                       'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold transition-all',
                       isSelected
@@ -167,8 +153,8 @@ export function FreebieItemCard({
                         : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
                     )}
                   >
-                    {isSelected ? '✓ ' : '+ '}
                     {booth}
+                    {isSelected ? ' ×' : ''}
                   </button>
                 );
               })}

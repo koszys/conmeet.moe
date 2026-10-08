@@ -22,6 +22,7 @@ export interface Freebie {
   created_by_name: string | null;
   is_saved: boolean;
   is_claimed: boolean;
+  is_owner?: boolean;
   claimed_at: string | null;
   save_count: number;
   created_at: string;

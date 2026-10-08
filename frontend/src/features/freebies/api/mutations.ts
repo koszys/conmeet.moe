@@ -81,3 +81,32 @@ export function useCreateFreebie() {
     },
   });
 }
+
+export function useUpdateFreebie() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ freebieId, formData }: { freebieId: number; formData: FormData }) => {
+      return api.patch(`api/v1/freebies/${freebieId}/`, { body: formData }).json<Freebie>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: freebieKeys.all });
+      queryClient.invalidateQueries({ queryKey: freebieKeys.allVendors });
+    },
+  });
+}
+
+export function useDeleteFreebie() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (freebieId: number) => {
+      await api.delete(`api/v1/freebies/${freebieId}/`);
+      return freebieId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: freebieKeys.all });
+      queryClient.invalidateQueries({ queryKey: freebieKeys.allVendors });
+    },
+  });
+}

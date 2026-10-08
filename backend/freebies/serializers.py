@@ -20,6 +20,7 @@ class FreebieSerializer(serializers.ModelSerializer):
     claimed_at = serializers.SerializerMethodField()
     save_count = serializers.SerializerMethodField()
     created_by_name = serializers.SerializerMethodField()
+    is_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Freebie
@@ -39,6 +40,7 @@ class FreebieSerializer(serializers.ModelSerializer):
             "created_by_name",
             "is_saved",
             "is_claimed",
+            "is_owner",
             "claimed_at",
             "save_count",
             "created_at",
@@ -88,6 +90,56 @@ class FreebieSerializer(serializers.ModelSerializer):
             return obj._save_count
         return obj.saved_by.count()
 
+    def get_is_owner(self, obj: Freebie) -> bool:
+        request = self.context.get("request")
+        user = request.user if request else None
+        if not user or not user.is_authenticated:
+            return False
+        return bool(obj.created_by_id == user.id)
+
+
+class FreebieUpdateSerializer(serializers.ModelSerializer):
+    vendor_name = serializers.CharField(write_only=True, required=False, max_length=50)
+    name = serializers.CharField(max_length=60, required=False)
+    location = serializers.CharField(max_length=50, required=False, allow_blank=False)
+    requirements = serializers.CharField(max_length=200, required=False, allow_blank=False)
+    description = serializers.CharField(max_length=300, required=False, allow_blank=True)
+    image = serializers.ImageField(required=False, allow_null=True)
+    clear_image = serializers.BooleanField(write_only=True, required=False, default=False)
+
+    class Meta:
+        model = Freebie
+        fields = [
+            "id",
+            "name",
+            "description",
+            "requirements",
+            "location",
+            "image",
+            "clear_image",
+            "vendor_name",
+        ]
+
+    def update(self, instance: Freebie, validated_data: dict) -> Freebie:
+        clear_image = validated_data.pop("clear_image", False)
+        if clear_image:
+            if instance.image:
+                instance.image.delete(save=False)
+            instance.image = None
+
+        if "image" in validated_data and validated_data["image"] and instance.image:
+            instance.image.delete(save=False)
+
+        if "vendor_name" in validated_data:
+            vendor_name = validated_data.pop("vendor_name").strip()
+            if vendor_name:
+                vendor = Vendor.objects.filter(name__iexact=vendor_name).first()
+                if not vendor:
+                    vendor = Vendor.objects.create(name=vendor_name)
+                instance.vendor = vendor
+
+        return super().update(instance, validated_data)
+
 
 class FreebieCreateSerializer(serializers.ModelSerializer):
     vendor_name = serializers.CharField(write_only=True, required=True, max_length=50)
@@ -122,7 +174,9 @@ class FreebieCreateSerializer(serializers.ModelSerializer):
         try:
             return Convention.objects.get(slug=value)
         except Convention.DoesNotExist:
-            raise serializers.ValidationError(f"Convention with slug '{value}' does not exist.")
+            raise serializers.ValidationError(
+                f"Convention with slug '{value}' does not exist."
+            ) from None
 
     def create(self, validated_data: dict) -> Freebie:
         vendor_name = validated_data.pop("vendor_name").strip()

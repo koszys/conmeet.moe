@@ -106,7 +106,7 @@ def test_search_freebies() -> None:
 
 def test_create_freebie_authenticated() -> None:
     user = get_user_model().objects.create_user(username="miku", display_name="Hatsune Miku")
-    con = _make_con("Anime NYC", "anime-nyc")
+    _make_con("Anime NYC", "anime-nyc")
 
     client = _authed_client(user)
     payload = {
@@ -131,7 +131,7 @@ def test_create_freebie_authenticated() -> None:
 
 def test_create_freebie_vendor_case_insensitive() -> None:
     user = get_user_model().objects.create_user(username="rin", display_name="Kagamine Rin")
-    con = _make_con("Anime Expo", "anime-expo")
+    _make_con("Anime Expo", "anime-expo")
 
     client = _authed_client(user)
 
@@ -339,4 +339,132 @@ def test_create_multiple_freebies_same_vendor() -> None:
     vendor = Vendor.objects.get(name="Kuro Games")
     # Verify all 3 freebies belong to the same vendor and convention
     assert Freebie.objects.filter(vendor=vendor, convention=con).count() == 3
+
+
+def test_edit_freebie_author_success() -> None:
+    user = get_user_model().objects.create_user(username="author1")
+    con = _make_con("Anime NYC", "anime-nyc")
+    freebie = _make_freebie(
+        name="Original Name",
+        vendor_name="Old Vendor",
+        con=con,
+        location="Booth 100",
+        requirements="Old Req",
+        created_by=user,
+    )
+
+    client = _authed_client(user)
+    resp = client.patch(
+        f"/api/v1/freebies/{freebie.id}/",
+        {
+            "name": "Updated Name",
+            "vendor_name": "New Vendor",
+            "location": "Booth 200",
+            "requirements": "New Req",
+            "description": "New Desc",
+        },
+    )
+    assert resp.status_code == status.HTTP_200_OK
+    data = resp.json()
+    assert data["name"] == "Updated Name"
+    assert data["vendor"]["name"] == "New Vendor"
+    assert data["location"] == "Booth 200"
+    assert data["requirements"] == "New Req"
+    assert data["description"] == "New Desc"
+    assert data["is_owner"] is True
+
+
+def test_edit_freebie_other_user_forbidden() -> None:
+    author = get_user_model().objects.create_user(username="real_author")
+    stranger = get_user_model().objects.create_user(username="stranger")
+    freebie = _make_freebie(name="Original Name", created_by=author)
+
+    client = _authed_client(stranger)
+    resp = client.patch(f"/api/v1/freebies/{freebie.id}/", {"name": "Hacked Name"})
+    assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_edit_freebie_unauthenticated_fails() -> None:
+    author = get_user_model().objects.create_user(username="some_author")
+    freebie = _make_freebie(name="Original Name", created_by=author)
+
+    client = APIClient()
+    resp = client.patch(f"/api/v1/freebies/{freebie.id}/", {"name": "Anon Name"})
+    assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_delete_freebie_author_success() -> None:
+    user = get_user_model().objects.create_user(username="deleter")
+    freebie = _make_freebie(name="To Delete", created_by=user)
+    UserFreebie.objects.create(user=user, freebie=freebie, claimed=False)
+
+    client = _authed_client(user)
+    resp = client.delete(f"/api/v1/freebies/{freebie.id}/")
+    assert resp.status_code == status.HTTP_204_NO_CONTENT
+    assert not Freebie.objects.filter(id=freebie.id).exists()
+    assert not UserFreebie.objects.filter(freebie_id=freebie.id).exists()
+
+
+def test_delete_freebie_other_user_forbidden() -> None:
+    author = get_user_model().objects.create_user(username="creator")
+    stranger = get_user_model().objects.create_user(username="bad_actor")
+    freebie = _make_freebie(name="Safe Item", created_by=author)
+
+    client = _authed_client(stranger)
+    resp = client.delete(f"/api/v1/freebies/{freebie.id}/")
+    assert resp.status_code == status.HTTP_403_FORBIDDEN
+    assert Freebie.objects.filter(id=freebie.id).exists()
+
+
+def test_delete_freebie_unauthenticated_fails() -> None:
+    author = get_user_model().objects.create_user(username="anon_target")
+    freebie = _make_freebie(name="Protected Item", created_by=author)
+
+    client = APIClient()
+    resp = client.delete(f"/api/v1/freebies/{freebie.id}/")
+    assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+    assert Freebie.objects.filter(id=freebie.id).exists()
+
+
+def test_edit_delete_staff_success() -> None:
+    author = get_user_model().objects.create_user(username="regular_user")
+    staff = get_user_model().objects.create_user(username="admin_user", is_staff=True)
+    freebie = _make_freebie(name="Original", created_by=author)
+
+    client = _authed_client(staff)
+    # Staff can edit
+    resp_edit = client.patch(f"/api/v1/freebies/{freebie.id}/", {"name": "Staff Moderated"})
+    assert resp_edit.status_code == status.HTTP_200_OK
+    assert resp_edit.json()["name"] == "Staff Moderated"
+    assert resp_edit.json()["is_owner"] is False
+
+    # Staff can delete
+    resp_del = client.delete(f"/api/v1/freebies/{freebie.id}/")
+    assert resp_del.status_code == status.HTTP_204_NO_CONTENT
+    assert not Freebie.objects.filter(id=freebie.id).exists()
+
+
+def test_freebie_is_owner_field() -> None:
+    author = get_user_model().objects.create_user(username="owner_user")
+    other = get_user_model().objects.create_user(username="other_user")
+    freebie = _make_freebie(name="Owner Check", created_by=author)
+
+    # When accessed by author
+    client_author = _authed_client(author)
+    resp1 = client_author.get(f"/api/v1/freebies/{freebie.id}/")
+    assert resp1.status_code == status.HTTP_200_OK
+    assert resp1.json()["is_owner"] is True
+
+    # When accessed by another user
+    client_other = _authed_client(other)
+    resp2 = client_other.get(f"/api/v1/freebies/{freebie.id}/")
+    assert resp2.status_code == status.HTTP_200_OK
+    assert resp2.json()["is_owner"] is False
+
+    # When accessed anonymously
+    client_anon = APIClient()
+    resp3 = client_anon.get(f"/api/v1/freebies/{freebie.id}/")
+    assert resp3.status_code == status.HTTP_200_OK
+    assert resp3.json()["is_owner"] is False
+
 

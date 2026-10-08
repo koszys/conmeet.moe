@@ -1,4 +1,3 @@
-from conventions.models import Convention
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -7,7 +6,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Freebie, UserFreebie, Vendor
-from .serializers import FreebieCreateSerializer, FreebieSerializer, VendorSerializer
+from .permissions import IsAuthorOrReadOnly
+from .serializers import (
+    FreebieCreateSerializer,
+    FreebieSerializer,
+    FreebieUpdateSerializer,
+    VendorSerializer,
+)
 
 
 class FreebieListCreateView(generics.ListCreateAPIView):
@@ -31,7 +36,10 @@ class FreebieListCreateView(generics.ListCreateAPIView):
         convention_param = self.request.query_params.get("convention")
         if convention_param:
             if convention_param.isdigit():
-                qs = qs.filter(Q(convention_id=int(convention_param)) | Q(convention__slug=convention_param))
+                qs = qs.filter(
+                    Q(convention_id=int(convention_param))
+                    | Q(convention__slug=convention_param)
+                )
             else:
                 qs = qs.filter(convention__slug=convention_param)
 
@@ -53,6 +61,13 @@ class FreebieListCreateView(generics.ListCreateAPIView):
         saved_param = self.request.query_params.get("saved")
         unclaimed_param = self.request.query_params.get("unclaimed")
         claimed_param = self.request.query_params.get("claimed")
+        uploaded_param = self.request.query_params.get("uploaded")
+
+        if uploaded_param == "true":
+            user = self.request.user
+            if not user.is_authenticated:
+                return qs.none()
+            qs = qs.filter(created_by=user)
 
         if saved_param == "true" or unclaimed_param == "true" or claimed_param == "true":
             user = self.request.user
@@ -87,11 +102,26 @@ class FreebieListCreateView(generics.ListCreateAPIView):
         return Response(out_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class FreebieDetailView(generics.RetrieveAPIView):
-    serializer_class = FreebieSerializer
+class FreebieDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthorOrReadOnly]
     queryset = Freebie.objects.select_related("vendor", "convention", "created_by").annotate(
         _save_count=Count("saved_by")
     )
+
+    def get_serializer_class(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return FreebieUpdateSerializer
+        return FreebieSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        freebie = serializer.save()
+
+        out_serializer = FreebieSerializer(freebie, context=self.get_serializer_context())
+        return Response(out_serializer.data, status=status.HTTP_200_OK)
 
 
 class FreebieSaveToggleView(APIView):
@@ -131,7 +161,11 @@ class FreebieClaimToggleView(APIView):
         return Response(
             {
                 "is_claimed": user_freebie.claimed,
-                "claimed_at": user_freebie.claimed_at.isoformat() if user_freebie.claimed_at else None,
+                "claimed_at": (
+                    user_freebie.claimed_at.isoformat()
+                    if user_freebie.claimed_at
+                    else None
+                ),
             },
             status=status.HTTP_200_OK,
         )
@@ -155,6 +189,9 @@ class VendorListView(generics.ListAPIView):
 
         q_param = self.request.query_params.get("q")
         if q_param:
-            qs = qs.filter(Q(name__icontains=q_param.strip()) | Q(description__icontains=q_param.strip()))
+            qs = qs.filter(
+                Q(name__icontains=q_param.strip())
+                | Q(description__icontains=q_param.strip())
+            )
 
         return qs

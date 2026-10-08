@@ -15,6 +15,7 @@ import {
   Plus,
   Rows3,
   Search,
+  UploadCloud,
   X,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth';
@@ -25,7 +26,7 @@ import { useFreebies, useVendors } from '../api/queries';
 import { FreebieCard } from './FreebieCard';
 import { FreebieSkeleton } from './FreebieSkeleton';
 
-type FilterTab = 'all' | 'saved';
+type FilterTab = 'all' | 'saved' | 'uploaded';
 
 export function FreebieBoard({
   conventionSlug,
@@ -88,7 +89,7 @@ export function FreebieBoard({
   }
 
   function handleTabClick(tab: FilterTab) {
-    if (tab === 'saved' && !user) {
+    if ((tab === 'saved' || tab === 'uploaded') && !user) {
       router.push(`/login?next=${encodeURIComponent(pathname)}`);
       return;
     }
@@ -96,14 +97,19 @@ export function FreebieBoard({
   }
 
   const counts = useMemo(() => {
-    if (!allFreebies) return { all: 0, saved: 0, unclaimed: 0, claimed: 0 };
+    if (!allFreebies) return { all: 0, saved: 0, unclaimed: 0, claimed: 0, uploaded: 0 };
     return {
       all: allFreebies.filter((f) => !f.is_claimed).length,
       saved: allFreebies.filter((f) => f.is_saved).length,
       unclaimed: allFreebies.filter((f) => f.is_saved && !f.is_claimed).length,
       claimed: allFreebies.filter((f) => f.is_saved && f.is_claimed).length,
+      uploaded: user
+        ? allFreebies.filter(
+            (f) => f.is_owner || (f.created_by !== null && f.created_by === user.id)
+          ).length
+        : 0,
     };
-  }, [allFreebies]);
+  }, [allFreebies, user]);
 
   const allDrops = useMemo(() => {
     if (!allFreebies) return [];
@@ -119,6 +125,13 @@ export function FreebieBoard({
     if (!allFreebies) return [];
     return allFreebies.filter((f) => !f.is_claimed && f.is_saved);
   }, [allFreebies]);
+
+  const uploadedDrops = useMemo(() => {
+    if (!allFreebies || !user) return [];
+    return allFreebies.filter(
+      (f) => f.is_owner || (f.created_by !== null && f.created_by === user.id)
+    );
+  }, [allFreebies, user]);
 
   const unclaimedSaved = useMemo(() => {
     if (!allFreebies) return [];
@@ -241,6 +254,40 @@ export function FreebieBoard({
               {counts.saved}
             </span>
           </button>
+
+          {/* Uploaded Freebies */}
+          <button
+            type="button"
+            onClick={() => handleTabClick('uploaded')}
+            className={cn(
+              'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
+              activeTab === 'uploaded'
+                ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+                : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
+            )}
+          >
+            <UploadCloud
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'uploaded'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+              )}
+            />
+            <span>
+              <span className="hidden md:inline">My </span>Uploads
+            </span>
+            <span
+              className={cn(
+                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                activeTab === 'uploaded'
+                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                  : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+              )}
+            >
+              {counts.uploaded}
+            </span>
+          </button>
         </div>
 
         {/* Search, Vendor Filter, and Density Toggle */}
@@ -255,7 +302,9 @@ export function FreebieBoard({
               placeholder={
                 activeTab === 'saved'
                   ? 'Search saved freebies, booths...'
-                  : 'Search items, booths...'
+                  : activeTab === 'uploaded'
+                    ? 'Search your uploaded freebies...'
+                    : 'Search items, booths...'
               }
               className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
             />
@@ -434,6 +483,66 @@ export function FreebieBoard({
                 </div>
               </div>
             )}
+          </div>
+        )
+      ) : activeTab === 'uploaded' ? (
+        uploadedDrops.length === 0 ? (
+          <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
+            <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+              {isFiltered ? (
+                <Search className="text-ink h-7 w-7 dark:text-zinc-100" />
+              ) : (
+                <UploadCloud className="text-ink h-7 w-7 dark:text-zinc-100" />
+              )}
+            </div>
+            <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
+              {isFiltered ? 'No Matching Uploads' : 'No Uploaded Freebies Yet'}
+            </h3>
+            <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
+              {isFiltered
+                ? debouncedSearch
+                  ? `No uploaded freebies match \u201c${debouncedSearch}\u201d. Try clearing your search.`
+                  : 'No uploaded freebies match the selected vendor filter.'
+                : 'You haven\u2019t posted any freebies for this convention yet. Share one with the community!'}
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              {isFiltered ? (
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className={cn(
+                    CONBLOCK,
+                    'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                  )}
+                >
+                  <X className="h-4 w-4" />
+                  Clear Filters
+                </button>
+              ) : (
+                <Link
+                  href={`/conventions/${conventionSlug}/freebies/new`}
+                  className={cn(
+                    CONBLOCK_PRIMARY,
+                    'inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase'
+                  )}
+                >
+                  <Plus className="h-4 w-4 stroke-3" />
+                  Post a Freebie
+                </Link>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {uploadedDrops.map((freebie) => (
+              <FreebieCard
+                key={freebie.id}
+                freebie={freebie}
+                condensed={isCardCondensed(freebie.id)}
+                onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                canManage
+              />
+            ))}
           </div>
         )
       ) : /* activeTab === 'saved' */

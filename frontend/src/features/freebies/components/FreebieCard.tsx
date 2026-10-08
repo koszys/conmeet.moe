@@ -11,15 +11,19 @@ import {
   ChevronUp,
   Clock,
   MapPin,
+  Pencil,
   Square,
+  Trash2,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK } from '@/shared/components/ui/button';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
 import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
 import { FreebieImageModal } from './FreebieImageModal';
+import { EditFreebieModal } from './EditFreebieModal';
+import { DeleteFreebieModal } from './DeleteFreebieModal';
 
 export function FreebieCard({
   freebie,
@@ -27,12 +31,14 @@ export function FreebieCard({
   defaultCondensed = false,
   condensed: externalCondensed,
   onToggleCondensed,
+  canManage = false,
 }: {
   freebie: Freebie;
   className?: string;
   defaultCondensed?: boolean;
   condensed?: boolean;
   onToggleCondensed?: () => void;
+  canManage?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -40,7 +46,13 @@ export function FreebieCard({
 
   const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isCondensed = externalCondensed !== undefined ? externalCondensed : internalCondensed;
+
+  const isOwner = Boolean(
+    user && (freebie.is_owner || (freebie.created_by !== null && freebie.created_by === user.id))
+  );
 
   const toggleSave = useToggleSaveFreebie();
   const toggleClaim = useToggleClaimFreebie();
@@ -266,25 +278,66 @@ export function FreebieCard({
             )}
           </button>
 
-          {/* Save / Bookmark button */}
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={toggleSave.isPending}
-            aria-label={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
-            title={freebie.is_saved ? 'Saved' : 'Save'}
-            className={cn(
-              CONBLOCK,
-              'inline-flex h-8 w-8 shrink-0 items-center justify-center text-xs font-bold transition-all',
-              freebie.is_saved
-                ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
-            )}
-          >
-            <Bookmark
-              className={cn('h-4 w-4', freebie.is_saved ? 'fill-current stroke-2' : 'stroke-2')}
-            />
-          </button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {/* Save / Bookmark button */}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={toggleSave.isPending}
+              aria-label={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
+              title={freebie.is_saved ? 'Saved' : 'Save'}
+              className={cn(
+                CONBLOCK,
+                'inline-flex h-8 w-8 shrink-0 items-center justify-center text-xs font-bold transition-all',
+                freebie.is_saved
+                  ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
+                  : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              )}
+            >
+              <Bookmark
+                className={cn('h-4 w-4', freebie.is_saved ? 'fill-current stroke-2' : 'stroke-2')}
+              />
+            </button>
+
+            {/* Owner Edit & Delete Buttons (Only in My Uploads) */}
+            {canManage && isOwner ? (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsEditOpen(true);
+                  }}
+                  aria-label={`Edit ${freebie.name}`}
+                  title="Edit freebie"
+                  className={cn(
+                    CONBLOCK,
+                    'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-zinc-700 transition-all hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
+                  )}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsDeleteOpen(true);
+                  }}
+                  aria-label={`Delete ${freebie.name}`}
+                  title="Delete freebie"
+                  className={cn(
+                    CONBLOCK,
+                    'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-rose-600 transition-all hover:bg-rose-50 hover:text-rose-700 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-rose-950/40'
+                  )}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -293,6 +346,22 @@ export function FreebieCard({
           freebie={freebie}
           isOpen={isImageOpen}
           onClose={() => setIsImageOpen(false)}
+        />
+      ) : null}
+
+      {isEditOpen ? (
+        <EditFreebieModal
+          freebie={freebie}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+        />
+      ) : null}
+
+      {isDeleteOpen ? (
+        <DeleteFreebieModal
+          freebie={freebie}
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
         />
       ) : null}
     </article>

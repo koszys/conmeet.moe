@@ -6,7 +6,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   ArrowLeft,
   Bookmark,
-  BookmarkX,
   Check,
   CheckSquare,
   ChevronDown,
@@ -44,7 +43,6 @@ export function FreebieBoard({
   const [searchQuery, setSearchQuery] = useState('');
   const [allCondensed, setAllCondensed] = useState(false);
   const [cardOverrides, setCardOverrides] = useState<Record<number, boolean>>({});
-  const [hideSavedInAll, setHideSavedInAll] = useState(false);
   const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
   const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -296,34 +294,6 @@ export function FreebieBoard({
             </select>
           ) : null}
 
-          {/* Hide Saved Toggle Button (Only in All Drops) */}
-          {activeTab === 'all' && (
-            <button
-              type="button"
-              onClick={() => setHideSavedInAll((prev) => !prev)}
-              aria-pressed={hideSavedInAll}
-              title={
-                hideSavedInAll ? 'Show bookmarked drops in feed' : 'Hide bookmarked drops from feed'
-              }
-              className={cn(
-                CONBLOCK,
-                'inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 px-3 text-xs font-bold uppercase transition-all',
-                hideSavedInAll
-                  ? 'border-ink bg-accent text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-                  : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
-              )}
-            >
-              {hideSavedInAll ? (
-                <BookmarkX className="h-4 w-4 stroke-[2.5]" />
-              ) : (
-                <Bookmark className="h-4 w-4 stroke-2" />
-              )}
-              <span className="hidden sm:inline">
-                {hideSavedInAll ? 'Saved Hidden' : 'Hide Saved'}
-              </span>
-            </button>
-          )}
-
           {/* View Density Segmented Toggle (Cards vs Condensed) */}
           <div
             className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900"
@@ -421,50 +391,6 @@ export function FreebieBoard({
               )}
             </div>
           </div>
-        ) : hideSavedInAll ? (
-          unsavedDrops.length === 0 ? (
-            <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-8 text-center dark:bg-zinc-900/50">
-              <div className="border-ink bg-accent mx-auto flex h-10 w-10 items-center justify-center border-2 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                <BookmarkX className="h-5 w-5 stroke-[2.5]" />
-              </div>
-              <p className="mt-3 text-sm font-bold text-zinc-800 dark:text-zinc-200">
-                {isFiltered
-                  ? 'No unsaved drops match your search'
-                  : "You've saved all active drops!"}
-              </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {isFiltered
-                  ? 'Matching drops might already be saved or filtered out.'
-                  : 'Switch to My Saved to view your checklist or toggle off \u201cSaved Hidden\u201d.'}
-              </p>
-              {isFiltered ? (
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={handleClearFilters}
-                    className={cn(
-                      CONBLOCK,
-                      'inline-flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase'
-                    )}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                    Clear Filters
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {unsavedDrops.map((freebie) => (
-                <FreebieCard
-                  key={freebie.id}
-                  freebie={freebie}
-                  condensed={isCardCondensed(freebie.id)}
-                  onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
-                />
-              ))}
-            </div>
-          )
         ) : (
           <div className="space-y-8">
             {/* Unsaved drops (Top) */}

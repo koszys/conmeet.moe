@@ -98,14 +98,14 @@ export function FreebieItemCard({
             htmlFor={`items.${index}.location`}
             className="font-display block text-xs tracking-wider uppercase"
           >
-            Booth / Hall Location
+            Booth / Hall Location <span className="text-accent">*</span>
           </label>
-          <CharCounter current={(itemVal.location || '').length} max={150} />
+          <CharCounter current={(itemVal.location || '').length} max={50} />
         </div>
         <input
           id={`items.${index}.location`}
           type="text"
-          maxLength={150}
+          maxLength={50}
           placeholder="e.g. Booth #1420, Hall B #204"
           {...register(`items.${index}.location`)}
           onKeyDown={(e) => {
@@ -176,7 +176,7 @@ export function FreebieItemCard({
             htmlFor={`items.${index}.requirements`}
             className="font-display block text-xs tracking-wider uppercase"
           >
-            How to Get It (Requirements)
+            How to Get It (Requirements) <span className="text-accent">*</span>
           </label>
           <CharCounter current={(itemVal.requirements || '').length} max={200} />
         </div>

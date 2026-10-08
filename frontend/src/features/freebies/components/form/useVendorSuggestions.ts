@@ -192,12 +192,13 @@ export function useVendorSuggestions({
       (v) => v.name.toLowerCase() === vendorName.trim().toLowerCase()
     );
     const canonicalName = match ? match.name : vendorName.trim();
-
+    const isVendorChanging =
+      canonicalName.toLowerCase() !== selectedVendorName.trim().toLowerCase();
     const knownLocs = vendorLocationsMap.get(canonicalName.toLowerCase()) || [];
     let autoLoc: string | undefined = undefined;
 
     if (knownLocs.length > 0) {
-      if (!firstItemLocation.trim() || autoFilledFromVendor) {
+      if (!firstItemLocation.trim() || autoFilledFromVendor || isVendorChanging) {
         autoLoc = knownLocs[0];
         setAutoFilledFromVendor(canonicalName);
       }

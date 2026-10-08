@@ -61,11 +61,11 @@ export function useConventionNav() {
 export function ConventionNavProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    subscribeSidebar,
+    () => true,
+    () => false
+  );
 
   const sidebarCollapsed = useSyncExternalStore(
     subscribeSidebar,

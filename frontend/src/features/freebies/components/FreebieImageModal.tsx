@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { Clock, MapPin, X } from 'lucide-react';
@@ -8,6 +8,8 @@ import { CONBLOCK } from '@/shared/components/ui/button';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
+
+const emptySubscribe = () => () => {};
 
 export function FreebieImageModal({
   freebie,
@@ -18,11 +20,11 @@ export function FreebieImageModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -43,7 +45,7 @@ export function FreebieImageModal({
     };
   }, [isOpen, onClose]);
 
-  if (!mounted || !isOpen) return null;
+  if (!isMounted || !isOpen) return null;
 
   const fullImageUrl = freebie.image || freebie.image_thumb;
   if (!fullImageUrl) return null;

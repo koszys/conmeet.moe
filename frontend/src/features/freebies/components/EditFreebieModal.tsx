@@ -3,13 +3,12 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { Camera, Check, Loader2, Trash2, Undo2, X } from 'lucide-react';
+import { Camera, Check, Loader2, RotateCw, Trash2, Undo2, X } from 'lucide-react';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
-import { useFreebies, useVendors } from '../api/queries';
 import { useUpdateFreebie } from '../api/mutations';
-import { CharCounter } from './form/CharCounter';
+import { CharCounter, useVendorSuggestions, VendorSuggestDropdown } from './form';
 
 interface EditFreebieModalProps {
   freebie: Freebie;
@@ -43,6 +42,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
   const [location, setLocation] = useState(freebie.location || '');
   const [requirements, setRequirements] = useState(freebie.requirements || '');
   const [description, setDescription] = useState(freebie.description || '');
+  const [showAllVendorPills, setShowAllVendorPills] = useState(false);
 
   // Photo state
   const [clearImage, setClearImage] = useState(false);
@@ -79,26 +79,21 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
     };
   }, [onClose, updateMutation.isPending]);
 
-  // Query vendors and freebies for suggestions & known booths
+  // Shared vendor search, suggestions, and known booths
   const conventionSlug = freebie.convention_slug || undefined;
-  const { data: conventionVendors } = useVendors(conventionSlug);
-  const { data: conventionFreebies } = useFreebies(
-    conventionSlug ? { convention: conventionSlug } : undefined
-  );
-
-  // Known booth locations for the current typed vendor
-  const knownBooths = useMemo(() => {
-    if (!conventionFreebies) return [];
-    const trimmed = vendorName.trim().toLowerCase();
-    if (!trimmed) return [];
-    const booths = new Set<string>();
-    for (const f of conventionFreebies) {
-      if (f.vendor?.name?.toLowerCase() === trimmed && f.location?.trim()) {
-        booths.add(f.location.trim());
+  const suggestions = useVendorSuggestions({
+    conventionSlug,
+    selectedVendorName: vendorName,
+    firstItemLocation: location,
+    onSelectVendor: (canonicalName, autoLocation) => {
+      setVendorName(canonicalName);
+      if (autoLocation && !location.trim()) {
+        setLocation(autoLocation);
       }
-    }
-    return Array.from(booths);
-  }, [conventionFreebies, vendorName]);
+    },
+    focusNextElementId: 'edit_item_name',
+  });
+  const knownBooths = suggestions.knownBooths;
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -250,17 +245,75 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 >
                   Vendor / Company Name <span className="text-accent">*</span>
                 </label>
-                <CharCounter current={vendorName.length} max={50} />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => suggestions.refreshVendors()}
+                    disabled={suggestions.isRefreshingVendors}
+                    className="cursor-pointer text-[10px] font-bold tracking-wider text-zinc-500 uppercase hover:text-zinc-800 disabled:opacity-50 dark:text-zinc-400 dark:hover:text-zinc-200"
+                    title="Refresh convention vendors"
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      <RotateCw
+                        className={cn(
+                          'h-2.5 w-2.5',
+                          suggestions.isRefreshingVendors && 'animate-spin'
+                        )}
+                      />
+                      Refresh
+                    </span>
+                  </button>
+                  <CharCounter current={vendorName.length} max={50} />
+                </div>
               </div>
-              <input
-                id="edit_vendor_name"
-                type="text"
-                maxLength={50}
-                value={vendorName}
-                onChange={(e) => setVendorName(e.target.value)}
-                placeholder="e.g. HoYoverse, Good Smile Company"
-                className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-              />
+
+              <div className="relative mt-1.5" ref={suggestions.inputWrapRef}>
+                <input
+                  id="edit_vendor_name"
+                  type="text"
+                  autoComplete="off"
+                  maxLength={50}
+                  value={vendorName}
+                  onChange={(e) => {
+                    setVendorName(e.target.value);
+                    if (!suggestions.isSuggestOpen) suggestions.setIsSuggestOpen(true);
+                    suggestions.setHighlightedIndex(-1);
+                  }}
+                  onFocus={() => suggestions.setIsSuggestOpen(true)}
+                  onKeyDown={suggestions.handleVendorKeyDown}
+                  placeholder="e.g. HoYoverse, Good Smile Company"
+                  className="border-ink focus:ring-accent h-10 w-full border-2 bg-white pr-9 pl-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+                />
+
+                {/* Instant Clear Button */}
+                {vendorName ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setVendorName('');
+                      suggestions.setIsSuggestOpen(false);
+                      suggestions.setHighlightedIndex(-1);
+                    }}
+                    className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                    title="Clear vendor name"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ) : null}
+
+                {/* Auto-suggest Dropdown */}
+                {suggestions.isSuggestOpen && (
+                  <VendorSuggestDropdown
+                    filteredSuggestions={suggestions.filteredSuggestions}
+                    selectedVendorName={vendorName}
+                    highlightedIndex={suggestions.highlightedIndex}
+                    suggestListRef={suggestions.suggestListRef}
+                    onSelectVendor={suggestions.handleSelectVendor}
+                    onHighlightIndex={suggestions.setHighlightedIndex}
+                  />
+                )}
+              </div>
+
               {errors.vendorName ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
                   {errors.vendorName}
@@ -268,29 +321,49 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
               ) : null}
 
               {/* Convention vendor pills */}
-              {conventionVendors && conventionVendors.length > 0 ? (
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-                    Con vendors:
-                  </span>
-                  {conventionVendors.slice(0, 6).map((v) => {
-                    const isSelected = vendorName.trim().toLowerCase() === v.name.toLowerCase();
-                    return (
+              {suggestions.conventionVendors && suggestions.conventionVendors.length > 0 ? (
+                <div className="mt-2 space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+                      Con vendors:
+                    </span>
+                    {(showAllVendorPills
+                      ? suggestions.conventionVendors
+                      : suggestions.conventionVendors.slice(0, 6)
+                    ).map((v) => {
+                      const isSelected = vendorName.trim().toLowerCase() === v.name.toLowerCase();
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => {
+                            suggestions.handleSelectVendor(v.name, {
+                              toggleIfSelected: true,
+                            });
+                          }}
+                          className={cn(
+                            'border-ink cursor-pointer border px-2 py-0.5 text-[10px] font-bold uppercase transition-all',
+                            isSelected
+                              ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
+                              : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                          )}
+                        >
+                          {v.name}
+                        </button>
+                      );
+                    })}
+                    {suggestions.conventionVendors.length > 6 && (
                       <button
-                        key={v.id}
                         type="button"
-                        onClick={() => setVendorName(v.name)}
-                        className={cn(
-                          'border-ink cursor-pointer border px-2 py-0.5 text-[10px] font-bold uppercase transition-all',
-                          isSelected
-                            ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
-                            : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-                        )}
+                        onClick={() => setShowAllVendorPills((prev) => !prev)}
+                        className="cursor-pointer text-[10px] font-bold text-zinc-500 underline dark:text-zinc-400"
                       >
-                        {v.name}
+                        {showAllVendorPills
+                          ? 'Show less'
+                          : `+${suggestions.conventionVendors.length - 6} more`}
                       </button>
-                    );
-                  })}
+                    )}
+                  </div>
                 </div>
               ) : null}
             </div>

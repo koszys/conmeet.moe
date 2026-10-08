@@ -13,23 +13,27 @@ export interface SuggestionVendor {
 }
 
 interface UseVendorSuggestionsProps {
-  conventionSlug: string;
+  conventionSlug?: string;
   selectedVendorName: string;
-  setValue: UseFormSetValue<MultiFreebieFormValues>;
+  onSelectVendor?: (canonicalName: string, autoLocation?: string) => void;
+  setValue?: UseFormSetValue<MultiFreebieFormValues>;
   firstItemLocation?: string;
+  focusNextElementId?: string;
 }
 
 export function useVendorSuggestions({
   conventionSlug,
   selectedVendorName,
+  onSelectVendor,
   setValue,
   firstItemLocation = '',
+  focusNextElementId = 'items.0.name',
 }: UseVendorSuggestionsProps) {
   const {
     data: conventionVendors,
     refetch: refetchConventionVendors,
     isFetching: isFetchingConventionVendors,
-  } = useVendors(conventionSlug, { staleTime: 0, refetchOnMount: 'always' });
+  } = useVendors(conventionSlug || undefined, { staleTime: 0, refetchOnMount: 'always' });
 
   const {
     data: allVendors,
@@ -41,7 +45,7 @@ export function useVendorSuggestions({
     data: conventionFreebies,
     refetch: refetchConventionFreebies,
     isFetching: isFetchingConventionFreebies,
-  } = useFreebies({ convention: conventionSlug });
+  } = useFreebies(conventionSlug ? { convention: conventionSlug } : undefined);
 
   async function refreshVendors() {
     await Promise.all([
@@ -151,6 +155,11 @@ export function useVendorSuggestions({
     }
   }, [highlightedIndex]);
 
+  // Known booth locations for the currently typed/selected vendor
+  const knownBooths = useMemo(() => {
+    return vendorLocationsMap.get(selectedVendorName.trim().toLowerCase()) || [];
+  }, [vendorLocationsMap, selectedVendorName]);
+
   // Selection & unselection handler
   function handleSelectVendor(
     vendorName: string,
@@ -160,14 +169,19 @@ export function useVendorSuggestions({
 
     if (options?.toggleIfSelected && isSelected) {
       // Explicit toggle off / Unselect
-      setValue('vendor_name', '', { shouldValidate: true });
-      if (
-        autoFilledFromVendor &&
-        autoFilledFromVendor.toLowerCase() === vendorName.trim().toLowerCase()
-      ) {
-        setValue('items.0.location', '', { shouldValidate: true });
-        setAutoFilledFromVendor(null);
+      if (setValue) {
+        setValue('vendor_name', '', { shouldValidate: true });
+        if (
+          autoFilledFromVendor &&
+          autoFilledFromVendor.toLowerCase() === vendorName.trim().toLowerCase()
+        ) {
+          setValue('items.0.location', '', { shouldValidate: true });
+        }
       }
+      if (onSelectVendor) {
+        onSelectVendor('', '');
+      }
+      setAutoFilledFromVendor(null);
       setIsSuggestOpen(false);
       setHighlightedIndex(-1);
       return;
@@ -179,26 +193,37 @@ export function useVendorSuggestions({
     );
     const canonicalName = match ? match.name : vendorName.trim();
 
-    setValue('vendor_name', canonicalName, { shouldValidate: true });
-
-    // Auto-fill first item's location if currently empty and known
     const knownLocs = vendorLocationsMap.get(canonicalName.toLowerCase()) || [];
+    let autoLoc: string | undefined = undefined;
+
     if (knownLocs.length > 0) {
       if (!firstItemLocation.trim() || autoFilledFromVendor) {
-        setValue('items.0.location', knownLocs[0], { shouldValidate: true });
+        autoLoc = knownLocs[0];
         setAutoFilledFromVendor(canonicalName);
       }
     } else if (autoFilledFromVendor) {
-      setValue('items.0.location', '', { shouldValidate: true });
       setAutoFilledFromVendor(null);
+    }
+
+    if (setValue) {
+      setValue('vendor_name', canonicalName, { shouldValidate: true });
+      if (autoLoc !== undefined) {
+        setValue('items.0.location', autoLoc, { shouldValidate: true });
+      } else if (autoFilledFromVendor) {
+        setValue('items.0.location', '', { shouldValidate: true });
+      }
+    }
+
+    if (onSelectVendor) {
+      onSelectVendor(canonicalName, autoLoc);
     }
 
     setIsSuggestOpen(false);
     setHighlightedIndex(-1);
 
-    if (options?.advanceFocus) {
+    if (options?.advanceFocus && focusNextElementId) {
       requestAnimationFrame(() => {
-        const target = document.getElementById('items.0.name');
+        const target = document.getElementById(focusNextElementId);
         if (target) {
           target.focus();
           target.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -257,10 +282,12 @@ export function useVendorSuggestions({
       } else {
         setIsSuggestOpen(false);
         setHighlightedIndex(-1);
-        const loc = document.getElementById('items.0.name');
-        if (loc) {
-          loc.focus();
-          loc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (focusNextElementId) {
+          const loc = document.getElementById(focusNextElementId);
+          if (loc) {
+            loc.focus();
+            loc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         }
       }
     }
@@ -268,9 +295,12 @@ export function useVendorSuggestions({
 
   return {
     conventionVendors,
+    allVendors,
+    conventionFreebies,
     vendorLocationsMap,
     combinedVendors,
     filteredSuggestions,
+    knownBooths,
     isSuggestOpen,
     setIsSuggestOpen,
     highlightedIndex,

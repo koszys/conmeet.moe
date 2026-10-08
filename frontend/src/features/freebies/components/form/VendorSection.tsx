@@ -144,11 +144,11 @@ export function VendorSection({
 
         {/* Quick select existing vendors with toggle-to-unselect and +X more expansion */}
         {conventionVendors && conventionVendors.length > 0 ? (
-          <div className="mt-2.5">
+          <div className="mt-2.5 space-y-1.5">
+            <span className="block text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
+              Existing at this con ({conventionVendors.length}):
+            </span>
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
-                Existing at this con ({conventionVendors.length}):
-              </span>
               {(showAllPills ? conventionVendors : conventionVendors.slice(0, 8)).map((v) => {
                 const isSelected = selectedVendorName.trim().toLowerCase() === v.name.toLowerCase();
                 return (

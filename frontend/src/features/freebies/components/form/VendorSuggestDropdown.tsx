@@ -83,11 +83,6 @@ export function VendorSuggestDropdown({
                   <span className="truncate font-semibold text-zinc-900 dark:text-zinc-100">
                     {highlightMatch(v.name, selectedVendorName)}
                   </span>
-                  {isSelected && (
-                    <span className="border-ink border-accent/40 bg-accent/15 text-accent dark:border-accent/40 dark:bg-accent/20 inline-flex items-center gap-1 border px-1.5 py-0.5 text-[9px] font-bold dark:text-teal-300">
-                      Selected · click to unselect
-                    </span>
-                  )}
                 </div>
                 <div className="ml-2 flex shrink-0 items-center gap-1.5">
                   {v.isCurrentCon ? (

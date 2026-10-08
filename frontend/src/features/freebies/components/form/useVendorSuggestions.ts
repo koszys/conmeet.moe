@@ -9,7 +9,7 @@ export interface SuggestionVendor {
   id: number;
   name: string;
   isCurrentCon: boolean;
-  knownLocation?: string;
+  knownLocations: string[];
 }
 
 interface UseVendorSuggestionsProps {
@@ -36,13 +36,19 @@ export function useVendorSuggestions({
   const inputWrapRef = useRef<HTMLDivElement>(null);
   const suggestListRef = useRef<HTMLDivElement>(null);
 
-  // Build map of vendor name -> known booth location at this convention
-  const vendorLocationMap = useMemo(() => {
-    const map = new Map<string, string>();
+  // Build map of vendor name -> array of unique known booth locations at this convention
+  const vendorLocationsMap = useMemo(() => {
+    const map = new Map<string, string[]>();
     if (conventionFreebies) {
       for (const f of conventionFreebies) {
-        if (f.vendor?.name && f.location?.trim() && !map.has(f.vendor.name.toLowerCase())) {
-          map.set(f.vendor.name.toLowerCase(), f.location.trim());
+        if (f.vendor?.name && f.location?.trim()) {
+          const key = f.vendor.name.toLowerCase();
+          const loc = f.location.trim();
+          const existing = map.get(key) || [];
+          if (!existing.includes(loc)) {
+            existing.push(loc);
+            map.set(key, existing);
+          }
         }
       }
     }
@@ -63,7 +69,7 @@ export function useVendorSuggestions({
             id: v.id,
             name: v.name,
             isCurrentCon: true,
-            knownLocation: vendorLocationMap.get(lower),
+            knownLocations: vendorLocationsMap.get(lower) || [],
           });
         }
       }
@@ -78,14 +84,14 @@ export function useVendorSuggestions({
             id: v.id,
             name: v.name,
             isCurrentCon: false,
-            knownLocation: vendorLocationMap.get(lower),
+            knownLocations: vendorLocationsMap.get(lower) || [],
           });
         }
       }
     }
 
     return list;
-  }, [conventionVendors, allVendors, vendorLocationMap]);
+  }, [conventionVendors, allVendors, vendorLocationsMap]);
 
   // Filter suggestions by typed vendor query
   const filteredSuggestions = useMemo(() => {
@@ -120,6 +126,37 @@ export function useVendorSuggestions({
     }
   }, [highlightedIndex]);
 
+  // Toggle or select a booth location pill
+  function handleToggleLocation(booth: string) {
+    const trimmed = booth.trim();
+    if (!trimmed) return;
+
+    const currentParts = selectedLocation
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const matchIndex = currentParts.findIndex(
+      (part) => part.toLowerCase() === trimmed.toLowerCase()
+    );
+
+    let nextLocation = '';
+    if (matchIndex >= 0) {
+      currentParts.splice(matchIndex, 1);
+      nextLocation = currentParts.join(', ');
+    } else {
+      currentParts.push(trimmed);
+      nextLocation = currentParts.join(', ');
+    }
+
+    setValue('location', nextLocation, { shouldValidate: true });
+    if (nextLocation) {
+      setAutoFilledFromVendor(selectedVendorName.trim() || null);
+    } else {
+      setAutoFilledFromVendor(null);
+    }
+  }
+
   // Selection & unselection handler
   function handleSelectVendor(
     vendorName: string,
@@ -152,11 +189,12 @@ export function useVendorSuggestions({
 
     // Update location with known booth if available
     let effectiveLocation = selectedLocation.trim();
-    const knownLoc = vendorLocationMap.get(canonicalName.toLowerCase());
-    if (knownLoc) {
-      setValue('location', knownLoc, { shouldValidate: true });
+    const knownLocs = vendorLocationsMap.get(canonicalName.toLowerCase()) || [];
+    if (knownLocs.length > 0) {
+      const primaryLoc = knownLocs[0];
+      setValue('location', primaryLoc, { shouldValidate: true });
       setAutoFilledFromVendor(canonicalName);
-      effectiveLocation = knownLoc;
+      effectiveLocation = primaryLoc;
     } else if (autoFilledFromVendor) {
       // If previous location was auto-filled from an earlier vendor and new vendor has no known location, clear it
       setValue('location', '', { shouldValidate: true });
@@ -241,7 +279,7 @@ export function useVendorSuggestions({
 
   return {
     conventionVendors,
-    vendorLocationMap,
+    vendorLocationsMap,
     combinedVendors,
     filteredSuggestions,
     isSuggestOpen,
@@ -253,6 +291,7 @@ export function useVendorSuggestions({
     inputWrapRef,
     suggestListRef,
     handleSelectVendor,
+    handleToggleLocation,
     handleVendorKeyDown,
   };
 }

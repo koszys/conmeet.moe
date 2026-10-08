@@ -99,9 +99,11 @@ export function VendorSuggestDropdown({
                       Known vendor
                     </span>
                   )}
-                  {v.knownLocation && (
+                  {v.knownLocations && v.knownLocations.length > 0 && (
                     <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
-                      {v.knownLocation}
+                      {v.knownLocations.length === 1
+                        ? v.knownLocations[0]
+                        : `${v.knownLocations.length} booths`}
                     </span>
                   )}
                 </div>

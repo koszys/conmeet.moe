@@ -30,7 +30,7 @@ export function VendorSection({
 
   const {
     conventionVendors,
-    vendorLocationMap,
+    vendorLocationsMap,
     combinedVendors,
     filteredSuggestions,
     isSuggestOpen,
@@ -42,8 +42,12 @@ export function VendorSection({
     inputWrapRef,
     suggestListRef,
     handleSelectVendor,
+    handleToggleLocation,
     handleVendorKeyDown,
   } = suggestions;
+
+  const currentVendorLocations =
+    vendorLocationsMap.get(selectedVendorName.trim().toLowerCase()) || [];
 
   return (
     <div className="border-ink space-y-4 border-2 bg-white p-4 shadow-[3px_3px_0_var(--ink)] sm:p-5 dark:bg-zinc-900">
@@ -84,9 +88,9 @@ export function VendorSection({
                   (v) => v.name.toLowerCase() === val.toLowerCase()
                 );
                 if (match) {
-                  const knownLoc = vendorLocationMap.get(match.name.toLowerCase());
-                  if (knownLoc) {
-                    setValue('location', knownLoc, { shouldValidate: true });
+                  const knownLocs = vendorLocationsMap.get(match.name.toLowerCase()) || [];
+                  if (knownLocs.length > 0) {
+                    setValue('location', knownLocs[0], { shouldValidate: true });
                     setAutoFilledFromVendor(match.name);
                   }
                 }
@@ -191,13 +195,13 @@ export function VendorSection({
           <label htmlFor="location" className="font-display block text-xs tracking-wider uppercase">
             Booth / Hall Location
           </label>
-          <CharCounter current={selectedLocation.length} max={50} />
+          <CharCounter current={selectedLocation.length} max={150} />
         </div>
         <input
           id="location"
           type="text"
-          maxLength={50}
-          placeholder="e.g. Booth #1420 (Exhibitor Hall A)"
+          maxLength={150}
+          placeholder="e.g. Booth #1420, Hall B #204"
           {...register('location', {
             onChange: () => {
               if (autoFilledFromVendor) {
@@ -217,8 +221,48 @@ export function VendorSection({
           }}
           className="border-ink focus:ring-accent mt-1.5 h-11 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
         />
+
+        {/* Known Booths Pill Selector */}
+        {currentVendorLocations.length > 0 && (
+          <div className="mt-2 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+                Known booth{currentVendorLocations.length > 1 ? 's' : ''} for{' '}
+                {selectedVendorName.trim()} ({currentVendorLocations.length}):
+              </span>
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                Click to select or combine
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {currentVendorLocations.map((booth) => {
+                const currentParts = selectedLocation.split(',').map((s) => s.trim().toLowerCase());
+                const isSelected = currentParts.includes(booth.toLowerCase());
+
+                return (
+                  <button
+                    key={booth}
+                    type="button"
+                    onClick={() => handleToggleLocation(booth)}
+                    title={isSelected ? 'Click to remove this booth' : 'Click to add this booth'}
+                    className={cn(
+                      'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold transition-all',
+                      isSelected
+                        ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
+                        : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                    )}
+                  >
+                    {isSelected ? '✓ ' : '+ '}
+                    {booth}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {autoFilledFromVendor ? (
-          <p className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-teal-600 dark:text-teal-400">
+          <p className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-teal-600 dark:text-teal-400">
             <Sparkles className="h-3 w-3" /> Auto-filled from previous drops by{' '}
             {autoFilledFromVendor}
           </p>

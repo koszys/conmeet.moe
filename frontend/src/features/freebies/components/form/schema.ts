@@ -8,7 +8,7 @@ export const freebieItemSchema = z.object({
 
 export const multiFreebieSchema = z.object({
   vendor_name: z.string().min(1, 'Vendor / company name is required').max(50, 'Max 50 characters'),
-  location: z.string().max(50, 'Max 50 characters').optional(),
+  location: z.string().max(150, 'Max 150 characters').optional(),
   items: z.array(freebieItemSchema).min(1, 'At least one freebie item is required'),
 });
 

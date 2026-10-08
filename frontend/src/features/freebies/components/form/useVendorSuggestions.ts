@@ -25,9 +25,34 @@ export function useVendorSuggestions({
   selectedLocation,
   setValue,
 }: UseVendorSuggestionsProps) {
-  const { data: conventionVendors } = useVendors(conventionSlug);
-  const { data: allVendors } = useVendors();
-  const { data: conventionFreebies } = useFreebies({ convention: conventionSlug });
+  const {
+    data: conventionVendors,
+    refetch: refetchConventionVendors,
+    isFetching: isFetchingConventionVendors,
+  } = useVendors(conventionSlug, { staleTime: 0, refetchOnMount: 'always' });
+
+  const {
+    data: allVendors,
+    refetch: refetchAllVendors,
+    isFetching: isFetchingAllVendors,
+  } = useVendors(undefined, { staleTime: 0, refetchOnMount: 'always' });
+
+  const {
+    data: conventionFreebies,
+    refetch: refetchConventionFreebies,
+    isFetching: isFetchingConventionFreebies,
+  } = useFreebies({ convention: conventionSlug });
+
+  async function refreshVendors() {
+    await Promise.all([
+      refetchConventionVendors(),
+      refetchAllVendors(),
+      refetchConventionFreebies(),
+    ]);
+  }
+
+  const isRefreshingVendors =
+    isFetchingConventionVendors || isFetchingAllVendors || isFetchingConventionFreebies;
 
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -293,5 +318,7 @@ export function useVendorSuggestions({
     handleSelectVendor,
     handleToggleLocation,
     handleVendorKeyDown,
+    refreshVendors,
+    isRefreshingVendors,
   };
 }

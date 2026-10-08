@@ -1,6 +1,6 @@
 'use client';
 
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/shared/lib/api';
 import type { Freebie, FreebieFilters, Vendor } from '../types';
 
@@ -10,6 +10,7 @@ export const freebieKeys = {
   list: (filters: FreebieFilters) => [...freebieKeys.lists(), filters] as const,
   details: () => [...freebieKeys.all, 'detail'] as const,
   detail: (id: number) => [...freebieKeys.details(), id] as const,
+  allVendors: ['vendors'] as const,
   vendors: (conventionSlug?: string) => ['vendors', conventionSlug] as const,
 };
 
@@ -33,7 +34,13 @@ export function useFreebies(filters: FreebieFilters = {}) {
   });
 }
 
-export function useVendors(conventionSlug?: string) {
+export function useVendors(
+  conventionSlug?: string,
+  options?: Omit<
+    UseQueryOptions<Vendor[], Error, Vendor[], readonly ['vendors', string | undefined]>,
+    'queryKey' | 'queryFn'
+  >
+) {
   return useQuery({
     queryKey: freebieKeys.vendors(conventionSlug),
     queryFn: async () => {
@@ -42,5 +49,6 @@ export function useVendors(conventionSlug?: string) {
         : 'api/v1/vendors/';
       return api.get(endpoint).json<Vendor[]>();
     },
+    ...options,
   });
 }

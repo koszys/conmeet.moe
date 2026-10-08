@@ -77,6 +77,7 @@ export function useCreateFreebie() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: freebieKeys.all });
+      queryClient.invalidateQueries({ queryKey: freebieKeys.allVendors });
     },
   });
 }

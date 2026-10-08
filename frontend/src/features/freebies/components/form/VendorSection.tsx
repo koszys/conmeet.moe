@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { Sparkles, X } from 'lucide-react';
+import { RotateCw, Sparkles, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import type { MultiFreebieFormValues } from './schema';
 import { CharCounter } from './CharCounter';
@@ -44,6 +44,8 @@ export function VendorSection({
     handleSelectVendor,
     handleToggleLocation,
     handleVendorKeyDown,
+    refreshVendors,
+    isRefreshingVendors,
   } = suggestions;
 
   const currentVendorLocations =
@@ -145,9 +147,24 @@ export function VendorSection({
         {/* Quick select existing vendors with toggle-to-unselect and +X more expansion */}
         {conventionVendors && conventionVendors.length > 0 ? (
           <div className="mt-2.5 space-y-1.5">
-            <span className="block text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
-              Existing at this con ({conventionVendors.length}):
-            </span>
+            <div className="flex items-center justify-between">
+              <span className="block text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
+                Existing at this con ({conventionVendors.length}):
+              </span>
+              <button
+                type="button"
+                onClick={() => refreshVendors()}
+                disabled={isRefreshingVendors}
+                title="Refresh vendors and booth locations"
+                aria-label="Refresh vendors and booth locations"
+                className="inline-flex cursor-pointer items-center gap-1 text-[10px] font-bold tracking-wider text-zinc-500 uppercase transition-colors hover:text-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-400 dark:hover:text-zinc-200"
+              >
+                <RotateCw
+                  className={cn('h-3 w-3', isRefreshingVendors && 'text-accent animate-spin')}
+                />
+                <span>{isRefreshingVendors ? 'Syncing…' : 'Refresh'}</span>
+              </button>
+            </div>
             <div className="flex flex-wrap items-center gap-1.5">
               {(showAllPills ? conventionVendors : conventionVendors.slice(0, 8)).map((v) => {
                 const isSelected = selectedVendorName.trim().toLowerCase() === v.name.toLowerCase();

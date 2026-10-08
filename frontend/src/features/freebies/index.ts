@@ -6,3 +6,4 @@ export * from './components/FreebieBoard';
 export * from './components/FreebieForm';
 export * from './components/FreebieSkeleton';
 export * from './components/form';
+export * from './components/board';

@@ -6,7 +6,7 @@ export default function ConventionsPage() {
       <ConventionGrid
         id="all-conventions"
         heading="all conventions"
-        tagline="Every convention currently on the site — browse the full line-up, not just what's up next."
+        tagline="Browse what conventions are currently on this site."
         showRequest
       />
     </main>

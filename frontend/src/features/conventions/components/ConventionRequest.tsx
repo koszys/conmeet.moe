@@ -8,9 +8,8 @@ export function ConventionRequest() {
         don&apos;t see your con?
       </h3>
       <p className="mt-3 max-w-2xl leading-relaxed text-zinc-700 dark:text-zinc-300">
-        This site only lists conventions that are currently on the platform — it&apos;s not every
-        convention out there. You can submit a request to add a convention, and each request is
-        manually reviewed. Thank you!
+        This site only lists conventions that are currently on the platform. You can submit a
+        request to add a convention, and each request is manually reviewed. Thank you!
       </p>
 
       <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center">

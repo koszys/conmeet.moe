@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RotateCw, X } from 'lucide-react';
+import { ChevronUp, Plus, RotateCw, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { CharCounter } from './CharCounter';
 import { VendorSuggestDropdown } from './VendorSuggestDropdown';
@@ -28,7 +28,9 @@ export function VendorPicker({
   label = 'Vendor / Company Name',
   required = true,
 }: VendorPickerProps) {
-  const [showAllPills, setShowAllPills] = useState(false);
+  const INITIAL_LIMIT = 5;
+  const INCREMENT_STEP = 5;
+  const [visibleLimit, setVisibleLimit] = useState(INITIAL_LIMIT);
 
   const {
     conventionVendors,
@@ -48,6 +50,12 @@ export function VendorPicker({
     refreshVendors,
     isRefreshingVendors,
   } = suggestions;
+
+  const totalVendors = conventionVendors?.length || 0;
+  const displayedVendors = conventionVendors ? conventionVendors.slice(0, visibleLimit) : [];
+  const hasMore = visibleLimit < totalVendors;
+  const nextIncrement = Math.min(INCREMENT_STEP, totalVendors - visibleLimit);
+  const canCollapse = visibleLimit > INITIAL_LIMIT;
 
   return (
     <div>
@@ -130,12 +138,12 @@ export function VendorPicker({
         <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">{error}</p>
       ) : null}
 
-      {/* Quick select existing vendors with toggle-to-unselect and +X more expansion */}
+      {/* Quick select existing vendors with incremental +X more and show less controls */}
       {conventionVendors && conventionVendors.length > 0 ? (
         <div className="mt-2.5 space-y-1.5">
           <div className="flex items-center justify-between">
             <span className="block text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
-              Existing at this con ({conventionVendors.length}):
+              Existing at this con ({totalVendors}):
             </span>
             <button
               type="button"
@@ -143,16 +151,14 @@ export function VendorPicker({
               disabled={isRefreshingVendors}
               title="Refresh vendors and booth locations"
               aria-label="Refresh vendors and booth locations"
-              className="inline-flex cursor-pointer items-center gap-1 text-[10px] font-bold tracking-wider text-zinc-500 uppercase transition-colors hover:text-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-400 dark:hover:text-zinc-200"
+              className="border-ink bg-accent inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-950"
             >
-              <RotateCw
-                className={cn('h-3 w-3', isRefreshingVendors && 'text-accent animate-spin')}
-              />
+              <RotateCw className={cn('h-2.5 w-2.5', isRefreshingVendors && 'animate-spin')} />
               <span>{isRefreshingVendors ? 'Syncing…' : 'Refresh'}</span>
             </button>
           </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {(showAllPills ? conventionVendors : conventionVendors.slice(0, 5)).map((v) => {
+          <div className="flex flex-wrap items-center gap-1.5 transition-all duration-300">
+            {displayedVendors.map((v, index) => {
               const isSelected = value.trim().toLowerCase() === v.name.toLowerCase();
               return (
                 <button
@@ -163,25 +169,45 @@ export function VendorPicker({
                       toggleIfSelected: true,
                     });
                   }}
+                  style={{ animationDelay: `${(index % INCREMENT_STEP) * 25}ms` }}
                   title={isSelected ? 'Click to unselect' : 'Click to select'}
                   className={cn(
-                    'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all',
+                    'border-ink animate-pill-pop cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all duration-150 hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none',
                     isSelected
                       ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
-                      : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                      : 'bg-zinc-100 hover:bg-zinc-200 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:hover:bg-zinc-700'
                   )}
                 >
                   {v.name}
                 </button>
               );
             })}
-            {conventionVendors.length > 5 && (
+
+            {/* Incremental Show More Button */}
+            {hasMore && (
               <button
                 type="button"
-                onClick={() => setShowAllPills((prev) => !prev)}
-                className="cursor-pointer text-[10px] font-bold text-zinc-500 underline dark:text-zinc-400"
+                onClick={() =>
+                  setVisibleLimit((prev) => Math.min(prev + INCREMENT_STEP, totalVendors))
+                }
+                title={`Show next ${nextIncrement} vendors`}
+                className="border-ink bg-accent inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[10px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950"
               >
-                {showAllPills ? 'Show less' : `+${conventionVendors.length - 5} more`}
+                <Plus className="h-2.5 w-2.5 stroke-3" />
+                <span>+{nextIncrement} more</span>
+              </button>
+            )}
+
+            {/* Show Less Button */}
+            {canCollapse && (
+              <button
+                type="button"
+                onClick={() => setVisibleLimit(INITIAL_LIMIT)}
+                title="Collapse vendor list back to top vendors"
+                className="border-ink bg-accent inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[10px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950"
+              >
+                <ChevronUp className="h-2.5 w-2.5 stroke-3" />
+                <span>Show less</span>
               </button>
             )}
           </div>

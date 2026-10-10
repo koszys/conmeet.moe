@@ -76,7 +76,7 @@ export function ConventionGrid({
     {
       phase: 'soon',
       label: 'SOON!',
-      chipClassName: 'bg-accent text-white',
+      chipClassName: 'bg-accent text-white dark:text-zinc-950',
       conventions: soon,
     },
     {
@@ -118,7 +118,7 @@ export function ConventionGrid({
           className={cn(
             'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
             tab === 'upcoming'
-              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)]'
+              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
               : 'bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
           )}
         >
@@ -130,7 +130,7 @@ export function ConventionGrid({
           className={cn(
             'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
             tab === 'past'
-              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)]'
+              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
               : 'bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
           )}
         >

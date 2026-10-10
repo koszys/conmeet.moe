@@ -73,7 +73,8 @@ export function ConventionDetail({
                     'font-display inline-flex -rotate-3 items-center border-2 px-2 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs',
                     getConventionPhase(convention) === 'now' &&
                       'border-ink bg-accent-pop text-white',
-                    getConventionPhase(convention) === 'soon' && 'border-ink bg-accent text-white',
+                    getConventionPhase(convention) === 'soon' &&
+                      'border-ink bg-accent text-white dark:text-zinc-950',
                     getConventionPhase(convention) === 'past' &&
                       'border-zinc-400 bg-zinc-200 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
                     getConventionPhase(convention) === 'up' &&
@@ -118,7 +119,7 @@ export function ConventionDetail({
               >
                 <div className="border-ink mb-6 flex flex-col gap-2 border-b-2 border-dashed pb-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-display bg-accent border-ink inline-block -rotate-1 border-2 px-2.5 py-0.5 text-xs tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+                    <span className="font-display bg-accent border-ink inline-block -rotate-1 border-2 px-2.5 py-0.5 text-xs tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
                       About
                     </span>
                     <h2

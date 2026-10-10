@@ -6,7 +6,7 @@ export const CONBLOCK =
 
 export const CONBLOCK_PRIMARY = cn(
   CONBLOCK,
-  'bg-accent hover:bg-accent-pop cursor-pointer text-xs font-bold tracking-widest text-white uppercase'
+  'bg-accent hover:bg-accent-pop cursor-pointer text-xs font-bold tracking-widest text-white uppercase dark:text-zinc-950 dark:hover:text-white'
 );
 
 const BUTTON_SIZES = {

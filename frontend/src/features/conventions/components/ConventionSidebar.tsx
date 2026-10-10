@@ -100,7 +100,7 @@ export function ConventionSidebar({
           className={cn(
             'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
             isOverview
-              ? 'bg-accent text-white'
+              ? 'bg-accent text-white dark:text-zinc-950'
               : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
           )}
         >
@@ -114,7 +114,7 @@ export function ConventionSidebar({
           className={cn(
             'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
             isFreebies
-              ? 'bg-accent text-white'
+              ? 'bg-accent text-white dark:text-zinc-950'
               : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
           )}
         >
@@ -246,7 +246,7 @@ export function ConventionSidebar({
             className={cn(
               'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
               isOverview
-                ? 'bg-accent text-white'
+                ? 'bg-accent text-white dark:text-zinc-950'
                 : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
             )}
           >
@@ -259,7 +259,7 @@ export function ConventionSidebar({
             className={cn(
               'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
               isFreebies
-                ? 'bg-accent text-white'
+                ? 'bg-accent text-white dark:text-zinc-950'
                 : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
             )}
           >

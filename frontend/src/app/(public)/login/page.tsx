@@ -88,7 +88,7 @@ function LoginContent() {
             </p>
             <Link
               href="/settings"
-              className="border-ink bg-accent hover:border-accent-pop flex w-full items-center justify-center border-2 px-6 py-3 text-sm font-bold tracking-wider text-white uppercase shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              className="border-ink bg-accent hover:border-accent-pop flex w-full items-center justify-center border-2 px-6 py-3 text-sm font-bold tracking-wider text-white uppercase shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950"
             >
               Go to Settings
             </Link>

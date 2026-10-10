@@ -55,7 +55,7 @@ export function ConventionRow({
             className={cn(
               'font-display border-ink -rotate-6 rounded-[2px] border-2 px-3.5 py-1 text-[11px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)]',
               phase === 'now' && 'bg-accent-pop text-white',
-              phase === 'soon' && 'bg-accent text-white',
+              phase === 'soon' && 'bg-accent text-white dark:text-zinc-950',
               phase === 'up' && 'text-ink bg-white dark:bg-zinc-900 dark:text-zinc-100',
               phase === 'past' &&
                 'border-zinc-400 bg-zinc-200 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'

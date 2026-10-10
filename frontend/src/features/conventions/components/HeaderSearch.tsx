@@ -195,7 +195,7 @@ export function HeaderSearch({
                   className={cn(
                     'font-display hidden shrink-0 border px-1.5 py-0.5 text-[9px] tracking-wider uppercase sm:inline-flex',
                     phase === 'now' && 'border-ink bg-accent-pop text-white',
-                    phase === 'soon' && 'border-ink bg-accent text-white',
+                    phase === 'soon' && 'border-ink bg-accent text-white dark:text-zinc-950',
                     phase === 'up' &&
                       'border-ink bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
                     phase === 'past' &&
@@ -226,7 +226,7 @@ export function HeaderSearch({
                   className={cn(
                     'font-display inline-flex shrink-0 border px-1.5 py-0.5 text-[9px] tracking-wider uppercase sm:hidden',
                     phase === 'now' && 'border-ink bg-accent-pop text-white',
-                    phase === 'soon' && 'border-ink bg-accent text-white',
+                    phase === 'soon' && 'border-ink bg-accent text-white dark:text-zinc-950',
                     phase === 'up' &&
                       'border-ink bg-white text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
                     phase === 'past' &&

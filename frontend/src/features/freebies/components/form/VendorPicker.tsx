@@ -152,7 +152,7 @@ export function VendorPicker({
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
-            {(showAllPills ? conventionVendors : conventionVendors.slice(0, 8)).map((v) => {
+            {(showAllPills ? conventionVendors : conventionVendors.slice(0, 5)).map((v) => {
               const isSelected = value.trim().toLowerCase() === v.name.toLowerCase();
               return (
                 <button
@@ -175,13 +175,13 @@ export function VendorPicker({
                 </button>
               );
             })}
-            {conventionVendors.length > 8 && (
+            {conventionVendors.length > 5 && (
               <button
                 type="button"
                 onClick={() => setShowAllPills((prev) => !prev)}
                 className="cursor-pointer text-[10px] font-bold text-zinc-500 underline dark:text-zinc-400"
               >
-                {showAllPills ? 'Show less' : `+${conventionVendors.length - 8} more`}
+                {showAllPills ? 'Show less' : `+${conventionVendors.length - 5} more`}
               </button>
             )}
           </div>

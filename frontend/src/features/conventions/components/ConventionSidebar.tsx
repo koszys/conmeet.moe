@@ -63,7 +63,9 @@ export function ConventionSidebar({
       <div className="border-ink border-b-2 border-dashed p-4">
         <div className="flex items-center gap-3">
           <div className="border-ink flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-zinc-900">
-            <span className="font-display text-xs tracking-wide dark:text-zinc-300">{month}</span>
+            <span className="font-display text-xs font-bold tracking-wide text-zinc-900 dark:text-white">
+              {month}
+            </span>
           </div>
           <div className="min-w-0">
             <p className="font-display truncate text-sm leading-tight tracking-wide uppercase">

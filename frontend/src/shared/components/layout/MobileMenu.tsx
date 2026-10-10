@@ -46,7 +46,7 @@ export function MobileMenu({
               <Link
                 href="/"
                 onClick={onClose}
-                className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-white"
+                className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-800 uppercase transition-colors last:border-b-0 dark:text-white"
               >
                 Home
               </Link>
@@ -54,7 +54,7 @@ export function MobileMenu({
             <Link
               href="/conventions"
               onClick={onClose}
-              className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-600 uppercase transition-colors last:border-b-0 dark:text-white"
+              className="border-ink hover:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest text-zinc-800 uppercase transition-colors last:border-b-0 dark:text-white"
             >
               Conventions
             </Link>

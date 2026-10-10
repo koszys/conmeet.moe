@@ -219,7 +219,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
             type="button"
             onClick={onClose}
             disabled={updateMutation.isPending}
-            className="border-ink flex h-8 w-8 cursor-pointer items-center justify-center border text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="border-ink flex h-8 w-8 cursor-pointer items-center justify-center border text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white"
             title="Close"
           >
             <X className="h-4 w-4" />

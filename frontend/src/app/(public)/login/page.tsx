@@ -94,7 +94,7 @@ function LoginContent() {
             </Link>
             <Link
               href="/"
-              className="hover:text-accent-pop block text-center text-xs font-bold tracking-widest text-zinc-500 uppercase"
+              className="hover:text-accent-pop block text-center text-xs font-bold tracking-widest text-zinc-700 uppercase dark:text-zinc-200 dark:hover:text-white"
             >
               Back to home
             </Link>

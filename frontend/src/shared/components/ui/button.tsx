@@ -19,7 +19,7 @@ export type ButtonSize = keyof typeof BUTTON_SIZES;
 
 const ICON_BUTTON =
   CONBLOCK +
-  ' hover:border-accent-pop hover:text-accent-pop inline-flex cursor-pointer items-center justify-center rounded-none text-zinc-700 dark:text-zinc-200';
+  ' hover:border-accent-pop hover:text-accent-pop inline-flex cursor-pointer items-center justify-center rounded-none text-zinc-900 dark:text-white';
 
 export interface IconButtonProps extends ComponentProps<'button'> {
   size?: ButtonSize;

@@ -31,7 +31,9 @@ export function ConventionRow({
     >
       <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 md:grid-cols-[5rem_1fr_auto] md:gap-x-6">
         <div className="border-ink flex h-14 items-center justify-center rounded-none border-2 bg-white px-3 shadow-[3px_3px_0_var(--ink)] dark:bg-zinc-900">
-          <span className="font-display text-xs tracking-wide dark:text-zinc-300">{month}</span>
+          <span className="font-display text-xs font-bold tracking-wide text-zinc-900 dark:text-white">
+            {month}
+          </span>
         </div>
 
         <div>

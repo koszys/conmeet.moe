@@ -116,7 +116,7 @@ export function Header() {
             </>
           )}
 
-          <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-600 uppercase md:flex dark:text-white">
+          <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-800 uppercase md:flex dark:text-white">
             <Link href="/conventions" className="hover:text-accent-pop transition-colors">
               Conventions
             </Link>

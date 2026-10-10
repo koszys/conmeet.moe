@@ -119,7 +119,7 @@ export function ConventionGrid({
             'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
             tab === 'upcoming'
               ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-              : 'bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
+              : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           Upcoming
@@ -131,7 +131,7 @@ export function ConventionGrid({
             'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
             tab === 'past'
               ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-              : 'bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800'
+              : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           Past Cons

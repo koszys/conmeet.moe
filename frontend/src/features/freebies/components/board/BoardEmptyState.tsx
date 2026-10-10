@@ -24,7 +24,7 @@ export function BoardEmptyState({ icon: Icon, title, description, action }: Boar
   return (
     <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
       <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
-        <Icon className="text-ink h-7 w-7 dark:text-zinc-100" />
+        <Icon className="text-ink h-7 w-7 dark:text-white" />
       </div>
 
       <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">{title}</h3>

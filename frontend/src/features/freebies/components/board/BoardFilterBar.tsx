@@ -36,7 +36,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
             activeTab === 'all'
               ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-              : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
+              : 'border-ink border-2 bg-white text-zinc-800 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <Gift
@@ -44,7 +44,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'h-4 w-4 shrink-0',
               activeTab === 'all'
                 ? 'stroke-[2.5]'
-                : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
           <span>All</span>
@@ -53,7 +53,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
               activeTab === 'all'
                 ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+                : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
             )}
           >
             {counts.all}
@@ -68,7 +68,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
             activeTab === 'saved'
               ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-              : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
+              : 'border-ink border-2 bg-white text-zinc-800 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <Bookmark
@@ -76,7 +76,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'h-4 w-4 shrink-0',
               activeTab === 'saved'
                 ? 'fill-current stroke-[2.5]'
-                : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
           <span>
@@ -87,7 +87,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
               activeTab === 'saved'
                 ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+                : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
             )}
           >
             {counts.saved}
@@ -102,7 +102,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
             activeTab === 'uploaded'
               ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-              : 'border-ink border-2 bg-white text-zinc-700 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white'
+              : 'border-ink border-2 bg-white text-zinc-800 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <UploadCloud
@@ -110,7 +110,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'h-4 w-4 shrink-0',
               activeTab === 'uploaded'
                 ? 'stroke-[2.5]'
-                : 'stroke-2 text-zinc-500 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white'
+                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
           <span>
@@ -121,7 +121,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
               activeTab === 'uploaded'
                 ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                : 'border-ink/20 border bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+                : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
             )}
           >
             {counts.uploaded}
@@ -155,7 +155,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />
@@ -195,7 +195,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
               !allCondensed
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'text-zinc-500 hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+                : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
@@ -210,7 +210,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
               'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
               allCondensed
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'text-zinc-500 hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
+                : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <Rows3 className="h-4 w-4 stroke-[2.5]" />

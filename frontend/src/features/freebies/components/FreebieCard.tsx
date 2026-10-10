@@ -147,7 +147,7 @@ export function FreebieCard({
                 onClick={handleToggleCondensed}
                 aria-label={isCondensed ? 'Expand card' : 'Condense card'}
                 title={isCondensed ? 'Expand card' : 'Condense card'}
-                className="border-ink hover:text-ink flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center border text-zinc-500 transition-colors hover:bg-zinc-100 hover:shadow-[1px_1px_0_var(--ink)] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="border-ink hover:text-ink flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center border text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-black hover:shadow-[1px_1px_0_var(--ink)] dark:text-white dark:hover:bg-zinc-800"
               >
                 {isCondensed ? (
                   <ChevronDown className="h-3.5 w-3.5" />
@@ -291,7 +291,7 @@ export function FreebieCard({
                 'inline-flex h-8 w-8 shrink-0 items-center justify-center text-xs font-bold transition-all',
                 freebie.is_saved
                   ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                  : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
               )}
             >
               <Bookmark

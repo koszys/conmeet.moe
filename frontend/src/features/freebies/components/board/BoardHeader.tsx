@@ -15,7 +15,7 @@ export function BoardHeader({ conventionSlug, conventionName }: BoardHeaderProps
     <div className="border-ink border-b-2 pb-5">
       <Link
         href={`/conventions/${conventionSlug}`}
-        className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase hover:underline dark:text-zinc-300 dark:hover:text-white"
+        className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-800 uppercase hover:text-black hover:underline dark:text-white"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to {conventionName || 'Convention'} Overview

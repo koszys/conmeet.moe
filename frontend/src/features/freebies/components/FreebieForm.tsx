@@ -144,7 +144,7 @@ export function FreebieForm({
       <div className="border-ink border-b-2 pb-5">
         <Link
           href={`/conventions/${conventionSlug}/freebies`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase hover:underline dark:text-zinc-300 dark:hover:text-white"
+          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-800 uppercase hover:text-black hover:underline dark:text-white"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Freebies Board
@@ -234,7 +234,7 @@ export function FreebieForm({
             }}
             className={cn(
               CONBLOCK,
-              'border-ink inline-flex w-full cursor-pointer items-center justify-center gap-2 border-2 border-dashed bg-zinc-50 px-4 py-3 text-xs font-bold text-zinc-800 uppercase transition-all hover:bg-zinc-100 dark:bg-zinc-800/60 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              'border-ink inline-flex w-full cursor-pointer items-center justify-center gap-2 border-2 border-dashed bg-zinc-50 px-4 py-3 text-xs font-bold text-zinc-800 uppercase transition-all hover:bg-zinc-100 dark:bg-zinc-800/60 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <Plus className="text-accent h-4 w-4 stroke-3" />

@@ -54,7 +54,7 @@ export function ConventionSidebar({
   const content = (
     <>
       <div className="border-ink border-b-2 border-dashed p-4">
-        <p className="font-display mb-2 text-[10px] tracking-widest text-zinc-500 uppercase dark:text-zinc-300">
+        <p className="font-display mb-2 text-[10px] font-bold tracking-widest text-zinc-700 uppercase dark:text-zinc-100">
           Search conventions
         </p>
         <HeaderSearch variant="sidebar" onSelect={onClose} />
@@ -101,7 +101,7 @@ export function ConventionSidebar({
             'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
             isOverview
               ? 'bg-accent text-white dark:text-zinc-950'
-              : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <Home className="h-4 w-4" />
@@ -115,7 +115,7 @@ export function ConventionSidebar({
             'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
             isFreebies
               ? 'bg-accent text-white dark:text-zinc-950'
-              : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <Gift className="h-4 w-4" />
@@ -247,7 +247,7 @@ export function ConventionSidebar({
               'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
               isOverview
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <Home className="h-4 w-4" />
@@ -260,7 +260,7 @@ export function ConventionSidebar({
               'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
               isFreebies
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <Gift className="h-4 w-4" />

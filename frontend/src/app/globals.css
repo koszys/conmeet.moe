@@ -62,13 +62,22 @@
 .dark {
   color-scheme: dark;
   --background: #373b3e;
-  --foreground: #bec8d1;
+  --foreground: #ffffff;
   --accent: #86cecb;
   --accent-hover: #9cdad7;
   --accent-soft: #137a7f;
   --accent-pop: #e12885;
   --accent-pop-hover: #f04a97;
   --ink: #bec8d1;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #ffffff;
 }
 
 body {

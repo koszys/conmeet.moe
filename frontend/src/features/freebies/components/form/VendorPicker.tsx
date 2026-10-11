@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronUp, Plus, RotateCw, X } from 'lucide-react';
+import { Check, ChevronUp, Plus, RotateCw, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { CharCounter } from './CharCounter';
 import { VendorSuggestDropdown } from './VendorSuggestDropdown';
@@ -49,6 +49,7 @@ export function VendorPicker({
     handleVendorKeyDown,
     refreshVendors,
     isRefreshingVendors,
+    refreshStatus,
   } = suggestions;
 
   const totalVendors = conventionVendors?.length || 0;
@@ -148,13 +149,34 @@ export function VendorPicker({
             <button
               type="button"
               onClick={() => refreshVendors()}
-              disabled={isRefreshingVendors}
+              disabled={refreshStatus !== 'idle'}
               title="Refresh vendors and booth locations"
               aria-label="Refresh vendors and booth locations"
-              className="border-ink bg-accent inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-950"
+              className={cn(
+                'border-ink bg-accent inline-flex items-center gap-1 border px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all dark:text-zinc-950',
+                refreshStatus === 'idle'
+                  ? 'cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none'
+                  : refreshStatus === 'success'
+                    ? 'cursor-default'
+                    : 'cursor-not-allowed opacity-75'
+              )}
             >
-              <RotateCw className={cn('h-2.5 w-2.5', isRefreshingVendors && 'animate-spin')} />
-              <span>{isRefreshingVendors ? 'Syncing…' : 'Refresh'}</span>
+              {refreshStatus === 'success' ? (
+                <>
+                  <Check className="animate-pill-pop h-2.5 w-2.5 stroke-3" />
+                  <span className="animate-pill-pop">Synced!</span>
+                </>
+              ) : refreshStatus === 'refreshing' ? (
+                <>
+                  <RotateCw className="h-2.5 w-2.5 animate-spin" />
+                  <span>Syncing…</span>
+                </>
+              ) : (
+                <>
+                  <RotateCw className="h-2.5 w-2.5" />
+                  <span>Refresh</span>
+                </>
+              )}
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 transition-all duration-300">

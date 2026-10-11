@@ -5,6 +5,8 @@ import type { UseFormSetValue } from 'react-hook-form';
 import type { MultiFreebieFormValues } from './schema';
 import { useFreebies, useVendors } from '../../api/queries';
 
+export type VendorRefreshStatus = 'idle' | 'refreshing' | 'success';
+
 export interface SuggestionVendor {
   id: number;
   name: string;
@@ -29,6 +31,9 @@ export function useVendorSuggestions({
   firstItemLocation = '',
   focusNextElementId = 'items.0.name',
 }: UseVendorSuggestionsProps) {
+  const [refreshStatus, setRefreshStatus] = useState<VendorRefreshStatus>('idle');
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const {
     data: conventionVendors,
     refetch: refetchConventionVendors,
@@ -48,15 +53,38 @@ export function useVendorSuggestions({
   } = useFreebies(conventionSlug ? { convention: conventionSlug } : undefined);
 
   async function refreshVendors() {
-    await Promise.all([
-      refetchConventionVendors(),
-      refetchAllVendors(),
-      refetchConventionFreebies(),
-    ]);
+    if (refreshStatus !== 'idle') return;
+    setRefreshStatus('refreshing');
+    try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 1000));
+      await Promise.all([
+        refetchConventionVendors(),
+        refetchAllVendors(),
+        refetchConventionFreebies(),
+        minDelay,
+      ]);
+      setRefreshStatus('success');
+      refreshTimeoutRef.current = setTimeout(() => {
+        setRefreshStatus('idle');
+      }, 900);
+    } catch {
+      setRefreshStatus('idle');
+    }
   }
 
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const isRefreshingVendors =
-    isFetchingConventionVendors || isFetchingAllVendors || isFetchingConventionFreebies;
+    refreshStatus === 'refreshing' ||
+    isFetchingConventionVendors ||
+    isFetchingAllVendors ||
+    isFetchingConventionFreebies;
 
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -314,5 +342,6 @@ export function useVendorSuggestions({
     handleVendorKeyDown,
     refreshVendors,
     isRefreshingVendors,
+    refreshStatus,
   };
 }

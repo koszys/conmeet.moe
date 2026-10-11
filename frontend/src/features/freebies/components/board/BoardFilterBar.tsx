@@ -1,6 +1,17 @@
 'use client';
 
-import { Bookmark, Gift, LayoutGrid, Loader2, Rows3, Search, UploadCloud, X } from 'lucide-react';
+import {
+  Bookmark,
+  Check,
+  Gift,
+  LayoutGrid,
+  Loader2,
+  RotateCw,
+  Rows3,
+  Search,
+  UploadCloud,
+  X,
+} from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import type { FreebieBoardState } from './types';
 
@@ -22,6 +33,8 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
     setSelectedVendor,
     allCondensed,
     handleToggleAllCondensed,
+    refreshBoard,
+    refreshStatus,
   } = state;
 
   return (
@@ -216,6 +229,37 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             <Rows3 className="h-4 w-4 stroke-[2.5]" />
           </button>
         </div>
+
+        {/* Compact Refresh Board Button */}
+        <button
+          type="button"
+          onClick={() => refreshBoard()}
+          disabled={refreshStatus !== 'idle'}
+          title={
+            refreshStatus === 'success'
+              ? 'Freebies synced!'
+              : refreshStatus === 'refreshing'
+                ? 'Syncing freebies…'
+                : 'Refresh freebies board'
+          }
+          aria-label="Refresh freebies board"
+          className={cn(
+            'border-ink inline-flex h-10 w-10 shrink-0 items-center justify-center border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all dark:bg-zinc-900',
+            refreshStatus === 'idle'
+              ? 'cursor-pointer text-zinc-900 hover:-translate-y-0.5 hover:bg-zinc-50 hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:text-white dark:hover:bg-zinc-800'
+              : refreshStatus === 'success'
+                ? 'cursor-default bg-emerald-50 dark:bg-emerald-950/30'
+                : 'cursor-not-allowed opacity-75'
+          )}
+        >
+          {refreshStatus === 'success' ? (
+            <Check className="animate-pill-pop h-4 w-4 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
+          ) : refreshStatus === 'refreshing' ? (
+            <RotateCw className="h-4 w-4 animate-spin stroke-[2.5]" />
+          ) : (
+            <RotateCw className="h-4 w-4 stroke-[2.5]" />
+          )}
+        </button>
       </div>
     </div>
   );

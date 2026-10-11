@@ -10,6 +10,8 @@ export interface FreebieCounts {
   uploaded: number;
 }
 
+export type BoardRefreshStatus = 'idle' | 'refreshing' | 'success';
+
 export interface FreebieBoardState {
   activeTab: FilterTab;
   setActiveTab: (tab: FilterTab) => void;
@@ -30,6 +32,8 @@ export interface FreebieBoardState {
   isLoading: boolean;
   isFetching: boolean;
   isError: boolean;
+  refreshStatus: BoardRefreshStatus;
+  refreshBoard: () => Promise<void>;
   // Partitions
   allDrops: Freebie[];
   unsavedDrops: Freebie[];

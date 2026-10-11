@@ -1,5 +1,7 @@
 'use client';
 
+import { RotateCw } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
 import { useFreebieBoardState } from './board/useFreebieBoardState';
 import { BoardHeader, BoardFilterBar, BoardAllTab, BoardSavedTab, BoardUploadedTab } from './board';
 import { FreebieSkeleton } from './FreebieSkeleton';
@@ -29,6 +31,17 @@ export function FreebieBoard({
           <p className="text-sm font-bold text-rose-600 dark:text-rose-400">
             Failed to load freebies. Please refresh or check connection.
           </p>
+          <button
+            type="button"
+            onClick={() => state.refreshBoard()}
+            disabled={state.refreshStatus !== 'idle'}
+            className="border-ink bg-accent mt-3 inline-flex cursor-pointer items-center gap-1.5 border-2 px-3 py-1.5 text-xs font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-950"
+          >
+            <RotateCw
+              className={cn('h-3.5 w-3.5', state.refreshStatus === 'refreshing' && 'animate-spin')}
+            />
+            <span>{state.refreshStatus === 'refreshing' ? 'Syncing…' : 'Try Refreshing'}</span>
+          </button>
         </div>
       ) : state.activeTab === 'all' ? (
         <BoardAllTab state={state} conventionSlug={conventionSlug} />

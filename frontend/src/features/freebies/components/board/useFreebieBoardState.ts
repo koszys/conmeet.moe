@@ -1,16 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth';
 import { useDebounce } from '@/shared/hooks';
-import { useFreebies, useVendors } from '../../api/queries';
-import type { FilterTab, FreebieBoardState } from './types';
+import { freebieKeys, useFreebies, useVendors } from '../../api/queries';
+import type { BoardRefreshStatus, FilterTab, FreebieBoardState } from './types';
 
 export function useFreebieBoardState(conventionSlug: string): FreebieBoardState {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [selectedVendor, setSelectedVendor] = useState<number | undefined>(undefined);
@@ -20,6 +22,9 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
   const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
   const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
   const debouncedSearch = useDebounce(searchQuery, 300);
+
+  const [refreshStatus, setRefreshStatus] = useState<BoardRefreshStatus>('idle');
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   function isCardCondensed(id: number) {
     return cardOverrides[id] !== undefined ? cardOverrides[id] : allCondensed;
@@ -46,13 +51,43 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     isLoading,
     isFetching,
     isError,
+    refetch: refetchFreebies,
   } = useFreebies({
     convention: conventionSlug,
     vendor: selectedVendor,
     q: debouncedSearch.trim() || undefined,
   });
 
-  const { data: vendors } = useVendors(conventionSlug);
+  const { data: vendors, refetch: refetchVendors } = useVendors(conventionSlug);
+
+  async function refreshBoard() {
+    if (refreshStatus !== 'idle') return;
+    setRefreshStatus('refreshing');
+    try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 1000));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: freebieKeys.all }),
+        queryClient.invalidateQueries({ queryKey: freebieKeys.vendors(conventionSlug) }),
+        refetchFreebies(),
+        refetchVendors(),
+        minDelay,
+      ]);
+      setRefreshStatus('success');
+      refreshTimeoutRef.current = setTimeout(() => {
+        setRefreshStatus('idle');
+      }, 900);
+    } catch {
+      setRefreshStatus('idle');
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const isFiltered = Boolean(debouncedSearch.trim() || selectedVendor !== undefined);
 
@@ -136,6 +171,8 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     isLoading,
     isFetching,
     isError,
+    refreshStatus,
+    refreshBoard,
     allDrops,
     unsavedDrops,
     savedDrops,

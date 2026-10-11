@@ -46,10 +46,10 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           type="button"
           onClick={() => handleTabClick('all')}
           className={cn(
-            'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
+            'group border-ink inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 border-2 px-3 py-2 text-center text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
             activeTab === 'all'
-              ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-              : 'border-ink border-2 bg-white text-zinc-800 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent text-white dark:text-zinc-950'
+              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <Gift
@@ -78,10 +78,10 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           type="button"
           onClick={() => handleTabClick('saved')}
           className={cn(
-            'group inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
+            'group border-ink inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 border-2 px-3 py-2 text-center text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
             activeTab === 'saved'
-              ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-              : 'border-ink border-2 bg-white text-zinc-800 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent text-white dark:text-zinc-950'
+              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <Bookmark
@@ -112,10 +112,10 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           type="button"
           onClick={() => handleTabClick('uploaded')}
           className={cn(
-            'group inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 px-3 py-2 text-center text-xs font-bold uppercase transition-all sm:flex-initial sm:px-4 sm:py-2.5',
+            'group border-ink inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 border-2 px-3 py-2 text-center text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:flex-initial sm:px-4 sm:py-2.5',
             activeTab === 'uploaded'
-              ? 'border-ink bg-accent dark:bg-accent border-2 text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-              : 'border-ink border-2 bg-white text-zinc-800 shadow-[2px_2px_0_var(--ink)] hover:-translate-y-0.5 hover:bg-zinc-50 hover:text-black hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent text-white dark:text-zinc-950'
+              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           <UploadCloud
@@ -182,7 +182,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             value={selectedVendor ?? ''}
             onChange={(e) => setSelectedVendor(e.target.value ? Number(e.target.value) : undefined)}
             aria-label="Filter by vendor"
-            className="border-ink h-10 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase focus:outline-none dark:bg-zinc-900"
+            className="border-ink h-10 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none dark:bg-zinc-900"
           >
             <option value="">All Vendors ({vendors.length})</option>
             {vendors.map((v) => (
@@ -195,7 +195,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
 
         {/* View Density Segmented Toggle (Cards vs Condensed) */}
         <div
-          className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900"
+          className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:bg-zinc-900"
           role="group"
           aria-label="View density"
         >
@@ -246,7 +246,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           className={cn(
             'border-ink inline-flex h-10 w-10 shrink-0 items-center justify-center border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all dark:bg-zinc-900',
             refreshStatus === 'idle'
-              ? 'cursor-pointer text-zinc-900 hover:-translate-y-0.5 hover:bg-zinc-50 hover:shadow-[3px_3px_0_var(--ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--ink)] dark:text-white dark:hover:bg-zinc-800'
+              ? 'cursor-pointer text-zinc-900 hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-50 hover:shadow-none dark:text-white dark:hover:bg-zinc-800'
               : refreshStatus === 'success'
                 ? 'cursor-default bg-emerald-50 dark:bg-emerald-950/30'
                 : 'cursor-not-allowed opacity-75'

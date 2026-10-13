@@ -12,7 +12,7 @@ export function Footer() {
           <span className="text-accent-pop">✦</span>
         </p>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 md:pr-16">
           <Link href="/privacy" className="hover:text-accent-pop transition-colors">
             Privacy Policy
           </Link>

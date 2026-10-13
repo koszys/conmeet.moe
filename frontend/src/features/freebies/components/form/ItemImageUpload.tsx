@@ -66,7 +66,13 @@ export function ItemImageUpload({
 
       {previewUrl ? (
         <div className="border-ink relative mt-2 aspect-video w-full max-w-sm overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-800">
-          <Image src={previewUrl} alt="Preview" fill className="object-cover" />
+          <Image
+            src={previewUrl}
+            alt="Preview"
+            fill
+            className="object-cover"
+            unoptimized={previewUrl.startsWith('blob:')}
+          />
           <div className="absolute top-2 right-2 flex items-center gap-1.5">
             <button
               type="button"

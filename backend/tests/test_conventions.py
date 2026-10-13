@@ -106,3 +106,66 @@ def test_convention_dates_serialize_as_iso() -> None:
     resp = Client(HTTP_HOST="localhost").get("/api/v1/conventions/")
 
     assert resp.json()[0]["starts_at"] == "2026-10-01"
+
+
+def test_convention_admin_change_view_renders_and_saves() -> None:
+    from accounts.models import User
+    from django.utils import timezone
+    from meetups.models import Meetup
+
+    admin_user = User.objects.create_superuser(
+        username="admin_test",
+        email="admin_test@example.com",
+        password="password123",
+    )
+    con = _make_convention("Test Admin Con", slug="test-admin-con")
+    meetup = Meetup.objects.create(
+        convention=con,
+        name="Test Meetup",
+        starts_at=timezone.now(),
+        ends_at=timezone.now() + timedelta(hours=2),
+    )
+
+    client = Client(HTTP_HOST="localhost")
+    client.force_login(admin_user)
+
+    # 1. GET change view must return 200 without FieldError
+    resp = client.get(f"/admin/conventions/convention/{con.pk}/change/")
+    assert resp.status_code == status.HTTP_200_OK
+
+    # 2. POST update to convention details must save successfully
+    post_data = {
+        "name": con.name,
+        "slug": con.slug,
+        "venue_name": "Updated Venue",
+        "city": "Updated City",
+        "country": "USA",
+        "starts_at": str(con.starts_at),
+        "ends_at": str(con.ends_at),
+        "website_url": "https://example.com/updated",
+        "map_url": "",
+        "description": '{"delta":"","html":""}',
+        "is_active": "on",
+        "meetups-TOTAL_FORMS": "1",
+        "meetups-INITIAL_FORMS": "1",
+        "meetups-MIN_NUM_FORMS": "0",
+        "meetups-MAX_NUM_FORMS": "1000",
+        "meetups-0-id": str(meetup.pk),
+        "meetups-0-convention": str(con.pk),
+        "meetups-0-name": meetup.name,
+        "meetups-0-starts_at_0": meetup.starts_at.strftime("%Y-%m-%d"),
+        "meetups-0-starts_at_1": meetup.starts_at.strftime("%H:%M:%S"),
+        "meetups-0-ends_at_0": meetup.ends_at.strftime("%Y-%m-%d"),
+        "meetups-0-ends_at_1": meetup.ends_at.strftime("%H:%M:%S"),
+    }
+    save_resp = client.post(
+        f"/admin/conventions/convention/{con.pk}/change/",
+        post_data,
+        follow=True,
+    )
+    assert save_resp.status_code == status.HTTP_200_OK
+
+    con.refresh_from_db()
+    assert con.venue_name == "Updated Venue"
+    assert con.city == "Updated City"
+

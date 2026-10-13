@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { useFreebies } from '@/features/freebies';
 import type {
   ConventionSectionConfig,
   ConventionSectionsProps,
@@ -17,9 +18,29 @@ export function ConventionSections({
   extraSections = [],
   className,
 }: ConventionSectionsProps) {
-  const allSections = (explicitSections ?? getDefaultConventionSections(convention)).concat(
-    extraSections
-  );
+  const { data: freebies } = useFreebies({ convention: convention.slug });
+
+  const baseSections = explicitSections ?? getDefaultConventionSections(convention);
+  const allSections = baseSections
+    .map((sec) => {
+      if (sec.id === 'freebies' && freebies && freebies.length > 0) {
+        const activeFreebies = freebies.filter((f) => !f.is_claimed);
+        return {
+          ...sec,
+          activityCountLabel: `${freebies.length} logged`,
+          activities: activeFreebies.slice(0, 3).map((f) => ({
+            id: String(f.id),
+            title: f.name,
+            subtitle: f.vendor.name,
+            meta: f.requirements || undefined,
+            badge: f.location ? { text: f.location, variant: 'accent' as const } : undefined,
+            href: `/conventions/${convention.slug}/freebies`,
+          })),
+        };
+      }
+      return sec;
+    })
+    .concat(extraSections);
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -137,7 +158,7 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
             href={section.secondaryAction.href ?? section.primaryAction.href}
             className={cn(
               CONBLOCK,
-              'inline-flex items-center justify-center gap-1.5 bg-white px-3.5 py-2 text-xs font-bold tracking-wider text-zinc-700 uppercase hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
+              'inline-flex items-center justify-center gap-1.5 bg-white px-3.5 py-2 text-xs font-bold tracking-wider text-zinc-900 uppercase hover:bg-zinc-50 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700'
             )}
           >
             {section.secondaryAction.icon && (

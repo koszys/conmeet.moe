@@ -59,7 +59,7 @@ export function Hero() {
           <a
             href="#conventions"
             onClick={scrollToSection('conventions')}
-            className="border-ink bg-accent font-display inline-flex items-center gap-2 rounded-none border-2 px-7 py-4 text-xs tracking-wide text-white uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm"
+            className="border-ink bg-accent hover:bg-accent-pop font-display inline-flex items-center gap-2 rounded-none border-2 px-7 py-4 text-xs tracking-wide text-white uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm dark:text-zinc-950 dark:hover:text-white"
           >
             Check the line-up
             <ArrowDown className="h-4 w-4" />
@@ -67,7 +67,7 @@ export function Hero() {
           <a
             href="#features"
             onClick={scrollToSection('features')}
-            className="border-ink font-display text-ink hover:bg-accent-soft inline-flex items-center gap-2 rounded-none border-2 bg-white px-7 py-4 text-xs tracking-wide uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm dark:bg-[#373b3e] dark:text-zinc-100"
+            className="border-ink font-display text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex items-center gap-2 rounded-none border-2 bg-white px-7 py-4 text-xs tracking-wide uppercase shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:text-sm dark:bg-black dark:text-zinc-100"
           >
             How it works!
           </a>

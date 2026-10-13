@@ -14,3 +14,14 @@ export function formatDateRange(startsAt: string, endsAt: string): string {
 
   return `${format(start, 'MMM d, yyyy')} \u2013 ${format(end, 'MMM d, yyyy')}`;
 }
+
+export function formatDateTime(dateStr?: string | null): string | null {
+  if (!dateStr) return null;
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return null;
+    return format(d, 'MMM d, yyyy \u00b7 HH:mm');
+  } catch {
+    return null;
+  }
+}

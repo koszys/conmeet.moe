@@ -2,7 +2,7 @@
 
 import { Globe, MapPin } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 import { useConvention } from '../data/api';
@@ -64,6 +64,9 @@ export function ConventionDetail({
       {!isLoading && !isError && convention && (
         <>
           <div className="border-ink bg-accent-soft/40 relative flex min-h-40 w-full flex-col justify-center border-b-2 px-4 py-4 sm:min-h-48 sm:px-6 sm:py-5 md:h-56 md:px-8 lg:h-64 dark:bg-zinc-900">
+            <div className="absolute top-3.5 right-3.5 z-10 sm:top-4 sm:right-6">
+              <CopyLinkButton size="sm" />
+            </div>
             {convention.banner ? (
               <img src={convention.banner} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -73,7 +76,8 @@ export function ConventionDetail({
                     'font-display inline-flex -rotate-3 items-center border-2 px-2 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs',
                     getConventionPhase(convention) === 'now' &&
                       'border-ink bg-accent-pop text-white',
-                    getConventionPhase(convention) === 'soon' && 'border-ink bg-accent text-white',
+                    getConventionPhase(convention) === 'soon' &&
+                      'border-ink bg-accent text-white dark:text-zinc-950',
                     getConventionPhase(convention) === 'past' &&
                       'border-zinc-400 bg-zinc-200 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
                     getConventionPhase(convention) === 'up' &&
@@ -118,7 +122,7 @@ export function ConventionDetail({
               >
                 <div className="border-ink mb-6 flex flex-col gap-2 border-b-2 border-dashed pb-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-display bg-accent border-ink inline-block -rotate-1 border-2 px-2.5 py-0.5 text-xs tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+                    <span className="font-display bg-accent border-ink inline-block -rotate-1 border-2 px-2.5 py-0.5 text-xs tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
                       About
                     </span>
                     <h2
@@ -128,32 +132,31 @@ export function ConventionDetail({
                       Overview
                     </h2>
                   </div>
-                  {(convention.website_url || convention.map_url) && (
-                    <div className="flex flex-wrap items-center gap-3">
-                      {convention.website_url && (
-                        <a
-                          href={convention.website_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
-                        >
-                          <Globe className="h-3.5 w-3.5" />
-                          Official Site
-                        </a>
-                      )}
-                      {convention.map_url && (
-                        <a
-                          href={convention.map_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
-                        >
-                          <MapPin className="h-3.5 w-3.5" />
-                          Venue Map
-                        </a>
-                      )}
-                    </div>
-                  )}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <CopyLinkButton variant="ghost" />
+                    {convention.website_url && (
+                      <a
+                        href={convention.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
+                      >
+                        <Globe className="h-3.5 w-3.5" />
+                        Official Site
+                      </a>
+                    )}
+                    {convention.map_url && (
+                      <a
+                        href={convention.map_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
+                      >
+                        <MapPin className="h-3.5 w-3.5" />
+                        Venue Map
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 <div

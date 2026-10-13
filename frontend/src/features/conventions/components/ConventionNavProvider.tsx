@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
 import { ConventionSidebar } from './ConventionSidebar';
 import { cn } from '@/shared/lib/utils';
 
-const CONVENTION_PATH = /^\/conventions\/([^/]+)$/;
+const CONVENTION_PATH = /^\/conventions\/([^/]+)(?:\/.*)?$/;
 
 export function isConventionDetailPath(pathname: string | null): boolean {
   return pathname != null && CONVENTION_PATH.test(pathname);
@@ -61,11 +61,11 @@ export function useConventionNav() {
 export function ConventionNavProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    subscribeSidebar,
+    () => true,
+    () => false
+  );
 
   const sidebarCollapsed = useSyncExternalStore(
     subscribeSidebar,
@@ -87,10 +87,10 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
     return match ? match[1] : null;
   }, [pathname]);
 
-  const [lastSlug, setLastSlug] = useState<string | null>(slug);
+  const [lastPathname, setLastPathname] = useState<string | null>(pathname);
 
-  if (slug !== lastSlug) {
-    setLastSlug(slug);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setOpen(false);
   }
 

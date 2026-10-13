@@ -135,17 +135,24 @@ AWS_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID", default=None)
 AWS_SECRET_ACCESS_KEY = env("R2_SECRET_ACCESS_KEY", default=None)
 AWS_STORAGE_BUCKET_NAME = env("R2_BUCKET_PUBLIC", default="conmeet-media")
 AWS_S3_ENDPOINT_URL = env("R2_ENDPOINT_URL", default=None)
+AWS_S3_REGION_NAME = env("R2_REGION_NAME", default="auto")
+AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_ADDRESSING_STYLE = "path"
+AWS_S3_FILE_OVERWRITE = False
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
-AWS_S3_CUSTOM_DOMAIN = env("R2_PUBLIC_URL", default=None)
+raw_r2_public_url = env("R2_PUBLIC_URL", default=None)
+if raw_r2_public_url:
+    AWS_S3_CUSTOM_DOMAIN = raw_r2_public_url.replace("https://", "").replace("http://", "").strip("/")
+else:
+    AWS_S3_CUSTOM_DOMAIN = None
 AWS_QUERYSTRING_AUTH = False
 AWS_DEFAULT_ACL = None
-MEDIA_URL = f"{AWS_S3_CUSTOM_DOMAIN}/" if AWS_S3_CUSTOM_DOMAIN else "/media/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/" if AWS_S3_CUSTOM_DOMAIN else "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 STORAGES = {
     "default": {
         "BACKEND": (
-            "storages.backends.s3.S3Storage"
+            "config.storage.R2Storage"
             if AWS_ACCESS_KEY_ID
             else "django.core.files.storage.FileSystemStorage"
         ),

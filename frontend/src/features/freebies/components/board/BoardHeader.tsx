@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, Gift, Plus } from 'lucide-react';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 interface BoardHeaderProps {
@@ -34,16 +34,19 @@ export function BoardHeader({ conventionSlug, conventionName }: BoardHeaderProps
           </div>
         </div>
 
-        <Link
-          href={`/conventions/${conventionSlug}/freebies/new`}
-          className={cn(
-            CONBLOCK_PRIMARY,
-            'inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold uppercase sm:text-sm'
-          )}
-        >
-          <Plus className="h-4 w-4 stroke-3" />
-          Post a Freebie
-        </Link>
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <CopyLinkButton />
+          <Link
+            href={`/conventions/${conventionSlug}/freebies/new`}
+            className={cn(
+              CONBLOCK_PRIMARY,
+              'inline-flex h-10 items-center justify-center gap-2 px-4 text-xs font-bold uppercase sm:px-5'
+            )}
+          >
+            <Plus className="h-4 w-4 stroke-3" />
+            Post a Freebie
+          </Link>
+        </div>
       </div>
     </div>
   );

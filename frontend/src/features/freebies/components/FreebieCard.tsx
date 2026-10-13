@@ -135,13 +135,6 @@ export function FreebieCard({
             </div>
 
             <div className="flex shrink-0 items-center gap-1.5">
-              {freebie.is_claimed ? (
-                <span className="border-ink bg-accent inline-flex items-center gap-1 border px-1.5 py-0.5 font-mono text-[10px] font-black text-white uppercase shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950">
-                  <Check className="h-3 w-3 stroke-3" />
-                  CLAIMED
-                </span>
-              ) : null}
-
               <button
                 type="button"
                 onClick={handleToggleCondensed}
@@ -173,7 +166,7 @@ export function FreebieCard({
                     ? 'text-sm leading-snug sm:text-base'
                     : 'text-base leading-snug sm:text-lg',
                   freebie.is_claimed
-                    ? 'text-zinc-500 line-through decoration-zinc-400 decoration-2 dark:text-zinc-400'
+                    ? 'text-zinc-600 dark:text-zinc-300'
                     : 'text-zinc-900 dark:text-zinc-50'
                 )}
               >

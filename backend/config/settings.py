@@ -142,7 +142,9 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 raw_r2_public_url = env("R2_PUBLIC_URL", default=None)
 if raw_r2_public_url:
-    AWS_S3_CUSTOM_DOMAIN = raw_r2_public_url.replace("https://", "").replace("http://", "").strip("/")
+    AWS_S3_CUSTOM_DOMAIN = (
+        raw_r2_public_url.replace("https://", "").replace("http://", "").strip("/")
+    )
 else:
     AWS_S3_CUSTOM_DOMAIN = None
 AWS_QUERYSTRING_AUTH = False

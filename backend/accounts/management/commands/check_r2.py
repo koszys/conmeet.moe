@@ -15,7 +15,8 @@ class Command(BaseCommand):
         if not getattr(settings, "AWS_ACCESS_KEY_ID", None):
             self.stdout.write(
                 self.style.WARNING(
-                    "R2_ACCESS_KEY_ID is not configured. Default storage is currently using FileSystemStorage."
+                    "R2_ACCESS_KEY_ID is not configured. "
+                    "Default storage is currently using FileSystemStorage."
                 )
             )
             return

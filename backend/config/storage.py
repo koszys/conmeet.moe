@@ -4,7 +4,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from django.conf import settings
-from storages.backends.s3 import S3Storage
+from storages.backends.s3 import S3Storage  # type: ignore[import-untyped]
 
 
 class R2Storage(S3Storage):

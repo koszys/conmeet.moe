@@ -1,3 +1,4 @@
+from config.admin_widgets import R2AdminMediaMixin
 from django.contrib import admin
 from django.db.models import Count
 
@@ -13,7 +14,7 @@ class FreebieInline(admin.TabularInline):
 
 
 @admin.register(Vendor)
-class VendorAdmin(admin.ModelAdmin):
+class VendorAdmin(R2AdminMediaMixin, admin.ModelAdmin):
     list_display = ("name", "website_url", "freebie_count", "created_at")
     search_fields = ("name", "description")
     inlines = [FreebieInline]
@@ -27,7 +28,7 @@ class VendorAdmin(admin.ModelAdmin):
 
 
 @admin.register(Freebie)
-class FreebieAdmin(admin.ModelAdmin):
+class FreebieAdmin(R2AdminMediaMixin, admin.ModelAdmin):
     list_display = ("name", "vendor", "convention", "location", "created_by", "created_at")
     list_select_related = ("vendor", "convention", "created_by")
     list_filter = ("convention", "vendor", "created_at")

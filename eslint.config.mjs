@@ -7,13 +7,13 @@ import globals from 'globals';
 export default [
   {
     ignores: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      '.next/**',
-      'out/**',
-      'coverage/**',
-      '.venv/**',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.next/**',
+      '**/out/**',
+      '**/coverage/**',
+      '**/.venv/**',
       '**/next-env.d.ts',
     ],
   },
@@ -23,6 +23,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       globals: {
+        ...globals.browser,
         ...globals.node,
         ...globals.es2022,
       },
@@ -41,6 +42,7 @@ export default [
     files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
       globals: {
+        ...globals.browser,
         ...globals.node,
         ...globals.es2022,
       },

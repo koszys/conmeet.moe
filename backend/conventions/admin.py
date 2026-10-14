@@ -1,3 +1,4 @@
+from config.admin_widgets import R2AdminMediaMixin
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
@@ -23,7 +24,7 @@ class MeetupInline(admin.TabularInline):
 
 
 @admin.register(Convention)
-class ConventionAdmin(admin.ModelAdmin):
+class ConventionAdmin(R2AdminMediaMixin, admin.ModelAdmin):
     list_display = (
         "name",
         "slug",

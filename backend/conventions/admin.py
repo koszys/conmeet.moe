@@ -11,12 +11,13 @@ class MeetupInline(admin.TabularInline):
     extra = 0
     show_change_link = True
     fields = ("name", "starts_at", "ends_at", "is_official", "going_count")
+    readonly_fields = ("going_count",)
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_going_count=Count("going"))
 
     def going_count(self, obj: Meetup) -> int:
-        return obj._going_count
+        return getattr(obj, "_going_count", 0)
 
     going_count.short_description = "Going"
 

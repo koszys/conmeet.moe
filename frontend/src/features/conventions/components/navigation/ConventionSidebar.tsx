@@ -9,10 +9,10 @@ import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { IconButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 
-import { useConvention } from '../data/api';
+import { useConvention } from '../../data/api';
 import { useConventionNav } from './ConventionNavProvider';
-import { HeaderSearch } from './HeaderSearch';
-import { ConventionExternalLinks } from './ConventionExternalLinks';
+import { HeaderSearch } from '../search/HeaderSearch';
+import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
 
 const COMING_SOON = [
   { label: 'Schedule', icon: CalendarDays },

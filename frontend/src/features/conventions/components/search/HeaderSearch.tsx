@@ -9,7 +9,7 @@ import { cn } from '@/shared/lib/utils';
 import { IconButton } from '@/shared/components/ui/button';
 
 import { useConventions } from '@/features/conventions/data/api';
-import { getConventionPhase, isPast } from '../utils/dates';
+import { getConventionPhase, isPast } from '../../utils/dates';
 
 const MAX_RESULTS = 8;
 

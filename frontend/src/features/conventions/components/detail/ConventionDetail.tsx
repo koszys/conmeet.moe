@@ -5,10 +5,10 @@ import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
-import { useConvention } from '../data/api';
-import { getConventionPhase } from '../utils/dates';
+import { useConvention } from '../../data/api';
+import { getConventionPhase } from '../../utils/dates';
 import { ConventionSections } from './ConventionSections';
-import type { ConventionSectionConfig } from '../types';
+import type { ConventionSectionConfig } from '../../types';
 
 function DetailSkeleton() {
   return (

@@ -9,8 +9,8 @@ import type {
   ConventionSectionConfig,
   ConventionSectionsProps,
   SectionActivityItem,
-} from '../types';
-import { getDefaultConventionSections } from '../data/sections';
+} from '../../types';
+import { getDefaultConventionSections } from '../../data/sections';
 
 export function ConventionSections({
   convention,

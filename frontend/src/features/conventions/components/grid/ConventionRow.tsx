@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
-import type { Convention, ConventionPhase } from '../types';
+import type { Convention, ConventionPhase } from '../../types';
 import { cn } from '@/shared/lib/utils';
-import { ConventionExternalLinks } from './ConventionExternalLinks';
+import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
 
 const STAMP: Record<ConventionPhase, string> = {
   now: 'now!',

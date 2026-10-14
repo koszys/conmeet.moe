@@ -3,7 +3,7 @@
 import { Star } from 'lucide-react';
 import { useConventions } from '@/features/conventions/data/api';
 import { isPast } from '@/features/conventions/utils/dates';
-import { ConventionCard } from '@/features/conventions/components/ConventionCard';
+import { ConventionCard } from '@/features/conventions';
 import { cn } from '@/shared/lib/utils';
 
 function CardSkeleton() {

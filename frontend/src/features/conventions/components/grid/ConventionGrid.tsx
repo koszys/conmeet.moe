@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
-import { useConventions } from '../data/api';
-import { getConventionPhase, isPast } from '../utils/dates';
-import type { Convention, ConventionPhase } from '../types';
+import { useConventions } from '../../data/api';
+import { getConventionPhase, isPast } from '../../utils/dates';
+import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 

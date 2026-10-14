@@ -5,9 +5,9 @@ import { ArrowUpRight, Calendar, MapPin, Sparkles, Star } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { getConventionPhase } from '../utils/dates';
-import type { Convention, ConventionPhase } from '../types';
-import { ConventionExternalLinks } from './ConventionExternalLinks';
+import { getConventionPhase } from '../../utils/dates';
+import type { Convention, ConventionPhase } from '../../types';
+import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
 
 const PHASE_CONFIG: Record<ConventionPhase, { label: string; chipClass: string }> = {
   now: {

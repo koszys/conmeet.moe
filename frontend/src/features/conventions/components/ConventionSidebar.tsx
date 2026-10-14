@@ -162,8 +162,11 @@ export function ConventionSidebar({
         <div className="border-ink flex shrink-0 items-center justify-between gap-2 border-b-2 p-4">
           <Link href="/" onClick={onClose} className="group flex min-w-0 items-center gap-2">
             <BrandMark size="sm" boxClassName="shrink-0" />
-            <span className="font-display truncate text-xs tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)]">
-              conmeet<span className="text-accent">.moe</span>
+            <span className="font-display truncate text-xs tracking-wide transition-all duration-200 [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] group-hover:translate-y-0.5 group-hover:[text-shadow:1px_1px_0_color-mix(in_srgb,var(--ink)_22%,transparent)]">
+              conmeet
+              <span className="text-accent group-hover:text-accent-pop transition-colors duration-200">
+                .moe
+              </span>
             </span>
             <Sparkles className="text-accent h-3 w-3 rotate-12 transition-transform group-hover:rotate-45" />
           </Link>

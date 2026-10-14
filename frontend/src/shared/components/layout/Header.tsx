@@ -79,12 +79,15 @@ export function Header() {
             >
               <span
                 className={cn(
-                  'font-display inline-block text-base tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
+                  'font-display inline-block text-base tracking-wide transition-all duration-200 [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] group-hover:translate-y-0.5 group-hover:[text-shadow:1px_1px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
                   nav?.isMounted && 'transition-opacity duration-150 ease-in-out',
                   isConventionPage && nav?.sidebarCollapsed ? 'opacity-0' : 'opacity-100 delay-300'
                 )}
               >
-                conmeet<span className="text-accent">.moe</span>
+                conmeet
+                <span className="text-accent group-hover:text-accent-pop transition-colors duration-200">
+                  .moe
+                </span>
               </span>
             </span>
             <BrandMark className="gap-3" withSparkles />

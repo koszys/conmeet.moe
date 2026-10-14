@@ -17,7 +17,7 @@ import {
 import { formatDateRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
-import { IconButton, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { IconButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 
 import { useConvention } from '../data/api';
 import { useConventionNav } from './ConventionNavProvider';
@@ -158,7 +158,10 @@ export function ConventionSidebar({
               href={convention.map_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center justify-center gap-2 border-2 bg-white px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors dark:bg-zinc-900 dark:text-zinc-100"
+              className={cn(
+                CONBLOCK,
+                'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center justify-center gap-2 bg-white px-4 py-2.5 text-xs font-bold tracking-widest uppercase dark:bg-zinc-900 dark:text-zinc-100'
+              )}
             >
               <MapPin className="h-4 w-4" />
               View on map

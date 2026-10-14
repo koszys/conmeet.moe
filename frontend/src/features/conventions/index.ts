@@ -1,4 +1,5 @@
 export { ConventionRow } from './components/ConventionRow';
+export { ConventionCard } from './components/ConventionCard';
 export { ConventionGrid } from './components/ConventionGrid';
 export { ConventionRequest } from './components/ConventionRequest';
 export { ConventionDetail } from './components/ConventionDetail';

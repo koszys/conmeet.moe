@@ -1,6 +1,7 @@
 import { Hero } from './components/Hero';
 import { LedDisplay } from './components/LedDisplay';
 import { Features } from './components/Features';
+import { FeaturedConventions } from './components/FeaturedConventions';
 import { ConventionGrid } from '@/features/conventions';
 
 export function Landing() {
@@ -9,7 +10,15 @@ export function Landing() {
       <Hero />
       <LedDisplay />
       <Features />
-      <ConventionGrid showAllLink limitNow={4} limitSoon={4} limitUp={4} limitPast={8} />
+      <FeaturedConventions />
+      <ConventionGrid
+        showAllLink
+        limitNow={4}
+        limitSoon={4}
+        limitUp={4}
+        limitPast={8}
+        className="pt-10 pb-20"
+      />
     </main>
   );
 }

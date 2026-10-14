@@ -230,14 +230,14 @@ export function ConventionSidebar({
       </div>
       <div
         className={cn(
-          'absolute inset-0',
+          'absolute inset-0 scrollbar-none overflow-x-hidden overflow-y-auto [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden',
           nav?.isMounted && 'transition-opacity duration-300',
           nav?.sidebarCollapsed ? 'opacity-100' : 'pointer-events-none opacity-0'
         )}
       >
         <nav
           aria-label="Convention sections"
-          className="flex h-full flex-col items-center gap-1 py-2"
+          className="flex min-h-full flex-col items-center gap-1 py-2"
         >
           <HeaderSearch variant="collapsed" />
           <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
@@ -245,11 +245,12 @@ export function ConventionSidebar({
             href={`/conventions/${convention.slug}`}
             aria-current={isOverview ? 'page' : undefined}
             aria-label="Overview"
+            title="Overview"
             className={cn(
-              'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
+              'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
               isOverview
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <Home className="h-4 w-4" />
@@ -258,11 +259,12 @@ export function ConventionSidebar({
             href={`/conventions/${convention.slug}/freebies`}
             aria-current={isFreebies ? 'page' : undefined}
             aria-label="Freebies"
+            title="Freebies"
             className={cn(
-              'border-ink flex h-9 w-9 items-center justify-center border-2 transition-colors',
+              'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
               isFreebies
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <Gift className="h-4 w-4" />
@@ -271,11 +273,54 @@ export function ConventionSidebar({
             <span
               key={label}
               title={`${label} (soon)`}
+              aria-label={`${label} (soon)`}
               className="border-ink flex h-9 w-9 cursor-not-allowed items-center justify-center border-2 text-zinc-400 dark:text-zinc-500"
             >
               <Icon className="h-4 w-4" />
             </span>
           ))}
+
+          {(convention.website_url || convention.map_url) && (
+            <>
+              <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
+              {convention.website_url && (
+                <a
+                  href={convention.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Official site"
+                  title="Official site"
+                  className="border-ink bg-accent hover:bg-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 text-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950 dark:hover:text-white"
+                >
+                  <Globe className="h-4 w-4" />
+                </a>
+              )}
+              {convention.map_url && (
+                <a
+                  href={convention.map_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="View on map"
+                  title="View on map"
+                  className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-100 hover:shadow-none dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  <MapPin className="h-4 w-4" />
+                </a>
+              )}
+            </>
+          )}
+
+          <div className="mt-auto flex flex-col items-center gap-1">
+            <div className="border-ink mb-1 w-7 border-t-2 border-dashed" />
+            <Link
+              href="/conventions"
+              aria-label="All conventions"
+              title="All conventions"
+              className="border-ink text-accent hover:border-accent-pop hover:text-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-100 hover:shadow-none dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            >
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
         </nav>
       </div>
     </aside>

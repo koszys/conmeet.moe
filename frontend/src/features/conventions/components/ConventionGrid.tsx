@@ -8,7 +8,7 @@ import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../data/api';
 import { getConventionPhase, isPast } from '../utils/dates';
 import type { Convention, ConventionPhase } from '../types';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
 interface ConventionGroup {
@@ -22,7 +22,10 @@ interface ConventionGridProps {
   id?: string;
   heading?: string;
   tagline?: string;
+  limitNow?: number;
+  limitSoon?: number;
   limitUp?: number;
+  limitPast?: number;
   showAllLink?: boolean;
   showRequest?: boolean;
   initialTab?: 'upcoming' | 'past';
@@ -44,7 +47,10 @@ export function ConventionGrid({
   id = 'conventions',
   heading = 'the line-up!',
   tagline = 'Only conventions currently on this site are listed here — not every con out there!',
+  limitNow,
+  limitSoon,
   limitUp,
+  limitPast,
   showAllLink = false,
   showRequest = true,
   initialTab = 'upcoming',
@@ -53,7 +59,7 @@ export function ConventionGrid({
   const [tab, setTab] = useState<'upcoming' | 'past'>(initialTab);
 
   const upcoming = data.filter((convention) => !isPast(convention));
-  const past = data
+  const allPast = data
     .filter((convention) => isPast(convention))
     .sort(
       (a, b) =>
@@ -64,26 +70,32 @@ export function ConventionGrid({
   const now = upcoming.filter((convention) => getConventionPhase(convention) === 'now');
   const soon = upcoming.filter((convention) => getConventionPhase(convention) === 'soon');
   const up = upcoming.filter((convention) => getConventionPhase(convention) === 'up');
-  const later = limitUp ? up.slice(0, limitUp) : up;
+
+  const displayedNow = limitNow ? now.slice(0, limitNow) : now;
+  const displayedSoon = limitSoon ? soon.slice(0, limitSoon) : soon;
+  const displayedUp = limitUp ? up.slice(0, limitUp) : up;
+  const displayedPast = limitPast ? allPast.slice(0, limitPast) : allPast;
+
+  const totalUpcomingCount = now.length + soon.length + up.length;
 
   const upcomingGroups: ConventionGroup[] = [
     {
       phase: 'now',
       label: 'HAPPENING NOW',
       chipClassName: 'bg-accent-pop text-white',
-      conventions: now,
+      conventions: displayedNow,
     },
     {
       phase: 'soon',
       label: 'SOON!',
       chipClassName: 'bg-accent text-white dark:text-zinc-950',
-      conventions: soon,
+      conventions: displayedSoon,
     },
     {
       phase: 'up',
       label: 'COMING UP',
       chipClassName: 'border-2 border-ink text-ink dark:text-zinc-100',
-      conventions: later,
+      conventions: displayedUp,
     },
   ];
 
@@ -101,10 +113,15 @@ export function ConventionGrid({
         </div>
         {showAllLink && (
           <Link
-            href="/conventions"
-            className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 border-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase transition-colors dark:bg-zinc-900 dark:text-zinc-100"
+            href={tab === 'past' ? '/conventions?tab=past' : '/conventions'}
+            className={cn(
+              CONBLOCK,
+              'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+            )}
           >
-            See all conventions
+            {data.length > 0
+              ? `See all conventions (${tab === 'upcoming' ? totalUpcomingCount : allPast.length})`
+              : 'See all conventions'}
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         )}
@@ -116,10 +133,11 @@ export function ConventionGrid({
           type="button"
           onClick={() => setTab('upcoming')}
           className={cn(
-            'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
+            CONBLOCK,
+            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
             tab === 'upcoming'
-              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           Upcoming
@@ -128,10 +146,11 @@ export function ConventionGrid({
           type="button"
           onClick={() => setTab('past')}
           className={cn(
-            'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
+            CONBLOCK,
+            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
             tab === 'past'
-              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           Past Cons
@@ -202,7 +221,7 @@ export function ConventionGrid({
 
       {!isLoading && !isError && tab === 'past' && (
         <>
-          {past.length === 0 ? (
+          {displayedPast.length === 0 ? (
             <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
               No past conventions listed yet.
             </p>
@@ -214,7 +233,7 @@ export function ConventionGrid({
                 </span>
               </h3>
               <div className="mt-4">
-                {past.map((convention) => (
+                {displayedPast.map((convention) => (
                   <ConventionRow key={convention.id} convention={convention} phase="past" />
                 ))}
               </div>

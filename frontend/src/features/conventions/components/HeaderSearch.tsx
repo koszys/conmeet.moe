@@ -355,7 +355,7 @@ export function HeaderSearch({
         createPortal(
           <div
             ref={panelRef}
-            className="border-ink fixed inset-x-0 top-16 z-50 border-b-2 bg-white min-[900px]:hidden dark:bg-[#373b3e]"
+            className="border-ink fixed inset-x-0 top-[calc(4rem-2px)] z-50 border-t-2 border-b-2 bg-white min-[900px]:hidden dark:bg-[#373b3e]"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4">
               <div className="relative">

@@ -18,11 +18,12 @@ LIST_FIELDS = {
     "starts_at",
     "ends_at",
     "website_url",
+    "map_url",
     "banner",
     "banner_thumb",
     "is_featured",
 }
-DETAIL_FIELDS = LIST_FIELDS | {"description", "map_url"}
+DETAIL_FIELDS = LIST_FIELDS | {"description"}
 
 
 def _make_convention(

@@ -12,11 +12,11 @@ export interface Convention {
   starts_at: string;
   ends_at: string;
   website_url: string | null;
+  map_url: string | null;
   banner: string | null;
   banner_thumb: string | null;
   is_featured: boolean;
   /** detail-only fields (GET /api/v1/conventions/{slug}/) */
-  map_url?: string | null;
   description?: string;
 }
 

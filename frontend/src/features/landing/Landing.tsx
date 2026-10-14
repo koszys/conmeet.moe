@@ -9,7 +9,7 @@ export function Landing() {
       <Hero />
       <LedDisplay />
       <Features />
-      <ConventionGrid showAllLink limitUp={4} />
+      <ConventionGrid showAllLink limitNow={4} limitSoon={4} limitUp={4} limitPast={8} />
     </main>
   );
 }

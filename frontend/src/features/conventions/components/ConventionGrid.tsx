@@ -22,7 +22,10 @@ interface ConventionGridProps {
   id?: string;
   heading?: string;
   tagline?: string;
+  limitNow?: number;
+  limitSoon?: number;
   limitUp?: number;
+  limitPast?: number;
   showAllLink?: boolean;
   showRequest?: boolean;
   initialTab?: 'upcoming' | 'past';
@@ -44,7 +47,10 @@ export function ConventionGrid({
   id = 'conventions',
   heading = 'the line-up!',
   tagline = 'Only conventions currently on this site are listed here — not every con out there!',
+  limitNow,
+  limitSoon,
   limitUp,
+  limitPast,
   showAllLink = false,
   showRequest = true,
   initialTab = 'upcoming',
@@ -53,7 +59,7 @@ export function ConventionGrid({
   const [tab, setTab] = useState<'upcoming' | 'past'>(initialTab);
 
   const upcoming = data.filter((convention) => !isPast(convention));
-  const past = data
+  const allPast = data
     .filter((convention) => isPast(convention))
     .sort(
       (a, b) =>
@@ -64,26 +70,32 @@ export function ConventionGrid({
   const now = upcoming.filter((convention) => getConventionPhase(convention) === 'now');
   const soon = upcoming.filter((convention) => getConventionPhase(convention) === 'soon');
   const up = upcoming.filter((convention) => getConventionPhase(convention) === 'up');
-  const later = limitUp ? up.slice(0, limitUp) : up;
+
+  const displayedNow = limitNow ? now.slice(0, limitNow) : now;
+  const displayedSoon = limitSoon ? soon.slice(0, limitSoon) : soon;
+  const displayedUp = limitUp ? up.slice(0, limitUp) : up;
+  const displayedPast = limitPast ? allPast.slice(0, limitPast) : allPast;
+
+  const totalUpcomingCount = now.length + soon.length + up.length;
 
   const upcomingGroups: ConventionGroup[] = [
     {
       phase: 'now',
       label: 'HAPPENING NOW',
       chipClassName: 'bg-accent-pop text-white',
-      conventions: now,
+      conventions: displayedNow,
     },
     {
       phase: 'soon',
       label: 'SOON!',
       chipClassName: 'bg-accent text-white dark:text-zinc-950',
-      conventions: soon,
+      conventions: displayedSoon,
     },
     {
       phase: 'up',
       label: 'COMING UP',
       chipClassName: 'border-2 border-ink text-ink dark:text-zinc-100',
-      conventions: later,
+      conventions: displayedUp,
     },
   ];
 
@@ -101,10 +113,12 @@ export function ConventionGrid({
         </div>
         {showAllLink && (
           <Link
-            href="/conventions"
+            href={tab === 'past' ? '/conventions?tab=past' : '/conventions'}
             className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 border-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase transition-colors dark:bg-zinc-900 dark:text-zinc-100"
           >
-            See all conventions
+            {data.length > 0
+              ? `See all conventions (${tab === 'upcoming' ? totalUpcomingCount : allPast.length})`
+              : 'See all conventions'}
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         )}
@@ -202,7 +216,7 @@ export function ConventionGrid({
 
       {!isLoading && !isError && tab === 'past' && (
         <>
-          {past.length === 0 ? (
+          {displayedPast.length === 0 ? (
             <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
               No past conventions listed yet.
             </p>
@@ -214,7 +228,7 @@ export function ConventionGrid({
                 </span>
               </h3>
               <div className="mt-4">
-                {past.map((convention) => (
+                {displayedPast.map((convention) => (
                   <ConventionRow key={convention.id} convention={convention} phase="past" />
                 ))}
               </div>

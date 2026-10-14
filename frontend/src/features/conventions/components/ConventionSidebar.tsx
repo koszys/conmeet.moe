@@ -161,7 +161,7 @@ export function ConventionSidebar({
               className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center justify-center gap-2 border-2 bg-white px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors dark:bg-zinc-900 dark:text-zinc-100"
             >
               <MapPin className="h-4 w-4" />
-              View map
+              View on map
             </a>
           )}
         </div>

@@ -262,18 +262,6 @@ export function ConventionSidebar({
               />
             </>
           )}
-
-          <div className="mt-auto flex flex-col items-center gap-1">
-            <div className="border-ink mb-1 w-7 border-t-2 border-dashed" />
-            <Link
-              href="/conventions"
-              aria-label="All conventions"
-              title="All conventions"
-              className="border-ink text-accent hover:border-accent-pop hover:text-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-100 hover:shadow-none dark:bg-zinc-900 dark:hover:bg-zinc-800"
-            >
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
         </nav>
       </div>
     </aside>

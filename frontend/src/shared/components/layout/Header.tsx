@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { isConventionDetailPath, useConventionNav } from '@/features/conventions';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { IconButton } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { AccountDropdown } from './AccountDropdown';
 import { HeaderActions } from './HeaderActions';
 import { MobileMenu } from './MobileMenu';
 
@@ -158,38 +158,14 @@ export function Header() {
         dropdownUserWrap={dropdownUserWrap}
       />
 
-      {accountOpen &&
-        user &&
-        createPortal(
-          <div
-            ref={accountPopupWrap}
-            className="border-ink fixed top-16 right-4 z-[70] w-48 rounded-none border-2 bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-[#373b3e]"
-          >
-            <div className="border-ink border-b-2 border-dashed px-4 py-3">
-              <p className="truncate text-sm font-bold">{user.display_name || user.username}</p>
-              <p className="truncate text-xs text-zinc-500 dark:text-zinc-300">@{user.username}</p>
-            </div>
-            <Link
-              href="/settings"
-              onClick={() => setAccountOpen(false)}
-              className="hover:text-accent-pop block px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors"
-            >
-              Settings
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                setAccountOpen(false);
-                logout();
-              }}
-              className="hover:text-accent-pop flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-xs font-bold tracking-widest uppercase transition-colors"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              Log out
-            </button>
-          </div>,
-          document.body
-        )}
+      {accountOpen && user && (
+        <AccountDropdown
+          user={user}
+          popupRef={accountPopupWrap}
+          onClose={() => setAccountOpen(false)}
+          onLogout={logout}
+        />
+      )}
     </header>
   );
 }

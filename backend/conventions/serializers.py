@@ -18,6 +18,7 @@ class ConventionListSerializer(serializers.ModelSerializer):
             "starts_at",
             "ends_at",
             "website_url",
+            "map_url",
             "banner",
             "banner_thumb",
             "is_featured",
@@ -33,7 +34,7 @@ class ConventionDetailSerializer(ConventionListSerializer):
     description = serializers.SerializerMethodField()
 
     class Meta(ConventionListSerializer.Meta):
-        fields = ConventionListSerializer.Meta.fields + ["description", "map_url"]
+        fields = ConventionListSerializer.Meta.fields + ["description"]
 
     def get_description(self, obj: Convention) -> str:
         value = obj.description

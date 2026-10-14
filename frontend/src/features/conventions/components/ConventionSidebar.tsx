@@ -3,17 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
-import {
-  ArrowUpRight,
-  CalendarDays,
-  Gift,
-  Globe,
-  Home,
-  MapPin,
-  Sparkles,
-  Users,
-  X,
-} from 'lucide-react';
+import { ArrowUpRight, CalendarDays, Gift, Home, MapPin, Sparkles, Users, X } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
@@ -22,6 +12,7 @@ import { IconButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/b
 import { useConvention } from '../data/api';
 import { useConventionNav } from './ConventionNavProvider';
 import { HeaderSearch } from './HeaderSearch';
+import { ConventionExternalLinks } from './ConventionExternalLinks';
 
 const COMING_SOON = [
   { label: 'Schedule', icon: CalendarDays },
@@ -138,35 +129,12 @@ export function ConventionSidebar({
       </nav>
 
       {(convention.website_url || convention.map_url) && (
-        <div className="border-ink flex flex-col gap-2 border-b-2 border-dashed p-4">
-          {convention.website_url && (
-            <a
-              href={convention.website_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                CONBLOCK_PRIMARY,
-                'inline-flex items-center justify-center gap-2 px-4 py-2.5'
-              )}
-            >
-              <Globe className="h-4 w-4" />
-              Official site
-            </a>
-          )}
-          {convention.map_url && (
-            <a
-              href={convention.map_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                CONBLOCK,
-                'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center justify-center gap-2 bg-white px-4 py-2.5 text-xs font-bold tracking-widest uppercase dark:bg-zinc-900 dark:text-zinc-100'
-              )}
-            >
-              <MapPin className="h-4 w-4" />
-              View on map
-            </a>
-          )}
+        <div className="border-ink border-b-2 border-dashed p-4">
+          <ConventionExternalLinks
+            websiteUrl={convention.website_url}
+            mapUrl={convention.map_url}
+            variant="full"
+          />
         </div>
       )}
 
@@ -286,30 +254,12 @@ export function ConventionSidebar({
           {(convention.website_url || convention.map_url) && (
             <>
               <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
-              {convention.website_url && (
-                <a
-                  href={convention.website_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Official site"
-                  title="Official site"
-                  className="border-ink bg-accent hover:bg-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 text-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950 dark:hover:text-white"
-                >
-                  <Globe className="h-4 w-4" />
-                </a>
-              )}
-              {convention.map_url && (
-                <a
-                  href={convention.map_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="View on map"
-                  title="View on map"
-                  className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-100 hover:shadow-none dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
-                >
-                  <MapPin className="h-4 w-4" />
-                </a>
-              )}
+              <ConventionExternalLinks
+                websiteUrl={convention.website_url}
+                mapUrl={convention.map_url}
+                variant="icon"
+                className="flex-col gap-1"
+              />
             </>
           )}
 

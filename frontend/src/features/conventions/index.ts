@@ -4,6 +4,9 @@ export { ConventionRequest } from './components/ConventionRequest';
 export { ConventionDetail } from './components/ConventionDetail';
 export { ConventionSidebar } from './components/ConventionSidebar';
 export { ConventionSections } from './components/ConventionSections';
+export { OfficialSiteButton } from './components/OfficialSiteButton';
+export { ViewOnMapButton } from './components/ViewOnMapButton';
+export { ConventionExternalLinks } from './components/ConventionExternalLinks';
 export {
   ConventionNavProvider,
   useConventionNav,

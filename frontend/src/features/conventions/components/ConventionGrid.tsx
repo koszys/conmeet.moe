@@ -8,7 +8,7 @@ import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../data/api';
 import { getConventionPhase, isPast } from '../utils/dates';
 import type { Convention, ConventionPhase } from '../types';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
 interface ConventionGroup {
@@ -114,7 +114,10 @@ export function ConventionGrid({
         {showAllLink && (
           <Link
             href={tab === 'past' ? '/conventions?tab=past' : '/conventions'}
-            className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 border-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase transition-colors dark:bg-zinc-900 dark:text-zinc-100"
+            className={cn(
+              CONBLOCK,
+              'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+            )}
           >
             {data.length > 0
               ? `See all conventions (${tab === 'upcoming' ? totalUpcomingCount : allPast.length})`
@@ -130,10 +133,11 @@ export function ConventionGrid({
           type="button"
           onClick={() => setTab('upcoming')}
           className={cn(
-            'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
+            CONBLOCK,
+            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
             tab === 'upcoming'
-              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           Upcoming
@@ -142,10 +146,11 @@ export function ConventionGrid({
           type="button"
           onClick={() => setTab('past')}
           className={cn(
-            'font-display border-ink cursor-pointer border-2 px-3.5 py-1.5 text-xs tracking-wider uppercase transition-all',
+            CONBLOCK,
+            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
             tab === 'past'
-              ? 'bg-accent -translate-y-0.5 text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
           )}
         >
           Past Cons

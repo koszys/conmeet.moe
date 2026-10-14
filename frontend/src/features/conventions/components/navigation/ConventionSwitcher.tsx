@@ -6,8 +6,8 @@ import { Check, ChevronDown } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 
-import { useConventions } from '../data/api';
-import { isPast } from '../utils/dates';
+import { useConventions } from '../../data/api';
+import { isPast } from '../../utils/dates';
 
 /**
  * @deprecated Currently unused.

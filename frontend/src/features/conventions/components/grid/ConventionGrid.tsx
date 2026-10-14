@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
-import { useConventions } from '../data/api';
-import { getConventionPhase, isPast } from '../utils/dates';
-import type { Convention, ConventionPhase } from '../types';
+import { useConventions } from '../../data/api';
+import { getConventionPhase, isPast } from '../../utils/dates';
+import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
@@ -29,6 +29,7 @@ interface ConventionGridProps {
   showAllLink?: boolean;
   showRequest?: boolean;
   initialTab?: 'upcoming' | 'past';
+  className?: string;
 }
 
 function RowSkeleton() {
@@ -54,6 +55,7 @@ export function ConventionGrid({
   showAllLink = false,
   showRequest = true,
   initialTab = 'upcoming',
+  className,
 }: ConventionGridProps) {
   const { data = [], isLoading, isError, refetch } = useConventions();
   const [tab, setTab] = useState<'upcoming' | 'past'>(initialTab);
@@ -102,7 +104,7 @@ export function ConventionGrid({
   const upcomingSections = upcomingGroups.filter((group) => group.conventions.length > 0);
 
   return (
-    <section id={id} className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6">
+    <section id={id} className={cn('mx-auto max-w-6xl scroll-mt-20 px-4 py-20 md:px-6', className)}>
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="font-display text-2xl tracking-wide uppercase sm:text-4xl">

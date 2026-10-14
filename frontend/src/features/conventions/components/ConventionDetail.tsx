@@ -13,7 +13,7 @@ import type { ConventionSectionConfig } from '../types';
 function DetailSkeleton() {
   return (
     <main className="w-full animate-pulse">
-      <div className="border-ink min-h-40 border-b-2 bg-zinc-100 sm:min-h-48 md:h-56 lg:h-64 dark:bg-zinc-900" />
+      <div className="border-ink min-h-48 border-b-2 bg-zinc-100 sm:min-h-56 md:h-64 lg:h-72 dark:bg-zinc-900" />
       <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
         <div className="h-4 w-40 bg-zinc-200 dark:bg-zinc-800" />
         <div className="mt-6 h-8 w-1/2 bg-zinc-200 dark:bg-zinc-800" />
@@ -63,55 +63,66 @@ export function ConventionDetail({
 
       {!isLoading && !isError && convention && (
         <>
-          <div className="border-ink bg-accent-soft/40 relative flex min-h-40 w-full flex-col justify-center border-b-2 px-4 py-4 sm:min-h-48 sm:px-6 sm:py-5 md:h-56 md:px-8 lg:h-64 dark:bg-zinc-900">
+          <div className="border-ink bg-accent-soft/40 relative flex min-h-48 w-full flex-col justify-center overflow-hidden border-b-2 px-4 py-6 sm:min-h-56 sm:px-6 sm:py-8 md:h-64 md:px-8 lg:h-72 dark:bg-zinc-900">
+            {convention.banner && (
+              <>
+                <img
+                  src={convention.banner}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/30 backdrop-blur-[1px] dark:from-zinc-950/95 dark:via-zinc-950/85 dark:to-zinc-950/40"
+                />
+              </>
+            )}
+
             <div className="absolute top-3.5 right-3.5 z-10 sm:top-4 sm:right-6">
               <CopyLinkButton size="sm" />
             </div>
-            {convention.banner ? (
-              <img src={convention.banner} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex flex-col items-start justify-center gap-2 sm:gap-2.5">
-                <span
-                  className={cn(
-                    'font-display inline-flex -rotate-3 items-center border-2 px-2 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs',
-                    getConventionPhase(convention) === 'now' &&
-                      'border-ink bg-accent-pop text-white',
-                    getConventionPhase(convention) === 'soon' &&
-                      'border-ink bg-accent text-white dark:text-zinc-950',
-                    getConventionPhase(convention) === 'past' &&
-                      'border-zinc-400 bg-zinc-200 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
-                    getConventionPhase(convention) === 'up' &&
-                      'border-ink text-ink bg-white dark:bg-zinc-900 dark:text-zinc-100'
-                  )}
-                >
-                  {getConventionPhase(convention) === 'now'
-                    ? 'HAPPENING NOW'
-                    : getConventionPhase(convention) === 'soon'
-                      ? 'SOON!'
-                      : getConventionPhase(convention) === 'past'
-                        ? 'CON ENDED'
-                        : 'COMING UP'}
-                </span>
-                <h1 className="font-display text-lg leading-snug tracking-wide break-words uppercase [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl sm:[text-shadow:3px_3px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] md:text-4xl lg:text-5xl">
-                  {convention.name}
-                </h1>
-                <div className="mt-0.5 flex flex-col items-start gap-1 sm:mt-1">
-                  <p className="text-accent text-xs font-semibold sm:text-sm sm:font-medium">
-                    {formatDateRange(convention.starts_at, convention.ends_at)}
+
+            <div className="relative z-10 flex flex-col items-start justify-center gap-2 sm:gap-2.5">
+              <span
+                className={cn(
+                  'font-display inline-flex -rotate-3 items-center border-2 px-2 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:px-2.5 sm:text-xs',
+                  getConventionPhase(convention) === 'now' && 'border-ink bg-accent-pop text-white',
+                  getConventionPhase(convention) === 'soon' &&
+                    'border-ink bg-accent text-white dark:text-zinc-950',
+                  getConventionPhase(convention) === 'past' &&
+                    'border-zinc-400 bg-zinc-200 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
+                  getConventionPhase(convention) === 'up' &&
+                    'border-ink text-ink bg-white dark:bg-zinc-900 dark:text-zinc-100'
+                )}
+              >
+                {getConventionPhase(convention) === 'now'
+                  ? 'HAPPENING NOW'
+                  : getConventionPhase(convention) === 'soon'
+                    ? 'SOON!'
+                    : getConventionPhase(convention) === 'past'
+                      ? 'CON ENDED'
+                      : 'COMING UP'}
+              </span>
+              <h1 className="font-display text-lg leading-snug tracking-wide break-words uppercase [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl sm:[text-shadow:3px_3px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] md:text-4xl lg:text-5xl">
+                {convention.name}
+              </h1>
+              <div className="mt-0.5 flex flex-col items-start gap-1 sm:mt-1">
+                <p className="text-accent text-xs font-semibold sm:text-sm sm:font-medium">
+                  {formatDateRange(convention.starts_at, convention.ends_at)}
+                </p>
+                {(convention.venue_name || convention.city || convention.country) && (
+                  <p className="flex items-start gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase sm:text-sm sm:tracking-widest dark:text-zinc-300">
+                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+                    <span className="break-words">
+                      {[convention.venue_name, convention.city, convention.country]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </span>
                   </p>
-                  {(convention.venue_name || convention.city || convention.country) && (
-                    <p className="flex items-start gap-1.5 text-xs font-bold tracking-wider text-zinc-600 uppercase sm:text-sm sm:tracking-widest dark:text-zinc-300">
-                      <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-                      <span className="break-words">
-                        {[convention.venue_name, convention.city, convention.country]
-                          .filter(Boolean)
-                          .join(', ')}
-                      </span>
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <div className="mx-auto w-full max-w-7xl space-y-10 px-4 py-8 md:px-6">

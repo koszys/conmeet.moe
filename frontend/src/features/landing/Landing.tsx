@@ -17,7 +17,7 @@ export function Landing() {
         limitSoon={4}
         limitUp={4}
         limitPast={8}
-        className="pt-10 pb-20"
+        className="pt-12 pb-20 md:pt-16"
       />
     </main>
   );

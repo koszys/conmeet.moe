@@ -74,6 +74,8 @@ export function FeaturedConventions() {
             <ConventionCard key={convention.id} convention={convention} />
           ))}
       </div>
+
+      <div className="border-ink mt-12 border-b-2 border-dashed md:mt-16" aria-hidden="true" />
     </section>
   );
 }

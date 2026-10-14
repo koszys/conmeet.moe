@@ -29,7 +29,7 @@ export function FeaturedConventions() {
 
   const featured = data.filter((convention) => convention.is_featured && !isPast(convention));
 
-  if (!isLoading && featured.length === 0) {
+  if (featured.length === 0) {
     return null;
   }
 

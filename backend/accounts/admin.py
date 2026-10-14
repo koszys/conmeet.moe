@@ -1,4 +1,5 @@
 from allauth.socialaccount.models import SocialAccount
+from config.admin_widgets import R2AdminMediaMixin
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.html import format_html
@@ -14,7 +15,7 @@ class SocialAccountInline(admin.TabularInline):
 
 
 @admin.register(User)
-class UserAdmin(DjangoUserAdmin):
+class UserAdmin(R2AdminMediaMixin, DjangoUserAdmin):
     inlines = (SocialAccountInline,)
     list_display = (
         "username",

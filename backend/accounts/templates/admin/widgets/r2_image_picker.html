@@ -1,0 +1,41 @@
+<div class="r2-image-picker-root" data-field-name="{{ widget.name }}" data-input-id="{{ widget.attrs.id }}">
+  {% if widget.is_initial %}
+    <p class="file-upload">
+      {{ widget.initial_text }}: 
+      {% if widget.current_url %}
+        <a href="{{ widget.current_url }}" target="_blank" rel="noopener noreferrer">{{ widget.value }}</a>
+      {% else %}
+        <a href="{{ widget.value.url }}" target="_blank" rel="noopener noreferrer">{{ widget.value }}</a>
+      {% endif %}
+      {% if not widget.required %}
+        <span class="clearable-file-input">
+          <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" {% if widget.attrs.disabled %}disabled{% endif %}>
+          <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+        </span>
+      {% endif %}
+      <br>
+      {{ widget.input_text }}:
+    </p>
+  {% endif %}
+
+  <div class="r2-upload-row">
+    <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+    <span class="r2-or-divider">— OR —</span>
+    <button type="button" class="button r2-open-btn" data-input-id="{{ widget.attrs.id }}" data-folder="{{ widget.upload_to }}">
+      🖼️ Select from R2
+    </button>
+  </div>
+
+  <input type="hidden" name="{{ widget.r2_key_name }}" id="{{ widget.r2_key_id }}" value="" class="r2-key-input">
+
+  <div class="r2-selected-preview" id="{{ widget.preview_id }}" style="display: none;">
+    <div class="r2-preview-card">
+      <img class="r2-preview-thumb" src="" alt="Selected R2 Image">
+      <div class="r2-preview-details">
+        <span class="r2-preview-badge">✓ Selected from Cloudflare R2</span>
+        <code class="r2-preview-key"></code>
+        <button type="button" class="button r2-clear-selection-btn">✕ Cancel Selection</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,13 @@
 from config.admin_widgets import R2AdminMediaMixin
 from django.contrib import admin
 from django.db.models import Count
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import display
 
 from .models import Freebie, UserFreebie, Vendor
 
 
-class FreebieInline(admin.TabularInline):
+class FreebieInline(TabularInline):
     model = Freebie
     extra = 0
     fields = ("name", "convention", "location", "created_at")
@@ -14,7 +16,7 @@ class FreebieInline(admin.TabularInline):
 
 
 @admin.register(Vendor)
-class VendorAdmin(R2AdminMediaMixin, admin.ModelAdmin):
+class VendorAdmin(R2AdminMediaMixin, ModelAdmin):
     list_display = ("name", "website_url", "freebie_count", "created_at")
     search_fields = ("name", "description")
     inlines = [FreebieInline]
@@ -22,13 +24,13 @@ class VendorAdmin(R2AdminMediaMixin, admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_freebie_count=Count("freebies"))
 
-    @admin.display(description="Freebies", ordering="_freebie_count")
+    @display(description="Freebies", ordering="_freebie_count")
     def freebie_count(self, obj) -> int:
         return getattr(obj, "_freebie_count", obj.freebies.count())
 
 
 @admin.register(Freebie)
-class FreebieAdmin(R2AdminMediaMixin, admin.ModelAdmin):
+class FreebieAdmin(R2AdminMediaMixin, ModelAdmin):
     list_display = ("name", "vendor", "convention", "location", "created_by", "created_at")
     list_select_related = ("vendor", "convention", "created_by")
     list_filter = ("convention", "vendor", "created_at")
@@ -37,7 +39,7 @@ class FreebieAdmin(R2AdminMediaMixin, admin.ModelAdmin):
 
 
 @admin.register(UserFreebie)
-class UserFreebieAdmin(admin.ModelAdmin):
+class UserFreebieAdmin(ModelAdmin):
     list_display = ("user", "freebie", "claimed", "claimed_at", "created_at")
     list_select_related = ("user", "freebie")
     list_filter = ("claimed", "created_at")

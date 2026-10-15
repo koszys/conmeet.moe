@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
+from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,6 +30,10 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 INSTALLED_APPS = [
+    # Unfold (must precede django.contrib.admin)
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -226,5 +231,109 @@ LOGGING = {
     "root": {
         "handlers": ["console"],
         "level": "INFO",
+    },
+}
+
+# Django Unfold Configuration
+UNFOLD = {
+    "SITE_TITLE": "conmeet Admin",
+    "SITE_HEADER": "conmeet",
+    "SITE_URL": "/",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "COLORS": {
+        "primary": {
+            "50": "#f0fdfa",
+            "100": "#ccfbf1",
+            "200": "#99f6e4",
+            "300": "#5eead4",
+            "400": "#2dd4bf",
+            "500": "#14b8a6",
+            "600": "#137a7f",
+            "700": "#0f5f63",
+            "800": "#115e59",
+            "900": "#134e4a",
+            "950": "#042f2e",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": "Conventions & Schedules",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Conventions",
+                        "icon": "event",
+                        "link": reverse_lazy("admin:conventions_convention_changelist"),
+                    },
+                    {
+                        "title": "Meetups",
+                        "icon": "groups",
+                        "link": reverse_lazy("admin:meetups_meetup_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Freebies & Vendors",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Vendors",
+                        "icon": "storefront",
+                        "link": reverse_lazy("admin:freebies_vendor_changelist"),
+                    },
+                    {
+                        "title": "Freebies",
+                        "icon": "redeem",
+                        "link": reverse_lazy("admin:freebies_freebie_changelist"),
+                    },
+                    {
+                        "title": "Claimed Freebies",
+                        "icon": "assignment_turned_in",
+                        "link": reverse_lazy("admin:freebies_userfreebie_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Community",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Comments",
+                        "icon": "chat",
+                        "link": reverse_lazy("admin:comments_comment_changelist"),
+                    },
+                    {
+                        "title": "Notifications",
+                        "icon": "notifications",
+                        "link": reverse_lazy("admin:notifications_notification_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Users & Access",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Users",
+                        "icon": "person",
+                        "link": reverse_lazy("admin:accounts_user_changelist"),
+                    },
+                    {
+                        "title": "Email Addresses",
+                        "icon": "mail",
+                        "link": reverse_lazy("admin:account_emailaddress_changelist"),
+                    },
+                    {
+                        "title": "Social Accounts",
+                        "icon": "account_tree",
+                        "link": reverse_lazy("admin:socialaccount_socialaccount_changelist"),
+                    },
+                ],
+            },
+        ],
     },
 }

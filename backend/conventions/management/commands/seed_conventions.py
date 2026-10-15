@@ -94,8 +94,10 @@ class Command(BaseCommand):
                 defaults=defaults,
             )
             created += was_created
-            updated += not was_created
-            self.stdout.write(f"  {'created' if was_created else 'updated'} {convention.name} ({convention.starts_at} → {convention.ends_at})")
+            status = "created" if was_created else "updated"
+            self.stdout.write(
+                f"  {status} {convention.name} ({convention.starts_at} → {convention.ends_at})"
+            )
 
         self.stdout.write(
             self.style.SUCCESS(f"Done — {created} created, {updated} updated.")

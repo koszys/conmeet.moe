@@ -304,7 +304,7 @@ export function HeaderSearch({
       )}
 
       {variant === 'header' && (
-        <div className="relative hidden min-[900px]:block">
+        <div className="relative hidden lg:block">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500 dark:text-zinc-300" />
           <input
             ref={inputRef}
@@ -318,7 +318,7 @@ export function HeaderSearch({
             onKeyDown={onKeyDown}
             placeholder="Search conventions..."
             aria-label="Search conventions"
-            className="border-ink focus:border-accent-pop w-40 border-2 bg-white py-2 pr-3 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none lg:w-52 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
+            className="border-ink focus:border-accent-pop w-40 border-2 bg-white py-2 pr-3 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none xl:w-52 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
           />
           {open && trimmed.length >= 2 && (
             <div className="border-ink absolute right-0 z-50 mt-2 w-80 border-2 bg-white shadow-[3px_3px_0_var(--ink)] sm:w-96 dark:bg-[#373b3e]">
@@ -333,7 +333,7 @@ export function HeaderSearch({
           ref={buttonRef}
           onClick={toggleSearch}
           aria-label="Search conventions"
-          className="hidden h-10 w-10 min-[550px]:max-[900px]:inline-flex"
+          className="hidden h-10 w-10 min-[550px]:inline-flex lg:hidden"
         >
           {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
         </IconButton>
@@ -355,7 +355,7 @@ export function HeaderSearch({
         createPortal(
           <div
             ref={panelRef}
-            className="border-ink fixed inset-x-0 top-[calc(4rem-2px)] z-50 border-t-2 border-b-2 bg-white min-[900px]:hidden dark:bg-[#373b3e]"
+            className="border-ink fixed inset-x-0 top-[calc(4rem-2px)] z-50 border-t-2 border-b-2 bg-white lg:hidden dark:bg-[#373b3e]"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4">
               <div className="relative">

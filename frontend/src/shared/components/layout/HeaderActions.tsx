@@ -41,7 +41,7 @@ export function HeaderActions({
         onClick={onMenuToggle}
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
-        className="md:hidden"
+        className="lg:hidden"
       >
         {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
       </IconButton>

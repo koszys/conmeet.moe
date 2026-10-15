@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
 import { ConventionSidebar } from './ConventionSidebar';
 import { cn } from '@/shared/lib/utils';
 
-const CONVENTION_PATH = /^\/conventions\/([^/]+)(?:\/.*)?$/;
+const CONVENTION_PATH = /^\/conventions\/(?!featured(?:\/|$))([^/]+)(?:\/.*)?$/;
 
 export function isConventionDetailPath(pathname: string | null): boolean {
   return pathname != null && CONVENTION_PATH.test(pathname);

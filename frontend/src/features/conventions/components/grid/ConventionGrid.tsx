@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
@@ -10,6 +8,7 @@ import { getConventionPhase, isPast } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { AllConsButton, FeaturedConsButton } from '../links';
 
 interface ConventionGroup {
   phase: ConventionPhase;
@@ -27,6 +26,7 @@ interface ConventionGridProps {
   limitUp?: number;
   limitPast?: number;
   showAllLink?: boolean;
+  showFeaturedLink?: boolean;
   showRequest?: boolean;
   initialTab?: 'upcoming' | 'past';
   className?: string;
@@ -53,6 +53,7 @@ export function ConventionGrid({
   limitUp,
   limitPast,
   showAllLink = false,
+  showFeaturedLink = false,
   showRequest = true,
   initialTab = 'upcoming',
   className,
@@ -114,49 +115,45 @@ export function ConventionGrid({
           <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">{tagline}</p>
         </div>
         {showAllLink && (
-          <Link
-            href={tab === 'past' ? '/conventions?tab=past' : '/conventions'}
-            className={cn(
-              CONBLOCK,
-              'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-            )}
-          >
-            {data.length > 0
-              ? `See all conventions (${tab === 'upcoming' ? totalUpcomingCount : allPast.length})`
-              : 'See all conventions'}
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
+          <AllConsButton
+            tab={tab}
+            count={tab === 'upcoming' ? totalUpcomingCount : allPast.length}
+          />
         )}
       </div>
 
-      {/* Filter Tabs */}
-      <div className="border-ink mt-8 flex items-center gap-2 border-b-2 pb-3">
-        <button
-          type="button"
-          onClick={() => setTab('upcoming')}
-          className={cn(
-            CONBLOCK,
-            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-            tab === 'upcoming'
-              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          Upcoming
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('past')}
-          className={cn(
-            CONBLOCK,
-            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-            tab === 'past'
-              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          Past Cons
-        </button>
+      {/* Filter Tabs & Navigation Link */}
+      <div className="border-ink mt-8 flex flex-wrap items-center justify-between gap-2 border-b-2 pb-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setTab('upcoming')}
+            className={cn(
+              CONBLOCK,
+              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+              tab === 'upcoming'
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            Upcoming
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('past')}
+            className={cn(
+              CONBLOCK,
+              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+              tab === 'past'
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            Past Cons
+          </button>
+        </div>
+
+        {showFeaturedLink && <FeaturedConsButton />}
       </div>
 
       {isLoading && (

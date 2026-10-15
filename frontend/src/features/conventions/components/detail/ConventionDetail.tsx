@@ -1,12 +1,13 @@
 'use client';
 
-import { Globe, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 import { useConvention } from '../../data/api';
 import { getConventionPhase } from '../../utils/dates';
+import { OfficialSiteButton, ViewOnMapButton } from '../links';
 import { ConventionSections } from './ConventionSections';
 import type { ConventionSectionConfig } from '../../types';
 
@@ -36,6 +37,7 @@ export function ConventionDetail({
   extraSections?: ConventionSectionConfig[];
 }) {
   const { data: convention, isLoading, isError, refetch } = useConvention(slug);
+  const hasOverview = Boolean(convention?.description && convention.description.trim().length > 0);
 
   return (
     <main className="w-full">
@@ -79,10 +81,6 @@ export function ConventionDetail({
               </>
             )}
 
-            <div className="absolute top-3.5 right-3.5 z-10 sm:top-4 sm:right-6">
-              <CopyLinkButton size="sm" />
-            </div>
-
             <div className="relative z-10 flex flex-col items-start justify-center gap-2 sm:gap-2.5">
               <span
                 className={cn(
@@ -122,51 +120,41 @@ export function ConventionDetail({
                   </p>
                 )}
               </div>
+              {!hasOverview && (
+                <div className="mt-1 sm:mt-1.5">
+                  <CopyLinkButton size="sm" />
+                </div>
+              )}
             </div>
           </div>
 
           <div className="mx-auto w-full max-w-7xl space-y-10 px-4 py-8 md:px-6">
-            {convention.description && (
+            {hasOverview && convention.description && (
               <section
                 aria-labelledby="overview-heading"
                 className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900"
               >
                 <div className="border-ink mb-6 flex flex-col gap-2 border-b-2 border-dashed pb-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-display bg-accent border-ink inline-block -rotate-1 border-2 px-2.5 py-0.5 text-xs tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                      About
-                    </span>
+                  <div className="flex items-center">
                     <h2
                       id="overview-heading"
-                      className="font-display text-lg tracking-wide uppercase sm:text-xl"
+                      className="font-display bg-accent border-ink inline-block -rotate-1 border-2 px-2.5 py-0.5 text-xs tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)] sm:text-sm dark:text-zinc-950"
                     >
                       Overview
                     </h2>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <CopyLinkButton variant="ghost" />
-                    {convention.website_url && (
-                      <a
-                        href={convention.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
-                      >
-                        <Globe className="h-3.5 w-3.5" />
-                        Official Site
-                      </a>
-                    )}
-                    {convention.map_url && (
-                      <a
-                        href={convention.map_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase"
-                      >
-                        <MapPin className="h-3.5 w-3.5" />
-                        Venue Map
-                      </a>
-                    )}
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                    <CopyLinkButton size="sm" />
+                    <OfficialSiteButton
+                      url={convention.website_url}
+                      variant="full"
+                      className="h-8 px-3 py-0 text-xs"
+                    />
+                    <ViewOnMapButton
+                      url={convention.map_url}
+                      variant="full"
+                      className="h-8 px-3 py-0 text-xs"
+                    />
                   </div>
                 </div>
 

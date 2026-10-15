@@ -61,7 +61,7 @@ export function Header() {
       className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90"
     >
       <div className="relative flex h-16 items-center justify-between px-4 md:px-6">
-        <div className="flex items-center gap-7">
+        <div className="flex items-center gap-4 lg:gap-7">
           <Link
             href="/"
             onClick={SCROLL_TO_TOP}
@@ -119,11 +119,11 @@ export function Header() {
             </>
           )}
 
-          <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-800 uppercase md:flex dark:text-white">
+          <nav className="hidden shrink-0 items-center gap-6 text-xs font-bold tracking-widest whitespace-nowrap text-zinc-800 uppercase lg:flex dark:text-white">
             <Link
               href="/conventions/featured"
               className={cn(
-                'hover:text-accent-pop dark:hover:text-accent-pop transition-colors',
+                'hover:text-accent-pop dark:hover:text-accent-pop whitespace-nowrap transition-colors',
                 pathname === '/conventions/featured' && 'text-accent dark:text-accent'
               )}
             >
@@ -132,7 +132,7 @@ export function Header() {
             <Link
               href="/conventions"
               className={cn(
-                'hover:text-accent-pop dark:hover:text-accent-pop transition-colors',
+                'hover:text-accent-pop dark:hover:text-accent-pop whitespace-nowrap transition-colors',
                 pathname === '/conventions' && 'text-accent dark:text-accent'
               )}
             >

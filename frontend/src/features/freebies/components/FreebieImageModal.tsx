@@ -62,7 +62,7 @@ export function FreebieImageModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="border-ink relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900"
+        className="border-ink relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900"
       >
         {/* Modal Header */}
         <div className="border-ink flex items-center justify-between border-b-2 bg-zinc-50 px-4 py-3 dark:bg-zinc-800/80">
@@ -95,7 +95,7 @@ export function FreebieImageModal({
             alt={freebie.name}
             fill
             className="object-contain"
-            sizes="(max-width: 640px) 100vw, 512px"
+            sizes="(max-width: 768px) 100vw, 672px"
             priority
           />
 

@@ -66,7 +66,7 @@ export function ItemImageUpload({
       <span className="font-display block text-xs tracking-wider uppercase">{label}</span>
 
       {previewUrl ? (
-        <div className="border-ink relative mt-2 aspect-video w-full max-w-sm overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-800">
+        <div className="border-ink relative mt-2 aspect-video w-full max-w-md overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-800">
           <Image
             src={previewUrl}
             alt="Preview"

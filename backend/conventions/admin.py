@@ -3,11 +3,13 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 from meetups.models import Meetup
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import display
 
 from .models import Convention
 
 
-class MeetupInline(admin.TabularInline):
+class MeetupInline(TabularInline):
     model = Meetup
     extra = 0
     show_change_link = True
@@ -17,14 +19,13 @@ class MeetupInline(admin.TabularInline):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_going_count=Count("going"))
 
+    @display(description="Going", ordering="_going_count")
     def going_count(self, obj: Meetup) -> int:
         return getattr(obj, "_going_count", 0)
 
-    going_count.short_description = "Going"
-
 
 @admin.register(Convention)
-class ConventionAdmin(R2AdminMediaMixin, admin.ModelAdmin):
+class ConventionAdmin(R2AdminMediaMixin, ModelAdmin):
     list_display = (
         "name",
         "slug",
@@ -50,14 +51,12 @@ class ConventionAdmin(R2AdminMediaMixin, admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_meetup_count=Count("meetups"))
 
+    @display(description="Meetups", ordering="_meetup_count")
     def meetup_count(self, obj: Convention) -> int:
         return obj._meetup_count
 
-    meetup_count.short_description = "Meetups"
-
+    @display(description="Banner")
     def banner_preview(self, obj: Convention):
         if obj.banner:
-            return format_html('<img src="{}" width="200" />', obj.banner_thumb.url)
+            return format_html('<img src="{}" width="200" class="rounded" />', obj.banner_thumb.url)
         return "-"
-
-    banner_preview.short_description = "Banner"

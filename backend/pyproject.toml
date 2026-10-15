@@ -19,6 +19,7 @@ dependencies = [
     "uvicorn[standard]>=0.34.0",
     "gunicorn>=23.0.0",
     "django-quill-editor>=0.1.42",
+    "django-unfold>=0.110.0",
     "requests>=2.34.2",
 ]
 

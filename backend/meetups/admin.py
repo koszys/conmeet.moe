@@ -2,18 +2,20 @@ from config.admin_widgets import R2AdminMediaMixin
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import display
 
 from .models import Going, Meetup, SavedMeetup
 
 
-class GoingInline(admin.TabularInline):
+class GoingInline(TabularInline):
     model = Going
     extra = 0
     readonly_fields = ("user", "created_at")
 
 
 @admin.register(Meetup)
-class MeetupAdmin(R2AdminMediaMixin, admin.ModelAdmin):
+class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
     list_display = ("name", "convention", "starts_at", "is_official", "going_count")
     list_filter = ("is_official", "convention")
     search_fields = ("name", "location", "convention__name")
@@ -37,26 +39,24 @@ class MeetupAdmin(R2AdminMediaMixin, admin.ModelAdmin):
             .annotate(_going_count=Count("going"))
         )
 
+    @display(description="Going", ordering="_going_count")
     def going_count(self, obj: Meetup) -> int:
         return obj._going_count
 
-    going_count.short_description = "Going"
-
+    @display(description="Image")
     def image_preview(self, obj: Meetup):
         if obj.image:
-            return format_html('<img src="{}" width="200" />', obj.image_thumb.url)
+            return format_html('<img src="{}" width="200" class="rounded" />', obj.image_thumb.url)
         return "-"
-
-    image_preview.short_description = "Image"
 
 
 @admin.register(Going)
-class GoingAdmin(admin.ModelAdmin):
+class GoingAdmin(ModelAdmin):
     list_display = ("user", "meetup", "created_at")
     search_fields = ("user__username", "meetup__name")
 
 
 @admin.register(SavedMeetup)
-class SavedMeetupAdmin(admin.ModelAdmin):
+class SavedMeetupAdmin(ModelAdmin):
     list_display = ("user", "meetup", "created_at")
     search_fields = ("user__username", "meetup__name")

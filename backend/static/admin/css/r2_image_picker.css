@@ -362,3 +362,52 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Unfold Dark Mode Integration */
+html.dark .r2-modal-window {
+  background: #18181b;
+  color: #f4f4f5;
+  border-color: #27272a;
+}
+
+html.dark .r2-modal-toolbar,
+html.dark .r2-modal-footer {
+  background: #27272a;
+  border-color: #3f3f46;
+}
+
+html.dark .r2-search-input,
+html.dark .r2-filter-select {
+  background: #18181b;
+  color: #f4f4f5;
+  border-color: #3f3f46;
+}
+
+html.dark .r2-grid-card {
+  background: #18181b;
+  border-color: #3f3f46;
+}
+
+html.dark .r2-card-meta {
+  background: #18181b;
+  border-color: #27272a;
+}
+
+html.dark .r2-card-name {
+  color: #f4f4f5;
+}
+
+html.dark .r2-preview-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #3f3f46;
+}
+
+html.dark .r2-preview-key,
+html.dark .r2-footer-selection-text {
+  color: #e4e4e7;
+}
+
+html.dark .r2-btn-cancel {
+  border-color: #3f3f46 !important;
+  color: #e4e4e7 !important;
+}

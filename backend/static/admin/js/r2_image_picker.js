@@ -49,7 +49,7 @@
         <div class="r2-modal-overlay" style="display: none;" id="r2_modal_overlay">
           <div class="r2-modal-window">
             <div class="r2-modal-header">
-              <h3>🖼️ Select Image from Cloudflare R2</h3>
+              <h3>Select Image from Cloudflare R2</h3>
               <button type="button" class="r2-modal-close-btn" id="r2_modal_close">&times;</button>
             </div>
             <div class="r2-modal-toolbar">
@@ -131,7 +131,7 @@
 
     fetchImages() {
       const grid = document.getElementById('r2_image_grid');
-      grid.innerHTML = '<div class="r2-modal-loading">⏳ Loading Cloudflare R2 images...</div>';
+      grid.innerHTML = '<div class="r2-modal-loading">Loading Cloudflare R2 images...</div>';
 
       fetch('/admin/r2-images/')
         .then((resp) => {

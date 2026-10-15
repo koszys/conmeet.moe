@@ -121,10 +121,22 @@ export function Header() {
 
           <nav className="hidden items-center gap-7 text-xs font-bold tracking-widest text-zinc-800 uppercase md:flex dark:text-white">
             <Link
-              href="/conventions"
-              className="hover:text-accent-pop dark:hover:text-accent-pop transition-colors"
+              href="/conventions/featured"
+              className={cn(
+                'hover:text-accent-pop dark:hover:text-accent-pop transition-colors',
+                pathname === '/conventions/featured' && 'text-accent dark:text-accent'
+              )}
             >
-              Conventions
+              Featured Cons
+            </Link>
+            <Link
+              href="/conventions"
+              className={cn(
+                'hover:text-accent-pop dark:hover:text-accent-pop transition-colors',
+                pathname === '/conventions' && 'text-accent dark:text-accent'
+              )}
+            >
+              All Cons
             </Link>
           </nav>
         </div>

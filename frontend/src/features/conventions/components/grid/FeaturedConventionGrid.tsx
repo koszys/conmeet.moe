@@ -58,7 +58,7 @@ export function FeaturedConventionGrid({
       id="featured-conventions"
       className={cn('mx-auto max-w-6xl scroll-mt-20 px-4 py-16 md:px-6 md:py-20', className)}
     >
-      <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col items-start gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="border-ink bg-accent-pop font-display inline-flex items-center gap-1.5 border-2 px-2.5 py-1 text-xs text-white uppercase shadow-[2px_2px_0_var(--ink)]">
@@ -74,47 +74,49 @@ export function FeaturedConventionGrid({
             Cons you definitely don&apos;t want to miss — handpicked and spotlighted.
           </p>
         </div>
+      </div>
+
+      {/* Filter Tabs & Navigation Link */}
+      <div className="border-ink mt-8 flex flex-wrap items-center justify-between gap-2 border-b-2 pb-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setTab('upcoming')}
+            className={cn(
+              CONBLOCK,
+              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+              tab === 'upcoming'
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            Upcoming
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('past')}
+            className={cn(
+              CONBLOCK,
+              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+              tab === 'past'
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            Past Cons
+          </button>
+        </div>
 
         <Link
           href="/conventions"
           className={cn(
             CONBLOCK,
-            'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+            'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-1.5 bg-white px-3.5 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
           )}
         >
-          <span>Browse All Cons</span>
+          <span>All Cons</span>
           <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="border-ink mt-8 flex items-center gap-2 border-b-2 pb-3">
-        <button
-          type="button"
-          onClick={() => setTab('upcoming')}
-          className={cn(
-            CONBLOCK,
-            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-            tab === 'upcoming'
-              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          Upcoming
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('past')}
-          className={cn(
-            CONBLOCK,
-            'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-            tab === 'past'
-              ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-              : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          Past Cons
-        </button>
       </div>
 
       {isLoading && (
@@ -163,7 +165,7 @@ export function FeaturedConventionGrid({
                     'inline-flex items-center gap-2 px-5 py-2.5 text-xs'
                   )}
                 >
-                  <span>Browse All Cons</span>
+                  <span>All Cons</span>
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>

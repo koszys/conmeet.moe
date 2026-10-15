@@ -21,6 +21,7 @@ export default async function ConventionsPage({
         heading="all cons"
         tagline="Browse what conventions are currently on this site."
         initialTab={initialTab}
+        showFeaturedLink
         showRequest
       />
     </main>

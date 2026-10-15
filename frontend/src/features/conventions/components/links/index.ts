@@ -1,3 +1,7 @@
+export { AllConsButton } from './AllConsButton';
+export type { AllConsButtonProps } from './AllConsButton';
+export { FeaturedConsButton } from './FeaturedConsButton';
+export type { FeaturedConsButtonProps } from './FeaturedConsButton';
 export { ConventionExternalLinks } from './ConventionExternalLinks';
 export type { ConventionExternalLinksProps } from './ConventionExternalLinks';
 export { OfficialSiteButton } from './OfficialSiteButton';

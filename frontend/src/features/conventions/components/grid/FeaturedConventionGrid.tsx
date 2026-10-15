@@ -9,6 +9,7 @@ import { useConventions } from '../../data/api';
 import { isPast } from '../../utils/dates';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { AllConsButton } from '../links';
 
 export interface FeaturedConventionGridProps {
   initialTab?: 'upcoming' | 'past';
@@ -107,16 +108,7 @@ export function FeaturedConventionGrid({
           </button>
         </div>
 
-        <Link
-          href="/conventions"
-          className={cn(
-            CONBLOCK,
-            'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-1.5 bg-white px-3.5 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-          )}
-        >
-          <span>All Cons</span>
-          <ArrowUpRight className="h-3.5 w-3.5" />
-        </Link>
+        <AllConsButton tab={tab} />
       </div>
 
       {isLoading && (

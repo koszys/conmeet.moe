@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowUpRight, Star } from 'lucide-react';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
@@ -10,6 +8,7 @@ import { getConventionPhase, isPast } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { AllConsButton, FeaturedConsButton } from '../links';
 
 interface ConventionGroup {
   phase: ConventionPhase;
@@ -116,18 +115,10 @@ export function ConventionGrid({
           <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">{tagline}</p>
         </div>
         {showAllLink && (
-          <Link
-            href={tab === 'past' ? '/conventions?tab=past' : '/conventions'}
-            className={cn(
-              CONBLOCK,
-              'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-2 bg-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-            )}
-          >
-            {data.length > 0
-              ? `See all conventions (${tab === 'upcoming' ? totalUpcomingCount : allPast.length})`
-              : 'See all conventions'}
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
+          <AllConsButton
+            tab={tab}
+            count={tab === 'upcoming' ? totalUpcomingCount : allPast.length}
+          />
         )}
       </div>
 
@@ -162,19 +153,7 @@ export function ConventionGrid({
           </button>
         </div>
 
-        {showFeaturedLink && (
-          <Link
-            href="/conventions/featured"
-            className={cn(
-              CONBLOCK,
-              'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center gap-1.5 bg-white px-3.5 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-            )}
-          >
-            <Star className="text-accent-pop h-3.5 w-3.5 fill-current" />
-            <span>Featured Cons</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        )}
+        {showFeaturedLink && <FeaturedConsButton />}
       </div>
 
       {isLoading && (

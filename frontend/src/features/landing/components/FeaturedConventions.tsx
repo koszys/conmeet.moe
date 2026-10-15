@@ -3,7 +3,7 @@
 import { Star } from 'lucide-react';
 import { useConventions } from '@/features/conventions/data/api';
 import { isPast } from '@/features/conventions/utils/dates';
-import { ConventionCard } from '@/features/conventions';
+import { ConventionCard, FeaturedConsButton } from '@/features/conventions';
 
 function CardSkeleton() {
   return (
@@ -54,6 +54,7 @@ export function FeaturedConventions() {
             Cons you definitely don&apos;t want to miss.
           </p>
         </div>
+        <FeaturedConsButton />
       </div>
 
       <div className="mt-8 flex flex-col gap-6">

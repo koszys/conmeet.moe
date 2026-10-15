@@ -119,26 +119,28 @@ export function Header() {
             </>
           )}
 
-          <nav className="hidden shrink-0 items-center gap-6 text-xs font-bold tracking-widest whitespace-nowrap text-zinc-800 uppercase lg:flex dark:text-white">
-            <Link
-              href="/conventions/featured"
-              className={cn(
-                'hover:text-accent-pop dark:hover:text-accent-pop whitespace-nowrap transition-colors',
-                pathname === '/conventions/featured' && 'text-accent dark:text-accent'
-              )}
-            >
-              Featured Cons
-            </Link>
-            <Link
-              href="/conventions"
-              className={cn(
-                'hover:text-accent-pop dark:hover:text-accent-pop whitespace-nowrap transition-colors',
-                pathname === '/conventions' && 'text-accent dark:text-accent'
-              )}
-            >
-              All Cons
-            </Link>
-          </nav>
+          {!isConventionPage && (
+            <nav className="hidden shrink-0 items-center gap-6 text-xs font-bold tracking-widest whitespace-nowrap text-zinc-800 uppercase lg:flex dark:text-white">
+              <Link
+                href="/conventions/featured"
+                className={cn(
+                  'hover:text-accent-pop dark:hover:text-accent-pop whitespace-nowrap transition-colors',
+                  pathname === '/conventions/featured' && 'text-accent dark:text-accent'
+                )}
+              >
+                Featured Cons
+              </Link>
+              <Link
+                href="/conventions"
+                className={cn(
+                  'hover:text-accent-pop dark:hover:text-accent-pop whitespace-nowrap transition-colors',
+                  pathname === '/conventions' && 'text-accent dark:text-accent'
+                )}
+              >
+                All Cons
+              </Link>
+            </nav>
+          )}
         </div>
 
         {isConventionPage && (

@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { ImagePlus, Undo2, X } from 'lucide-react';
+import { CONBLOCK } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ItemImageUploadProps {
@@ -77,7 +78,10 @@ export function ItemImageUpload({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="border-ink flex h-7 cursor-pointer items-center border-2 bg-white px-2 text-[10px] font-bold uppercase shadow-[2px_2px_0_var(--ink)] hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+              className={cn(
+                CONBLOCK,
+                'flex h-7 items-center bg-white px-2 text-[10px] font-bold uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              )}
               title="Replace image"
             >
               Replace
@@ -85,10 +89,14 @@ export function ItemImageUpload({
             <button
               type="button"
               onClick={onRemove}
-              className="border-ink flex h-7 w-7 cursor-pointer items-center justify-center border-2 bg-rose-500 text-white shadow-[2px_2px_0_var(--ink)] hover:bg-rose-600"
+              className={cn(
+                CONBLOCK,
+                'flex h-7 w-7 items-center justify-center bg-white text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              )}
               title="Remove image"
+              aria-label="Remove image"
             >
-              <X className="h-4 w-4 stroke-3" />
+              <X className="h-4 w-4" />
             </button>
           </div>
           <input

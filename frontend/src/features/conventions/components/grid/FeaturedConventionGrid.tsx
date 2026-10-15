@@ -71,7 +71,7 @@ export function FeaturedConventionGrid({
             <span className="text-accent ml-3">★</span>
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-zinc-600 sm:text-base dark:text-zinc-300">
-            Cons you definitely don&apos;t want to miss — handpicked and spotlighted.
+            Cons you definitely don&apos;t want to miss.
           </p>
         </div>
       </div>

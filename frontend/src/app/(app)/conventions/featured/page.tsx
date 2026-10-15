@@ -3,7 +3,7 @@ import { FeaturedConventionGrid } from '@/features/conventions';
 
 export const metadata: Metadata = {
   title: 'Featured Cons',
-  description: 'Spotlight and featured conventions on conmeet.moe.',
+  description: 'Featured conventions on conmeet.moe.',
 };
 
 export default async function FeaturedConventionsPage({

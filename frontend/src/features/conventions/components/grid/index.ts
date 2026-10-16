@@ -5,3 +5,5 @@ export { ConventionGrid } from './ConventionGrid';
 export { FeaturedConventionGrid } from './FeaturedConventionGrid';
 export type { FeaturedConventionGridProps } from './FeaturedConventionGrid';
 export { ConventionRequest } from './ConventionRequest';
+export { ConventionsHub } from './ConventionsHub';
+export type { ConventionsHubProps } from './ConventionsHub';

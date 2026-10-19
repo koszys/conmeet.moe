@@ -225,16 +225,6 @@ export function ConventionsHub({
           >
             <Star className={cn('h-3.5 w-3.5', view === 'featured' && 'fill-current')} />
             <span>Featured Cons</span>
-            <span
-              className={cn(
-                'ml-1 px-1.5 py-0.5 font-mono text-[10px] font-bold',
-                view === 'featured'
-                  ? 'bg-white/25 text-white dark:bg-zinc-950/20 dark:text-zinc-950'
-                  : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'
-              )}
-            >
-              {featured.length}
-            </span>
           </button>
 
           <button
@@ -251,16 +241,6 @@ export function ConventionsHub({
           >
             <List className="h-3.5 w-3.5" />
             <span>List of Cons</span>
-            <span
-              className={cn(
-                'ml-1 px-1.5 py-0.5 font-mono text-[10px] font-bold',
-                view === 'list'
-                  ? 'bg-white/25 text-white dark:bg-zinc-950/20 dark:text-zinc-950'
-                  : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'
-              )}
-            >
-              {data.length}
-            </span>
           </button>
         </div>
 

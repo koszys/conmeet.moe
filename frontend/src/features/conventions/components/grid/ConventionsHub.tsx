@@ -7,14 +7,14 @@ import { ConventionCard } from './ConventionCard';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
-import { getConventionPhase, isPast } from '../../utils/dates';
+import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionsHubProps {
   initialView?: 'featured' | 'list';
-  initialTab?: 'upcoming' | 'past';
+  initialTab?: 'upcoming' | 'past' | 'recently-ended';
   className?: string;
 }
 
@@ -69,11 +69,17 @@ export function ConventionsHub({
 
   const resolvedInitialView: 'featured' | 'list' =
     paramView === 'list' ? 'list' : paramView === 'featured' ? 'featured' : initialView;
-  const resolvedInitialTab: 'upcoming' | 'past' =
-    paramTab === 'past' ? 'past' : paramTab === 'upcoming' ? 'upcoming' : initialTab;
+  const resolvedInitialTab: 'upcoming' | 'past' | 'recently-ended' =
+    paramTab === 'recently-ended'
+      ? 'recently-ended'
+      : paramTab === 'past'
+        ? 'past'
+        : paramTab === 'upcoming'
+          ? 'upcoming'
+          : initialTab;
 
   const [view, setView] = useState<'featured' | 'list'>(resolvedInitialView);
-  const [tab, setTab] = useState<'upcoming' | 'past'>(resolvedInitialTab);
+  const [tab, setTab] = useState<'upcoming' | 'past' | 'recently-ended'>(resolvedInitialTab);
 
   const { data = [], isLoading, isError, refetch } = useConventions();
 
@@ -84,7 +90,7 @@ export function ConventionsHub({
       const v = params.get('view');
       const t = params.get('tab');
       setView(v === 'list' ? 'list' : 'featured');
-      setTab(t === 'past' ? 'past' : 'upcoming');
+      setTab(t === 'recently-ended' ? 'recently-ended' : t === 'past' ? 'past' : 'upcoming');
     }
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -99,16 +105,20 @@ export function ConventionsHub({
     }
     if (prevParamsRef.current.paramTab !== paramTab) {
       prevParamsRef.current.paramTab = paramTab;
-      setTab(paramTab === 'past' ? 'past' : 'upcoming');
+      setTab(
+        paramTab === 'recently-ended' ? 'recently-ended' : paramTab === 'past' ? 'past' : 'upcoming'
+      );
     }
   }, [paramView, paramTab]);
 
-  function updateUrl(newView: 'featured' | 'list', newTab: 'upcoming' | 'past') {
+  function updateUrl(newView: 'featured' | 'list', newTab: 'upcoming' | 'past' | 'recently-ended') {
     const params = new URLSearchParams();
     if (newView === 'list') {
       params.set('view', 'list');
       if (newTab === 'past') {
         params.set('tab', 'past');
+      } else if (newTab === 'recently-ended') {
+        params.set('tab', 'recently-ended');
       }
     } else {
       params.set('view', 'featured');
@@ -124,7 +134,7 @@ export function ConventionsHub({
     updateUrl(newView, tab);
   }
 
-  function handleTabChange(newTab: 'upcoming' | 'past') {
+  function handleTabChange(newTab: 'upcoming' | 'past' | 'recently-ended') {
     setTab(newTab);
     updateUrl(view, newTab);
   }
@@ -141,6 +151,7 @@ export function ConventionsHub({
         new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
         new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
     );
+  const recentlyEnded = allPast.filter((c) => isRecentlyEnded(c));
 
   const now = allUpcoming.filter((c) => getConventionPhase(c) === 'now');
   const soon = allUpcoming.filter((c) => getConventionPhase(c) === 'soon');
@@ -274,6 +285,19 @@ export function ConventionsHub({
               >
                 Past Cons ({allPast.length})
               </button>
+              <button
+                type="button"
+                onClick={() => handleTabChange('recently-ended')}
+                className={cn(
+                  CONBLOCK,
+                  'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+                  tab === 'recently-ended'
+                    ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                    : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                )}
+              >
+                Recently Ended ({recentlyEnded.length})
+              </button>
             </div>
           </div>
         )}
@@ -402,6 +426,29 @@ export function ConventionsHub({
               </h3>
               <div className="mt-4">
                 {allPast.map((convention) => (
+                  <ConventionRow key={convention.id} convention={convention} phase="past" />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isLoading && !isError && view === 'list' && tab === 'recently-ended' && (
+        <div className="mt-6">
+          {recentlyEnded.length === 0 ? (
+            <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
+              No conventions ended in the last 30 days.
+            </p>
+          ) : (
+            <div className="border-ink">
+              <h3 className="font-display mt-6 flex items-center gap-3 text-lg tracking-wide uppercase">
+                <span className="border-2 border-zinc-400 bg-zinc-200 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                  RECENTLY ENDED (LAST 30 DAYS)
+                </span>
+              </h3>
+              <div className="mt-4">
+                {recentlyEnded.map((convention) => (
                   <ConventionRow key={convention.id} convention={convention} phase="past" />
                 ))}
               </div>

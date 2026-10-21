@@ -132,9 +132,9 @@ export function ConventionDetail({
             {hasOverview && convention.description && (
               <section
                 aria-labelledby="overview-heading"
-                className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900"
+                className="border-ink @container border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900"
               >
-                <div className="border-ink mb-6 flex flex-col gap-2 border-b-2 border-dashed pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="border-ink mb-6 flex items-center justify-between gap-2 border-b-2 border-dashed pb-4">
                   <div className="flex items-center">
                     <h2
                       id="overview-heading"
@@ -143,18 +143,10 @@ export function ConventionDetail({
                       Overview
                     </h2>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-                    <CopyLinkButton size="sm" />
-                    <OfficialSiteButton
-                      url={convention.website_url}
-                      variant="full"
-                      className="h-8 px-3 py-0 text-xs"
-                    />
-                    <ViewOnMapButton
-                      url={convention.map_url}
-                      variant="full"
-                      className="h-8 px-3 py-0 text-xs"
-                    />
+                  <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                    <CopyLinkButton size="sm" variant="responsive" />
+                    <OfficialSiteButton url={convention.website_url} variant="responsive" />
+                    <ViewOnMapButton url={convention.map_url} variant="responsive" />
                   </div>
                 </div>
 

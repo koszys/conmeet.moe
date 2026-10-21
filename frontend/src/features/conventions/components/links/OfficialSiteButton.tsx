@@ -4,7 +4,7 @@ import { cn } from '@/shared/lib/utils';
 
 export interface OfficialSiteButtonProps {
   url?: string | null;
-  variant?: 'icon' | 'full';
+  variant?: 'icon' | 'full' | 'responsive';
   className?: string;
   title?: string;
 }
@@ -16,6 +16,26 @@ export function OfficialSiteButton({
   title = 'Official site',
 }: OfficialSiteButtonProps) {
   if (!url) return null;
+
+  if (variant === 'responsive') {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={title}
+        title={title}
+        className={cn(
+          CONBLOCK_PRIMARY,
+          'inline-flex h-8 w-8 shrink-0 items-center justify-center border-2 p-0 text-xs transition-all @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-3',
+          className
+        )}
+      >
+        <Globe className="h-4 w-4 shrink-0" />
+        <span className="hidden @min-[680px]:inline">Official site</span>
+      </a>
+    );
+  }
 
   if (variant === 'full') {
     return (

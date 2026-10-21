@@ -4,7 +4,7 @@ import { cn } from '@/shared/lib/utils';
 
 export interface ViewOnMapButtonProps {
   url?: string | null;
-  variant?: 'icon' | 'full';
+  variant?: 'icon' | 'full' | 'responsive';
   className?: string;
   title?: string;
 }
@@ -16,6 +16,26 @@ export function ViewOnMapButton({
   title = 'View on map',
 }: ViewOnMapButtonProps) {
   if (!url) return null;
+
+  if (variant === 'responsive') {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={title}
+        title={title}
+        className={cn(
+          CONBLOCK,
+          'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-8 w-8 shrink-0 items-center justify-center border-2 bg-white p-0 text-xs font-bold tracking-widest uppercase transition-all @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-3 dark:bg-zinc-900 dark:text-zinc-100',
+          className
+        )}
+      >
+        <MapPin className="h-4 w-4 shrink-0" />
+        <span className="hidden @min-[680px]:inline">View on map</span>
+      </a>
+    );
+  }
 
   if (variant === 'full') {
     return (

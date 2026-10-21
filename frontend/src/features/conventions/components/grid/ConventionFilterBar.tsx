@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
 import { CONBLOCK } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { ConventionFilterDrawer } from './ConventionFilterDrawer';
+import { ConventionFilterPopover } from './ConventionFilterPopover';
 
 export interface ConventionFilters {
   query: string;
@@ -43,7 +43,8 @@ export function ConventionFilterBar({
   totalCount,
   className,
 }: ConventionFilterBarProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const activeFiltersCount =
     (filters.location ? 1 : 0) + (filters.year ? 1 : 0) + (tab !== 'upcoming' ? 1 : 0);
@@ -79,33 +80,54 @@ export function ConventionFilterBar({
           )}
         </div>
 
-        {/* Unified Filter Button */}
-        <button
-          type="button"
-          onClick={() => setIsDrawerOpen(true)}
-          title="Open filters"
-          aria-label="Open filters"
-          className={cn(
-            CONBLOCK,
-            'inline-flex h-10 shrink-0 cursor-pointer items-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
-            activeFiltersCount > 0
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <SlidersHorizontal className="h-3.5 w-3.5 stroke-[2.5]" />
-          <span>Filters</span>
-          {activeFiltersCount > 0 && (
-            <span
-              className={cn(
-                'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-                'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-              )}
-            >
-              {activeFiltersCount}
-            </span>
-          )}
-        </button>
+        {/* Unified Filter Button & Popover */}
+        <div className="relative shrink-0">
+          <button
+            ref={triggerRef}
+            type="button"
+            onClick={() => setIsPopoverOpen((prev) => !prev)}
+            title={isPopoverOpen ? 'Close filters' : 'Open filters'}
+            aria-label="Filters"
+            aria-expanded={isPopoverOpen}
+            className={cn(
+              CONBLOCK,
+              'inline-flex h-10 shrink-0 cursor-pointer items-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
+              isPopoverOpen || activeFiltersCount > 0
+                ? 'bg-accent text-white dark:text-zinc-950'
+                : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5 stroke-[2.5]" />
+            <span>Filters</span>
+            {activeFiltersCount > 0 && (
+              <span
+                className={cn(
+                  'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                  'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                )}
+              >
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
+
+          {/* Floating Popover Card */}
+          <ConventionFilterPopover
+            isOpen={isPopoverOpen}
+            onClose={() => setIsPopoverOpen(false)}
+            triggerRef={triggerRef}
+            tab={tab}
+            onTabChange={onTabChange}
+            filters={filters}
+            onFilterChange={onFilterChange}
+            onReset={onReset}
+            availableLocations={availableLocations}
+            availableYears={availableYears}
+            counts={counts}
+            filteredCount={filteredCount}
+            totalCount={totalCount}
+          />
+        </div>
       </div>
 
       {/* Active Filters Row: Reset & Stats */}
@@ -118,10 +140,10 @@ export function ConventionFilterBar({
             aria-label="Reset filters"
             className={cn(
               CONBLOCK,
-              'font-display inline-flex h-6.5 cursor-pointer items-center gap-1 bg-white px-2 text-[9.5px] tracking-wider whitespace-nowrap text-zinc-800 uppercase hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              'inline-flex h-6.5 cursor-pointer items-center gap-1 bg-white px-2 text-[11px] font-bold whitespace-nowrap text-zinc-800 uppercase hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
             )}
           >
-            <RotateCcw className="h-2.5 w-2.5" />
+            <RotateCcw className="h-3 w-3" />
             <span>Reset</span>
           </button>
 
@@ -130,22 +152,6 @@ export function ConventionFilterBar({
           </span>
         </div>
       )}
-
-      {/* Filter Drawer / Modal */}
-      <ConventionFilterDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        tab={tab}
-        onTabChange={onTabChange}
-        filters={filters}
-        onFilterChange={onFilterChange}
-        onReset={onReset}
-        availableLocations={availableLocations}
-        availableYears={availableYears}
-        counts={counts}
-        filteredCount={filteredCount}
-        totalCount={totalCount}
-      />
     </div>
   );
 }

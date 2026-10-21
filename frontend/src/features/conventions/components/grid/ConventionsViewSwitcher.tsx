@@ -29,7 +29,7 @@ export function ConventionsViewSwitcher({
         aria-pressed={view === 'featured'}
         className={cn(
           CONBLOCK,
-          'font-display flex w-full items-center justify-center gap-1 px-1 py-1.5 text-[9.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[350px]:gap-1.5 min-[350px]:px-2.5 min-[350px]:text-[11px] min-[350px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
+          'font-display flex w-full items-center justify-center gap-1 px-1.5 py-1.5 text-[9.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
           view === 'featured'
             ? 'bg-accent hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
             : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -41,7 +41,10 @@ export function ConventionsViewSwitcher({
             view === 'featured' && 'fill-current'
           )}
         />
-        <span>Featured Cons</span>
+        <span>
+          <span className="hidden min-[440px]:inline">Featured Cons</span>
+          <span className="min-[440px]:hidden">Featured</span>
+        </span>
       </button>
 
       <button
@@ -50,14 +53,17 @@ export function ConventionsViewSwitcher({
         aria-pressed={view === 'list'}
         className={cn(
           CONBLOCK,
-          'font-display flex w-full items-center justify-center gap-1 px-1 py-1.5 text-[9.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[350px]:gap-1.5 min-[350px]:px-2.5 min-[350px]:text-[11px] min-[350px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
+          'font-display flex w-full items-center justify-center gap-1 px-1.5 py-1.5 text-[9.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
           view === 'list'
             ? 'bg-accent hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
             : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
         )}
       >
         <List className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
-        <span>List of Cons</span>
+        <span>
+          <span className="hidden min-[440px]:inline">List of Cons</span>
+          <span className="min-[440px]:hidden">All Cons</span>
+        </span>
       </button>
     </div>
   );

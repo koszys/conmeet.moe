@@ -7,7 +7,13 @@ import { ConventionCard } from './ConventionCard';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
-import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
+import {
+  getConventionPhase,
+  isFeaturedVisible,
+  isPast,
+  isRecentlyEnded,
+  sortFeaturedConventions,
+} from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
@@ -139,8 +145,8 @@ export function ConventionsHub({
     updateUrl(view, newTab);
   }
 
-  // Featured conventions data (active & upcoming)
-  const featured = data.filter((c) => c.is_featured && !isPast(c));
+  // Featured conventions data (active, upcoming, & recently ended)
+  const featured = sortFeaturedConventions(data.filter((c) => isFeaturedVisible(c)));
 
   // All conventions data (List view)
   const allUpcoming = data.filter((c) => !isPast(c));

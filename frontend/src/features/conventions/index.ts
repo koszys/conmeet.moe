@@ -3,10 +3,12 @@ export { getDefaultConventionSections } from './data/sections';
 export { formatSlugToTitle, getConventionServer } from './data/server';
 export {
   getConventionPhase,
+  isFeaturedVisible,
   isPast,
   isRecentlyEnded,
   RECENTLY_ENDED_DAYS,
   SOON_DAYS,
+  sortFeaturedConventions,
 } from './utils/dates';
 export type {
   Convention,

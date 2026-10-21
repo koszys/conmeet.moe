@@ -3,12 +3,11 @@
 import { ArrowDown, Sparkles, Star } from 'lucide-react';
 import { MikuSilhouette, MikuTextHorizontal, MikuTextVertical } from '@/shared/components/miku';
 import { useConventions } from '@/features/conventions/data/api';
-import { isPast } from '@/features/conventions/utils/dates';
+import { isFeaturedVisible } from '@/features/conventions';
 
 export function Hero() {
   const { data = [], isLoading } = useConventions();
-  const hasFeatured =
-    !isLoading && data.some((convention) => convention.is_featured && !isPast(convention));
+  const hasFeatured = !isLoading && data.some((convention) => isFeaturedVisible(convention));
 
   function scrollToSection(id: string) {
     return (e: React.MouseEvent<HTMLAnchorElement>) => {

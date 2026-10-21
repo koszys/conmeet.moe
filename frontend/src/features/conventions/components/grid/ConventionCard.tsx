@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Calendar, MapPin, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Calendar, Clock, MapPin, Sparkles } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
@@ -9,7 +9,10 @@ import { getConventionPhase } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
 
-const PHASE_CONFIG: Record<ConventionPhase, { label: string; chipClass: string }> = {
+const PHASE_CONFIG: Record<
+  ConventionPhase,
+  { label: string; chipClass: string; icon?: React.ComponentType<{ className?: string }> }
+> = {
   now: {
     label: 'HAPPENING NOW',
     chipClass: 'bg-accent-pop text-white',
@@ -84,11 +87,12 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
           <div className="mb-3 flex items-center">
             <span
               className={cn(
-                'border-ink font-display -rotate-2 border-2 px-2.5 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:text-[11px]',
+                'border-ink font-display inline-flex -rotate-2 items-center gap-1.5 border-2 px-2.5 py-0.5 text-[10px] tracking-wide uppercase shadow-[2px_2px_0_var(--ink)] sm:text-[11px]',
                 phaseInfo.chipClass
               )}
             >
-              {phaseInfo.label}
+              {phaseInfo.icon && <phaseInfo.icon className="h-3 w-3 shrink-0" />}
+              <span>{phaseInfo.label}</span>
             </span>
           </div>
 

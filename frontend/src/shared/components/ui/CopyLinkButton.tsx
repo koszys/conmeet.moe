@@ -85,7 +85,7 @@ export function CopyLinkButton({
         title={tooltip}
         aria-label={tooltip}
         className={cn(
-          'border-ink inline-flex shrink-0 cursor-pointer items-center justify-center border-2 bg-white font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-zinc-900',
+          'border-ink inline-flex shrink-0 cursor-pointer items-center justify-center border-2 bg-white font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-zinc-900',
           size === 'sm'
             ? 'h-8 w-8 p-0 text-xs @min-[680px]:w-auto @min-[680px]:gap-1.5 @min-[680px]:px-3'
             : 'h-10 w-10 p-0 text-xs @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-4',

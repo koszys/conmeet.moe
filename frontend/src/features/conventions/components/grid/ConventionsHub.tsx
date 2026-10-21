@@ -6,7 +6,6 @@ import { Star } from 'lucide-react';
 import { ConventionRequest } from './ConventionRequest';
 import { ConventionFilterBar, type ConventionFilters } from './ConventionFilterBar';
 import { ConventionsViewSwitcher } from './ConventionsViewSwitcher';
-import { ConventionsTimeTabs } from './ConventionsTimeTabs';
 import { FeaturedViewContent } from './FeaturedViewContent';
 import { ListViewContent, type ConventionGroup } from './ListViewContent';
 import { ConventionsHubSkeleton } from './ConventionsHubSkeleton';
@@ -66,6 +65,8 @@ export function ConventionsHub({
 
   function handleResetFilters() {
     setFilters({ query: '', location: '', year: '' });
+    setTab('upcoming');
+    updateUrl(view, 'upcoming');
   }
 
   const { data = [], isLoading, isError, refetch } = useConventions();
@@ -243,10 +244,13 @@ export function ConventionsHub({
       <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:gap-4">
         <ConventionsViewSwitcher view={view} onViewChange={handleViewChange} />
 
-        {/* Time Filter Tabs & Filter Bar: Only for List of Cons */}
+        {/* Filter Bar with Drawer: Only for List of Cons */}
         {view === 'list' && (
           <div className="border-ink flex flex-col border-b-2 pb-3 sm:pb-4">
-            <ConventionsTimeTabs
+            <ConventionFilterBar
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onReset={handleResetFilters}
               tab={tab}
               onTabChange={handleTabChange}
               counts={{
@@ -254,12 +258,6 @@ export function ConventionsHub({
                 past: allPast.length,
                 recentlyEnded: recentlyEnded.length,
               }}
-            />
-
-            <ConventionFilterBar
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onReset={handleResetFilters}
               availableLocations={availableLocations}
               availableYears={availableYears}
               filteredCount={currentFilteredCount}

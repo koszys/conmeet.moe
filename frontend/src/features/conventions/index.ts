@@ -1,6 +1,7 @@
 export * from './components';
 export { getDefaultConventionSections } from './data/sections';
 export { formatSlugToTitle, getConventionServer } from './data/server';
+export { matchesConventionFilters } from './utils/filters';
 export {
   getConventionPhase,
   isFeaturedVisible,

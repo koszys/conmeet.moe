@@ -1,11 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { ArrowUpRight, List, Star } from 'lucide-react';
-import { ConventionCard } from './ConventionCard';
-import { ConventionRow } from './ConventionRow';
+import { Star } from 'lucide-react';
 import { ConventionRequest } from './ConventionRequest';
+import { ConventionFilterBar, type ConventionFilters } from './ConventionFilterBar';
+import { ConventionsViewSwitcher } from './ConventionsViewSwitcher';
+import { ConventionsTimeTabs } from './ConventionsTimeTabs';
+import { FeaturedViewContent } from './FeaturedViewContent';
+import { ListViewContent, type ConventionGroup } from './ListViewContent';
+import { ConventionsHubSkeleton } from './ConventionsHubSkeleton';
 import { useConventions } from '../../data/api';
 import {
   getConventionPhase,
@@ -14,52 +18,14 @@ import {
   isRecentlyEnded,
   sortFeaturedConventions,
 } from '../../utils/dates';
-import type { Convention, ConventionPhase } from '../../types';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { matchesConventionFilters } from '../../utils/filters';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionsHubProps {
   initialView?: 'featured' | 'list';
   initialTab?: 'upcoming' | 'past' | 'recently-ended';
   className?: string;
-}
-
-interface ConventionGroup {
-  phase: ConventionPhase;
-  label: string;
-  chipClassName: string;
-  conventions: Convention[];
-}
-
-function CardSkeleton() {
-  return (
-    <div className="border-ink relative flex min-h-60 animate-pulse flex-col justify-between overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] sm:min-h-64 md:min-h-72 dark:bg-zinc-900">
-      <div className="space-y-4 p-5 sm:p-6 md:p-8">
-        <div className="h-5 w-24 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-8 w-2/3 bg-zinc-200 sm:w-1/2 dark:bg-zinc-800" />
-        <div className="space-y-2 pt-2">
-          <div className="h-4 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
-          <div className="h-4 w-1/4 bg-zinc-200 dark:bg-zinc-800" />
-        </div>
-      </div>
-      <div className="border-ink flex items-center justify-between border-t-2 border-dashed px-5 py-3.5 sm:px-6 md:px-8">
-        <div className="h-7 w-20 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-7 w-24 bg-zinc-200 dark:bg-zinc-800" />
-      </div>
-    </div>
-  );
-}
-
-function RowSkeleton() {
-  return (
-    <div className="border-ink flex animate-pulse items-center gap-4 border-b-2 border-dashed px-2 py-6 md:px-4">
-      <div className="border-ink h-14 w-14 bg-zinc-200 dark:bg-zinc-800" />
-      <div className="flex-1 space-y-2.5">
-        <div className="h-4 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-3 w-1/4 bg-zinc-200 dark:bg-zinc-800" />
-      </div>
-    </div>
-  );
 }
 
 export function ConventionsHub({
@@ -86,6 +52,21 @@ export function ConventionsHub({
 
   const [view, setView] = useState<'featured' | 'list'>(resolvedInitialView);
   const [tab, setTab] = useState<'upcoming' | 'past' | 'recently-ended'>(resolvedInitialTab);
+  const [filters, setFilters] = useState<ConventionFilters>({
+    query: '',
+    location: '',
+    year: '',
+  });
+
+  const hasActiveFilters = Boolean(filters.query || filters.location || filters.year);
+
+  function handleFilterChange(newFilters: Partial<ConventionFilters>) {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  }
+
+  function handleResetFilters() {
+    setFilters({ query: '', location: '', year: '' });
+  }
 
   const { data = [], isLoading, isError, refetch } = useConventions();
 
@@ -159,9 +140,33 @@ export function ConventionsHub({
     );
   const recentlyEnded = allPast.filter((c) => isRecentlyEnded(c));
 
-  const now = allUpcoming.filter((c) => getConventionPhase(c) === 'now');
-  const soon = allUpcoming.filter((c) => getConventionPhase(c) === 'soon');
-  const up = allUpcoming.filter((c) => getConventionPhase(c) === 'up');
+  // Extract unique locations and years for filters
+  const availableLocations = useMemo(() => {
+    const locSet = new Set<string>();
+    for (const c of data) {
+      const loc = [c.city, c.country].filter(Boolean).join(', ');
+      if (loc) locSet.add(loc);
+    }
+    return Array.from(locSet).sort((a, b) => a.localeCompare(b));
+  }, [data]);
+
+  const availableYears = useMemo(() => {
+    const yearSet = new Set<string>();
+    for (const c of data) {
+      if (c.starts_at) yearSet.add(new Date(c.starts_at).getFullYear().toString());
+      if (c.ends_at) yearSet.add(new Date(c.ends_at).getFullYear().toString());
+    }
+    return Array.from(yearSet).sort((a, b) => b.localeCompare(a));
+  }, [data]);
+
+  // Filtered datasets for the list view
+  const filteredUpcoming = allUpcoming.filter((c) => matchesConventionFilters(c, filters));
+  const filteredPast = allPast.filter((c) => matchesConventionFilters(c, filters));
+  const filteredRecentlyEnded = recentlyEnded.filter((c) => matchesConventionFilters(c, filters));
+
+  const now = filteredUpcoming.filter((c) => getConventionPhase(c) === 'now');
+  const soon = filteredUpcoming.filter((c) => getConventionPhase(c) === 'soon');
+  const up = filteredUpcoming.filter((c) => getConventionPhase(c) === 'up');
 
   const upcomingGroups: ConventionGroup[] = [
     {
@@ -185,6 +190,20 @@ export function ConventionsHub({
   ];
 
   const upcomingSections = upcomingGroups.filter((group) => group.conventions.length > 0);
+
+  const currentTotalCount =
+    tab === 'upcoming'
+      ? allUpcoming.length
+      : tab === 'recently-ended'
+        ? recentlyEnded.length
+        : allPast.length;
+
+  const currentFilteredCount =
+    tab === 'upcoming'
+      ? filteredUpcoming.length
+      : tab === 'recently-ended'
+        ? filteredRecentlyEnded.length
+        : filteredPast.length;
 
   return (
     <section
@@ -221,111 +240,37 @@ export function ConventionsHub({
       </div>
 
       {/* Primary View Switcher: Two Separate Choices */}
-      <div className="mt-8 flex flex-col gap-4">
-        <div
-          className={cn(
-            'flex flex-wrap items-center gap-2.5 sm:gap-3',
-            view === 'featured' && 'border-ink border-b-2 pb-4'
-          )}
-        >
-          <button
-            type="button"
-            onClick={() => handleViewChange('featured')}
-            aria-pressed={view === 'featured'}
-            className={cn(
-              CONBLOCK,
-              'font-display flex items-center gap-2 px-4 py-2 text-xs tracking-wider uppercase transition-all',
-              view === 'featured'
-                ? 'bg-accent hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
-                : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
-          >
-            <Star className={cn('h-3.5 w-3.5', view === 'featured' && 'fill-current')} />
-            <span>Featured Cons</span>
-          </button>
+      <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:gap-4">
+        <ConventionsViewSwitcher view={view} onViewChange={handleViewChange} />
 
-          <button
-            type="button"
-            onClick={() => handleViewChange('list')}
-            aria-pressed={view === 'list'}
-            className={cn(
-              CONBLOCK,
-              'font-display flex items-center gap-2 px-4 py-2 text-xs tracking-wider uppercase transition-all',
-              view === 'list'
-                ? 'bg-accent hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
-                : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
-          >
-            <List className="h-3.5 w-3.5" />
-            <span>List of Cons</span>
-          </button>
-        </div>
-
-        {/* Time Filter Tabs: Only for List of Cons */}
+        {/* Time Filter Tabs & Filter Bar: Only for List of Cons */}
         {view === 'list' && (
-          <div className="border-ink flex flex-wrap items-center justify-between gap-2 border-b-2 pb-3">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleTabChange('upcoming')}
-                className={cn(
-                  CONBLOCK,
-                  'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-                  tab === 'upcoming'
-                    ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                    : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-                )}
-              >
-                Upcoming ({allUpcoming.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTabChange('past')}
-                className={cn(
-                  CONBLOCK,
-                  'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-                  tab === 'past'
-                    ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                    : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-                )}
-              >
-                Past Cons ({allPast.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTabChange('recently-ended')}
-                className={cn(
-                  CONBLOCK,
-                  'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-                  tab === 'recently-ended'
-                    ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                    : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-                )}
-              >
-                Recently Ended ({recentlyEnded.length})
-              </button>
-            </div>
+          <div className="border-ink flex flex-col border-b-2 pb-3 sm:pb-4">
+            <ConventionsTimeTabs
+              tab={tab}
+              onTabChange={handleTabChange}
+              counts={{
+                upcoming: allUpcoming.length,
+                past: allPast.length,
+                recentlyEnded: recentlyEnded.length,
+              }}
+            />
+
+            <ConventionFilterBar
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onReset={handleResetFilters}
+              availableLocations={availableLocations}
+              availableYears={availableYears}
+              filteredCount={currentFilteredCount}
+              totalCount={currentTotalCount}
+            />
           </div>
         )}
       </div>
 
       {/* Loading Skeletons */}
-      {isLoading && (
-        <div className="mt-8">
-          {view === 'featured' ? (
-            <div className="flex flex-col gap-6">
-              <CardSkeleton />
-              <CardSkeleton />
-            </div>
-          ) : (
-            <div>
-              <RowSkeleton />
-              <RowSkeleton />
-              <RowSkeleton />
-            </div>
-          )}
-        </div>
-      )}
+      {isLoading && <ConventionsHubSkeleton view={view} />}
 
       {/* Error State */}
       {isError && (
@@ -348,119 +293,22 @@ export function ConventionsHub({
 
       {/* Main Content: Featured View */}
       {!isLoading && !isError && view === 'featured' && (
-        <div className="mt-8 flex flex-col gap-6">
-          {featured.length === 0 ? (
-            <div className="border-ink border-2 border-dashed bg-white p-8 text-center sm:p-12 dark:bg-zinc-900">
-              <p className="font-display text-sm tracking-wide uppercase sm:text-base">
-                No featured conventions right now!
-              </p>
-              <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
-                Check back soon or explore the full list of conventions happening across the
-                community.
-              </p>
-              <div className="mt-6 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => handleViewChange('list')}
-                  className={cn(
-                    CONBLOCK_PRIMARY,
-                    'inline-flex items-center gap-2 px-5 py-2.5 text-xs'
-                  )}
-                >
-                  <span>View All Cons List</span>
-                  <ArrowUpRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            featured.map((convention) => (
-              <ConventionCard key={convention.id} convention={convention} />
-            ))
-          )}
-        </div>
+        <FeaturedViewContent
+          conventions={featured}
+          onSwitchToList={() => handleViewChange('list')}
+        />
       )}
 
       {/* Main Content: List View (The Line-up) */}
-      {!isLoading && !isError && view === 'list' && tab === 'upcoming' && (
-        <div className="mt-6">
-          {upcomingSections.length === 0 ? (
-            <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
-              No upcoming conventions listed right now — check back soon!
-            </p>
-          ) : (
-            upcomingSections.map((group, index) => (
-              <div key={group.phase} className={cn('border-ink', index > 0 && 'mt-8 border-t-2')}>
-                <h3
-                  className={cn(
-                    'font-display flex items-center gap-3 text-lg tracking-wide uppercase',
-                    index === 0 ? 'mt-6' : 'mt-10'
-                  )}
-                >
-                  <span
-                    className={`${group.chipClassName} inline-flex items-center px-2 py-1 text-xs`}
-                  >
-                    {group.label}
-                  </span>
-                </h3>
-                <div className="mt-4">
-                  {group.conventions.map((convention) => (
-                    <ConventionRow
-                      key={convention.id}
-                      convention={convention}
-                      phase={group.phase}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {!isLoading && !isError && view === 'list' && tab === 'past' && (
-        <div className="mt-6">
-          {allPast.length === 0 ? (
-            <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
-              No past conventions listed yet.
-            </p>
-          ) : (
-            <div className="border-ink">
-              <h3 className="font-display mt-6 flex items-center gap-3 text-lg tracking-wide uppercase">
-                <span className="border-2 border-zinc-400 bg-zinc-200 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                  ENDED CONVENTIONS
-                </span>
-              </h3>
-              <div className="mt-4">
-                {allPast.map((convention) => (
-                  <ConventionRow key={convention.id} convention={convention} phase="past" />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {!isLoading && !isError && view === 'list' && tab === 'recently-ended' && (
-        <div className="mt-6">
-          {recentlyEnded.length === 0 ? (
-            <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
-              No conventions ended in the last 30 days.
-            </p>
-          ) : (
-            <div className="border-ink">
-              <h3 className="font-display mt-6 flex items-center gap-3 text-lg tracking-wide uppercase">
-                <span className="border-2 border-zinc-400 bg-zinc-200 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                  RECENTLY ENDED (LAST 30 DAYS)
-                </span>
-              </h3>
-              <div className="mt-4">
-                {recentlyEnded.map((convention) => (
-                  <ConventionRow key={convention.id} convention={convention} phase="past" />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+      {!isLoading && !isError && view === 'list' && (
+        <ListViewContent
+          tab={tab}
+          upcomingSections={upcomingSections}
+          pastConventions={filteredPast}
+          recentlyEndedConventions={filteredRecentlyEnded}
+          hasActiveFilters={hasActiveFilters}
+          onResetFilters={handleResetFilters}
+        />
       )}
 
       {/* Suggest a Convention Box */}

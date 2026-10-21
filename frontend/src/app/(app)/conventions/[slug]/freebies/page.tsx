@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import { FreebieBoard } from '@/features/freebies';
+
+export const metadata: Metadata = {
+  title: 'Freebies',
+  description: 'User uploaded freebies for this convention.',
+};
 
 export default async function ConventionFreebiesPage({
   params,

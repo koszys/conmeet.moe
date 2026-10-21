@@ -1,6 +1,29 @@
 import type { ReactNode } from 'react';
-import { ConventionSidebar } from '@/features/conventions';
+import type { Metadata } from 'next';
+import { ConventionSidebar, formatSlugToTitle, getConventionServer } from '@/features/conventions';
 import { Footer } from '@/shared/components/layout/Footer';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const convention = await getConventionServer(slug);
+  const conventionName = convention?.name ?? formatSlugToTitle(slug);
+
+  return {
+    title: {
+      default: conventionName,
+      template: `%s | ${conventionName}`,
+    },
+    description: convention?.description || `Explore ${conventionName} on conmeet.moe.`,
+    openGraph: {
+      title: `${conventionName} | conmeet.moe`,
+      description: convention?.description || `Explore ${conventionName} on conmeet.moe.`,
+    },
+  };
+}
 
 export default async function ConventionLayout({
   children,

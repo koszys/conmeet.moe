@@ -1,5 +1,6 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { FeaturedConventionGrid } from '@/features/conventions';
+import { ConventionsHub } from '@/features/conventions';
 
 export const metadata: Metadata = {
   title: 'Featured Cons',
@@ -16,7 +17,9 @@ export default async function FeaturedConventionsPage({
 
   return (
     <main className="flex w-full flex-1 flex-col">
-      <FeaturedConventionGrid initialTab={initialTab} />
+      <Suspense fallback={null}>
+        <ConventionsHub initialView="featured" initialTab={initialTab} />
+      </Suspense>
     </main>
   );
 }

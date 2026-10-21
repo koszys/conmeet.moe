@@ -5,13 +5,22 @@ import { cn } from '@/shared/lib/utils';
 
 export interface AllConsButtonProps {
   count?: number;
-  tab?: 'upcoming' | 'past';
+  tab?: 'upcoming' | 'past' | 'recently-ended';
+  view?: 'featured' | 'list';
   href?: string;
   className?: string;
 }
 
-export function AllConsButton({ count, tab, href, className }: AllConsButtonProps) {
-  const targetHref = href ?? (tab === 'past' ? '/conventions?tab=past' : '/conventions');
+export function AllConsButton({ count, tab, view = 'list', href, className }: AllConsButtonProps) {
+  const queryParts: string[] = [];
+  if (view) queryParts.push(`view=${view}`);
+  if (tab === 'past') {
+    queryParts.push('tab=past');
+  } else if (tab === 'recently-ended') {
+    queryParts.push('tab=recently-ended');
+  }
+  const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+  const targetHref = href ?? `/conventions${query}`;
   const label = count !== undefined ? `All Cons (${count})` : 'All Cons';
 
   return (

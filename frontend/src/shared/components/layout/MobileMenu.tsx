@@ -52,13 +52,6 @@ export function MobileMenu({
               </Link>
             )}
             <Link
-              href="/conventions/featured"
-              onClick={onClose}
-              className="border-ink hover:text-accent-pop active:text-accent-pop dark:hover:text-accent-pop dark:active:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest whitespace-nowrap text-zinc-800 uppercase transition-colors last:border-b-0 dark:text-white"
-            >
-              Featured Cons
-            </Link>
-            <Link
               href="/conventions"
               onClick={onClose}
               className="border-ink hover:text-accent-pop active:text-accent-pop dark:hover:text-accent-pop dark:active:text-accent-pop border-b-2 border-dashed py-4 text-sm font-bold tracking-widest whitespace-nowrap text-zinc-800 uppercase transition-colors last:border-b-0 dark:text-white"

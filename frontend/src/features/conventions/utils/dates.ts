@@ -3,9 +3,42 @@ import { daysUntil } from '@/shared/lib/dates';
 import type { Convention, ConventionPhase } from '../types';
 
 export const SOON_DAYS = 20;
+export const RECENTLY_ENDED_DAYS = 30;
 
 export function isPast(convention: Convention): boolean {
   return daysUntil(convention.ends_at) < 0;
+}
+
+export function isRecentlyEnded(
+  convention: Convention,
+  daysThreshold = RECENTLY_ENDED_DAYS
+): boolean {
+  if (!isPast(convention)) return false;
+  return daysUntil(convention.ends_at) >= -daysThreshold;
+}
+
+export function isFeaturedVisible(
+  convention: Convention,
+  daysThreshold = RECENTLY_ENDED_DAYS
+): boolean {
+  if (!convention.is_featured) return false;
+  return !isPast(convention) || isRecentlyEnded(convention, daysThreshold);
+}
+
+export function sortFeaturedConventions(conventions: Convention[]): Convention[] {
+  return [...conventions].sort((a, b) => {
+    const aPast = isPast(a);
+    const bPast = isPast(b);
+    if (!aPast && bPast) return -1;
+    if (aPast && !bPast) return 1;
+    if (!aPast && !bPast) {
+      return new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
+    }
+    return (
+      new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
+      new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
+    );
+  });
 }
 
 export function getConventionPhase(convention: Convention): ConventionPhase {

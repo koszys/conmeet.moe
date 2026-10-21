@@ -2,8 +2,12 @@
 
 import { Star } from 'lucide-react';
 import { useConventions } from '@/features/conventions/data/api';
-import { isPast } from '@/features/conventions/utils/dates';
-import { ConventionCard, FeaturedConsButton } from '@/features/conventions';
+import {
+  ConventionCard,
+  FeaturedConsButton,
+  isFeaturedVisible,
+  sortFeaturedConventions,
+} from '@/features/conventions';
 
 function CardSkeleton() {
   return (
@@ -27,7 +31,9 @@ function CardSkeleton() {
 export function FeaturedConventions() {
   const { data = [], isLoading } = useConventions();
 
-  const featured = data.filter((convention) => convention.is_featured && !isPast(convention));
+  const featured = sortFeaturedConventions(
+    data.filter((convention) => isFeaturedVisible(convention))
+  );
 
   if (featured.length === 0) {
     return null;

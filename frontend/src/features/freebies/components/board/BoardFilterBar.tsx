@@ -38,15 +38,17 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
   } = state;
 
   return (
-    <div className="border-ink flex flex-col gap-3 border-b-2 pb-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="border-ink @container flex flex-col gap-3 border-b-2 pb-5 lg:flex-row lg:items-center lg:justify-between">
       {/* Filter Tabs - Neo-Brutalist Block Buttons */}
-      <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         {/* All Freebies */}
         <button
           type="button"
           onClick={() => handleTabClick('all')}
+          title={`All Freebies (${counts.all})`}
+          aria-label={`All Freebies (${counts.all})`}
           className={cn(
-            'group border-ink inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 border-2 px-3 py-2 text-center text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
+            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none @min-[680px]:px-4',
             activeTab === 'all'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -60,7 +62,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
-          <span>All</span>
+          <span className="hidden @min-[680px]:inline">All</span>
           <span
             className={cn(
               'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
@@ -77,8 +79,10 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
         <button
           type="button"
           onClick={() => handleTabClick('saved')}
+          title={`Saved Freebies (${counts.saved})`}
+          aria-label={`Saved Freebies (${counts.saved})`}
           className={cn(
-            'group border-ink inline-flex min-w-[calc(50%-0.25rem)] flex-1 cursor-pointer items-center justify-center gap-1.5 border-2 px-3 py-2 text-center text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:min-w-0 sm:flex-initial sm:px-4 sm:py-2.5',
+            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none @min-[680px]:px-4',
             activeTab === 'saved'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -92,8 +96,8 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
-          <span>
-            <span className="hidden md:inline">My </span>Saved
+          <span className="hidden @min-[680px]:inline">
+            <span className="hidden xl:inline">My </span>Saved
           </span>
           <span
             className={cn(
@@ -111,8 +115,10 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
         <button
           type="button"
           onClick={() => handleTabClick('uploaded')}
+          title={`My Uploads (${counts.uploaded})`}
+          aria-label={`My Uploads (${counts.uploaded})`}
           className={cn(
-            'group border-ink inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 border-2 px-3 py-2 text-center text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:flex-initial sm:px-4 sm:py-2.5',
+            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none @min-[680px]:px-4',
             activeTab === 'uploaded'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -126,8 +132,8 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
-          <span>
-            <span className="hidden md:inline">My </span>Uploads
+          <span className="hidden @min-[680px]:inline">
+            <span className="hidden xl:inline">My </span>Uploads
           </span>
           <span
             className={cn(
@@ -143,9 +149,9 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
       </div>
 
       {/* Search, Vendor Filter, and Density Toggle */}
-      <div className="flex flex-1 flex-wrap items-center gap-2.5 sm:flex-nowrap lg:max-w-xl">
+      <div className="flex flex-1 flex-wrap items-center gap-2.5 lg:max-w-xl">
         {/* Search Box */}
-        <div className="relative min-w-[200px] flex-1">
+        <div className="relative w-full min-w-0 @min-[540px]:w-auto @min-[540px]:flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
           <input
             type="text"
@@ -176,90 +182,95 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           ) : null}
         </div>
 
-        {/* Vendor Filter */}
-        {vendors && vendors.length > 0 ? (
-          <select
-            value={selectedVendor ?? ''}
-            onChange={(e) => setSelectedVendor(e.target.value ? Number(e.target.value) : undefined)}
-            aria-label="Filter by vendor"
-            className="border-ink h-10 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none dark:bg-zinc-900"
-          >
-            <option value="">All Vendors ({vendors.length})</option>
-            {vendors.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name}
-              </option>
-            ))}
-          </select>
-        ) : null}
+        {/* Controls Cluster: Vendor Filter, View Density Toggle, and Refresh (Stay together) */}
+        <div className="flex shrink-0 items-center gap-2">
+          {/* Vendor Filter */}
+          {vendors && vendors.length > 0 ? (
+            <select
+              value={selectedVendor ?? ''}
+              onChange={(e) =>
+                setSelectedVendor(e.target.value ? Number(e.target.value) : undefined)
+              }
+              aria-label="Filter by vendor"
+              className="border-ink h-10 max-w-[150px] cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none sm:max-w-[180px] dark:bg-zinc-900"
+            >
+              <option value="">All Vendors ({vendors.length})</option>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+          ) : null}
 
-        {/* View Density Segmented Toggle (Cards vs Condensed) */}
-        <div
-          className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:bg-zinc-900"
-          role="group"
-          aria-label="View density"
-        >
+          {/* View Density Segmented Toggle (Cards vs Condensed) */}
+          <div
+            className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:bg-zinc-900"
+            role="group"
+            aria-label="View density"
+          >
+            <button
+              type="button"
+              onClick={() => allCondensed && handleToggleAllCondensed()}
+              aria-label="Card view"
+              title="Card view (expanded)"
+              className={cn(
+                'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
+                !allCondensed
+                  ? 'bg-accent text-white dark:text-zinc-950'
+                  : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
+              )}
+            >
+              <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
+            </button>
+            <div className="border-ink border-r-2" />
+            <button
+              type="button"
+              onClick={() => !allCondensed && handleToggleAllCondensed()}
+              aria-label="Compact view"
+              title="Compact view (condensed)"
+              className={cn(
+                'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
+                allCondensed
+                  ? 'bg-accent text-white dark:text-zinc-950'
+                  : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
+              )}
+            >
+              <Rows3 className="h-4 w-4 stroke-[2.5]" />
+            </button>
+          </div>
+
+          {/* Compact Refresh Board Button */}
           <button
             type="button"
-            onClick={() => allCondensed && handleToggleAllCondensed()}
-            aria-label="Card view"
-            title="Card view (expanded)"
+            onClick={() => refreshBoard()}
+            disabled={refreshStatus !== 'idle'}
+            title={
+              refreshStatus === 'success'
+                ? 'Freebies synced!'
+                : refreshStatus === 'refreshing'
+                  ? 'Syncing freebies…'
+                  : 'Refresh freebies board'
+            }
+            aria-label="Refresh freebies board"
             className={cn(
-              'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
-              !allCondensed
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
+              'border-ink inline-flex h-10 w-10 shrink-0 items-center justify-center border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all dark:bg-zinc-900',
+              refreshStatus === 'idle'
+                ? 'cursor-pointer text-zinc-900 hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-50 hover:shadow-none dark:text-white dark:hover:bg-zinc-800'
+                : refreshStatus === 'success'
+                  ? 'cursor-default bg-emerald-50 dark:bg-emerald-950/30'
+                  : 'cursor-not-allowed opacity-75'
             )}
           >
-            <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
-          </button>
-          <div className="border-ink border-r-2" />
-          <button
-            type="button"
-            onClick={() => !allCondensed && handleToggleAllCondensed()}
-            aria-label="Compact view"
-            title="Compact view (condensed)"
-            className={cn(
-              'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
-              allCondensed
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
+            {refreshStatus === 'success' ? (
+              <Check className="animate-pill-pop h-4 w-4 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
+            ) : refreshStatus === 'refreshing' ? (
+              <RotateCw className="h-4 w-4 animate-spin stroke-[2.5]" />
+            ) : (
+              <RotateCw className="h-4 w-4 stroke-[2.5]" />
             )}
-          >
-            <Rows3 className="h-4 w-4 stroke-[2.5]" />
           </button>
         </div>
-
-        {/* Compact Refresh Board Button */}
-        <button
-          type="button"
-          onClick={() => refreshBoard()}
-          disabled={refreshStatus !== 'idle'}
-          title={
-            refreshStatus === 'success'
-              ? 'Freebies synced!'
-              : refreshStatus === 'refreshing'
-                ? 'Syncing freebies…'
-                : 'Refresh freebies board'
-          }
-          aria-label="Refresh freebies board"
-          className={cn(
-            'border-ink inline-flex h-10 w-10 shrink-0 items-center justify-center border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all dark:bg-zinc-900',
-            refreshStatus === 'idle'
-              ? 'cursor-pointer text-zinc-900 hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-50 hover:shadow-none dark:text-white dark:hover:bg-zinc-800'
-              : refreshStatus === 'success'
-                ? 'cursor-default bg-emerald-50 dark:bg-emerald-950/30'
-                : 'cursor-not-allowed opacity-75'
-          )}
-        >
-          {refreshStatus === 'success' ? (
-            <Check className="animate-pill-pop h-4 w-4 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
-          ) : refreshStatus === 'refreshing' ? (
-            <RotateCw className="h-4 w-4 animate-spin stroke-[2.5]" />
-          ) : (
-            <RotateCw className="h-4 w-4 stroke-[2.5]" />
-          )}
-        </button>
       </div>
     </div>
   );

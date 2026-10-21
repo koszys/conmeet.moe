@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ConventionRow } from './ConventionRow';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
-import { getConventionPhase, isPast } from '../../utils/dates';
+import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
@@ -25,10 +25,11 @@ interface ConventionGridProps {
   limitSoon?: number;
   limitUp?: number;
   limitPast?: number;
+  limitRecentlyEnded?: number;
   showAllLink?: boolean;
   showFeaturedLink?: boolean;
   showRequest?: boolean;
-  initialTab?: 'upcoming' | 'past';
+  initialTab?: 'upcoming' | 'past' | 'recently-ended';
   className?: string;
 }
 
@@ -52,6 +53,7 @@ export function ConventionGrid({
   limitSoon,
   limitUp,
   limitPast,
+  limitRecentlyEnded,
   showAllLink = false,
   showFeaturedLink = false,
   showRequest = true,
@@ -59,7 +61,7 @@ export function ConventionGrid({
   className,
 }: ConventionGridProps) {
   const { data = [], isLoading, isError, refetch } = useConventions();
-  const [tab, setTab] = useState<'upcoming' | 'past'>(initialTab);
+  const [tab, setTab] = useState<'upcoming' | 'past' | 'recently-ended'>(initialTab);
 
   const upcoming = data.filter((convention) => !isPast(convention));
   const allPast = data
@@ -69,6 +71,7 @@ export function ConventionGrid({
         new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
         new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
     );
+  const recentlyEnded = allPast.filter((convention) => isRecentlyEnded(convention));
 
   const now = upcoming.filter((convention) => getConventionPhase(convention) === 'now');
   const soon = upcoming.filter((convention) => getConventionPhase(convention) === 'soon');
@@ -78,6 +81,11 @@ export function ConventionGrid({
   const displayedSoon = limitSoon ? soon.slice(0, limitSoon) : soon;
   const displayedUp = limitUp ? up.slice(0, limitUp) : up;
   const displayedPast = limitPast ? allPast.slice(0, limitPast) : allPast;
+  const displayedRecentlyEnded = limitRecentlyEnded
+    ? recentlyEnded.slice(0, limitRecentlyEnded)
+    : limitPast
+      ? recentlyEnded.slice(0, limitPast)
+      : recentlyEnded;
 
   const totalUpcomingCount = now.length + soon.length + up.length;
 
@@ -117,20 +125,26 @@ export function ConventionGrid({
         {showAllLink && (
           <AllConsButton
             tab={tab}
-            count={tab === 'upcoming' ? totalUpcomingCount : allPast.length}
+            count={
+              tab === 'upcoming'
+                ? totalUpcomingCount
+                : tab === 'recently-ended'
+                  ? recentlyEnded.length
+                  : allPast.length
+            }
           />
         )}
       </div>
 
       {/* Filter Tabs & Navigation Link */}
-      <div className="border-ink mt-8 flex flex-wrap items-center justify-between gap-2 border-b-2 pb-3">
-        <div className="flex items-center gap-2">
+      <div className="border-ink mt-6 flex flex-wrap items-center justify-between gap-2 border-b-2 pb-3 sm:mt-8">
+        <div className="grid grid-cols-3 gap-1 sm:flex sm:w-auto sm:items-center sm:gap-2">
           <button
             type="button"
             onClick={() => setTab('upcoming')}
             className={cn(
               CONBLOCK,
-              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+              'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
               tab === 'upcoming'
                 ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
                 : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -143,13 +157,28 @@ export function ConventionGrid({
             onClick={() => setTab('past')}
             className={cn(
               CONBLOCK,
-              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
+              'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
               tab === 'past'
                 ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
                 : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
-            Past Cons
+            <span className="hidden sm:inline">Past Cons</span>
+            <span className="sm:hidden">Past</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('recently-ended')}
+            className={cn(
+              CONBLOCK,
+              'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
+              tab === 'recently-ended'
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            <span className="hidden sm:inline">Recently Ended</span>
+            <span className="sm:hidden">Recent</span>
           </button>
         </div>
 
@@ -233,6 +262,29 @@ export function ConventionGrid({
               </h3>
               <div className="mt-4">
                 {displayedPast.map((convention) => (
+                  <ConventionRow key={convention.id} convention={convention} phase="past" />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {!isLoading && !isError && tab === 'recently-ended' && (
+        <>
+          {displayedRecentlyEnded.length === 0 ? (
+            <p className="border-ink mt-12 border-b-2 border-dashed px-2 py-6 text-center text-zinc-500 dark:border-zinc-600 dark:text-zinc-300">
+              No conventions ended in the last 30 days.
+            </p>
+          ) : (
+            <div className="border-ink">
+              <h3 className="font-display mt-6 flex items-center gap-3 text-lg tracking-wide uppercase">
+                <span className="border-2 border-zinc-400 bg-zinc-200 px-2 py-1 text-xs text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                  RECENTLY ENDED (LAST 30 DAYS)
+                </span>
+              </h3>
+              <div className="mt-4">
+                {displayedRecentlyEnded.map((convention) => (
                   <ConventionRow key={convention.id} convention={convention} phase="past" />
                 ))}
               </div>

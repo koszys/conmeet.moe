@@ -51,11 +51,13 @@ export interface ConventionSectionConfig {
   };
   primaryAction: {
     label: string;
+    shortLabel?: string;
     href: string;
     isExternal?: boolean;
   };
   secondaryAction?: {
     label: string;
+    shortLabel?: string;
     href?: string;
     icon?: ComponentType<{ className?: string }>;
   };

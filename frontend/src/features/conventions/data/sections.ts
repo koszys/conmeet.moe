@@ -18,11 +18,13 @@ export function getDefaultConventionSections(convention: Convention): Convention
         actionHref: `/conventions/${convention.slug}/freebies/new`,
       },
       primaryAction: {
-        label: 'View All Freebies',
+        label: 'View Freebies',
+        shortLabel: 'View',
         href: `/conventions/${convention.slug}/freebies`,
       },
       secondaryAction: {
         label: 'Post Freebie',
+        shortLabel: 'Post',
         href: `/conventions/${convention.slug}/freebies/new`,
         icon: Plus,
       },
@@ -40,11 +42,13 @@ export function getDefaultConventionSections(convention: Convention): Convention
         actionHref: `/conventions/${convention.slug}/meetups/new`,
       },
       primaryAction: {
-        label: 'Browse All Meetups',
+        label: 'Browse Meetups',
+        shortLabel: 'Browse',
         href: `/conventions/${convention.slug}/meetups`,
       },
       secondaryAction: {
         label: 'Plan Meetup',
+        shortLabel: 'Plan',
         href: `/conventions/${convention.slug}/meetups/new`,
         icon: Plus,
       },
@@ -62,12 +66,15 @@ export function getDefaultConventionSections(convention: Convention): Convention
         actionHref: `/conventions/${convention.slug}/schedule`,
       },
       primaryAction: {
-        label: 'Explore Full Schedule',
+        label: 'Full Schedule',
+        shortLabel: 'Schedule',
         href: `/conventions/${convention.slug}/schedule`,
       },
       secondaryAction: {
         label: 'My Schedule',
+        shortLabel: 'Mine',
         href: `/conventions/${convention.slug}/schedule`,
+        icon: CalendarDays,
       },
       colSpan: 2,
     },

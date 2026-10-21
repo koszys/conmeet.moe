@@ -74,7 +74,7 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
     <article
       id={section.id}
       className={cn(
-        'border-ink group flex flex-col justify-between border-2 bg-white p-5 shadow-[4px_4px_0_var(--ink)] transition-all sm:p-6 dark:bg-zinc-900',
+        'border-ink group @container flex flex-col justify-between border-2 bg-white p-5 shadow-[4px_4px_0_var(--ink)] transition-all sm:p-6 dark:bg-zinc-900',
         section.colSpan === 2 ? 'md:col-span-2' : 'md:col-span-1'
       )}
     >
@@ -101,15 +101,16 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
         {/* Activity Items List or Empty State */}
         {hasActivities ? (
           <>
-            <div className="mt-3.5 mb-2.5 flex items-center justify-between">
+            <div className="mt-3.5 mb-2.5 flex items-center justify-between gap-2">
               <span className="font-display text-[11px] tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
                 {section.activityHeader ?? 'Recent Activity'}
               </span>
               <Link
                 href={section.primaryAction.href}
-                className="text-accent hover:text-accent-pop inline-flex items-center gap-1 text-[11px] font-bold tracking-wider uppercase"
+                className="text-accent hover:text-accent-pop inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider uppercase"
               >
-                View all
+                <span className="hidden @min-[360px]:inline">View all</span>
+                <span className="@min-[360px]:hidden">All</span>
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
@@ -141,32 +142,50 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
       </div>
 
       {/* Card Action Footer */}
-      <div className="border-ink mt-5 flex flex-col gap-2 border-t-2 border-dashed pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          href={section.primaryAction.href}
-          className={cn(
-            CONBLOCK_PRIMARY,
-            'inline-flex flex-1 items-center justify-center gap-1.5 px-4 py-2 text-xs'
-          )}
-        >
-          <span>{section.primaryAction.label}</span>
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-
+      <div className="border-ink mt-5 flex flex-wrap items-center justify-end gap-2 border-t-2 border-dashed pt-4">
         {section.secondaryAction && (
           <Link
             href={section.secondaryAction.href ?? section.primaryAction.href}
+            title={section.secondaryAction.label}
+            aria-label={section.secondaryAction.label}
             className={cn(
               CONBLOCK,
-              'inline-flex items-center justify-center gap-1.5 bg-white px-3.5 py-2 text-xs font-bold tracking-wider text-zinc-900 uppercase hover:bg-zinc-50 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700'
+              'inline-flex items-center justify-center gap-1.5 bg-white px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap text-zinc-900 uppercase hover:bg-zinc-50 @min-[440px]:px-3.5 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700'
             )}
           >
             {section.secondaryAction.icon && (
-              <section.secondaryAction.icon className="h-3.5 w-3.5" />
+              <section.secondaryAction.icon className="h-3.5 w-3.5 shrink-0" />
             )}
-            <span>{section.secondaryAction.label}</span>
+            {section.secondaryAction.shortLabel ? (
+              <>
+                <span className="hidden @min-[440px]:inline">{section.secondaryAction.label}</span>
+                <span className="@min-[440px]:hidden">{section.secondaryAction.shortLabel}</span>
+              </>
+            ) : (
+              <span>{section.secondaryAction.label}</span>
+            )}
           </Link>
         )}
+
+        <Link
+          href={section.primaryAction.href}
+          title={section.primaryAction.label}
+          aria-label={section.primaryAction.label}
+          className={cn(
+            CONBLOCK_PRIMARY,
+            'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs whitespace-nowrap @min-[440px]:px-3.5'
+          )}
+        >
+          {section.primaryAction.shortLabel ? (
+            <>
+              <span className="hidden @min-[440px]:inline">{section.primaryAction.label}</span>
+              <span className="@min-[440px]:hidden">{section.primaryAction.shortLabel}</span>
+            </>
+          ) : (
+            <span>{section.primaryAction.label}</span>
+          )}
+          <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+        </Link>
       </div>
     </article>
   );

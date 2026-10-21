@@ -95,39 +95,26 @@ export function ConventionFilterBar({
             </select>
           )}
         </div>
-
-        {/* Reset Button (on desktop sits in line) */}
-        {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={onReset}
-            className={cn(
-              CONBLOCK,
-              'font-display hidden h-8.5 shrink-0 cursor-pointer items-center gap-1.5 bg-white px-2.5 text-[10.5px] tracking-wider whitespace-nowrap text-zinc-800 uppercase hover:bg-zinc-100 hover:text-black sm:inline-flex sm:h-9 sm:px-3 sm:text-xs dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-            )}
-          >
-            <RotateCcw className="h-3 w-3" />
-            <span>Reset</span>
-          </button>
-        )}
       </div>
 
-      {/* Mobile Active Filters Row: Reset & Stats */}
+      {/* Active Filters Row: Reset & Stats */}
       {hasActiveFilters && (
-        <div className="flex items-center justify-between gap-2 pt-0.5">
+        <div className="flex items-center gap-2.5 pt-0.5">
           <button
             type="button"
             onClick={onReset}
+            title="Reset filters"
+            aria-label="Reset filters"
             className={cn(
               CONBLOCK,
-              'font-display inline-flex h-7.5 cursor-pointer items-center gap-1 bg-white px-2 text-[10px] tracking-wider whitespace-nowrap text-zinc-800 uppercase hover:bg-zinc-100 hover:text-black sm:hidden dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              'font-display inline-flex h-6.5 cursor-pointer items-center gap-1 bg-white px-2 text-[9.5px] tracking-wider whitespace-nowrap text-zinc-800 uppercase hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
             )}
           >
             <RotateCcw className="h-2.5 w-2.5" />
-            <span>Reset Filters</span>
+            <span>Reset</span>
           </button>
 
-          <span className="font-display text-[10px] font-bold tracking-wider text-zinc-500 uppercase sm:ml-auto sm:text-[11px] dark:text-zinc-400">
+          <span className="font-display text-[10.5px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
             Showing {filteredCount} of {totalCount}
           </span>
         </div>

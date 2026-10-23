@@ -1,4 +1,4 @@
-import { daysUntil } from '@/shared/lib/dates';
+import { daysUntil, parseDate } from '@/shared/lib/dates';
 
 import type { Convention, ConventionPhase } from '../types';
 
@@ -32,11 +32,11 @@ export function sortFeaturedConventions(conventions: Convention[]): Convention[]
     if (!aPast && bPast) return -1;
     if (aPast && !bPast) return 1;
     if (!aPast && !bPast) {
-      return new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
+      return parseDate(a.starts_at).getTime() - parseDate(b.starts_at).getTime();
     }
     return (
-      new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
-      new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
+      parseDate(b.ends_at).getTime() - parseDate(a.ends_at).getTime() ||
+      parseDate(b.starts_at).getTime() - parseDate(a.starts_at).getTime()
     );
   });
 }

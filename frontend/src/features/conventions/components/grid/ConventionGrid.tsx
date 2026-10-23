@@ -6,6 +6,7 @@ import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
 import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
+import { parseDate } from '@/shared/lib/dates';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { AllConsButton, FeaturedConsButton } from '../links';
@@ -68,8 +69,8 @@ export function ConventionGrid({
     .filter((convention) => isPast(convention))
     .sort(
       (a, b) =>
-        new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
-        new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
+        parseDate(b.ends_at).getTime() - parseDate(a.ends_at).getTime() ||
+        parseDate(b.starts_at).getTime() - parseDate(a.starts_at).getTime()
     );
   const recentlyEnded = allPast.filter((convention) => isRecentlyEnded(convention));
 

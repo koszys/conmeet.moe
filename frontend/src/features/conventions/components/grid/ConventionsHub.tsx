@@ -18,6 +18,7 @@ import {
   sortFeaturedConventions,
 } from '../../utils/dates';
 import { matchesConventionFilters } from '../../utils/filters';
+import { parseDate } from '@/shared/lib/dates';
 import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
@@ -136,8 +137,8 @@ export function ConventionsHub({
     .filter((c) => isPast(c))
     .sort(
       (a, b) =>
-        new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime() ||
-        new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
+        parseDate(b.ends_at).getTime() - parseDate(a.ends_at).getTime() ||
+        parseDate(b.starts_at).getTime() - parseDate(a.starts_at).getTime()
     );
   const recentlyEnded = allPast.filter((c) => isRecentlyEnded(c));
 
@@ -154,8 +155,8 @@ export function ConventionsHub({
   const availableYears = useMemo(() => {
     const yearSet = new Set<string>();
     for (const c of data) {
-      if (c.starts_at) yearSet.add(new Date(c.starts_at).getFullYear().toString());
-      if (c.ends_at) yearSet.add(new Date(c.ends_at).getFullYear().toString());
+      if (c.starts_at) yearSet.add(parseDate(c.starts_at).getFullYear().toString());
+      if (c.ends_at) yearSet.add(parseDate(c.ends_at).getFullYear().toString());
     }
     return Array.from(yearSet).sort((a, b) => b.localeCompare(a));
   }, [data]);

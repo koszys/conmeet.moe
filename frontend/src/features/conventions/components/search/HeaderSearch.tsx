@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { MapPin, Search, X } from 'lucide-react';
-import { formatDateRange } from '@/shared/lib/dates';
+import { formatDateRange, parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { IconButton } from '@/shared/components/ui/button';
 
@@ -40,8 +40,8 @@ export function HeaderSearch({
 
     return data
       .filter((convention) => {
-        const startYear = new Date(convention.starts_at).getFullYear().toString();
-        const endYear = new Date(convention.ends_at).getFullYear().toString();
+        const startYear = parseDate(convention.starts_at).getFullYear().toString();
+        const endYear = parseDate(convention.ends_at).getFullYear().toString();
         const searchable =
           `${convention.name} ${startYear} ${endYear} ${convention.slug} ${convention.city ?? ''} ${convention.country ?? ''} ${convention.venue_name ?? ''}`.toLowerCase();
         return tokens.every((token) => searchable.includes(token));
@@ -58,10 +58,10 @@ export function HeaderSearch({
         }
 
         if (!aPast) {
-          return new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
+          return parseDate(a.starts_at).getTime() - parseDate(b.starts_at).getTime();
         }
 
-        return new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime();
+        return parseDate(b.ends_at).getTime() - parseDate(a.ends_at).getTime();
       })
       .slice(0, MAX_RESULTS);
   }, [data, trimmed]);
@@ -167,7 +167,7 @@ export function HeaderSearch({
   const list = (
     <ul className="max-h-72 overflow-y-auto">
       {results.map((convention, index) => {
-        const startYear = new Date(convention.starts_at).getFullYear();
+        const startYear = parseDate(convention.starts_at).getFullYear();
         const showYearBadge = !convention.name.includes(startYear.toString());
         const phase = getConventionPhase(convention);
         const location = [convention.city, convention.country].filter(Boolean).join(', ');

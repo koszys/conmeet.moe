@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { ArrowUpRight, CalendarDays, Gift, Home, MapPin, Sparkles, Users, X } from 'lucide-react';
-import { formatDateRange } from '@/shared/lib/dates';
+import { formatDateRange, parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
-import { IconButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { IconButton } from '@/shared/components/ui/button';
 
 import { useConvention } from '../../data/api';
 import { useConventionNav } from './ConventionNavProvider';
@@ -37,7 +37,7 @@ export function ConventionSidebar({
 
   if (!convention) return null;
 
-  const month = format(new Date(convention.starts_at), 'MMM').toUpperCase();
+  const month = format(parseDate(convention.starts_at), 'MMM').toUpperCase();
   const location = [convention.venue_name, convention.city, convention.country]
     .filter(Boolean)
     .join(', ');

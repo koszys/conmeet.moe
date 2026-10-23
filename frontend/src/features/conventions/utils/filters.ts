@@ -1,5 +1,6 @@
 import type { Convention } from '../types';
 import type { ConventionFilters } from '../components/grid/ConventionFilterBar';
+import { parseDate } from '@/shared/lib/dates';
 
 export function matchesConventionFilters(
   convention: Convention,
@@ -26,8 +27,8 @@ export function matchesConventionFilters(
   }
 
   if (filters.year) {
-    const startYear = new Date(convention.starts_at).getFullYear().toString();
-    const endYear = new Date(convention.ends_at).getFullYear().toString();
+    const startYear = parseDate(convention.starts_at).getFullYear().toString();
+    const endYear = parseDate(convention.ends_at).getFullYear().toString();
     if (startYear !== filters.year && endYear !== filters.year) {
       return false;
     }

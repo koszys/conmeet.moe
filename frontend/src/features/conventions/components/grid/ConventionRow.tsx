@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ArrowUpRight, MapPin } from 'lucide-react';
-import { formatDateRange } from '@/shared/lib/dates';
+import { formatDateRange, parseDate } from '@/shared/lib/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { cn } from '@/shared/lib/utils';
 import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
@@ -20,7 +20,7 @@ export function ConventionRow({
   convention: Convention;
   phase: ConventionPhase;
 }) {
-  const month = format(new Date(convention.starts_at), 'MMM').toUpperCase();
+  const month = format(parseDate(convention.starts_at), 'MMM').toUpperCase();
   const location = [convention.venue_name, convention.city].filter(Boolean).join(', ');
 
   return (

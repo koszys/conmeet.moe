@@ -4,6 +4,8 @@ export { ConventionRow } from './ConventionRow';
 export { ConventionGrid } from './ConventionGrid';
 export { FeaturedConventionGrid } from './FeaturedConventionGrid';
 export type { FeaturedConventionGridProps } from './FeaturedConventionGrid';
+export { FeaturedConventionSlider } from './FeaturedConventionSlider';
+export type { FeaturedConventionSliderProps } from './FeaturedConventionSlider';
 export { ConventionFilterBar } from './ConventionFilterBar';
 export type { ConventionFilterBarProps, ConventionFilters } from './ConventionFilterBar';
 export { ConventionFilterPopover } from './ConventionFilterPopover';

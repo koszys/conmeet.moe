@@ -22,6 +22,7 @@ LIST_FIELDS = {
     "banner",
     "banner_thumb",
     "is_featured",
+    "featured_priority",
 }
 DETAIL_FIELDS = LIST_FIELDS | {"description"}
 
@@ -169,4 +170,18 @@ def test_convention_admin_change_view_renders_and_saves() -> None:
     con.refresh_from_db()
     assert con.venue_name == "Updated Venue"
     assert con.city == "Updated City"
+
+
+def test_convention_featured_priority_serialization() -> None:
+    con = _make_convention("Priority Con", slug="priority-con")
+    con.is_featured = True
+    con.featured_priority = 1
+    con.save()
+
+    resp = Client(HTTP_HOST="localhost").get("/api/v1/conventions/priority-con/")
+    assert resp.status_code == status.HTTP_200_OK
+    data = resp.json()
+    assert data["is_featured"] is True
+    assert data["featured_priority"] == 1
+
 

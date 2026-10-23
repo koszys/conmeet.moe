@@ -22,6 +22,7 @@ class ConventionListSerializer(serializers.ModelSerializer):
             "banner",
             "banner_thumb",
             "is_featured",
+            "featured_priority",
         ]
 
     def get_banner_thumb(self, obj: Convention) -> str | None:

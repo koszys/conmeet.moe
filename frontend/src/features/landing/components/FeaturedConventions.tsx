@@ -3,8 +3,8 @@
 import { Star } from 'lucide-react';
 import { useConventions } from '@/features/conventions/data/api';
 import {
-  ConventionCard,
   FeaturedConsButton,
+  FeaturedConventionSlider,
   isFeaturedVisible,
   sortFeaturedConventions,
 } from '@/features/conventions';
@@ -63,18 +63,9 @@ export function FeaturedConventions() {
         <FeaturedConsButton />
       </div>
 
-      <div className="mt-8 flex flex-col gap-6">
-        {isLoading && (
-          <>
-            <CardSkeleton />
-            <CardSkeleton />
-          </>
-        )}
-
-        {!isLoading &&
-          featured.map((convention) => (
-            <ConventionCard key={convention.id} convention={convention} />
-          ))}
+      <div className="mt-8">
+        {isLoading && <CardSkeleton />}
+        {!isLoading && <FeaturedConventionSlider conventions={featured} />}
       </div>
 
       <div className="border-ink mt-12 border-b-2 border-dashed md:mt-16" aria-hidden="true" />

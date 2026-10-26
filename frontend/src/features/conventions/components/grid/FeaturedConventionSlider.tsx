@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowUpRight,
@@ -64,22 +64,177 @@ export function FeaturedConventionSlider({
   const rafIdRef = useRef<number | null>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const [canScrollUp, setCanScrollUp] = useState(false);
-  const [canScrollDown, setCanScrollDown] = useState(false);
-
   const total = conventions.length;
 
+  // Multi-copy loop for infinite cylindrical scrolling
+  const copies = total > 1 ? Math.max(3, Math.ceil(15 / total)) : 1;
+  const middleCopyIndex = Math.floor(copies / 2);
+
+  // Flattened array of repeated conventions
+  const items = useMemo(() => {
+    if (total <= 1) {
+      return conventions.map((conv, idx) => ({
+        conv,
+        originalIndex: idx,
+        copyIndex: 0,
+        globalIndex: idx,
+        key: `${conv.id}-0-0`,
+      }));
+    }
+
+    const result: {
+      conv: Convention;
+      originalIndex: number;
+      copyIndex: number;
+      globalIndex: number;
+      key: string;
+    }[] = [];
+
+    let count = 0;
+    for (let c = 0; c < copies; c++) {
+      for (let i = 0; i < total; i++) {
+        result.push({
+          conv: conventions[i],
+          originalIndex: i,
+          copyIndex: c,
+          globalIndex: count++,
+          key: `${conventions[i].id}-${c}-${i}`,
+        });
+      }
+    }
+    return result;
+  }, [conventions, copies, total]);
+
+  const centeredGlobalIndexRef = useRef<number>(middleCopyIndex * total);
+  const isProgrammaticScrollRef = useRef(false);
+  const hasCenteredInitialRef = useRef(false);
+
+  // Center an element within the scroll container
+  const centerItemInViewport = useCallback((element: HTMLElement, smooth = true) => {
+    const list = listRef.current;
+    if (!list || !element) return;
+    const targetTop = element.offsetTop - (list.clientHeight - element.clientHeight) / 2;
+    list.scrollTo({ top: targetTop, behavior: smooth ? 'smooth' : 'auto' });
+  }, []);
+
+  // Center a convention by globalIndex and update state
+  const goToGlobalIndex = useCallback(
+    (targetGlobalIndex: number, smooth = true) => {
+      const targetItem = items[targetGlobalIndex];
+      if (!targetItem) return;
+
+      setCurrentIndex(targetItem.originalIndex);
+      centeredGlobalIndexRef.current = targetGlobalIndex;
+
+      const el = itemRefs.current[targetGlobalIndex];
+      if (el) {
+        isProgrammaticScrollRef.current = true;
+        centerItemInViewport(el, smooth);
+        setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 400);
+      }
+    },
+    [items, centerItemInViewport]
+  );
+
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % total);
-  }, [total]);
+    if (total <= 1) return;
+    let nextGlobal = centeredGlobalIndexRef.current + 1;
+    // Maintain position within middle repetition range
+    if (nextGlobal >= total * (copies - 1)) {
+      const list = listRef.current;
+      const cycleHeight =
+        (itemRefs.current[total]?.offsetTop ?? 0) - (itemRefs.current[0]?.offsetTop ?? 0);
+      if (list && cycleHeight > 0) {
+        list.scrollTop -= cycleHeight;
+        nextGlobal -= total;
+      }
+    }
+    goToGlobalIndex(nextGlobal, true);
+  }, [total, copies, goToGlobalIndex]);
 
   const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + total) % total);
-  }, [total]);
+    if (total <= 1) return;
+    let prevGlobal = centeredGlobalIndexRef.current - 1;
+    // Maintain position within middle repetition range
+    if (prevGlobal < total) {
+      const list = listRef.current;
+      const cycleHeight =
+        (itemRefs.current[total]?.offsetTop ?? 0) - (itemRefs.current[0]?.offsetTop ?? 0);
+      if (list && cycleHeight > 0) {
+        list.scrollTop += cycleHeight;
+        prevGlobal += total;
+      }
+    }
+    goToGlobalIndex(prevGlobal, true);
+  }, [total, copies, goToGlobalIndex]);
 
-  const goToSlide = useCallback((index: number) => {
-    setCurrentIndex(index);
-  }, []);
+  // Initial Centering: Position highest priority convention (index 0) in the middle slot
+  useEffect(() => {
+    if (total <= 1 || hasCenteredInitialRef.current) return;
+    const initialGlobalIndex = middleCopyIndex * total;
+
+    const timer = requestAnimationFrame(() => {
+      const initialEl = itemRefs.current[initialGlobalIndex];
+      if (initialEl) {
+        centerItemInViewport(initialEl, false);
+        hasCenteredInitialRef.current = true;
+        centeredGlobalIndexRef.current = initialGlobalIndex;
+      }
+    });
+
+    return () => cancelAnimationFrame(timer);
+  }, [total, middleCopyIndex, centerItemInViewport, items]);
+
+  // Window resize re-centering
+  useEffect(() => {
+    if (total <= 1) return;
+    const handleResize = () => {
+      const currentEl = itemRefs.current[centeredGlobalIndexRef.current];
+      if (currentEl) {
+        centerItemInViewport(currentEl, false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [total, centerItemInViewport]);
+
+  // Infinite Scroll Wrapping: Silent modulo scroll shift on manual boundary reach
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || total <= 1) return;
+
+    const handleScroll = () => {
+      if (isProgrammaticScrollRef.current) return;
+
+      const cycleHeight =
+        (itemRefs.current[total]?.offsetTop ?? 0) - (itemRefs.current[0]?.offsetTop ?? 0);
+      if (cycleHeight <= 0) return;
+
+      if (list.scrollTop < cycleHeight * 0.5) {
+        list.scrollTop += cycleHeight;
+        centeredGlobalIndexRef.current += total;
+      } else if (list.scrollTop > cycleHeight * (copies - 1.5)) {
+        list.scrollTop -= cycleHeight;
+        centeredGlobalIndexRef.current -= total;
+      }
+    };
+
+    list.addEventListener('scroll', handleScroll, { passive: true });
+    return () => list.removeEventListener('scroll', handleScroll);
+  }, [total, copies]);
+
+  // Dual edge fade mask for infinite cylindrical roller
+  const maskStyle = useMemo<React.CSSProperties | undefined>(() => {
+    if (total <= 1) return undefined;
+    return {
+      maskImage:
+        'linear-gradient(to bottom, transparent 0%, black 36px, black calc(100% - 36px), transparent 100%)',
+      WebkitMaskImage:
+        'linear-gradient(to bottom, transparent 0%, black 36px, black calc(100% - 36px), transparent 100%)',
+    };
+  }, [total]);
 
   // Intersection Observer: Only slide when in viewport
   useEffect(() => {
@@ -97,67 +252,12 @@ export function FeaturedConventionSlider({
     return () => observer.disconnect();
   }, []);
 
-  // Track and update scroll bounds for dynamic edge fade mask
-  const updateScrollBounds = useCallback(() => {
-    const el = listRef.current;
-    if (!el) return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    const hasMoreBelow = scrollHeight - scrollTop - clientHeight > 3;
-    const hasMoreAbove = scrollTop > 3;
-    setCanScrollUp(hasMoreAbove);
-    setCanScrollDown(hasMoreBelow);
-  }, []);
-
-  useEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    updateScrollBounds();
-    el.addEventListener('scroll', updateScrollBounds, { passive: true });
-    window.addEventListener('resize', updateScrollBounds);
-    return () => {
-      el.removeEventListener('scroll', updateScrollBounds);
-      window.removeEventListener('resize', updateScrollBounds);
-    };
-  }, [updateScrollBounds, total]);
-
-  // Compute dynamic CSS mask for smooth fading when scrolling
-  const getMaskStyle = useCallback((): React.CSSProperties | undefined => {
-    if (total <= 4) return undefined;
-    const fadeSize = '32px';
-    if (canScrollUp && canScrollDown) {
-      const gradient = `linear-gradient(to bottom, transparent 0%, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent 100%)`;
-      return { maskImage: gradient, WebkitMaskImage: gradient };
-    }
-    if (canScrollDown) {
-      const gradient = `linear-gradient(to bottom, black calc(100% - ${fadeSize}), transparent 100%)`;
-      return { maskImage: gradient, WebkitMaskImage: gradient };
-    }
-    if (canScrollUp) {
-      const gradient = `linear-gradient(to bottom, transparent 0%, black ${fadeSize}, black 100%)`;
-      return { maskImage: gradient, WebkitMaskImage: gradient };
-    }
-    return undefined;
-  }, [total, canScrollUp, canScrollDown]);
-
   // Reset elapsed time & progress when active convention changes
   useEffect(() => {
     elapsedRef.current = 0;
     setProgress(0);
     lastTimeRef.current = null;
-
-    // Auto-scroll switcher list so the active convention remains in view
-    const activeEl = itemRefs.current[currentIndex];
-    if (activeEl) {
-      activeEl.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'nearest',
-      });
-      // Re-check scroll bounds after smooth scroll animation completes
-      const timer = setTimeout(updateScrollBounds, 350);
-      return () => clearTimeout(timer);
-    }
-  }, [currentIndex, updateScrollBounds]);
+  }, [currentIndex]);
 
   const isTimerActive = isInView && !isPaused && !isManuallyPaused && total > 1;
 
@@ -404,14 +504,14 @@ export function FeaturedConventionSlider({
           </div>
         </div>
 
-        {/* Right Selector Column: Shows 4 items + fading peek of 5th item */}
+        {/* Right Selector Column: Infinite cylindrical scroll with centered active convention */}
         <div className="flex w-full shrink-0 flex-col justify-start md:w-56 lg:w-60">
-          {/* Compact Strip Selection Items with Dynamic Edge Fade Mask and Custom Scrollbar */}
+          {/* Compact Strip Selection Items with Dual Edge Fade Mask and Custom Scrollbar */}
           <div
             ref={listRef}
-            style={getMaskStyle()}
+            style={maskStyle}
             className={cn(
-              'flex max-h-[242px] flex-col gap-2 overflow-y-auto py-2 pr-3 pl-5',
+              'flex max-h-[230px] flex-col gap-2 overflow-y-auto py-2 pr-3 pl-5',
               'scrollbar-thin [scrollbar-color:var(--color-accent)_transparent]',
               '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent',
               '[&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600',
@@ -421,19 +521,19 @@ export function FeaturedConventionSlider({
             role="tablist"
             aria-label="Featured conventions list"
           >
-            {conventions.map((conv, idx) => {
-              const isActive = idx === currentIndex;
+            {items.map((item) => {
+              const isActive = item.originalIndex === currentIndex;
               return (
                 <button
-                  key={conv.id}
+                  key={item.key}
                   ref={(el) => {
-                    itemRefs.current[idx] = el;
+                    itemRefs.current[item.globalIndex] = el;
                   }}
                   type="button"
                   role="tab"
                   aria-selected={isActive}
-                  aria-label={`Select ${conv.name}`}
-                  onClick={() => goToSlide(idx)}
+                  aria-label={`Select ${item.conv.name}`}
+                  onClick={() => goToGlobalIndex(item.globalIndex, true)}
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
                   onFocus={() => setIsPaused(true)}
@@ -448,9 +548,9 @@ export function FeaturedConventionSlider({
                 >
                   {/* Thumbnail Image */}
                   <div className="border-ink relative h-7 w-7 shrink-0 overflow-hidden border bg-zinc-100 dark:bg-zinc-900">
-                    {conv.banner_thumb || conv.banner ? (
+                    {item.conv.banner_thumb || item.conv.banner ? (
                       <img
-                        src={conv.banner_thumb || conv.banner || ''}
+                        src={item.conv.banner_thumb || item.conv.banner || ''}
                         alt=""
                         className="h-full w-full object-cover"
                       />
@@ -462,10 +562,10 @@ export function FeaturedConventionSlider({
 
                   {/* Convention Title */}
                   <span className="min-w-0 flex-1 truncate text-[11px] font-bold tracking-wide uppercase">
-                    {conv.name}
+                    {item.conv.name}
                   </span>
 
-                  {/* Progress bar */}
+                  {/* Progress bar on active strip */}
                   {isActive && (
                     <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-zinc-200 dark:bg-black">
                       <div

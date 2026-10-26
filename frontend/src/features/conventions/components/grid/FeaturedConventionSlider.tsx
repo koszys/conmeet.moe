@@ -56,9 +56,18 @@ export function FeaturedConventionSlider({
   const [isInView, setIsInView] = useState(true);
   const [progress, setProgress] = useState(0);
 
+  // Mobile swipe and gesture animations
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<'next' | 'prev' | null>(null);
+  const [isWiggling, setIsWiggling] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+  const hasPlayedWiggleRef = useRef(false);
   const elapsedRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
   const rafIdRef = useRef<number | null>(null);
@@ -163,6 +172,7 @@ export function FeaturedConventionSlider({
 
   const nextSlide = useCallback(() => {
     if (total <= 1) return;
+    setSlideDirection('next');
     if (!isInfinite) {
       setCurrentIndex((prev) => (prev + 1) % total);
       return;
@@ -182,6 +192,7 @@ export function FeaturedConventionSlider({
 
   const prevSlide = useCallback(() => {
     if (total <= 1) return;
+    setSlideDirection('prev');
     if (!isInfinite) {
       setCurrentIndex((prev) => (prev - 1 + total) % total);
       return;
@@ -340,25 +351,101 @@ export function FeaturedConventionSlider({
     };
   }, [isTimerActive, autoSlideInterval, nextSlide, currentIndex]);
 
-  // Handle Touch Swipe Gestures
+  // One-time micro-wiggle gesture hint when card enters view on mobile
+  useEffect(() => {
+    if (
+      total <= 1 ||
+      !isInView ||
+      hasPlayedWiggleRef.current ||
+      typeof window === 'undefined' ||
+      window.innerWidth >= 768
+    ) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsWiggling(true);
+      hasPlayedWiggleRef.current = true;
+
+      const stopTimer = setTimeout(() => {
+        setIsWiggling(false);
+      }, 850);
+
+      return () => clearTimeout(stopTimer);
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [isInView, total]);
+
+  // Handle Touch Swipe Gestures with real-time drag tracking
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (isWiggling) setIsWiggling(false);
+    hasPlayedWiggleRef.current = true;
+
     touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    isHorizontalSwipeRef.current = null;
+    setIsDragging(true);
+    setIsPaused(true);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null) return;
-    const diff = touchStartXRef.current - e.changedTouches[0].clientX;
-    const threshold = 45;
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartXRef.current;
+    const diffY = currentY - touchStartYRef.current;
 
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0) {
-        nextSlide();
-      } else {
-        prevSlide();
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(diffX) > 6 || Math.abs(diffY) > 6) {
+        isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
       }
     }
-    touchStartXRef.current = null;
+
+    if (isHorizontalSwipeRef.current) {
+      setDragOffset(diffX * 0.8);
+    }
   };
+
+  const handleTouchEnd = () => {
+    if (touchStartXRef.current === null) return;
+    setIsDragging(false);
+    setIsPaused(false);
+
+    const threshold = 45;
+    if (dragOffset < -threshold) {
+      setSlideDirection('next');
+      nextSlide();
+    } else if (dragOffset > threshold) {
+      setSlideDirection('prev');
+      prevSlide();
+    }
+
+    setDragOffset(0);
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = null;
+  };
+
+  const slideAnimationClass =
+    !isDragging && !isWiggling
+      ? slideDirection === 'next'
+        ? 'animate-slide-in-right md:animate-none'
+        : slideDirection === 'prev'
+          ? 'animate-slide-in-left md:animate-none'
+          : ''
+      : '';
+
+  const slideTransformStyle: React.CSSProperties | undefined = isDragging
+    ? {
+        transform: `translateX(${dragOffset}px)`,
+        transition: 'none',
+      }
+    : isWiggling
+      ? {
+          animation: 'mobile-swipe-wiggle 850ms cubic-bezier(0.25, 1, 0.5, 1)',
+        }
+      : undefined;
 
   if (total === 0) {
     return null;
@@ -474,10 +561,20 @@ export function FeaturedConventionSlider({
         className
       )}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       aria-roledescription="carousel"
       aria-label="Featured Conventions"
     >
+      {/* Mobile Swipe Hint Badge: Briefly displays during micro-wiggle on initial view */}
+      {isWiggling && (
+        <div className="border-ink bg-accent-pop pointer-events-none absolute top-4 right-4 z-30 flex items-center gap-1.5 border-2 px-2.5 py-1 text-xs font-bold tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)] md:hidden">
+          <ChevronLeft className="h-3.5 w-3.5 animate-pulse" />
+          <span>Swipe</span>
+          <ChevronRight className="h-3.5 w-3.5 animate-pulse" />
+        </div>
+      )}
+
       {/* Convention Banner Backdrop */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
         {current.banner || current.banner_thumb ? (
@@ -489,12 +586,17 @@ export function FeaturedConventionSlider({
               aria-hidden="true"
               className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-2xl transition-opacity duration-500 ease-out dark:opacity-30"
             />
-            <img
-              key={current.id}
-              src={current.banner || current.banner_thumb || ''}
-              alt=""
-              className="relative h-full w-full object-contain transition-opacity duration-500 ease-out"
-            />
+            <div
+              key={`banner-fg-${current.id}`}
+              className={cn('relative h-full w-full', slideAnimationClass)}
+              style={slideTransformStyle}
+            >
+              <img
+                src={current.banner || current.banner_thumb || ''}
+                alt=""
+                className="h-full w-full object-contain transition-opacity duration-500 ease-out"
+              />
+            </div>
           </>
         ) : (
           <div className="h-full w-full bg-linear-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-950" />
@@ -504,7 +606,11 @@ export function FeaturedConventionSlider({
       {/* Main Content Body */}
       <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between gap-6 p-5 pb-4 sm:p-7 md:flex-row md:p-8 md:pb-4">
         {/* Left Spotlight Info Area */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between">
+        <div
+          key={`info-${current.id}`}
+          className={cn('flex min-w-0 flex-1 flex-col justify-between', slideAnimationClass)}
+          style={slideTransformStyle}
+        >
           {/* Top Header Badge Row */}
           <div className="flex flex-wrap items-center gap-2">
             <span

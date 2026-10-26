@@ -31,6 +31,49 @@
   --animate-spin-xslow: spin-slow 60s linear infinite reverse;
   --animate-pill-pop: pill-pop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-progress-timer: progress-timer linear forwards;
+  --animate-mobile-swipe-wiggle: mobile-swipe-wiggle 850ms cubic-bezier(0.25, 1, 0.5, 1);
+  --animate-slide-in-right: slide-in-from-right 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-in-left: slide-in-from-left 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mobile-swipe-wiggle {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-16px);
+  }
+  45% {
+    transform: translateX(10px);
+  }
+  70% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-left {
+  from {
+    transform: translateX(-24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes progress-timer {

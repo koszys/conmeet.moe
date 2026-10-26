@@ -470,7 +470,7 @@ export function FeaturedConventionSlider({
     <div
       ref={containerRef}
       className={cn(
-        'border-ink relative flex min-h-[400px] flex-col justify-between overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] sm:min-h-[440px] md:min-h-[460px] dark:bg-zinc-950',
+        'border-ink relative flex min-h-[360px] flex-col justify-between overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] sm:min-h-[400px] md:min-h-[460px] dark:bg-zinc-950',
         className
       )}
       onTouchStart={handleTouchStart}
@@ -543,8 +543,8 @@ export function FeaturedConventionSlider({
           </div>
         </div>
 
-        {/* Right Selector Column: Centered vertically in the card */}
-        <div className="flex w-full shrink-0 flex-col justify-center md:w-56 md:self-center lg:w-60">
+        {/* Right Selector Column: Hidden on mobile (< md) to avoid clutter, visible on desktop (md+) */}
+        <div className="hidden shrink-0 flex-col justify-center md:flex md:w-56 md:self-center lg:w-60">
           {/* Compact Strip Selection Items (Infinite Cylindrical Roller when total >= 3, or clean centered list when total < 3) */}
           <div
             ref={listRef}
@@ -653,8 +653,17 @@ export function FeaturedConventionSlider({
           </Link>
         </div>
 
-        {/* Right: Slider Action Controls (Play/Pause, Prev, Next) */}
+        {/* Right: Slider Action Controls (Play/Pause, Prev, Next) + Mobile Counter */}
         <div className="flex items-center gap-2">
+          {/* Mobile-Only Slide Counter Badge */}
+          {total > 1 && (
+            <div className="border-ink font-display flex h-9 items-center justify-center border-2 bg-white px-2.5 text-xs font-bold tracking-wider text-zinc-950 shadow-[1px_1px_0_var(--ink)] md:hidden dark:bg-zinc-900 dark:text-zinc-100">
+              <span className="text-accent-pop">{String(currentIndex + 1).padStart(2, '0')}</span>
+              <span className="mx-1 text-zinc-400 dark:text-zinc-600">/</span>
+              <span>{String(total).padStart(2, '0')}</span>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => setIsManuallyPaused((prev) => !prev)}
@@ -690,6 +699,22 @@ export function FeaturedConventionSlider({
           </button>
         </div>
       </div>
+
+      {/* Mobile-Only Bottom Countdown Progress Bar (replaces the progress bar on the hidden desktop strip) */}
+      {total > 1 && (
+        <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-zinc-200 md:hidden dark:bg-black">
+          <div
+            className={cn(
+              'bg-accent-pop h-full w-full origin-left transition-opacity duration-150',
+              !isTimerActive && 'opacity-70'
+            )}
+            style={{
+              transform: `scaleX(${progress})`,
+              willChange: 'transform',
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

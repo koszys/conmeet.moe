@@ -11,7 +11,7 @@ import {
 
 function CardSkeleton() {
   return (
-    <div className="border-ink relative flex min-h-60 animate-pulse flex-col justify-between overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] sm:min-h-64 md:min-h-72 dark:bg-zinc-900">
+    <div className="border-ink relative flex min-h-[360px] animate-pulse flex-col justify-between overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] sm:min-h-[400px] md:min-h-[460px] dark:bg-zinc-900">
       <div className="space-y-4 p-5 sm:p-6 md:p-8">
         <div className="h-5 w-24 bg-zinc-200 dark:bg-zinc-800" />
         <div className="h-8 w-2/3 bg-zinc-200 sm:w-1/2 dark:bg-zinc-800" />
@@ -35,7 +35,7 @@ export function FeaturedConventions() {
     data.filter((convention) => isFeaturedVisible(convention))
   );
 
-  if (featured.length === 0) {
+  if (!isLoading && featured.length === 0) {
     return null;
   }
 

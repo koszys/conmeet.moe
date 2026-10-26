@@ -31,6 +31,15 @@ class Convention(models.Model):
     map_url = models.URLField(max_length=512, blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    featured_priority = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        default=None,
+        help_text=(
+            "Display order in featured slider (1 = first, 2 = second, etc.). "
+            "If blank, sorted by closest date."
+        ),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

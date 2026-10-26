@@ -34,8 +34,10 @@ class ConventionAdmin(R2AdminMediaMixin, ModelAdmin):
         "ends_at",
         "is_featured",
         "is_active",
+        "featured_priority",
         "meetup_count",
     )
+    list_editable = ("is_featured", "is_active", "featured_priority")
     list_filter = ("is_featured", "is_active", "country")
     search_fields = ("name", "slug", "city")
     prepopulated_fields = {"slug": ("name",)}
@@ -44,7 +46,16 @@ class ConventionAdmin(R2AdminMediaMixin, ModelAdmin):
         (None, {"fields": ("name", "slug", "website_url", "map_url")}),
         ("Details", {"fields": ("venue_name", "city", "country", "starts_at", "ends_at")}),
         ("Media", {"fields": ("banner", "banner_preview")}),
-        ("Content", {"fields": ("description", "is_featured", "is_active")}),
+        (
+            "Content",
+            {
+                "fields": (
+                    "description",
+                    ("is_featured", "is_active"),
+                    "featured_priority",
+                )
+            },
+        ),
     )
     readonly_fields = ("banner_preview",)
 

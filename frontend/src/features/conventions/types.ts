@@ -16,6 +16,7 @@ export interface Convention {
   banner: string | null;
   banner_thumb: string | null;
   is_featured: boolean;
+  featured_priority?: number | null;
   /** detail-only fields (GET /api/v1/conventions/{slug}/) */
   description?: string;
 }

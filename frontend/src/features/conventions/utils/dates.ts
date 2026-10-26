@@ -27,6 +27,19 @@ export function isFeaturedVisible(
 
 export function sortFeaturedConventions(conventions: Convention[]): Convention[] {
   return [...conventions].sort((a, b) => {
+    // 1. Explicit admin priority (1 = highest / first)
+    const aPrio = a.featured_priority;
+    const bPrio = b.featured_priority;
+    const aHasPrio = typeof aPrio === 'number' && aPrio > 0;
+    const bHasPrio = typeof bPrio === 'number' && bPrio > 0;
+
+    if (aHasPrio && !bHasPrio) return -1;
+    if (!aHasPrio && bHasPrio) return 1;
+    if (aHasPrio && bHasPrio && aPrio !== bPrio) {
+      return aPrio - bPrio;
+    }
+
+    // 2. Closer date priority
     const aPast = isPast(a);
     const bPast = isPast(b);
     if (!aPast && bPast) return -1;

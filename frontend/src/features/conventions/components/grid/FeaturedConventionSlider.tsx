@@ -66,19 +66,20 @@ export function FeaturedConventionSlider({
 
   const total = conventions.length;
 
-  // Multi-copy loop for infinite cylindrical scrolling
-  const copies = total > 1 ? Math.max(3, Math.ceil(15 / total)) : 1;
-  const middleCopyIndex = Math.floor(copies / 2);
+  // Infinite scroll is enabled only when there are 3 or more conventions
+  const isInfinite = total >= 3;
+  const copies = isInfinite ? Math.max(3, Math.ceil(15 / total)) : 1;
+  const middleCopyIndex = isInfinite ? Math.floor(copies / 2) : 0;
 
-  // Flattened array of repeated conventions
+  // Flattened array of conventions (repeated only when isInfinite is true)
   const items = useMemo(() => {
-    if (total <= 1) {
+    if (!isInfinite) {
       return conventions.map((conv, idx) => ({
         conv,
         originalIndex: idx,
         copyIndex: 0,
         globalIndex: idx,
-        key: `${conv.id}-0-0`,
+        key: `${conv.id}-0`,
       }));
     }
 
@@ -103,19 +104,39 @@ export function FeaturedConventionSlider({
       }
     }
     return result;
-  }, [conventions, copies, total]);
+  }, [conventions, copies, isInfinite, total]);
 
   const centeredGlobalIndexRef = useRef<number>(middleCopyIndex * total);
   const isProgrammaticScrollRef = useRef(false);
   const hasCenteredInitialRef = useRef(false);
 
-  // Center an element within the scroll container
+  // Center an element within the scroll container using precise viewport geometry
   const centerItemInViewport = useCallback((element: HTMLElement, smooth = true) => {
     const list = listRef.current;
-    if (!list || !element) return;
-    const targetTop = element.offsetTop - (list.clientHeight - element.clientHeight) / 2;
+    if (!list || !element) return false;
+    const listRect = list.getBoundingClientRect();
+    const elemRect = element.getBoundingClientRect();
+    if (listRect.height === 0 || elemRect.height === 0) return false;
+
+    const currentOffsetFromListTop = elemRect.top - listRect.top;
+    const targetOffset = (listRect.height - elemRect.height) / 2;
+    const delta = currentOffsetFromListTop - targetOffset;
+    const targetTop = list.scrollTop + delta;
+
     list.scrollTo({ top: targetTop, behavior: smooth ? 'smooth' : 'auto' });
+    return true;
   }, []);
+
+  // Compute exact pixel height of one full cycle
+  const getCycleHeight = useCallback(() => {
+    const el0 = itemRefs.current[0];
+    const elTotal = itemRefs.current[total];
+    if (el0 && elTotal) {
+      const diff = elTotal.getBoundingClientRect().top - el0.getBoundingClientRect().top;
+      if (diff > 0) return diff;
+    }
+    return total * 52;
+  }, [total]);
 
   // Center a convention by globalIndex and update state
   const goToGlobalIndex = useCallback(
@@ -126,70 +147,89 @@ export function FeaturedConventionSlider({
       setCurrentIndex(targetItem.originalIndex);
       centeredGlobalIndexRef.current = targetGlobalIndex;
 
-      const el = itemRefs.current[targetGlobalIndex];
-      if (el) {
-        isProgrammaticScrollRef.current = true;
-        centerItemInViewport(el, smooth);
-        setTimeout(() => {
-          isProgrammaticScrollRef.current = false;
-        }, 400);
+      if (isInfinite) {
+        const el = itemRefs.current[targetGlobalIndex];
+        if (el) {
+          isProgrammaticScrollRef.current = true;
+          centerItemInViewport(el, smooth);
+          setTimeout(() => {
+            isProgrammaticScrollRef.current = false;
+          }, 400);
+        }
       }
     },
-    [items, centerItemInViewport]
+    [items, isInfinite, centerItemInViewport]
   );
 
   const nextSlide = useCallback(() => {
     if (total <= 1) return;
+    if (!isInfinite) {
+      setCurrentIndex((prev) => (prev + 1) % total);
+      return;
+    }
     let nextGlobal = centeredGlobalIndexRef.current + 1;
     // Maintain position within middle repetition range
     if (nextGlobal >= total * (copies - 1)) {
       const list = listRef.current;
-      const cycleHeight =
-        (itemRefs.current[total]?.offsetTop ?? 0) - (itemRefs.current[0]?.offsetTop ?? 0);
+      const cycleHeight = getCycleHeight();
       if (list && cycleHeight > 0) {
         list.scrollTop -= cycleHeight;
         nextGlobal -= total;
       }
     }
     goToGlobalIndex(nextGlobal, true);
-  }, [total, copies, goToGlobalIndex]);
+  }, [total, isInfinite, copies, getCycleHeight, goToGlobalIndex]);
 
   const prevSlide = useCallback(() => {
     if (total <= 1) return;
+    if (!isInfinite) {
+      setCurrentIndex((prev) => (prev - 1 + total) % total);
+      return;
+    }
     let prevGlobal = centeredGlobalIndexRef.current - 1;
     // Maintain position within middle repetition range
     if (prevGlobal < total) {
       const list = listRef.current;
-      const cycleHeight =
-        (itemRefs.current[total]?.offsetTop ?? 0) - (itemRefs.current[0]?.offsetTop ?? 0);
+      const cycleHeight = getCycleHeight();
       if (list && cycleHeight > 0) {
         list.scrollTop += cycleHeight;
         prevGlobal += total;
       }
     }
     goToGlobalIndex(prevGlobal, true);
-  }, [total, copies, goToGlobalIndex]);
+  }, [total, isInfinite, copies, getCycleHeight, goToGlobalIndex]);
 
   // Initial Centering: Position highest priority convention (index 0) in the middle slot
   useEffect(() => {
-    if (total <= 1 || hasCenteredInitialRef.current) return;
+    if (!isInfinite || hasCenteredInitialRef.current) return;
     const initialGlobalIndex = middleCopyIndex * total;
 
-    const timer = requestAnimationFrame(() => {
+    let rafId: number;
+    let attempts = 0;
+
+    const attemptCenter = () => {
       const initialEl = itemRefs.current[initialGlobalIndex];
       if (initialEl) {
-        centerItemInViewport(initialEl, false);
-        hasCenteredInitialRef.current = true;
-        centeredGlobalIndexRef.current = initialGlobalIndex;
+        const success = centerItemInViewport(initialEl, false);
+        if (success) {
+          hasCenteredInitialRef.current = true;
+          centeredGlobalIndexRef.current = initialGlobalIndex;
+          return;
+        }
       }
-    });
+      if (attempts < 15) {
+        attempts++;
+        rafId = requestAnimationFrame(attemptCenter);
+      }
+    };
 
-    return () => cancelAnimationFrame(timer);
-  }, [total, middleCopyIndex, centerItemInViewport, items]);
+    rafId = requestAnimationFrame(attemptCenter);
+    return () => cancelAnimationFrame(rafId);
+  }, [isInfinite, total, middleCopyIndex, centerItemInViewport, items]);
 
   // Window resize re-centering
   useEffect(() => {
-    if (total <= 1) return;
+    if (!isInfinite) return;
     const handleResize = () => {
       const currentEl = itemRefs.current[centeredGlobalIndexRef.current];
       if (currentEl) {
@@ -198,18 +238,17 @@ export function FeaturedConventionSlider({
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [total, centerItemInViewport]);
+  }, [isInfinite, centerItemInViewport]);
 
   // Infinite Scroll Wrapping: Silent modulo scroll shift on manual boundary reach
   useEffect(() => {
     const list = listRef.current;
-    if (!list || total <= 1) return;
+    if (!list || !isInfinite) return;
 
     const handleScroll = () => {
       if (isProgrammaticScrollRef.current) return;
 
-      const cycleHeight =
-        (itemRefs.current[total]?.offsetTop ?? 0) - (itemRefs.current[0]?.offsetTop ?? 0);
+      const cycleHeight = getCycleHeight();
       if (cycleHeight <= 0) return;
 
       if (list.scrollTop < cycleHeight * 0.5) {
@@ -223,18 +262,18 @@ export function FeaturedConventionSlider({
 
     list.addEventListener('scroll', handleScroll, { passive: true });
     return () => list.removeEventListener('scroll', handleScroll);
-  }, [total, copies]);
+  }, [isInfinite, total, copies, getCycleHeight]);
 
-  // Dual edge fade mask for infinite cylindrical roller
+  // Dual edge fade mask for infinite cylindrical roller (only when isInfinite is true)
   const maskStyle = useMemo<React.CSSProperties | undefined>(() => {
-    if (total <= 1) return undefined;
+    if (!isInfinite) return undefined;
     return {
       maskImage:
         'linear-gradient(to bottom, transparent 0%, black 36px, black calc(100% - 36px), transparent 100%)',
       WebkitMaskImage:
         'linear-gradient(to bottom, transparent 0%, black 36px, black calc(100% - 36px), transparent 100%)',
     };
-  }, [total]);
+  }, [isInfinite]);
 
   // Intersection Observer: Only slide when in viewport
   useEffect(() => {
@@ -504,19 +543,24 @@ export function FeaturedConventionSlider({
           </div>
         </div>
 
-        {/* Right Selector Column: Infinite cylindrical scroll with centered active convention */}
-        <div className="flex w-full shrink-0 flex-col justify-start md:w-56 lg:w-60">
-          {/* Compact Strip Selection Items with Dual Edge Fade Mask and Custom Scrollbar */}
+        {/* Right Selector Column: Centered vertically in the card */}
+        <div className="flex w-full shrink-0 flex-col justify-center md:w-56 md:self-center lg:w-60">
+          {/* Compact Strip Selection Items (Infinite Cylindrical Roller when total >= 3, or clean centered list when total < 3) */}
           <div
             ref={listRef}
             style={maskStyle}
             className={cn(
-              'flex max-h-[230px] flex-col gap-2 overflow-y-auto py-2 pr-3 pl-5',
-              'scrollbar-thin [scrollbar-color:var(--color-accent)_transparent]',
-              '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent',
-              '[&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600',
-              '[&::-webkit-scrollbar-thumb]:border-ink [&::-webkit-scrollbar-thumb]:border',
-              'hover:[&::-webkit-scrollbar-thumb]:bg-accent'
+              'relative flex flex-col gap-2 py-2 pr-3 pl-5',
+              isInfinite
+                ? cn(
+                    'max-h-[230px] overflow-y-auto',
+                    'scrollbar-thin [scrollbar-color:var(--color-accent)_transparent]',
+                    '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent',
+                    '[&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600',
+                    '[&::-webkit-scrollbar-thumb]:border-ink [&::-webkit-scrollbar-thumb]:border',
+                    'hover:[&::-webkit-scrollbar-thumb]:bg-accent'
+                  )
+                : 'overflow-visible'
             )}
             role="tablist"
             aria-label="Featured conventions list"

@@ -71,218 +71,113 @@ export function FeaturedConventionSlider({
   const elapsedRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
   const rafIdRef = useRef<number | null>(null);
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
   const total = conventions.length;
-
-  // Infinite scroll is enabled only when there are 3 or more conventions
   const isInfinite = total >= 3;
-  const copies = isInfinite ? Math.max(3, Math.ceil(15 / total)) : 1;
-  const middleCopyIndex = isInfinite ? Math.floor(copies / 2) : 0;
 
-  // Flattened array of conventions (repeated only when isInfinite is true)
-  const items = useMemo(() => {
+  // 5-Slot Virtual Wheel
+  const virtualSlots = useMemo(() => {
     if (!isInfinite) {
       return conventions.map((conv, idx) => ({
         conv,
         originalIndex: idx,
-        copyIndex: 0,
-        globalIndex: idx,
-        key: `${conv.id}-0`,
+        slotOffset: idx - currentIndex,
+        isActive: idx === currentIndex,
+        key: `static-${conv.id}`,
       }));
     }
 
-    const result: {
-      conv: Convention;
-      originalIndex: number;
-      copyIndex: number;
-      globalIndex: number;
-      key: string;
-    }[] = [];
-
-    let count = 0;
-    for (let c = 0; c < copies; c++) {
-      for (let i = 0; i < total; i++) {
-        result.push({
-          conv: conventions[i],
-          originalIndex: i,
-          copyIndex: c,
-          globalIndex: count++,
-          key: `${conventions[i].id}-${c}-${i}`,
-        });
-      }
-    }
-    return result;
-  }, [conventions, copies, isInfinite, total]);
-
-  const centeredGlobalIndexRef = useRef<number>(middleCopyIndex * total);
-  const isProgrammaticScrollRef = useRef(false);
-  const hasCenteredInitialRef = useRef(false);
-
-  // Center an element within the scroll container using precise viewport geometry
-  const centerItemInViewport = useCallback((element: HTMLElement, smooth = true) => {
-    const list = listRef.current;
-    if (!list || !element) return false;
-    const listRect = list.getBoundingClientRect();
-    const elemRect = element.getBoundingClientRect();
-    if (listRect.height === 0 || elemRect.height === 0) return false;
-
-    const currentOffsetFromListTop = elemRect.top - listRect.top;
-    const targetOffset = (listRect.height - elemRect.height) / 2;
-    const delta = currentOffsetFromListTop - targetOffset;
-    const targetTop = list.scrollTop + delta;
-
-    list.scrollTo({ top: targetTop, behavior: smooth ? 'smooth' : 'auto' });
-    return true;
-  }, []);
-
-  // Compute exact pixel height of one full cycle
-  const getCycleHeight = useCallback(() => {
-    const el0 = itemRefs.current[0];
-    const elTotal = itemRefs.current[total];
-    if (el0 && elTotal) {
-      const diff = elTotal.getBoundingClientRect().top - el0.getBoundingClientRect().top;
-      if (diff > 0) return diff;
-    }
-    return total * 52;
-  }, [total]);
-
-  // Center a convention by globalIndex and update state
-  const goToGlobalIndex = useCallback(
-    (targetGlobalIndex: number, smooth = true) => {
-      const targetItem = items[targetGlobalIndex];
-      if (!targetItem) return;
-
-      setCurrentIndex(targetItem.originalIndex);
-      centeredGlobalIndexRef.current = targetGlobalIndex;
-
-      if (isInfinite) {
-        const el = itemRefs.current[targetGlobalIndex];
-        if (el) {
-          isProgrammaticScrollRef.current = true;
-          centerItemInViewport(el, smooth);
-          setTimeout(() => {
-            isProgrammaticScrollRef.current = false;
-          }, 400);
-        }
-      }
-    },
-    [items, isInfinite, centerItemInViewport]
-  );
+    const offsets = [-2, -1, 0, 1, 2];
+    return offsets.map((slotOffset) => {
+      const mappedIndex = (currentIndex + slotOffset + total * 100) % total;
+      return {
+        conv: conventions[mappedIndex],
+        originalIndex: mappedIndex,
+        slotOffset,
+        isActive: slotOffset === 0,
+        key: `slot-${slotOffset}-${conventions[mappedIndex].id}`,
+      };
+    });
+  }, [conventions, currentIndex, isInfinite, total]);
 
   const nextSlide = useCallback(() => {
     if (total <= 1) return;
     setSlideDirection('next');
-    if (!isInfinite) {
-      setCurrentIndex((prev) => (prev + 1) % total);
-      return;
-    }
-    let nextGlobal = centeredGlobalIndexRef.current + 1;
-    // Maintain position within middle repetition range
-    if (nextGlobal >= total * (copies - 1)) {
-      const list = listRef.current;
-      const cycleHeight = getCycleHeight();
-      if (list && cycleHeight > 0) {
-        list.scrollTop -= cycleHeight;
-        nextGlobal -= total;
-      }
-    }
-    goToGlobalIndex(nextGlobal, true);
-  }, [total, isInfinite, copies, getCycleHeight, goToGlobalIndex]);
+    setCurrentIndex((prev) => (prev + 1) % total);
+  }, [total]);
 
   const prevSlide = useCallback(() => {
     if (total <= 1) return;
     setSlideDirection('prev');
-    if (!isInfinite) {
-      setCurrentIndex((prev) => (prev - 1 + total) % total);
-      return;
+    setCurrentIndex((prev) => (prev - 1 + total) % total);
+  }, [total]);
+
+  // Click on any visible slot: smoothly rotates that slot to center
+  const handleSlotClick = useCallback((slot: { originalIndex: number; slotOffset: number }) => {
+    if (slot.slotOffset === 0) return;
+    if (slot.slotOffset > 0) {
+      setSlideDirection('next');
+    } else {
+      setSlideDirection('prev');
     }
-    let prevGlobal = centeredGlobalIndexRef.current - 1;
-    // Maintain position within middle repetition range
-    if (prevGlobal < total) {
-      const list = listRef.current;
-      const cycleHeight = getCycleHeight();
-      if (list && cycleHeight > 0) {
-        list.scrollTop += cycleHeight;
-        prevGlobal += total;
-      }
-    }
-    goToGlobalIndex(prevGlobal, true);
-  }, [total, isInfinite, copies, getCycleHeight, goToGlobalIndex]);
+    setCurrentIndex(slot.originalIndex);
+  }, []);
 
-  // Initial Centering: Position highest priority convention (index 0) in the middle slot
-  useEffect(() => {
-    if (!isInfinite || hasCenteredInitialRef.current) return;
-    const initialGlobalIndex = middleCopyIndex * total;
+  // Mouse wheel / trackpad scroll over the selector
+  const wheelAccumulatorRef = useRef(0);
+  const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastAdvanceTimeRef = useRef(0);
 
-    let rafId: number;
-    let attempts = 0;
-
-    const attemptCenter = () => {
-      const initialEl = itemRefs.current[initialGlobalIndex];
-      if (initialEl) {
-        const success = centerItemInViewport(initialEl, false);
-        if (success) {
-          hasCenteredInitialRef.current = true;
-          centeredGlobalIndexRef.current = initialGlobalIndex;
-          return;
-        }
-      }
-      if (attempts < 15) {
-        attempts++;
-        rafId = requestAnimationFrame(attemptCenter);
-      }
-    };
-
-    rafId = requestAnimationFrame(attemptCenter);
-    return () => cancelAnimationFrame(rafId);
-  }, [isInfinite, total, middleCopyIndex, centerItemInViewport, items]);
-
-  // Window resize re-centering
-  useEffect(() => {
-    if (!isInfinite) return;
-    const handleResize = () => {
-      const currentEl = itemRefs.current[centeredGlobalIndexRef.current];
-      if (currentEl) {
-        centerItemInViewport(currentEl, false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isInfinite, centerItemInViewport]);
-
-  // Infinite Scroll Wrapping: Silent modulo scroll shift on manual boundary reach
   useEffect(() => {
     const list = listRef.current;
     if (!list || !isInfinite) return;
 
-    const handleScroll = () => {
-      if (isProgrammaticScrollRef.current) return;
+    const onWheel = (e: WheelEvent) => {
+      // Prevent the outer webpage from scrolling while rotating the selector
+      e.preventDefault();
 
-      const cycleHeight = getCycleHeight();
-      if (cycleHeight <= 0) return;
+      const now = Date.now();
+      wheelAccumulatorRef.current += e.deltaY;
 
-      if (list.scrollTop < cycleHeight * 0.5) {
-        list.scrollTop += cycleHeight;
-        centeredGlobalIndexRef.current += total;
-      } else if (list.scrollTop > cycleHeight * (copies - 1.5)) {
-        list.scrollTop -= cycleHeight;
-        centeredGlobalIndexRef.current -= total;
+      if (wheelTimeoutRef.current) {
+        clearTimeout(wheelTimeoutRef.current);
       }
+
+      const threshold = 35;
+      const cooldown = 180; // ms minimum between notch clicks to avoid skipping
+
+      if (now - lastAdvanceTimeRef.current > cooldown) {
+        if (wheelAccumulatorRef.current > threshold) {
+          nextSlide();
+          wheelAccumulatorRef.current = 0;
+          lastAdvanceTimeRef.current = now;
+        } else if (wheelAccumulatorRef.current < -threshold) {
+          prevSlide();
+          wheelAccumulatorRef.current = 0;
+          lastAdvanceTimeRef.current = now;
+        }
+      }
+
+      wheelTimeoutRef.current = setTimeout(() => {
+        wheelAccumulatorRef.current = 0;
+      }, 150);
     };
 
-    list.addEventListener('scroll', handleScroll, { passive: true });
-    return () => list.removeEventListener('scroll', handleScroll);
-  }, [isInfinite, total, copies, getCycleHeight]);
+    // Attach non-passive event listener so e.preventDefault() blocks window scrolling
+    list.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      list.removeEventListener('wheel', onWheel);
+      if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current);
+    };
+  }, [isInfinite, nextSlide, prevSlide]);
 
-  // Dual edge fade mask for infinite cylindrical roller (only when isInfinite is true)
+  // Dual edge fade mask: only fades outer peeks (0-48px top and bottom), leaving all 3 cards 100% solid
   const maskStyle = useMemo<React.CSSProperties | undefined>(() => {
     if (!isInfinite) return undefined;
     return {
       maskImage:
-        'linear-gradient(to bottom, transparent 0%, black 36px, black calc(100% - 36px), transparent 100%)',
+        'linear-gradient(to bottom, transparent 0px, black 48px, black calc(100% - 48px), transparent 100%)',
       WebkitMaskImage:
-        'linear-gradient(to bottom, transparent 0%, black 36px, black calc(100% - 36px), transparent 100%)',
+        'linear-gradient(to bottom, transparent 0px, black 48px, black calc(100% - 48px), transparent 100%)',
     };
   }, [isInfinite]);
 
@@ -515,9 +410,9 @@ export function FeaturedConventionSlider({
               </div>
 
               {location && (
-                <div className="border-ink flex items-center gap-2 border-2 bg-white px-2.5 py-1 text-xs text-zinc-800 shadow-[2px_2px_0_var(--ink)] sm:text-sm dark:bg-zinc-950 dark:text-white">
-                  <MapPin className="h-4 w-4 shrink-0 text-zinc-500 dark:text-white" />
-                  <span className="truncate">{location}</span>
+                <div className="border-ink flex max-w-full items-start gap-2 border-2 bg-white px-2.5 py-1 text-xs text-zinc-800 shadow-[2px_2px_0_var(--ink)] sm:items-center sm:text-sm dark:bg-zinc-950 dark:text-white">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500 sm:mt-0 dark:text-white" />
+                  <span className="line-clamp-2 break-words sm:line-clamp-1">{location}</span>
                 </div>
               )}
             </div>
@@ -640,9 +535,9 @@ export function FeaturedConventionSlider({
               </div>
 
               {location && (
-                <div className="border-ink flex items-center gap-2 border-2 bg-white px-2.5 py-1 text-xs text-zinc-800 shadow-[2px_2px_0_var(--ink)] sm:text-sm dark:bg-zinc-950 dark:text-white">
-                  <MapPin className="h-4 w-4 shrink-0 text-zinc-500 dark:text-white" />
-                  <span className="truncate">{location}</span>
+                <div className="border-ink flex max-w-full items-start gap-2 border-2 bg-white px-2.5 py-1 text-xs text-zinc-800 shadow-[2px_2px_0_var(--ink)] sm:items-center sm:text-sm dark:bg-zinc-950 dark:text-white">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500 sm:mt-0 dark:text-white" />
+                  <span className="line-clamp-2 break-words sm:line-clamp-1">{location}</span>
                 </div>
               )}
             </div>
@@ -651,56 +546,45 @@ export function FeaturedConventionSlider({
 
         {/* Right Selector Column: Hidden on mobile (< md) to avoid clutter, visible on desktop (md+) */}
         <div className="hidden shrink-0 flex-col justify-center md:flex md:w-56 md:self-center lg:w-60">
-          {/* Compact Strip Selection Items (Infinite Cylindrical Roller when total >= 3, or clean centered list when total < 3) */}
+          {/* Compact Strip Selection Items (5-Slot Virtual Wheel with zero duplicate copies) */}
           <div
             ref={listRef}
             style={maskStyle}
             className={cn(
-              'relative flex flex-col gap-2 py-2 pr-3 pl-5',
-              isInfinite
-                ? cn(
-                    'max-h-[230px] overflow-y-auto',
-                    'scrollbar-thin [scrollbar-color:var(--color-accent)_transparent]',
-                    '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent',
-                    '[&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600',
-                    '[&::-webkit-scrollbar-thumb]:border-ink [&::-webkit-scrollbar-thumb]:border',
-                    'hover:[&::-webkit-scrollbar-thumb]:bg-accent'
-                  )
-                : 'overflow-visible'
+              'relative flex flex-col justify-center gap-2 overscroll-contain py-1 pr-3 pl-5',
+              isInfinite ? 'h-[250px] overflow-hidden' : 'overflow-visible'
             )}
             role="tablist"
             aria-label="Featured conventions list"
           >
-            {items.map((item) => {
-              const isActive = item.originalIndex === currentIndex;
+            {virtualSlots.map((slot) => {
+              const isActive = slot.isActive;
               return (
                 <button
-                  key={item.key}
-                  ref={(el) => {
-                    itemRefs.current[item.globalIndex] = el;
-                  }}
+                  key={slot.key}
                   type="button"
                   role="tab"
                   aria-selected={isActive}
-                  aria-label={`Select ${item.conv.name}`}
-                  onClick={() => goToGlobalIndex(item.globalIndex, true)}
+                  aria-label={`Select ${slot.conv.name}`}
+                  onClick={() => handleSlotClick(slot)}
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
                   onFocus={() => setIsPaused(true)}
                   onBlur={() => setIsPaused(false)}
                   className={cn(
                     CONBLOCK,
-                    'relative flex h-11 shrink-0 items-center gap-2 overflow-hidden p-1.5 text-left transition-all',
+                    'relative flex h-11 shrink-0 items-center gap-2 overflow-hidden p-1.5 text-left transition-all duration-200',
                     isActive
                       ? 'border-accent-pop bg-white text-zinc-950 shadow-[4px_4px_0_var(--ink)] hover:-translate-x-2.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] md:-translate-x-3 dark:bg-zinc-950 dark:text-white'
-                      : 'hover:border-accent-pop bg-white text-zinc-800 hover:text-zinc-950 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:text-white'
+                      : 'hover:border-accent-pop bg-white text-zinc-800 hover:text-zinc-950 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:text-white',
+                    Math.abs(slot.slotOffset) === 2 && 'opacity-40 hover:opacity-80'
                   )}
                 >
                   {/* Thumbnail Image */}
                   <div className="border-ink relative h-7 w-7 shrink-0 overflow-hidden border bg-zinc-100 dark:bg-zinc-900">
-                    {item.conv.banner_thumb || item.conv.banner ? (
+                    {slot.conv.banner_thumb || slot.conv.banner ? (
                       <img
-                        src={item.conv.banner_thumb || item.conv.banner || ''}
+                        src={slot.conv.banner_thumb || slot.conv.banner || ''}
                         alt=""
                         className="h-full w-full object-cover"
                       />
@@ -712,7 +596,7 @@ export function FeaturedConventionSlider({
 
                   {/* Convention Title */}
                   <span className="min-w-0 flex-1 truncate text-[11px] font-bold tracking-wide uppercase">
-                    {item.conv.name}
+                    {slot.conv.name}
                   </span>
 
                   {/* Progress bar on active strip */}

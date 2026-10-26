@@ -57,11 +57,15 @@ export function FeaturedConventionSlider({
   const [progress, setProgress] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const touchStartXRef = useRef<number | null>(null);
   const elapsedRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
   const rafIdRef = useRef<number | null>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
 
   const total = conventions.length;
 
@@ -93,6 +97,48 @@ export function FeaturedConventionSlider({
     return () => observer.disconnect();
   }, []);
 
+  // Track and update scroll bounds for dynamic edge fade mask
+  const updateScrollBounds = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const hasMoreBelow = scrollHeight - scrollTop - clientHeight > 3;
+    const hasMoreAbove = scrollTop > 3;
+    setCanScrollUp(hasMoreAbove);
+    setCanScrollDown(hasMoreBelow);
+  }, []);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    updateScrollBounds();
+    el.addEventListener('scroll', updateScrollBounds, { passive: true });
+    window.addEventListener('resize', updateScrollBounds);
+    return () => {
+      el.removeEventListener('scroll', updateScrollBounds);
+      window.removeEventListener('resize', updateScrollBounds);
+    };
+  }, [updateScrollBounds, total]);
+
+  // Compute dynamic CSS mask for smooth fading when scrolling
+  const getMaskStyle = useCallback((): React.CSSProperties | undefined => {
+    if (total <= 4) return undefined;
+    const fadeSize = '32px';
+    if (canScrollUp && canScrollDown) {
+      const gradient = `linear-gradient(to bottom, transparent 0%, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent 100%)`;
+      return { maskImage: gradient, WebkitMaskImage: gradient };
+    }
+    if (canScrollDown) {
+      const gradient = `linear-gradient(to bottom, black calc(100% - ${fadeSize}), transparent 100%)`;
+      return { maskImage: gradient, WebkitMaskImage: gradient };
+    }
+    if (canScrollUp) {
+      const gradient = `linear-gradient(to bottom, transparent 0%, black ${fadeSize}, black 100%)`;
+      return { maskImage: gradient, WebkitMaskImage: gradient };
+    }
+    return undefined;
+  }, [total, canScrollUp, canScrollDown]);
+
   // Reset elapsed time & progress when active convention changes
   useEffect(() => {
     elapsedRef.current = 0;
@@ -107,8 +153,11 @@ export function FeaturedConventionSlider({
         block: 'nearest',
         inline: 'nearest',
       });
+      // Re-check scroll bounds after smooth scroll animation completes
+      const timer = setTimeout(updateScrollBounds, 350);
+      return () => clearTimeout(timer);
     }
-  }, [currentIndex]);
+  }, [currentIndex, updateScrollBounds]);
 
   const isTimerActive = isInView && !isPaused && !isManuallyPaused && total > 1;
 
@@ -355,12 +404,14 @@ export function FeaturedConventionSlider({
           </div>
         </div>
 
-        {/* Right Selector Column */}
+        {/* Right Selector Column: Shows 4 items + fading peek of 5th item */}
         <div className="flex w-full shrink-0 flex-col justify-start md:w-56 lg:w-60">
-          {/* Compact Strip Selection Items (Thumbnail + Title) */}
+          {/* Compact Strip Selection Items with Dynamic Edge Fade Mask and Custom Scrollbar */}
           <div
+            ref={listRef}
+            style={getMaskStyle()}
             className={cn(
-              'flex max-h-[190px] flex-col gap-2 overflow-y-auto py-2 pr-3 pl-5 md:max-h-[300px]',
+              'flex max-h-[242px] flex-col gap-2 overflow-y-auto py-2 pr-3 pl-5',
               'scrollbar-thin [scrollbar-color:var(--color-accent)_transparent]',
               '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent',
               '[&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600',
@@ -389,14 +440,14 @@ export function FeaturedConventionSlider({
                   onBlur={() => setIsPaused(false)}
                   className={cn(
                     CONBLOCK,
-                    'relative flex items-center gap-2 overflow-hidden p-1.5 text-left transition-all',
+                    'relative flex h-11 shrink-0 items-center gap-2 overflow-hidden p-1.5 text-left transition-all',
                     isActive
                       ? 'border-accent-pop bg-white text-zinc-950 shadow-[4px_4px_0_var(--ink)] hover:-translate-x-2.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] md:-translate-x-3 dark:bg-zinc-950 dark:text-white'
                       : 'hover:border-accent-pop bg-white text-zinc-800 hover:text-zinc-950 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:text-white'
                   )}
                 >
                   {/* Thumbnail Image */}
-                  <div className="border-ink relative h-6 w-6 shrink-0 overflow-hidden border bg-zinc-100 sm:h-7 sm:w-7 dark:bg-zinc-900">
+                  <div className="border-ink relative h-7 w-7 shrink-0 overflow-hidden border bg-zinc-100 dark:bg-zinc-900">
                     {conv.banner_thumb || conv.banner ? (
                       <img
                         src={conv.banner_thumb || conv.banner || ''}

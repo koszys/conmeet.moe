@@ -6,7 +6,7 @@
 <div align="center">
   <h1 align="center">conmeet.moe</h1>
   <p align="center">
-    A community site for convention goers!
+    A community site for convention goers! I tried to make this website have a certain theme with a familiar face. Hatsune Miku!
   </p>
   <br />
   <img src="docs/landing.png" alt="conmeet.moe preview" width="850" />
@@ -27,6 +27,7 @@
         <li><a href="#schedule">Schedule</a></li>
       </ul>
     </li>
+    <li><a href="#screenshots">Screenshots</a></li>
     <li><a href="#built-with">Built With</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -57,6 +58,40 @@ A lot of my favorite artists sell at conventions but keeping track of where they
 
 ### Schedule 
 Just a normal schedule planner thingy. Official meets, events, etc. 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- SCREENSHOTS -->
+## Screenshots
+Some screenshots of the website. I tried to make it as nice of an experience as possible. I am quite proud of the light/dark theme and the featured section in landing page (tried to make it OSU like lol). Mobile has a normal swipe thing since the screen would be a bit too small. I spent a bit of thinking on the desktop/mobile UI and everything came out pretty good if I say so myself. There are a lot of small interactions that I can't really show in pictures! Contact me with anything you would like to be added or issues. Thanks
+
+### Convention Page
+
+<div align="center">
+  <img src="docs/conventionpage.png" alt="Convention Page" width="100%" />
+</div>
+
+<br />
+
+### Landing & Themes (Light & Dark)
+Tried to follow Miku's color palette for the light and dark themes.
+
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%" align="center"><strong>Light Theme</strong></td>
+      <td width="50%" align="center"><strong>Dark Theme</strong></td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <img src="docs/conmeetlight.png" alt="Light Theme" width="100%" />
+      </td>
+      <td valign="top">
+        <img src="docs/conmeetdark.png" alt="Dark Theme" width="100%" />
+      </td>
+    </tr>
+  </table>
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -47,6 +47,9 @@ class ConventionDetailSerializer(ConventionListSerializer):
 class ConventionRequestCreateSerializer(serializers.ModelSerializer):
     website_url = serializers.URLField(required=True, allow_blank=False)
     map_url = serializers.URLField(required=True, allow_blank=False)
+    venue_name = serializers.CharField(required=True, allow_blank=False, max_length=255)
+    city = serializers.CharField(required=True, allow_blank=False, max_length=120)
+    country = serializers.CharField(required=True, allow_blank=False, max_length=120)
 
     class Meta:
         model = ConventionRequest

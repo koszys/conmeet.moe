@@ -61,7 +61,9 @@ def test_authenticated_user_request_links_user() -> None:
         "name": "MagiCon 2027",
         "starts_at": "2027-05-10",
         "ends_at": "2027-05-12",
+        "venue_name": "Austin Convention Center",
         "city": "Austin",
+        "country": "USA",
         "website_url": "https://magicon.example.com",
         "map_url": "https://maps.example.com/austin",
     }
@@ -71,12 +73,18 @@ def test_authenticated_user_request_links_user() -> None:
     data = resp.json()
     req = ConventionRequest.objects.get(pk=data["id"])
     assert req.submitted_by == user
+    assert req.venue_name == "Austin Convention Center"
+    assert req.city == "Austin"
+    assert req.country == "USA"
 
 
 def test_convention_request_urls_required() -> None:
     client = Client(HTTP_HOST="localhost")
     payload = {
         "name": "Missing Links Con",
+        "venue_name": "Seattle Center",
+        "city": "Seattle",
+        "country": "USA",
         "starts_at": "2027-05-10",
         "ends_at": "2027-05-12",
     }
@@ -91,10 +99,34 @@ def test_convention_request_urls_required() -> None:
     assert "map_url" in errors
 
 
+def test_convention_request_location_fields_required() -> None:
+    client = Client(HTTP_HOST="localhost")
+    payload = {
+        "name": "No Location Con",
+        "starts_at": "2027-05-10",
+        "ends_at": "2027-05-12",
+        "website_url": "https://nolocation.example.com",
+        "map_url": "https://maps.example.com/nolocation",
+    }
+    resp = client.post(
+        "/api/v1/conventions/requests/",
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    errors = resp.json()
+    assert "venue_name" in errors
+    assert "city" in errors
+    assert "country" in errors
+
+
 def test_convention_request_date_validation() -> None:
     client = Client(HTTP_HOST="localhost")
     payload = {
         "name": "Time Travel Con",
+        "venue_name": "McCormick Place",
+        "city": "Chicago",
+        "country": "USA",
         "starts_at": "2027-06-10",
         "ends_at": "2027-06-05",  # invalid: ends before starts
         "website_url": "https://timetravel.example.com",

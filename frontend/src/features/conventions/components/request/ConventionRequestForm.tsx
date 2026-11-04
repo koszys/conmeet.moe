@@ -21,21 +21,18 @@ const conventionRequestSchema = z
     venue_name: z
       .string()
       .trim()
-      .max(255, 'Venue name cannot exceed 255 characters')
-      .optional()
-      .or(z.literal('')),
+      .min(1, 'Venue name is required')
+      .max(255, 'Venue name cannot exceed 255 characters'),
     city: z
       .string()
       .trim()
-      .max(120, 'City cannot exceed 120 characters')
-      .optional()
-      .or(z.literal('')),
+      .min(1, 'City / State is required')
+      .max(120, 'City / State cannot exceed 120 characters'),
     country: z
       .string()
       .trim()
-      .max(120, 'Country cannot exceed 120 characters')
-      .optional()
-      .or(z.literal('')),
+      .min(1, 'Country is required')
+      .max(120, 'Country cannot exceed 120 characters'),
     starts_at: z.string().min(1, 'Start date is required'),
     ends_at: z.string().min(1, 'End date is required'),
     website_url: z
@@ -97,7 +94,7 @@ export function ConventionRequestForm() {
       name: '',
       venue_name: '',
       city: '',
-      country: 'USA',
+      country: '',
       starts_at: '',
       ends_at: '',
       website_url: '',
@@ -128,9 +125,9 @@ export function ConventionRequestForm() {
     try {
       const formData = new FormData();
       formData.append('name', values.name);
-      if (values.venue_name) formData.append('venue_name', values.venue_name);
-      if (values.city) formData.append('city', values.city);
-      if (values.country) formData.append('country', values.country);
+      formData.append('venue_name', values.venue_name);
+      formData.append('city', values.city);
+      formData.append('country', values.country);
       formData.append('starts_at', values.starts_at);
       formData.append('ends_at', values.ends_at);
       formData.append('website_url', values.website_url);
@@ -240,7 +237,7 @@ export function ConventionRequestForm() {
             <input
               id="name"
               type="text"
-              placeholder="e.g. Anime Boston 2027"
+              placeholder="e.g. AnimeNYC 2027"
               {...register('name')}
               className={cn(
                 'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
@@ -318,29 +315,33 @@ export function ConventionRequestForm() {
               htmlFor="venue_name"
               className="font-display block text-xs tracking-wider uppercase"
             >
-              Venue Name (Optional)
+              Venue Name <span className="text-accent-pop">*</span>
             </label>
             <input
               id="venue_name"
               type="text"
-              placeholder="e.g. Hynes Convention Center"
+              placeholder="e.g. Javits Center"
               {...register('venue_name')}
               className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
             />
+            {errors.venue_name && (
+              <p className="text-accent-pop mt-1 text-xs">{errors.venue_name.message}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="city" className="font-display block text-xs tracking-wider uppercase">
-                City / State (Optional)
+                City / State <span className="text-accent-pop">*</span>
               </label>
               <input
                 id="city"
                 type="text"
-                placeholder="e.g. Boston, MA"
+                placeholder="e.g. New York, NY"
                 {...register('city')}
                 className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
               />
+              {errors.city && <p className="text-accent-pop mt-1 text-xs">{errors.city.message}</p>}
             </div>
 
             <div>
@@ -348,15 +349,18 @@ export function ConventionRequestForm() {
                 htmlFor="country"
                 className="font-display block text-xs tracking-wider uppercase"
               >
-                Country (Optional)
+                Country <span className="text-accent-pop">*</span>
               </label>
               <input
                 id="country"
                 type="text"
-                placeholder="e.g. USA"
+                placeholder="e.g. United States"
                 {...register('country')}
                 className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
               />
+              {errors.country && (
+                <p className="text-accent-pop mt-1 text-xs">{errors.country.message}</p>
+              )}
             </div>
           </div>
         </div>
@@ -380,7 +384,7 @@ export function ConventionRequestForm() {
               <input
                 id="website_url"
                 type="url"
-                placeholder="https://www.animeboston.com"
+                placeholder="https://animenyc.com/"
                 {...register('website_url')}
                 className={cn(
                   'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',

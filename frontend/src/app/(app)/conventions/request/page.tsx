@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { ConventionRequestForm } from '@/features/conventions';
+import { BackLink } from '@/shared/components/ui';
 
 export const metadata: Metadata = {
   title: 'Request a Convention',
@@ -12,13 +12,9 @@ export default function ConventionRequestPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 md:py-12">
       {/* Back link */}
-      <Link
-        href="/conventions"
-        className="font-display hover:text-accent-pop group mb-6 inline-flex items-center gap-2 text-xs tracking-wider text-zinc-600 uppercase transition-colors dark:text-zinc-400"
-      >
-        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+      <BackLink href="/conventions" className="mb-6">
         Back to Conventions
-      </Link>
+      </BackLink>
 
       {/* Header */}
       <div className="mb-8">

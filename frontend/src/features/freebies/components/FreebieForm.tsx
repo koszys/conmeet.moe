@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Plus } from 'lucide-react';
-import Link from 'next/link';
-import { CONBLOCK, FormActions } from '@/shared/components/ui';
+import { Plus } from 'lucide-react';
+import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useCreateFreebie } from '../api/mutations';
 import {
@@ -142,13 +141,7 @@ export function FreebieForm({
     <div className="mx-auto max-w-2xl space-y-6">
       {/* Header */}
       <div className="border-ink border-b-2 pb-5">
-        <Link
-          href={`/conventions/${conventionSlug}/freebies`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-800 uppercase hover:text-black hover:underline dark:text-white"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back to Freebies Board
-        </Link>
+        <BackLink href={`/conventions/${conventionSlug}/freebies`}>Back to Freebies Board</BackLink>
 
         <h1 className="font-display mt-3 text-2xl tracking-wide uppercase sm:text-3xl">
           Post Freebie Drops

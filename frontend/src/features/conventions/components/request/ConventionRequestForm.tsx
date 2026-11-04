@@ -322,10 +322,15 @@ export function ConventionRequestForm() {
               type="text"
               placeholder="e.g. Javits Center"
               {...register('venue_name')}
-              className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
+              className={cn(
+                'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                errors.venue_name && 'border-red-500 focus:border-red-500'
+              )}
             />
             {errors.venue_name && (
-              <p className="text-accent-pop mt-1 text-xs">{errors.venue_name.message}</p>
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                {errors.venue_name.message}
+              </p>
             )}
           </div>
 
@@ -339,9 +344,14 @@ export function ConventionRequestForm() {
                 type="text"
                 placeholder="e.g. New York, NY"
                 {...register('city')}
-                className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
+                className={cn(
+                  'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                  errors.city && 'border-red-500 focus:border-red-500'
+                )}
               />
-              {errors.city && <p className="text-accent-pop mt-1 text-xs">{errors.city.message}</p>}
+              {errors.city && (
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.city.message}</p>
+              )}
             </div>
 
             <div>
@@ -356,10 +366,15 @@ export function ConventionRequestForm() {
                 type="text"
                 placeholder="e.g. United States"
                 {...register('country')}
-                className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
+                className={cn(
+                  'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                  errors.country && 'border-red-500 focus:border-red-500'
+                )}
               />
               {errors.country && (
-                <p className="text-accent-pop mt-1 text-xs">{errors.country.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                  {errors.country.message}
+                </p>
               )}
             </div>
           </div>

@@ -511,7 +511,12 @@ export function ConventionRequestForm() {
       {/* Submit Actions */}
       <FormActions
         cancelHref="/conventions"
-        submitLabel="Submit Convention Request"
+        submitLabel={
+          <>
+            <span className="hidden sm:inline">Submit Convention Request</span>
+            <span className="sm:hidden">Submit Request</span>
+          </>
+        }
         submittingLabel="Submitting..."
         isSubmitting={isSubmitting || submitMutation.isPending}
         className="pt-2"

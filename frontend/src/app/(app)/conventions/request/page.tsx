@@ -31,8 +31,8 @@ export default function ConventionRequestPage() {
         </h1>
 
         <p className="mt-2.5 max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300">
-          Know of a con that isn&apos;t listed yet? Fill in the details below. Each submission is
-          reviewed and added to the platform.
+          Know of a con that isn&apos;t listed yet? Fill in the details below. Each submission will
+          be reviewed before being added. Thank you!
         </p>
       </div>
 

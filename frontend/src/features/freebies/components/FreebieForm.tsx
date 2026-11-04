@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Loader2, Plus, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useCreateFreebie } from '../api/mutations';
 import {
@@ -243,34 +243,13 @@ export function FreebieForm({
         </div>
 
         {/* Submit Actions */}
-        <div className="border-ink flex items-center justify-end gap-3 border-t-2 pt-5">
-          <Link
-            href={`/conventions/${conventionSlug}/freebies`}
-            className={cn(CONBLOCK, 'px-5 py-2.5 text-xs font-bold uppercase')}
-          >
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            disabled={Boolean(submittingProgress) || createMutation.isPending}
-            className={cn(
-              CONBLOCK_PRIMARY,
-              'inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold uppercase'
-            )}
-          >
-            {submittingProgress ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {submittingProgress}
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                Post {fields.length === 1 ? 'Freebie' : `${fields.length} Freebies`}
-              </>
-            )}
-          </button>
-        </div>
+        <FormActions
+          cancelHref={`/conventions/${conventionSlug}/freebies`}
+          submitLabel={`Post ${fields.length === 1 ? 'Freebie' : `${fields.length} Freebies`}`}
+          submittingLabel={submittingProgress || 'Posting...'}
+          isSubmitting={Boolean(submittingProgress) || createMutation.isPending}
+          borderTop
+        />
       </form>
     </div>
   );

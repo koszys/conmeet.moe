@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CheckCircle2, Loader2, Sparkles } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY, ImageUpload } from '@/shared/components/ui';
+import { CheckCircle2 } from 'lucide-react';
+import { CONBLOCK, CONBLOCK_PRIMARY, FormActions, ImageUpload } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
 import { useSubmitConventionRequest } from '../../data/api';
@@ -184,7 +184,10 @@ export function ConventionRequestForm() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/conventions"
-              className={cn(CONBLOCK_PRIMARY, 'px-6 py-3 text-xs tracking-wider uppercase')}
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'px-6 py-3 text-xs font-bold tracking-widest uppercase'
+              )}
             >
               Browse Conventions
             </Link>
@@ -193,7 +196,7 @@ export function ConventionRequestForm() {
               onClick={() => setIsSuccess(false)}
               className={cn(
                 CONBLOCK,
-                'bg-white px-6 py-3 text-xs tracking-wider uppercase dark:bg-zinc-800'
+                'bg-white px-6 py-3 text-xs font-bold tracking-widest text-zinc-900 uppercase hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
               )}
             >
               Submit Another
@@ -486,38 +489,14 @@ export function ConventionRequestForm() {
         </div>
       </div>
 
-      {/* Submit Button */}
-      <div className="flex items-center justify-end gap-3 pt-2">
-        <Link
-          href="/conventions"
-          className={cn(
-            CONBLOCK,
-            'bg-white px-5 py-2.5 text-xs tracking-wider uppercase dark:bg-zinc-800'
-          )}
-        >
-          Cancel
-        </Link>
-        <button
-          type="submit"
-          disabled={isSubmitting || submitMutation.isPending}
-          className={cn(
-            CONBLOCK_PRIMARY,
-            'inline-flex items-center gap-2 px-7 py-3 text-xs tracking-wider uppercase disabled:opacity-50'
-          )}
-        >
-          {isSubmitting || submitMutation.isPending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            <>
-              <Sparkles className="h-4 w-4" />
-              Submit Convention Request
-            </>
-          )}
-        </button>
-      </div>
+      {/* Submit Actions */}
+      <FormActions
+        cancelHref="/conventions"
+        submitLabel="Submit Convention Request"
+        submittingLabel="Submitting..."
+        isSubmitting={isSubmitting || submitMutation.isPending}
+        className="pt-2"
+      />
     </form>
   );
 }

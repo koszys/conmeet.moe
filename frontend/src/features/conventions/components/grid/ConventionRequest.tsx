@@ -13,10 +13,13 @@ export function ConventionRequest() {
       </p>
 
       <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-        <span className="font-display border-ink text-ink inline-flex items-center gap-2 rounded-none border-2 bg-white px-5 py-2.5 text-xs tracking-wide uppercase dark:bg-zinc-900 dark:text-zinc-100">
+        <Link
+          href="/conventions/request"
+          className="font-display border-ink text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex items-center gap-2 rounded-none border-2 bg-white px-5 py-2.5 text-xs tracking-wide uppercase shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] active:translate-x-1 active:translate-y-1 active:shadow-none dark:bg-zinc-900 dark:text-zinc-100"
+        >
           <Mail className="text-accent-pop h-4 w-4" />
           Submit a request
-        </span>
+        </Link>
         <p className="text-sm text-zinc-600 dark:text-zinc-300">
           Check out{' '}
           <Link

@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Loader2, Plus, Sparkles } from 'lucide-react';
-import Link from 'next/link';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { Plus } from 'lucide-react';
+import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useCreateFreebie } from '../api/mutations';
 import {
@@ -142,13 +141,7 @@ export function FreebieForm({
     <div className="mx-auto max-w-2xl space-y-6">
       {/* Header */}
       <div className="border-ink border-b-2 pb-5">
-        <Link
-          href={`/conventions/${conventionSlug}/freebies`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-800 uppercase hover:text-black hover:underline dark:text-white"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back to Freebies Board
-        </Link>
+        <BackLink href={`/conventions/${conventionSlug}/freebies`}>Back to Freebies Board</BackLink>
 
         <h1 className="font-display mt-3 text-2xl tracking-wide uppercase sm:text-3xl">
           Post Freebie Drops
@@ -243,34 +236,13 @@ export function FreebieForm({
         </div>
 
         {/* Submit Actions */}
-        <div className="border-ink flex items-center justify-end gap-3 border-t-2 pt-5">
-          <Link
-            href={`/conventions/${conventionSlug}/freebies`}
-            className={cn(CONBLOCK, 'px-5 py-2.5 text-xs font-bold uppercase')}
-          >
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            disabled={Boolean(submittingProgress) || createMutation.isPending}
-            className={cn(
-              CONBLOCK_PRIMARY,
-              'inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold uppercase'
-            )}
-          >
-            {submittingProgress ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {submittingProgress}
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                Post {fields.length === 1 ? 'Freebie' : `${fields.length} Freebies`}
-              </>
-            )}
-          </button>
-        </div>
+        <FormActions
+          cancelHref={`/conventions/${conventionSlug}/freebies`}
+          submitLabel={`Post ${fields.length === 1 ? 'Freebie' : `${fields.length} Freebies`}`}
+          submittingLabel={submittingProgress || 'Posting...'}
+          isSubmitting={Boolean(submittingProgress) || createMutation.isPending}
+          borderTop
+        />
       </form>
     </div>
   );

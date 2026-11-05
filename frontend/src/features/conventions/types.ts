@@ -72,3 +72,20 @@ export interface ConventionSectionsProps {
   extraSections?: ConventionSectionConfig[];
   className?: string;
 }
+
+export interface ConventionRequestResponse {
+  id: number;
+  name: string;
+  venue_name: string | null;
+  city: string | null;
+  country: string | null;
+  starts_at: string;
+  ends_at: string;
+  website_url: string | null;
+  map_url: string | null;
+  banner: string | null;
+  notes: string;
+  contact_email: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+}

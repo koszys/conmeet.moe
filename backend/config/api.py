@@ -1,7 +1,11 @@
 """API v1 URL patterns (aggregated so config/urls.py stays tiny)."""
 
 from accounts.views import LogoutView, MeView, health
-from conventions.views import ConventionDetailView, ConventionListView
+from conventions.views import (
+    ConventionDetailView,
+    ConventionListView,
+    ConventionRequestCreateView,
+)
 from django.urls import path
 from freebies.views import (
     FreebieClaimToggleView,
@@ -18,6 +22,7 @@ urlpatterns = [
     path("auth/me/", MeView.as_view(), name="me"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("conventions/", ConventionListView.as_view(), name="convention-list"),
+    path("conventions/requests/", ConventionRequestCreateView.as_view(), name="convention-request-create"),
     path("conventions/<slug:slug>/", ConventionDetailView.as_view(), name="convention-detail"),
     path("freebies/", FreebieListCreateView.as_view(), name="freebie-list"),
     path("freebies/<int:pk>/", FreebieDetailView.as_view(), name="freebie-detail"),

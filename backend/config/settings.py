@@ -270,6 +270,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:conventions_convention_changelist"),
                     },
                     {
+                        "title": "Convention Requests",
+                        "icon": "pending_actions",
+                        "link": reverse_lazy("admin:conventions_conventionrequest_changelist"),
+                    },
+                    {
                         "title": "Meetups",
                         "icon": "groups",
                         "link": reverse_lazy("admin:meetups_meetup_changelist"),

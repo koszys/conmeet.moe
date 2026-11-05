@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Gift, Plus } from 'lucide-react';
-import { CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
+import { Gift, Plus } from 'lucide-react';
+import { BackLink, CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 interface BoardHeaderProps {
@@ -13,13 +13,9 @@ interface BoardHeaderProps {
 export function BoardHeader({ conventionSlug, conventionName }: BoardHeaderProps) {
   return (
     <div className="border-ink @container border-b-2 pb-5">
-      <Link
-        href={`/conventions/${conventionSlug}`}
-        className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-zinc-800 uppercase hover:text-black hover:underline dark:text-white"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
+      <BackLink href={`/conventions/${conventionSlug}`}>
         Back to {conventionName || 'Convention'} Overview
-      </Link>
+      </BackLink>
 
       <div className="mt-3 flex flex-col justify-between gap-4 @min-[640px]:flex-row @min-[640px]:items-end">
         <div className="flex items-center gap-3">

@@ -14,6 +14,7 @@ from freebies.views import (
     FreebieSaveToggleView,
     VendorListView,
 )
+from meetups.views import ConventionMeetupListCreateView, MeetupDetailView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -24,6 +25,8 @@ urlpatterns = [
     path("conventions/", ConventionListView.as_view(), name="convention-list"),
     path("conventions/requests/", ConventionRequestCreateView.as_view(), name="convention-request-create"),
     path("conventions/<slug:slug>/", ConventionDetailView.as_view(), name="convention-detail"),
+    path("conventions/<slug:slug>/meetups/", ConventionMeetupListCreateView.as_view(), name="convention-meetup-list"),
+    path("meetups/<int:pk>/", MeetupDetailView.as_view(), name="meetup-detail"),
     path("freebies/", FreebieListCreateView.as_view(), name="freebie-list"),
     path("freebies/<int:pk>/", FreebieDetailView.as_view(), name="freebie-detail"),
     path("freebies/<int:pk>/save/", FreebieSaveToggleView.as_view(), name="freebie-save"),

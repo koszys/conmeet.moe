@@ -141,6 +141,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
     ends_at = serializers.DateTimeField(required=True)
     description = serializers.CharField(required=False, allow_blank=True, default="")
     image = serializers.ImageField(required=False, allow_null=True)
+    image_thumb = serializers.SerializerMethodField()
     is_official = serializers.BooleanField(required=False, default=False)
 
     class Meta:
@@ -154,10 +155,19 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
             "ends_at",
             "description",
             "image",
+            "image_thumb",
             "is_official",
             "created_at",
         ]
-        read_only_fields = ["id", "created_at"]
+        read_only_fields = ["id", "image_thumb", "created_at"]
+
+    def get_image_thumb(self, obj: Meetup) -> str | None:
+        if obj.image:
+            try:
+                return obj.image_thumb.url
+            except Exception:
+                return obj.image.url
+        return None
 
     def validate(self, attrs):
         starts_at = attrs.get("starts_at")

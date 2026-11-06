@@ -1,7 +1,11 @@
 from datetime import datetime, timezone
+from io import BytesIO
+
 import pytest
 from conventions.models import Convention
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -9,6 +13,13 @@ from meetups.models import Meetup
 
 pytestmark = pytest.mark.django_db
 User = get_user_model()
+
+
+def _create_test_image_file(name: str = "banner.webp") -> SimpleUploadedFile:
+    img = Image.new("RGB", (200, 200), color="purple")
+    buf = BytesIO()
+    img.save(buf, format="WEBP")
+    return SimpleUploadedFile(name, buf.getvalue(), content_type="image/webp")
 
 
 @pytest.fixture
@@ -339,4 +350,141 @@ def test_filter_saved_meetups(convention: Convention, regular_user: User) -> Non
     data = resp.json()
     assert len(data) == 1
     assert data[0]["id"] == m1.id
+
+
+def test_create_meetup_with_image_upload(convention: Convention, regular_user: User) -> None:
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+
+    image_file = _create_test_image_file("poster.webp")
+    payload = {
+        "name": "Cosplay Showcase",
+        "location": "Main Stage",
+        "starts_at": "2027-07-02T13:00:00Z",
+        "ends_at": "2027-07-02T15:00:00Z",
+        "description": "Show off your craftsmanship!",
+        "image": image_file,
+    }
+    resp = client.post(
+        f"/api/v1/conventions/{convention.slug}/meetups/",
+        payload,
+        format="multipart",
+    )
+    assert resp.status_code == status.HTTP_201_CREATED
+    data = resp.json()
+    assert data["name"] == "Cosplay Showcase"
+    assert "poster" in data["image"]
+    assert data["image_thumb"] is not None
+
+
+def test_update_meetup_clear_image(convention: Convention, regular_user: User) -> None:
+    image_file = _create_test_image_file("initial.webp")
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="Meetup with banner",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        created_by=regular_user,
+        image=image_file,
+    )
+    assert bool(meetup.image) is True
+
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+    resp = client.patch(f"/api/v1/meetups/{meetup.id}/", {"clear_image": True})
+    assert resp.status_code == status.HTTP_200_OK
+    meetup.refresh_from_db()
+    assert bool(meetup.image) is False
+
+
+def test_staff_can_edit_and_delete_any_meetup(
+    convention: Convention, regular_user: User, staff_user: User
+) -> None:
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="User Community Meetup",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        created_by=regular_user,
+        is_official=False,
+    )
+
+    client = APIClient()
+    client.force_authenticate(user=staff_user)
+
+    # Staff promotes to official
+    resp_patch = client.patch(
+        f"/api/v1/meetups/{meetup.id}/",
+        {"is_official": True, "name": "Promoted Official Meetup"},
+    )
+    assert resp_patch.status_code == status.HTTP_200_OK
+    assert resp_patch.json()["is_official"] is True
+    assert resp_patch.json()["name"] == "Promoted Official Meetup"
+
+    # Staff deletes user meetup
+    resp_del = client.delete(f"/api/v1/meetups/{meetup.id}/")
+    assert resp_del.status_code == status.HTTP_204_NO_CONTENT
+    assert not Meetup.objects.filter(id=meetup.id).exists()
+
+
+def test_save_and_going_multi_user_isolation(
+    convention: Convention, regular_user: User, other_user: User
+) -> None:
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="Multi-user Gathering",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+    )
+
+    client1 = APIClient()
+    client1.force_authenticate(user=regular_user)
+
+    client2 = APIClient()
+    client2.force_authenticate(user=other_user)
+
+    # User 1 saves and marks going
+    client1.post(f"/api/v1/meetups/{meetup.id}/save/")
+    client1.post(f"/api/v1/meetups/{meetup.id}/going/")
+
+    # User 2 saves only
+    client2.post(f"/api/v1/meetups/{meetup.id}/save/")
+
+    # Check from user 1's view
+    resp1 = client1.get(f"/api/v1/conventions/{convention.slug}/meetups/")
+    data1 = resp1.json()[0]
+    assert data1["save_count"] == 2
+    assert data1["going_count"] == 1
+    assert data1["is_saved"] is True
+    assert data1["is_going"] is True
+
+    # Check from user 2's view
+    resp2 = client2.get(f"/api/v1/conventions/{convention.slug}/meetups/")
+    data2 = resp2.json()[0]
+    assert data2["save_count"] == 2
+    assert data2["going_count"] == 1
+    assert data2["is_saved"] is True
+    assert data2["is_going"] is False
+
+
+def test_meetup_not_found_endpoints() -> None:
+    client = APIClient()
+    resp_detail = client.get("/api/v1/meetups/99999/")
+    assert resp_detail.status_code == status.HTTP_404_NOT_FOUND
+
+    user = User.objects.create_user(username="temp", email="temp@example.com", password="pw")
+    client.force_authenticate(user=user)
+
+    resp_save = client.post("/api/v1/meetups/99999/save/")
+    assert resp_save.status_code == status.HTTP_404_NOT_FOUND
+
+    resp_going = client.post("/api/v1/meetups/99999/going/")
+    assert resp_going.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_convention_slug_not_found() -> None:
+    client = APIClient()
+    resp = client.get("/api/v1/conventions/non-existent-convention/meetups/")
+    assert resp.status_code == status.HTTP_404_NOT_FOUND
+
 

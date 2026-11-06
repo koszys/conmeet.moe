@@ -128,6 +128,9 @@ export function MeetupFilterBar({
           <span>All Meetups</span>
         </button>
 
+        {/* Divider between All Meetups and the rest */}
+        <div className="border-ink/30 mx-1 hidden h-6 shrink-0 border-r-2 border-dashed sm:block" />
+
         <button
           type="button"
           onClick={() => onTabChange('official')}

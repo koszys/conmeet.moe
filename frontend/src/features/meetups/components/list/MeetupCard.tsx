@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bookmark, Check, Clock, MapPin, User, Users } from 'lucide-react';
+import { Check, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { CONBLOCK } from '@/shared/components/ui';
+import { BookmarkButton, CONBLOCK } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
@@ -80,21 +80,13 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         </div>
 
         {/* Quick bookmark button on image */}
-        <button
-          type="button"
+        <BookmarkButton
+          isSaved={meetup.is_saved}
           onClick={handleToggleSave}
           title={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
-          aria-label={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
-          className={cn(
-            CONBLOCK,
-            'absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center',
-            meetup.is_saved
-              ? 'bg-accent-pop text-white'
-              : 'bg-white/95 text-zinc-700 hover:text-black dark:bg-zinc-900/95 dark:text-zinc-200 dark:hover:text-white'
-          )}
-        >
-          <Bookmark className={cn('h-4 w-4', meetup.is_saved && 'fill-current')} />
-        </button>
+          ariaLabel={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
+          className="absolute top-2.5 right-2.5"
+        />
       </Link>
 
       {/* Card Content */}
@@ -153,7 +145,14 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
               <Users className="h-3.5 w-3.5" />
             )}
             <span>{meetup.is_going ? "I'm Going!" : 'Going!'}</span>
-            <span className="border-ink ml-1 rounded-none border-l pl-1.5 text-[11px] opacity-80">
+            <span
+              className={cn(
+                'ml-1 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                meetup.is_going
+                  ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                  : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
+              )}
+            >
               {meetup.going_count}
             </span>
           </button>

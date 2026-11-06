@@ -4,14 +4,15 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bookmark, Camera, Check, Clock, Edit3, MapPin, Trash2, User, Users } from 'lucide-react';
+import { Camera, Check, Clock, Edit3, MapPin, Trash2, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BackLink, CONBLOCK, CopyLinkButton } from '@/shared/components/ui';
+import { BackLink, BookmarkButton, CONBLOCK, CopyLinkButton } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
-import { useDeleteMeetup, useMeetup, useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
+import { useMeetup, useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
 import { MeetupForm } from '../form';
 import { MeetupDetailSkeleton } from './MeetupDetailSkeleton';
+import { DeleteMeetupModal } from './DeleteMeetupModal';
 
 interface MeetupDetailViewProps {
   conventionSlug: string;
@@ -24,10 +25,9 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   const { data: meetup, isLoading, isError } = useMeetup(meetupId);
   const toggleSave = useToggleSaveMeetup();
   const toggleGoing = useToggleGoingMeetup();
-  const deleteMutation = useDeleteMeetup();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   if (isLoading) {
     return <MeetupDetailSkeleton />;
@@ -84,61 +84,39 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
     toggleGoing.mutate(meetup.id);
   };
 
-  const handleDelete = async () => {
-    if (
-      !window.confirm('Are you sure you want to delete this meetup? This action cannot be undone.')
-    ) {
-      return;
-    }
-
-    try {
-      setIsDeleting(true);
-      await deleteMutation.mutateAsync(meetup.id);
-      router.push(`/conventions/${conventionSlug}/meetups`);
-    } catch {
-      alert('Failed to delete meetup. Please try again.');
-      setIsDeleting(false);
-    }
-  };
-
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-8 sm:px-6">
       {/* Top Navigation Row */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <BackLink href={`/conventions/${conventionSlug}/meetups`}>Back to Meetups</BackLink>
 
-        <div className="flex items-center gap-2">
-          <CopyLinkButton size="sm" variant="responsive" />
+        {isOwnerOrAdmin && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className={cn(
+                CONBLOCK,
+                'inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-bold text-zinc-800 uppercase dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
+              )}
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+              <span>Edit</span>
+            </button>
 
-          {isOwnerOrAdmin && (
-            <>
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className={cn(
-                  CONBLOCK,
-                  'inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-bold text-zinc-800 uppercase dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
-                )}
-              >
-                <Edit3 className="h-3.5 w-3.5" />
-                <span>Edit</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className={cn(
-                  CONBLOCK,
-                  'inline-flex items-center gap-1.5 bg-red-500 px-3 py-1.5 text-xs font-bold text-white uppercase hover:bg-red-600 disabled:opacity-50'
-                )}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
-              </button>
-            </>
-          )}
-        </div>
+            <button
+              type="button"
+              onClick={() => setIsDeleteOpen(true)}
+              className={cn(
+                CONBLOCK,
+                'inline-flex items-center gap-1.5 bg-red-500 px-3 py-1.5 text-xs font-bold text-white uppercase hover:bg-red-600'
+              )}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span>Delete</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main Hero Card */}
@@ -208,7 +186,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             </div>
           </div>
 
-          {/* Action Row: Going + Save */}
+          {/* Action Row: Going + Save + Share Link */}
           <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
             {/* Going Button */}
             <button
@@ -220,33 +198,40 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                 CONBLOCK,
                 'inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase',
                 meetup.is_going
-                  ? 'bg-teal-500 text-white dark:bg-teal-600'
-                  : 'bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                  ? 'bg-accent text-white dark:text-zinc-950'
+                  : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
               )}
             >
               <Check className={cn('h-4 w-4', meetup.is_going && 'stroke-[3]')} />
               <span>{meetup.is_going ? "I'm Going!" : 'Going!'}</span>
-              <span className="border-ink ml-1 border-l pl-2 opacity-80">{meetup.going_count}</span>
+              <span
+                className={cn(
+                  'ml-1 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
+                  meetup.is_going
+                    ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
+                    : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
+                )}
+              >
+                {meetup.going_count}
+              </span>
             </button>
 
-            {/* Save Button */}
-            <button
-              type="button"
+            {/* Save Button (No save count) */}
+            <BookmarkButton
+              variant="button"
+              isSaved={meetup.is_saved}
               onClick={handleToggleSave}
-              title={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
-              aria-label={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
-              className={cn(
-                CONBLOCK,
-                'inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase',
-                meetup.is_saved
-                  ? 'bg-accent-pop text-white'
-                  : 'bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-              )}
-            >
-              <Bookmark className={cn('h-4 w-4', meetup.is_saved && 'fill-current')} />
-              <span>{meetup.is_saved ? 'Saved' : 'Save Meetup'}</span>
-              <span className="border-ink ml-1 border-l pl-2 opacity-80">{meetup.save_count}</span>
-            </button>
+              savedLabel="Saved"
+              unsavedLabel="Save Meetup"
+            />
+
+            {/* Link Button: Placed to the right of Save Meetup */}
+            <CopyLinkButton
+              variant="button"
+              size="md"
+              label="Share Link"
+              className="h-auto px-4 py-2 text-xs font-bold uppercase sm:px-5 sm:py-2.5"
+            />
           </div>
         </div>
       </article>
@@ -292,6 +277,14 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           </p>
         </div>
       </section>
+
+      {/* Delete Confirmation Modal Popup */}
+      <DeleteMeetupModal
+        meetup={meetup}
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onSuccess={() => router.push(`/conventions/${conventionSlug}/meetups`)}
+      />
     </div>
   );
 }

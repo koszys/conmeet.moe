@@ -14,6 +14,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
     is_going = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
     going_count = serializers.SerializerMethodField()
+    save_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Meetup
@@ -32,6 +33,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
             "created_by",
             "created_by_name",
             "going_count",
+            "save_count",
             "is_saved",
             "is_going",
             "is_owner",
@@ -90,6 +92,11 @@ class MeetupListSerializer(serializers.ModelSerializer):
         if hasattr(obj, "_going_count"):
             return obj._going_count
         return obj.going.count()
+
+    def get_save_count(self, obj: Meetup) -> int:
+        if hasattr(obj, "_save_count"):
+            return obj._save_count
+        return obj.saved_by.count()
 
 
 class MeetupDetailSerializer(MeetupListSerializer):

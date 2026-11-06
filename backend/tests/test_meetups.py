@@ -239,3 +239,104 @@ def test_delete_meetup_author_and_permissions(
     resp = client.delete(f"/api/v1/meetups/{meetup.id}/")
     assert resp.status_code == status.HTTP_204_NO_CONTENT
     assert not Meetup.objects.filter(id=meetup.id).exists()
+
+
+def test_save_and_going_require_authentication(convention: Convention) -> None:
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="Saved Meetup Test",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+    )
+    client = APIClient()
+
+    resp_save = client.post(f"/api/v1/meetups/{meetup.id}/save/")
+    assert resp_save.status_code == status.HTTP_401_UNAUTHORIZED
+
+    resp_going = client.post(f"/api/v1/meetups/{meetup.id}/going/")
+    assert resp_going.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_toggle_save_meetup(convention: Convention, regular_user: User) -> None:
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="Save Toggle Meetup",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+    )
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+
+    # First toggle: Save
+    resp = client.post(f"/api/v1/meetups/{meetup.id}/save/")
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json()["is_saved"] is True
+    assert resp.json()["save_count"] == 1
+
+    # In list endpoint, is_saved is True
+    resp_list = client.get(f"/api/v1/conventions/{convention.slug}/meetups/")
+    assert resp_list.json()[0]["is_saved"] is True
+    assert resp_list.json()[0]["save_count"] == 1
+
+    # Second toggle: Unsave
+    resp2 = client.post(f"/api/v1/meetups/{meetup.id}/save/")
+    assert resp2.status_code == status.HTTP_200_OK
+    assert resp2.json()["is_saved"] is False
+    assert resp2.json()["save_count"] == 0
+
+
+def test_toggle_going_meetup(convention: Convention, regular_user: User) -> None:
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="RSVP Meetup",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+    )
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+
+    # First toggle: Going
+    resp = client.post(f"/api/v1/meetups/{meetup.id}/going/")
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json()["is_going"] is True
+    assert resp.json()["going_count"] == 1
+
+    # In list endpoint, is_going is True
+    resp_list = client.get(f"/api/v1/conventions/{convention.slug}/meetups/")
+    assert resp_list.json()[0]["is_going"] is True
+    assert resp_list.json()[0]["going_count"] == 1
+
+    # Second toggle: Not going
+    resp2 = client.post(f"/api/v1/meetups/{meetup.id}/going/")
+    assert resp2.status_code == status.HTTP_200_OK
+    assert resp2.json()["is_going"] is False
+    assert resp2.json()["going_count"] == 0
+
+
+def test_filter_saved_meetups(convention: Convention, regular_user: User) -> None:
+    m1 = Meetup.objects.create(
+        convention=convention,
+        name="Saved Meetup",
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+    )
+    m2 = Meetup.objects.create(
+        convention=convention,
+        name="Unsaved Meetup",
+        starts_at=datetime(2027, 7, 2, 15, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 17, 0, tzinfo=timezone.utc),
+    )
+
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+
+    # Save m1
+    client.post(f"/api/v1/meetups/{m1.id}/save/")
+
+    # Query with ?saved=true
+    resp = client.get(f"/api/v1/conventions/{convention.slug}/meetups/?saved=true")
+    assert resp.status_code == status.HTTP_200_OK
+    data = resp.json()
+    assert len(data) == 1
+    assert data[0]["id"] == m1.id
+

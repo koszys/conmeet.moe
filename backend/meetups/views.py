@@ -1,7 +1,9 @@
 from conventions.models import Convention
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Going, Meetup, SavedMeetup
 from .permissions import IsAuthorOrReadOnly
@@ -49,7 +51,10 @@ class ConventionMeetupListCreateView(generics.ListCreateAPIView):
         qs = (
             Meetup.objects.filter(convention=convention)
             .select_related("convention", "created_by")
-            .annotate(_going_count=Count("going", distinct=True))
+            .annotate(
+                _going_count=Count("going", distinct=True),
+                _save_count=Count("saved_by", distinct=True),
+            )
             .order_by("starts_at", "name")
         )
 
@@ -93,10 +98,55 @@ class MeetupDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthorOrReadOnly]
     queryset = (
         Meetup.objects.select_related("convention", "created_by")
-        .annotate(_going_count=Count("going", distinct=True))
+        .annotate(
+            _going_count=Count("going", distinct=True),
+            _save_count=Count("saved_by", distinct=True),
+        )
     )
 
     def get_serializer_class(self):
         if self.request.method in ("PUT", "PATCH"):
             return MeetupUpdateSerializer
         return MeetupDetailSerializer
+
+
+class MeetupSaveToggleView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk: int):
+        meetup = get_object_or_404(Meetup, pk=pk)
+        saved_obj = SavedMeetup.objects.filter(user=request.user, meetup=meetup).first()
+
+        if saved_obj:
+            saved_obj.delete()
+            is_saved = False
+        else:
+            SavedMeetup.objects.create(user=request.user, meetup=meetup)
+            is_saved = True
+
+        save_count = meetup.saved_by.count()
+        return Response(
+            {"is_saved": is_saved, "save_count": save_count},
+            status=status.HTTP_200_OK,
+        )
+
+
+class MeetupGoingToggleView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk: int):
+        meetup = get_object_or_404(Meetup, pk=pk)
+        going_obj = Going.objects.filter(user=request.user, meetup=meetup).first()
+
+        if going_obj:
+            going_obj.delete()
+            is_going = False
+        else:
+            Going.objects.create(user=request.user, meetup=meetup)
+            is_going = True
+
+        going_count = meetup.going.count()
+        return Response(
+            {"is_going": is_going, "going_count": going_count},
+            status=status.HTTP_200_OK,
+        )

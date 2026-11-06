@@ -5,6 +5,8 @@ import { ArrowRight, MapPin } from 'lucide-react';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { useFreebies } from '@/features/freebies';
+import { useMeetups } from '@/features/meetups';
+import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import type {
   ConventionSectionConfig,
   ConventionSectionsProps,
@@ -19,6 +21,7 @@ export function ConventionSections({
   className,
 }: ConventionSectionsProps) {
   const { data: freebies } = useFreebies({ convention: convention.slug });
+  const { data: meetups } = useMeetups({ conventionSlug: convention.slug });
 
   const baseSections = explicitSections ?? getDefaultConventionSections(convention);
   const allSections = baseSections
@@ -35,6 +38,20 @@ export function ConventionSections({
             meta: f.requirements || undefined,
             badge: f.location ? { text: f.location, variant: 'accent' as const } : undefined,
             href: `/conventions/${convention.slug}/freebies`,
+          })),
+        };
+      }
+      if (sec.id === 'meetups' && meetups && meetups.length > 0) {
+        return {
+          ...sec,
+          activityCountLabel: `${meetups.length} scheduled`,
+          activities: meetups.slice(0, 3).map((m) => ({
+            id: String(m.id),
+            title: m.name,
+            subtitle: m.location || 'Convention Center',
+            meta: formatMeetupTimeRange(m.starts_at, m.ends_at),
+            badge: m.is_official ? { text: 'Official', variant: 'accent' as const } : undefined,
+            href: `/conventions/${convention.slug}/meetups/${m.id}`,
           })),
         };
       }

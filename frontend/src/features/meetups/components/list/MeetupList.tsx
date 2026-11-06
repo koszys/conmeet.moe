@@ -36,17 +36,6 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
 
   const { data: meetups, isLoading, isError, refetch, isFetching } = useMeetups(queryFilters);
 
-  // Counts for the filter bar
-  const counts = useMemo(() => {
-    if (!meetups) return undefined;
-    return {
-      all: meetups.length,
-      official: meetups.filter((m) => m.is_official).length,
-      community: meetups.filter((m) => !m.is_official).length,
-      saved: meetups.filter((m) => m.is_saved).length,
-    };
-  }, [meetups]);
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -62,7 +51,6 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
         onDateChange={setSelectedDate}
         conventionStartsAt={convention?.starts_at}
         conventionEndsAt={convention?.ends_at}
-        counts={counts}
       />
 
       {/* Content Grid */}

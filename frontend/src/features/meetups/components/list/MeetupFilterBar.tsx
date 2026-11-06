@@ -18,12 +18,6 @@ interface MeetupFilterBarProps {
   onDateChange: (date?: string) => void;
   conventionStartsAt?: string;
   conventionEndsAt?: string;
-  counts?: {
-    all: number;
-    official: number;
-    community: number;
-    saved: number;
-  };
 }
 
 export function MeetupFilterBar({
@@ -35,7 +29,6 @@ export function MeetupFilterBar({
   onDateChange,
   conventionStartsAt,
   conventionEndsAt,
-  counts,
 }: MeetupFilterBarProps) {
   // Generate date day options between convention starts_at and ends_at
   const conventionDays = useMemo(() => {
@@ -43,7 +36,7 @@ export function MeetupFilterBar({
     try {
       const start = parseDate(conventionStartsAt);
       const end = parseDate(conventionEndsAt);
-      const days: { dateStr: string; label: string }[] = [];
+      const days: { dateStr: string; label: string; shortLabel: string }[] = [];
       const current = new Date(start);
 
       // Max 14 days guard
@@ -51,7 +44,8 @@ export function MeetupFilterBar({
       while (current <= end && count < 14) {
         const dateStr = format(current, 'yyyy-MM-dd');
         const label = format(current, 'EEE, MMM d');
-        days.push({ dateStr, label });
+        const shortLabel = format(current, 'EEE');
+        days.push({ dateStr, label, shortLabel });
         current.setDate(current.getDate() + 1);
         count++;
       }
@@ -77,10 +71,10 @@ export function MeetupFilterBar({
           />
         </div>
 
-        {/* Date Filter Pills: Wrap naturally without horizontal scroll */}
+        {/* Date Filter Pills: Single row, no stacking, responsive compact labels on mobile */}
         {conventionDays.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 pr-1 pb-1">
-            <span className="font-display text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+          <div className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-1 pb-1 sm:gap-2">
+            <span className="font-display hidden text-[11px] font-bold tracking-wider text-zinc-500 uppercase sm:inline">
               Day:
             </span>
             <button
@@ -88,13 +82,14 @@ export function MeetupFilterBar({
               onClick={() => onDateChange(undefined)}
               className={cn(
                 CONBLOCK,
-                'px-2.5 py-1 text-xs font-bold whitespace-nowrap uppercase',
+                'px-2 py-1 text-xs font-bold whitespace-nowrap uppercase sm:px-2.5',
                 !selectedDate
                   ? 'bg-accent text-white dark:text-zinc-950'
                   : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
               )}
             >
-              All Days
+              <span className="hidden sm:inline">All Days</span>
+              <span className="sm:hidden">All</span>
             </button>
             {conventionDays.map((day) => (
               <button
@@ -103,20 +98,21 @@ export function MeetupFilterBar({
                 onClick={() => onDateChange(day.dateStr)}
                 className={cn(
                   CONBLOCK,
-                  'px-2.5 py-1 text-xs font-bold whitespace-nowrap uppercase',
+                  'px-2 py-1 text-xs font-bold whitespace-nowrap uppercase sm:px-2.5',
                   selectedDate === day.dateStr
                     ? 'bg-accent text-white dark:text-zinc-950'
                     : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
                 )}
               >
-                {day.label}
+                <span className="hidden sm:inline">{day.label}</span>
+                <span className="sm:hidden">{day.shortLabel}</span>
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Primary Category Tabs */}
+      {/* Primary Category Tabs without count badges */}
       <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pr-1 pb-3 dark:border-zinc-800">
         <button
           type="button"
@@ -130,11 +126,6 @@ export function MeetupFilterBar({
           )}
         >
           <span>All Meetups</span>
-          {counts && (
-            <span className="border-ink ml-1 rounded-none border-l pl-1.5 opacity-80">
-              {counts.all}
-            </span>
-          )}
         </button>
 
         <button
@@ -148,12 +139,7 @@ export function MeetupFilterBar({
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
           )}
         >
-          <span>★ Official Only</span>
-          {counts && (
-            <span className="border-ink ml-1 rounded-none border-l pl-1.5 opacity-80">
-              {counts.official}
-            </span>
-          )}
+          <span>★ Official</span>
         </button>
 
         <button
@@ -168,11 +154,6 @@ export function MeetupFilterBar({
           )}
         >
           <span>Community / Fan</span>
-          {counts && (
-            <span className="border-ink ml-1 rounded-none border-l pl-1.5 opacity-80">
-              {counts.community}
-            </span>
-          )}
         </button>
 
         <button
@@ -187,11 +168,6 @@ export function MeetupFilterBar({
           )}
         >
           <span>Saved</span>
-          {counts && (
-            <span className="border-ink ml-1 rounded-none border-l pl-1.5 opacity-80">
-              {counts.saved}
-            </span>
-          )}
         </button>
       </div>
     </div>

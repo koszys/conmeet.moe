@@ -157,14 +157,6 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
               {meetup.going_count}
             </span>
           </button>
-
-          {/* Save counter / link */}
-          <Link
-            href={meetupHref}
-            className="text-xs font-bold text-zinc-500 uppercase transition-colors hover:text-black dark:hover:text-white"
-          >
-            View Details →
-          </Link>
         </div>
       </div>
     </article>

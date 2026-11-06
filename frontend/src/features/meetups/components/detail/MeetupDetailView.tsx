@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -28,6 +28,20 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [isEditing]);
+
+  const handleOpenEdit = () => {
+    setIsEditing(true);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditing(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
 
   if (isLoading) {
     return <MeetupDetailSkeleton />;
@@ -60,8 +74,8 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
         <MeetupForm
           conventionSlug={conventionSlug}
           initialData={meetup}
-          onSuccess={() => setIsEditing(false)}
-          onCancel={() => setIsEditing(false)}
+          onSuccess={handleCloseEdit}
+          onCancel={handleCloseEdit}
         />
       </div>
     );
@@ -95,7 +109,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setIsEditing(true)}
+              onClick={handleOpenEdit}
               className={cn(
                 CONBLOCK,
                 'inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-bold text-zinc-800 uppercase dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'

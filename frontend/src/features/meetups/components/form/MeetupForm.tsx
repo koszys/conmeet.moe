@@ -244,6 +244,14 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             ? `/conventions/${conventionSlug}/meetups/${initialData.id}`
             : `/conventions/${conventionSlug}/meetups`
         }
+        onClick={
+          onCancel
+            ? (e) => {
+                e.preventDefault();
+                onCancel();
+              }
+            : undefined
+        }
       >
         {isEditing ? 'Back to Meetup' : 'Back to Meetups'}
       </BackLink>

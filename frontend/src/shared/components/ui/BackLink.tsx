@@ -9,12 +9,14 @@ export interface BackLinkProps {
   href: string;
   children: ReactNode;
   className?: string;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
-export function BackLink({ href, children, className }: BackLinkProps) {
+export function BackLink({ href, children, className, onClick }: BackLinkProps) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         'font-display hover:text-accent-pop group inline-flex items-center gap-2 text-xs tracking-wider text-zinc-600 uppercase transition-colors dark:text-zinc-400',
         className

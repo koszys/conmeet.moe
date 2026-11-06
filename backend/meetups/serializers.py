@@ -178,8 +178,11 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         user = request.user if request else None
 
-        # Only staff or superuser can mark a meetup as official
-        if not (user and (user.is_staff or user.is_superuser)):
+        # Only staff, superuser, or admin role can mark a meetup as official
+        is_staff_user = bool(
+            user and (user.is_staff or user.is_superuser or getattr(user, "role", "") == "admin")
+        )
+        if not is_staff_user:
             attrs["is_official"] = False
 
         if "description" in attrs:
@@ -225,8 +228,11 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         user = request.user if request else None
 
-        # Only staff or superuser can toggle is_official
-        if "is_official" in attrs and not (user and (user.is_staff or user.is_superuser)):
+        # Only staff, superuser, or admin role can toggle is_official
+        is_staff_user = bool(
+            user and (user.is_staff or user.is_superuser or getattr(user, "role", "") == "admin")
+        )
+        if "is_official" in attrs and not is_staff_user:
             attrs.pop("is_official")
 
         if "description" in attrs:

@@ -159,7 +159,7 @@ export function MeetupFilterBar({
           )}
         >
           <HeartHandshake className="h-3.5 w-3.5 shrink-0" />
-          <span>Community / Fan</span>
+          <span>Community/Fan</span>
         </button>
 
         <button

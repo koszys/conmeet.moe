@@ -131,23 +131,25 @@ def test_create_meetup_requires_authentication(convention: Convention) -> None:
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_regular_user_cannot_create_official_meetup(convention: Convention, regular_user: User) -> None:
+def test_regular_user_can_create_official_or_fan_meetup(
+    convention: Convention, regular_user: User
+) -> None:
     client = APIClient()
     client.force_authenticate(user=regular_user)
 
     payload = {
-        "name": "Community Cosplay Group",
+        "name": "Official Cosplay Gathering",
         "location": "North Plaza",
         "starts_at": "2027-07-02T13:00:00Z",
         "ends_at": "2027-07-02T15:00:00Z",
         "description": "Come join our group cosplay photo!",
-        "is_official": True,  # Non-staff attempting official
+        "is_official": True,
     }
     resp = client.post(f"/api/v1/conventions/{convention.slug}/meetups/", payload)
     assert resp.status_code == status.HTTP_201_CREATED
     data = resp.json()
-    assert data["name"] == "Community Cosplay Group"
-    assert data["is_official"] is False  # Forced to False by serializer
+    assert data["name"] == "Official Cosplay Gathering"
+    assert data["is_official"] is True
 
 
 def test_staff_user_can_create_official_meetup(convention: Convention, staff_user: User) -> None:

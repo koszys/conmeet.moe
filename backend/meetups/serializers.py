@@ -175,16 +175,6 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
         if starts_at and ends_at and ends_at <= starts_at:
             raise serializers.ValidationError({"ends_at": "End time must be after start time."})
 
-        request = self.context.get("request")
-        user = request.user if request else None
-
-        # Only staff, superuser, or admin role can mark a meetup as official
-        is_staff_user = bool(
-            user and (user.is_staff or user.is_superuser or getattr(user, "role", "") == "admin")
-        )
-        if not is_staff_user:
-            attrs["is_official"] = False
-
         if "description" in attrs:
             attrs["description"] = _format_quill_description(attrs.get("description"))
 
@@ -224,16 +214,6 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
 
         if starts_at and ends_at and ends_at <= starts_at:
             raise serializers.ValidationError({"ends_at": "End time must be after start time."})
-
-        request = self.context.get("request")
-        user = request.user if request else None
-
-        # Only staff, superuser, or admin role can toggle is_official
-        is_staff_user = bool(
-            user and (user.is_staff or user.is_superuser or getattr(user, "role", "") == "admin")
-        )
-        if "is_official" in attrs and not is_staff_user:
-            attrs.pop("is_official")
 
         if "description" in attrs:
             attrs["description"] = _format_quill_description(attrs.get("description"))

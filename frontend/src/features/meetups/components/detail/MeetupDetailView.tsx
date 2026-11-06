@@ -193,7 +193,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 shrink-0 text-zinc-400" />
               <span>
-                Organized by{' '}
+                Posted by{' '}
                 <span className="font-semibold text-zinc-800 dark:text-zinc-200">
                   {meetup.created_by_name || 'Attendee'}
                 </span>

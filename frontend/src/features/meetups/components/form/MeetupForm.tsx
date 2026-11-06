@@ -3,8 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, Sparkles, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/features/auth';
+import { Calendar, Clock, HeartHandshake, MapPin, Sparkles, AlertCircle } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { BackLink, FormActions, ImageUpload, CONBLOCK } from '@/shared/components/ui';
 import { parseDate } from '@/shared/lib/dates';
@@ -37,7 +36,6 @@ function toLocalDateAndTimes(isoString?: string | null): { date: string; time: s
 
 export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }: MeetupFormProps) {
   const router = useRouter();
-  const { user } = useAuth();
   const { data: convention } = useConvention(conventionSlug);
   const isEditing = Boolean(initialData);
 
@@ -129,8 +127,6 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const isStaffOrAdmin = Boolean(user && user.role === 'admin');
-
   const handleImageSelect = (file: File) => {
     if (imagePreview && imagePreview.startsWith('blob:')) {
       URL.revokeObjectURL(imagePreview);
@@ -188,9 +184,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
       if (description.trim()) {
         formData.append('description', description.trim());
       }
-      if (isStaffOrAdmin) {
-        formData.append('is_official', isOfficial ? 'true' : 'false');
-      }
+      formData.append('is_official', isOfficial ? 'true' : 'false');
       if (imageFile) {
         formData.append('image', imageFile);
       } else if (clearImage) {
@@ -563,29 +557,79 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           />
         </div>
 
-        {/* Staff/Admin Toggle: Official Meetup */}
-        {isStaffOrAdmin && (
-          <div className="border-ink border-2 bg-pink-50 p-4 shadow-[3px_3px_0_var(--ink)] dark:bg-pink-950/30">
-            <label className="flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                checked={isOfficial}
-                onChange={(e) => setIsOfficial(e.target.checked)}
-                className="border-ink accent-accent-pop mt-1 h-4 w-4 cursor-pointer rounded-none border-2"
-              />
-              <div>
-                <span className="font-display flex items-center gap-1.5 text-xs font-bold tracking-wider text-pink-900 uppercase dark:text-pink-300">
-                  <Sparkles className="h-3.5 w-3.5 fill-current" />
-                  Mark as Official Convention Meetup
+        {/* Meetup Type: Official vs Fan/Community */}
+        <div>
+          <label className="font-display block text-xs tracking-wider uppercase">
+            Meetup Type <span className="text-red-500">*</span>
+          </label>
+          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+            Choose whether this gathering is a fan-hosted event or an official con event:
+          </p>
+          <div className="mt-2.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            {/* Fan/Community Option */}
+            <button
+              type="button"
+              onClick={() => setIsOfficial(false)}
+              className={cn(
+                CONBLOCK,
+                'flex cursor-pointer flex-col items-start p-3.5 text-left transition-all',
+                !isOfficial
+                  ? '-translate-y-0.5 bg-zinc-900 text-white shadow-[3px_3px_0_var(--ink)] dark:bg-white dark:text-zinc-900'
+                  : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <HeartHandshake
+                  className={cn(
+                    'h-4 w-4 shrink-0',
+                    !isOfficial ? 'text-accent-pop dark:text-pink-600' : 'text-zinc-500'
+                  )}
+                />
+                <span className="font-display text-xs font-bold tracking-wider uppercase">
+                  Fan/Community Meetup
                 </span>
-                <p className="mt-0.5 text-xs text-pink-800/80 dark:text-pink-400/80">
-                  Staff privileges enabled: This meetup will be badged as official and listed
-                  prominently in the Official filter tab.
-                </p>
               </div>
-            </label>
+              <p
+                className={cn(
+                  'mt-1 text-[11px] leading-relaxed',
+                  !isOfficial
+                    ? 'text-zinc-300 dark:text-zinc-600'
+                    : 'text-zinc-500 dark:text-zinc-400'
+                )}
+              >
+                Your community doesn&apos;t have an official meetup? Add it here!
+              </p>
+            </button>
+
+            {/* Official Convention Option */}
+            <button
+              type="button"
+              onClick={() => setIsOfficial(true)}
+              className={cn(
+                CONBLOCK,
+                'flex cursor-pointer flex-col items-start p-3.5 text-left transition-all',
+                isOfficial
+                  ? 'bg-accent-pop -translate-y-0.5 text-white shadow-[3px_3px_0_var(--ink)]'
+                  : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 shrink-0 fill-current" />
+                <span className="font-display text-xs font-bold tracking-wider uppercase">
+                  Official Convention Meetup
+                </span>
+              </div>
+              <p
+                className={cn(
+                  'mt-1 text-[11px] leading-relaxed',
+                  isOfficial ? 'text-pink-100' : 'text-zinc-500 dark:text-zinc-400'
+                )}
+              >
+                Official meetup/gathering as shown on the convention schedule.
+              </p>
+            </button>
           </div>
-        )}
+        </div>
 
         {/* Form Actions */}
         <FormActions

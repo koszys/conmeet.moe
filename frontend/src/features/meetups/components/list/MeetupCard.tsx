@@ -116,7 +116,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         <div className="mt-3 flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
           <User className="h-3 w-3 shrink-0" />
           <span>
-            Hosted by{' '}
+            Posted by{' '}
             <strong className="font-semibold text-zinc-700 dark:text-zinc-300">
               @{meetup.created_by_name || 'Fan'}
             </strong>

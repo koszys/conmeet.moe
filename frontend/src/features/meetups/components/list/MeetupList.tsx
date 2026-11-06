@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Plus, RotateCw, Users } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useMeetups } from '../../api';
 import { MeetupCard } from './MeetupCard';
@@ -120,7 +120,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
               )}
             >
               <Plus className="h-4 w-4" />
-              <span>Host a Meetup</span>
+              <span>Post a Meetup</span>
             </Link>
             {(activeTab !== 'all' || searchQuery || selectedDate) && (
               <button
@@ -130,7 +130,10 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
                   setSearchQuery('');
                   setSelectedDate(undefined);
                 }}
-                className="border-ink inline-flex items-center gap-1.5 border-2 bg-zinc-50 px-4 py-2 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                className={cn(
+                  CONBLOCK,
+                  'inline-flex items-center gap-1.5 bg-zinc-50 px-4 py-2 text-xs font-bold uppercase hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                )}
               >
                 Clear Filters
               </button>

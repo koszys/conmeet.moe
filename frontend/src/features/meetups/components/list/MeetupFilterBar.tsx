@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { Search } from 'lucide-react';
+import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
 import { format } from 'date-fns';
@@ -62,10 +63,10 @@ export function MeetupFilterBar({
 
   return (
     <div className="space-y-4">
-      {/* Search & Day Row */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Search & Day Row: Search has its own line on tablet and mobile */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {/* Search input */}
-        <div className="relative flex-1">
+        <div className="relative w-full lg:max-w-md">
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
@@ -76,17 +77,18 @@ export function MeetupFilterBar({
           />
         </div>
 
-        {/* Date Filter Dropdown or Pills */}
+        {/* Date Filter Pills: Wrap naturally without horizontal scroll */}
         {conventionDays.length > 0 && (
-          <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            <span className="font-display hidden text-[11px] tracking-wider text-zinc-500 uppercase sm:inline">
+          <div className="flex flex-wrap items-center gap-2 pr-1 pb-1">
+            <span className="font-display text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
               Day:
             </span>
             <button
               type="button"
               onClick={() => onDateChange(undefined)}
               className={cn(
-                'border-ink border-2 px-2.5 py-1 text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all',
+                CONBLOCK,
+                'px-2.5 py-1 text-xs font-bold whitespace-nowrap uppercase',
                 !selectedDate
                   ? 'bg-accent text-white dark:text-zinc-950'
                   : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
@@ -100,7 +102,8 @@ export function MeetupFilterBar({
                 type="button"
                 onClick={() => onDateChange(day.dateStr)}
                 className={cn(
-                  'border-ink border-2 px-2.5 py-1 text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all',
+                  CONBLOCK,
+                  'px-2.5 py-1 text-xs font-bold whitespace-nowrap uppercase',
                   selectedDate === day.dateStr
                     ? 'bg-accent text-white dark:text-zinc-950'
                     : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
@@ -114,12 +117,13 @@ export function MeetupFilterBar({
       </div>
 
       {/* Primary Category Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-800">
+      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pr-1 pb-3 dark:border-zinc-800">
         <button
           type="button"
           onClick={() => onTabChange('all')}
           className={cn(
-            'border-ink inline-flex items-center gap-1.5 border-2 px-3.5 py-1.5 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all',
+            CONBLOCK,
+            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
             activeTab === 'all'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
@@ -137,7 +141,8 @@ export function MeetupFilterBar({
           type="button"
           onClick={() => onTabChange('official')}
           className={cn(
-            'border-ink inline-flex items-center gap-1.5 border-2 px-3.5 py-1.5 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all',
+            CONBLOCK,
+            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
             activeTab === 'official'
               ? 'text-ink bg-amber-300'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
@@ -155,7 +160,8 @@ export function MeetupFilterBar({
           type="button"
           onClick={() => onTabChange('community')}
           className={cn(
-            'border-ink inline-flex items-center gap-1.5 border-2 px-3.5 py-1.5 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all',
+            CONBLOCK,
+            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
             activeTab === 'community'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
@@ -173,7 +179,8 @@ export function MeetupFilterBar({
           type="button"
           onClick={() => onTabChange('saved')}
           className={cn(
-            'border-ink inline-flex items-center gap-1.5 border-2 px-3.5 py-1.5 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all',
+            CONBLOCK,
+            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
             activeTab === 'saved'
               ? 'bg-accent-pop text-white'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'

@@ -191,7 +191,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess }: MeetupFor
           {convention?.name || 'Convention'}
         </span>
         <h1 className="font-display text-2xl font-black tracking-wider uppercase sm:text-3xl">
-          {isEditing ? 'Edit Meetup' : 'Host a Meetup'}
+          {isEditing ? 'Edit Meetup' : 'Post a Meetup'}
         </h1>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           {isEditing
@@ -259,7 +259,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess }: MeetupFor
                 setLocation(e.target.value);
                 if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
               }}
-              placeholder="e.g. South Terrace Stairs, Room 402B, Hall C Fountain"
+              placeholder="e.g. River Pavilion Meetup #1, Site #1, Room 402B"
               className={cn(
                 'border-ink w-full border-2 bg-zinc-50 py-2.5 pr-3.5 pl-9 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
                 errors.location && 'border-red-500 bg-red-50 dark:bg-red-950/30'

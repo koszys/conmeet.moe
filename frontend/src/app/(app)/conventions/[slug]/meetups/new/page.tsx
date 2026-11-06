@@ -3,7 +3,7 @@ import { RequireAuth } from '@/features/auth';
 import { MeetupForm } from '@/features/meetups';
 
 export const metadata: Metadata = {
-  title: 'Host a Meetup',
+  title: 'Post a Meetup',
   description: 'Organize a meetup or cosplay gathering for this convention.',
 };
 

@@ -255,6 +255,20 @@ export function ConventionSidebar({
           >
             <Gift className="h-4 w-4" />
           </Link>
+          <Link
+            href={`/conventions/${convention.slug}/meetups`}
+            aria-current={isMeetups ? 'page' : undefined}
+            aria-label="Meetups"
+            title="Meetups"
+            className={cn(
+              'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
+              isMeetups
+                ? 'bg-accent text-white dark:text-zinc-950'
+                : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            <Users className="h-4 w-4" />
+          </Link>
           {COMING_SOON.map(({ label, icon: Icon }) => (
             <span
               key={label}

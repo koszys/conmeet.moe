@@ -36,15 +36,15 @@ export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderPro
           <CopyLinkButton variant="responsive" />
           <Link
             href={`/conventions/${conventionSlug}/meetups/new`}
-            title="Host a Meetup"
-            aria-label="Host a Meetup"
+            title="Post a Meetup"
+            aria-label="Post a Meetup"
             className={cn(
               CONBLOCK_PRIMARY,
               'inline-flex h-10 items-center justify-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase @min-[680px]:gap-2 @min-[680px]:px-5'
             )}
           >
             <Plus className="h-4 w-4" />
-            <span>Host a Meetup</span>
+            <span>Post a Meetup</span>
           </Link>
         </div>
       </div>

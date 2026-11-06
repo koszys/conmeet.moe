@@ -38,7 +38,7 @@ export function getDefaultConventionSections(convention: Convention): Convention
       activities: [],
       emptyState: {
         message: 'No meetups scheduled yet. Organize a fan meetup or cosplay gathering!',
-        actionLabel: 'Host a Meetup',
+        actionLabel: 'Post a Meetup',
         actionHref: `/conventions/${convention.slug}/meetups/new`,
       },
       primaryAction: {

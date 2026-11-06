@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Bookmark, Check, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
+import { CONBLOCK } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
@@ -85,7 +86,8 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
           title={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
           aria-label={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
           className={cn(
-            'border-ink absolute top-2.5 right-2.5 flex h-8 w-8 cursor-pointer items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] transition-transform hover:scale-110 active:scale-95',
+            CONBLOCK,
+            'absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center',
             meetup.is_saved
               ? 'bg-accent-pop text-white'
               : 'bg-white/95 text-zinc-700 hover:text-black dark:bg-zinc-900/95 dark:text-zinc-200 dark:hover:text-white'
@@ -131,12 +133,15 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
 
         {/* Action footer */}
         <div className="mt-4 flex items-center justify-between border-t border-zinc-200 pt-3 dark:border-zinc-800">
-          {/* RSVP / Going button */}
+          {/* Going button */}
           <button
             type="button"
             onClick={handleToggleGoing}
+            title={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
+            aria-label={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
             className={cn(
-              'border-ink inline-flex items-center gap-1.5 border-2 px-2.5 py-1 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5',
+              CONBLOCK,
+              'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase',
               meetup.is_going
                 ? 'bg-accent text-white dark:text-zinc-950'
                 : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
@@ -147,7 +152,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
             ) : (
               <Users className="h-3.5 w-3.5" />
             )}
-            <span>{meetup.is_going ? 'Going' : 'RSVP'}</span>
+            <span>{meetup.is_going ? "I'm Going!" : 'Going!'}</span>
             <span className="border-ink ml-1 rounded-none border-l pl-1.5 text-[11px] opacity-80">
               {meetup.going_count}
             </span>

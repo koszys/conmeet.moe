@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { Bookmark, HeartHandshake, Search, Sparkles, Users } from 'lucide-react';
 import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
@@ -119,30 +119,32 @@ export function MeetupFilterBar({
           onClick={() => onTabChange('all')}
           className={cn(
             CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
+            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
             activeTab === 'all'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
           )}
         >
+          <Users className="h-3.5 w-3.5 shrink-0" />
           <span>All Meetups</span>
         </button>
 
         {/* Divider between All Meetups and the rest */}
-        <div className="border-ink/30 mx-1 hidden h-6 shrink-0 border-r-2 border-dashed sm:block" />
+        <div className="border-ink/30 mx-0.5 h-6 shrink-0 self-center border-r-2 border-dashed sm:mx-1" />
 
         <button
           type="button"
           onClick={() => onTabChange('official')}
           className={cn(
             CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
+            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
             activeTab === 'official'
-              ? 'text-ink bg-amber-300'
+              ? 'bg-accent-pop text-white'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
           )}
         >
-          <span>★ Official</span>
+          <Sparkles className="h-3.5 w-3.5 shrink-0 fill-current" />
+          <span>Official</span>
         </button>
 
         <button
@@ -150,12 +152,13 @@ export function MeetupFilterBar({
           onClick={() => onTabChange('community')}
           className={cn(
             CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
+            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
             activeTab === 'community'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
           )}
         >
+          <HeartHandshake className="h-3.5 w-3.5 shrink-0" />
           <span>Community / Fan</span>
         </button>
 
@@ -164,12 +167,13 @@ export function MeetupFilterBar({
           onClick={() => onTabChange('saved')}
           className={cn(
             CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase',
+            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
             activeTab === 'saved'
               ? 'bg-accent-pop text-white'
               : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
           )}
         >
+          <Bookmark className="h-3.5 w-3.5 shrink-0 fill-current" />
           <span>Saved</span>
         </button>
       </div>

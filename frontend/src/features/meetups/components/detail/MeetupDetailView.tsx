@@ -61,6 +61,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           conventionSlug={conventionSlug}
           initialData={meetup}
           onSuccess={() => setIsEditing(false)}
+          onCancel={() => setIsEditing(false)}
         />
       </div>
     );
@@ -142,11 +143,11 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           </div>
         )}
 
-        <div className="p-6 sm:p-8">
+        <div className="p-4 sm:p-8">
           {/* Status Badges */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {meetup.is_official ? (
-              <span className="border-ink text-ink bg-amber-300 px-2.5 py-1 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)]">
+              <span className="border-ink bg-accent-pop px-2.5 py-1 text-xs font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)]">
                 ★ Official Convention Meetup
               </span>
             ) : (
@@ -186,8 +187,8 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             </div>
           </div>
 
-          {/* Action Row: Going + Save + Share Link */}
-          <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
+          {/* Action Row: Going + (Save & Link always together on same line) */}
+          <div className="mt-6 flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-6 sm:gap-3 dark:border-zinc-800">
             {/* Going Button */}
             <button
               type="button"
@@ -196,7 +197,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
               aria-label={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
               className={cn(
                 CONBLOCK,
-                'inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase',
+                'inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase sm:px-5',
                 meetup.is_going
                   ? 'bg-accent text-white dark:text-zinc-950'
                   : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
@@ -216,22 +217,20 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
               </span>
             </button>
 
-            {/* Save Button (No save count) */}
-            <BookmarkButton
-              variant="button"
-              isSaved={meetup.is_saved}
-              onClick={handleToggleSave}
-              savedLabel="Saved"
-              unsavedLabel="Save Meetup"
-            />
+            {/* Save & Link: Always paired side-by-side on the same line */}
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+              {/* Save Button: Responsive (icon only on mobile, full with text on sm+) */}
+              <BookmarkButton
+                variant="responsive"
+                isSaved={meetup.is_saved}
+                onClick={handleToggleSave}
+                savedLabel="Saved"
+                unsavedLabel="Save Meetup"
+              />
 
-            {/* Link Button: Placed to the right of Save Meetup */}
-            <CopyLinkButton
-              variant="button"
-              size="md"
-              label="Share Link"
-              className="h-auto px-4 py-2 text-xs font-bold uppercase sm:px-5 sm:py-2.5"
-            />
+              {/* Link Button: Responsive (icon only on mobile, full with text on sm+) */}
+              <CopyLinkButton variant="responsive" size="md" label="Share Link" />
+            </div>
           </div>
         </div>
       </article>

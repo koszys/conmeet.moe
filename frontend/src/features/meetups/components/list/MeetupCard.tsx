@@ -69,7 +69,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         {/* Badges on artwork */}
         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
           {meetup.is_official ? (
-            <span className="border-ink text-ink bg-amber-300 px-2 py-0.5 text-[10px] font-bold uppercase shadow-[2px_2px_0_var(--ink)]">
+            <span className="border-ink bg-accent-pop px-2 py-0.5 text-[10px] font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)]">
               ★ Official Meetup
             </span>
           ) : (

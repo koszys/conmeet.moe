@@ -49,7 +49,7 @@ function RowSkeleton() {
 export function ConventionGrid({
   id = 'conventions',
   heading = 'the line-up!',
-  tagline = 'Only conventions currently on this site are listed here — not every con out there!',
+  tagline = 'Only conventions currently on this site are listed here. If yours is missing, add it by submitting a request!',
   limitNow,
   limitSoon,
   limitUp,

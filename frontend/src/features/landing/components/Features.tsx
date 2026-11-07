@@ -12,7 +12,7 @@ const FEATURES = [
     id: 'meetups',
     title: 'Meetups',
     description:
-      'Official and unofficial gatherings with a simple Going/RSVP system and public headcounts. Find others who are also attending to share your socials, pictures, etc!',
+      'Official and unofficial meetups with a headcount to see how many others are going. Use this section to share your socials, pictures, etc!',
     icon: Users,
   },
   {

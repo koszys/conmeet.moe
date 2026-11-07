@@ -56,8 +56,8 @@ export function Hero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-zinc-600 sm:mt-8 sm:text-lg dark:text-zinc-300">
-          A community site for convention goers! Freebies, meetups, and schedules. Many more updates
-          to come to make your con life easier.
+          A community site for convention goers! Current features are listed below. Support and
+          feedback is appreciated!
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:mt-10 sm:gap-5">

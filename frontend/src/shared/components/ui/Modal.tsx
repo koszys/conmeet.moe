@@ -134,7 +134,7 @@ export function ModalHeader({
             </h2>
           )}
           {subtitle && (
-            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">{subtitle}</p>
+            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-300">{subtitle}</p>
           )}
         </div>
       )}

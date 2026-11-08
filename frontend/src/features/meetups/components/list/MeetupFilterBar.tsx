@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Bookmark, HeartHandshake, Sparkles, Users } from 'lucide-react';
+import { Bookmark, Calendar, HeartHandshake, Sparkles, Users } from 'lucide-react';
 import { CONBLOCK, SearchInput } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
@@ -72,7 +72,8 @@ export function MeetupFilterBar({
         {/* Date Filter Pills: Single row, no stacking, responsive compact labels on mobile */}
         {conventionDays.length > 0 && (
           <div className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-1 pb-1 sm:gap-2">
-            <span className="font-display hidden text-[11px] font-bold tracking-wider text-zinc-500 uppercase sm:inline">
+            <span className="font-display hidden items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase sm:inline-flex dark:text-zinc-300">
+              <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               Day:
             </span>
             <button

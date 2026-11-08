@@ -166,7 +166,7 @@ export function ImageUpload({
                 <span className="font-display block text-xs font-bold tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
                   Click or drag image to upload
                 </span>
-                <span className="mt-0.5 block text-[11px] text-zinc-500 dark:text-zinc-400">
+                <span className="mt-0.5 block text-[11px] text-zinc-500 dark:text-zinc-300">
                   {description}
                 </span>
               </div>

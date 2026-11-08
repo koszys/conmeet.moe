@@ -20,14 +20,14 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <div className={cn('relative w-full', wrapperClassName)}>
-      <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+      <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'border-ink w-full border-2 bg-zinc-50 py-2 text-xs shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+          'border-ink w-full border-2 bg-zinc-50 py-2 text-xs shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black',
           value && onClear ? 'pr-9 pl-9' : 'pr-3 pl-9',
           className
         )}

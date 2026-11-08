@@ -18,7 +18,7 @@ export function BackLink({ href, children, className, onClick }: BackLinkProps) 
       href={href}
       onClick={onClick}
       className={cn(
-        'font-display hover:text-accent-pop group inline-flex items-center gap-2 text-xs tracking-wider text-zinc-600 uppercase transition-colors dark:text-zinc-400',
+        'font-display group hover:text-accent-pop dark:hover:text-accent-pop inline-flex items-center gap-2 text-xs font-bold tracking-wider text-zinc-800 uppercase transition-colors dark:text-white',
         className
       )}
     >

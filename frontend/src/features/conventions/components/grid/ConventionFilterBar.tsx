@@ -66,7 +66,7 @@ export function ConventionFilterBar({
             onChange={(e) => onFilterChange({ query: e.target.value })}
             placeholder="Search by name, city, venue..."
             aria-label="Search conventions"
-            className="border-ink h-10 w-full border-2 bg-white pr-8 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+            className="border-ink h-10 w-full border-2 bg-white pr-8 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
           />
           {filters.query && (
             <button

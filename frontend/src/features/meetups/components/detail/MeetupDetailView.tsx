@@ -61,7 +61,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       <div className="mx-auto max-w-4xl px-4 py-12 text-center sm:px-6">
         <div className="border-ink inline-block border-2 bg-white p-8 shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
           <h2 className="font-display text-xl font-bold uppercase">Meetup Not Found</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
             This meetup may have been moved or removed by the host.
           </p>
           <div className="mt-6">
@@ -422,7 +422,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                 Photo Collections & Albums
               </h2>
             </div>
-            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
               Attendee photos, albums, and photographer credits for this meetup.
             </p>
           </div>

@@ -16,8 +16,8 @@ export function CharCounter({ current, max }: CharCounterProps) {
         isAtLimit
           ? 'font-bold text-rose-500 dark:text-rose-400'
           : isNearLimit
-            ? 'font-bold text-zinc-700 dark:text-zinc-200'
-            : 'text-zinc-400 dark:text-zinc-500'
+            ? 'font-bold text-zinc-700 dark:text-zinc-100'
+            : 'text-zinc-500 dark:text-zinc-300'
       )}
     >
       {current}/{max}

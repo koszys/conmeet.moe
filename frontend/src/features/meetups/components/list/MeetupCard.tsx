@@ -115,18 +115,18 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
 
         {/* Location */}
         {meetup.location && (
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400">
-            <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+            <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-500 dark:text-zinc-400" />
             <span className="truncate">{meetup.location}</span>
           </div>
         )}
 
         {/* Creator credit */}
-        <div className="mt-3 flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-          <User className="h-3 w-3 shrink-0" />
+        <div className="mt-3 flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-300">
+          <User className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-400" />
           <span>
             Posted by{' '}
-            <strong className="font-semibold text-zinc-700 dark:text-zinc-300">
+            <strong className="font-semibold text-zinc-700 dark:text-zinc-200">
               @{meetup.created_by_name || 'Fan'}
             </strong>
           </span>

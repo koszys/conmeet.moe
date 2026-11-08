@@ -164,7 +164,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                   ? 'Search your uploaded freebies...'
                   : 'Search items, booths...'
             }
-            className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+            className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
           />
           {isFetching && debouncedSearch ? (
             <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400">

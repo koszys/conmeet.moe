@@ -42,7 +42,7 @@ export function EmptyState({
       </h3>
 
       {description && (
-        <div className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <div className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
           {description}
         </div>
       )}

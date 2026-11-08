@@ -275,7 +275,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
         <h1 className="font-display text-2xl font-black tracking-wider uppercase sm:text-3xl">
           {isEditing ? 'Edit Meetup' : 'Post a Meetup'}
         </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
           {isEditing
             ? 'Update the meetup details, schedule, or meetup location.'
             : 'Organize a cosplay gathering, photoshoot, franchise fan meetup, or panel.'}
@@ -313,7 +313,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             }}
             placeholder="e.g. Genshin Impact Cosplay Meetup, Chainsaw Man Fan Meetup"
             className={cn(
-              'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+              'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black',
               errors.name && 'border-red-500 bg-red-50 dark:bg-red-950/30'
             )}
           />
@@ -331,7 +331,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             Location / Gathering Spot <span className="text-red-500">*</span>
           </label>
           <div className="relative mt-1.5">
-            <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
             <input
               id="meetup-location"
               type="text"
@@ -343,7 +343,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
               }}
               placeholder="e.g. River Pavilion Meetup #1, Site #1, Room 402B"
               className={cn(
-                'border-ink w-full border-2 bg-zinc-50 py-2.5 pr-3.5 pl-9 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                'border-ink w-full border-2 bg-zinc-50 py-2.5 pr-3.5 pl-9 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black',
                 errors.location && 'border-red-500 bg-red-50 dark:bg-red-950/30'
               )}
             />
@@ -353,7 +353,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
               {errors.location}
             </p>
           ) : (
-            <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
               Be specific so attendees know exactly where to assemble.
             </p>
           )}
@@ -365,11 +365,11 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           <div>
             <div className="flex flex-wrap items-baseline justify-between gap-1.5 sm:gap-2">
               <label className="font-display flex items-center gap-1.5 text-xs tracking-wider uppercase">
-                <Calendar className="h-3.5 w-3.5 text-zinc-500" />
+                <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
                 Meetup Day <span className="text-red-500">*</span>
               </label>
               {convention?.name && (
-                <span className="truncate text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                <span className="truncate text-[11px] font-semibold text-zinc-500 dark:text-zinc-300">
                   {convention.name}
                 </span>
               )}
@@ -413,7 +413,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
 
                 {/* Custom/Specific date fallback: Stacks on mobile, inline on desktop */}
                 <div className="flex flex-col gap-1.5 pt-1 text-xs sm:flex-row sm:items-center sm:gap-2">
-                  <span className="font-semibold text-zinc-500 dark:text-zinc-400">
+                  <span className="font-semibold text-zinc-500 dark:text-zinc-300">
                     Or select another date:
                   </span>
                   <input
@@ -467,7 +467,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   Start Time <span className="text-red-500">*</span>
                 </label>
                 <div className="relative mt-1.5">
-                  <Clock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <Clock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
                   <input
                     id="meetup-start-time"
                     type="time"
@@ -491,7 +491,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   End Time <span className="text-red-500">*</span>
                 </label>
                 <div className="relative mt-1.5">
-                  <Clock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <Clock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
                   <input
                     id="meetup-end-time"
                     type="time"
@@ -512,7 +512,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
 
             {/* Quick Duration */}
             <div className="mt-3.5">
-              <span className="block text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+              <span className="block text-[11px] font-semibold text-zinc-500 dark:text-zinc-300">
                 Quick duration:
               </span>
               <div className="mt-1.5 grid grid-cols-4 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
@@ -561,7 +561,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
               <span className="font-display block text-xs tracking-wider uppercase">
                 Display Format
               </span>
-              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-300">
                 Choose how this image is displayed on the meetup page.
               </p>
 
@@ -580,7 +580,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   <span className="font-display block text-xs tracking-wide uppercase">
                     Portrait Flyer (Vertical)
                   </span>
-                  <span className="mt-1 block text-[11px] leading-snug font-normal text-zinc-500 dark:text-zinc-400">
+                  <span className="mt-1 block text-[11px] leading-snug font-normal text-zinc-500 dark:text-zinc-300">
                     Featured vertical poster on the meetup page. Best for event flyers and manga
                     covers.
                   </span>
@@ -600,7 +600,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   <span className="font-display block text-xs tracking-wide uppercase">
                     Landscape Banner (Horizontal)
                   </span>
-                  <span className="mt-1 block text-[11px] leading-snug font-normal text-zinc-500 dark:text-zinc-400">
+                  <span className="mt-1 block text-[11px] leading-snug font-normal text-zinc-500 dark:text-zinc-300">
                     Full-width 16:9 banner across the top of the meetup page. Best for landscape
                     banners and wide photos.
                   </span>
@@ -624,7 +624,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Introduce the meetup! Include photoshoot schedules, rules for cosplay weapons/props, contact info, Discord invite, or social handles..."
-            className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
+            className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black"
           />
         </div>
 
@@ -633,7 +633,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           <label className="font-display block text-xs tracking-wider uppercase">
             Meetup Type <span className="text-red-500">*</span>
           </label>
-          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-300">
             Choose whether this gathering is a fan-hosted event or an official con event:
           </p>
           <div className="mt-2.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
@@ -665,7 +665,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   'mt-1 text-[11px] leading-relaxed',
                   !isOfficial
                     ? 'text-zinc-300 dark:text-zinc-600'
-                    : 'text-zinc-500 dark:text-zinc-400'
+                    : 'text-zinc-500 dark:text-zinc-300'
                 )}
               >
                 Your community doesn&apos;t have an official meetup? Add it here!
@@ -693,7 +693,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
               <p
                 className={cn(
                   'mt-1 text-[11px] leading-relaxed',
-                  isOfficial ? 'text-pink-100' : 'text-zinc-500 dark:text-zinc-400'
+                  isOfficial ? 'text-pink-100' : 'text-zinc-500 dark:text-zinc-300'
                 )}
               >
                 Official meetup/gathering as shown on the convention schedule.

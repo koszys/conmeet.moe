@@ -126,7 +126,7 @@ export function ConventionFilterPopover({
       <div className="max-h-[65vh] space-y-4 overflow-y-auto p-3.5">
         {/* Section 1: Timeframe */}
         <div>
-          <label className="font-display flex items-center gap-1.5 text-xs tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+          <label className="font-display flex items-center gap-1.5 text-xs tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
             <Calendar className="h-3 w-3" />
             Timeframe
           </label>
@@ -190,7 +190,7 @@ export function ConventionFilterPopover({
           <div>
             <label
               htmlFor="filter-popover-location"
-              className="font-display flex items-center gap-1.5 text-xs tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+              className="font-display flex items-center gap-1.5 text-xs tracking-wider text-zinc-600 uppercase dark:text-zinc-300"
             >
               <Globe className="h-3 w-3" />
               Location
@@ -218,7 +218,7 @@ export function ConventionFilterPopover({
           <div>
             <label
               htmlFor="filter-popover-year"
-              className="font-display flex items-center gap-1.5 text-xs tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+              className="font-display flex items-center gap-1.5 text-xs tracking-wider text-zinc-600 uppercase dark:text-zinc-300"
             >
               <Calendar className="h-3 w-3" />
               Year
@@ -244,7 +244,7 @@ export function ConventionFilterPopover({
 
       {/* Footer */}
       <div className="border-ink flex items-center justify-between gap-2 border-t-2 bg-zinc-50 p-2.5 sm:p-3 dark:bg-zinc-950">
-        <span className="font-mono text-[11px] font-bold tracking-tight whitespace-nowrap text-zinc-500 uppercase dark:text-zinc-400">
+        <span className="font-mono text-[11px] font-bold tracking-tight whitespace-nowrap text-zinc-500 uppercase dark:text-zinc-300">
           {filteredCount} of {totalCount} cons
         </span>
 

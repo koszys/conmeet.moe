@@ -59,7 +59,7 @@ export function ConventionFilterBar({
       <div className="flex items-center gap-2 sm:gap-2.5">
         {/* Search Input */}
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
+          <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
           <input
             type="text"
             value={filters.query}
@@ -72,7 +72,7 @@ export function ConventionFilterBar({
             <button
               type="button"
               onClick={() => onFilterChange({ query: '' })}
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />
@@ -147,7 +147,7 @@ export function ConventionFilterBar({
             <span>Reset</span>
           </button>
 
-          <span className="font-display text-[10.5px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+          <span className="font-display text-[10.5px] font-bold tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
             Showing {filteredCount} of {totalCount}
           </span>
         </div>

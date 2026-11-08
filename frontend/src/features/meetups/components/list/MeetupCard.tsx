@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Check, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BookmarkButton, CONBLOCK } from '@/shared/components/ui';
+import { Badge, BookmarkButton, CONBLOCK } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
@@ -74,13 +74,17 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         {/* Badges on artwork */}
         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
           {meetup.is_official ? (
-            <span className="border-ink bg-accent-pop px-2 py-0.5 text-[10px] font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+            <Badge variant="pop" size="sm">
               Official Meetup
-            </span>
+            </Badge>
           ) : (
-            <span className="border-ink bg-white/95 px-2 py-0.5 text-[10px] font-bold text-zinc-800 uppercase shadow-[2px_2px_0_var(--ink)] backdrop-blur-xs dark:bg-zinc-900/95 dark:text-zinc-200">
+            <Badge
+              variant="default"
+              size="sm"
+              className="bg-white/95 backdrop-blur-xs dark:bg-zinc-900/95"
+            >
               Community
-            </span>
+            </Badge>
           )}
         </div>
 

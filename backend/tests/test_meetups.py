@@ -1,15 +1,14 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from io import BytesIO
 
 import pytest
 from conventions.models import Convention
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from meetups.models import Meetup
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from meetups.models import Meetup
 
 pytestmark = pytest.mark.django_db
 User = get_user_model()
@@ -59,13 +58,15 @@ def other_user() -> User:
     )
 
 
-def test_list_convention_meetups_unauthenticated(convention: Convention, regular_user: User) -> None:
+def test_list_convention_meetups_unauthenticated(
+    convention: Convention, regular_user: User
+) -> None:
     Meetup.objects.create(
         convention=convention,
         name="Genshin Impact Gathering",
         location="South Hall Lobby",
-        starts_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 16, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 16, 0, tzinfo=UTC),
         created_by=regular_user,
     )
 
@@ -81,21 +82,23 @@ def test_list_convention_meetups_unauthenticated(convention: Convention, regular
     assert data[0]["going_count"] == 0
 
 
-def test_filter_meetups_by_date_official_and_search(convention: Convention, regular_user: User) -> None:
+def test_filter_meetups_by_date_official_and_search(
+    convention: Convention, regular_user: User
+) -> None:
     m1 = Meetup.objects.create(
         convention=convention,
         name="Official Guest Autographs",
         location="Room 403",
-        starts_at=datetime(2027, 7, 2, 10, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 10, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
         is_official=True,
     )
     m2 = Meetup.objects.create(
         convention=convention,
         name="Frieren Fan Photoshoot",
         location="Fountain Stairs",
-        starts_at=datetime(2027, 7, 3, 15, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 3, 17, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 3, 15, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 3, 17, 0, tzinfo=UTC),
         is_official=False,
     )
 
@@ -188,8 +191,8 @@ def test_retrieve_meetup_detail(convention: Convention, regular_user: User) -> N
         convention=convention,
         name="Hatsune Miku Fan Meet",
         location="Exhibit Hall A",
-        starts_at=datetime(2027, 7, 2, 16, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 18, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 16, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 18, 0, tzinfo=UTC),
         created_by=regular_user,
     )
     meetup.description = '{"delta": "", "html": "<p>Bring glowsticks!</p>"}'
@@ -210,8 +213,8 @@ def test_update_meetup_author_and_permissions(
     meetup = Meetup.objects.create(
         convention=convention,
         name="Original Meetup Name",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
         created_by=regular_user,
     )
 
@@ -235,8 +238,8 @@ def test_delete_meetup_author_and_permissions(
     meetup = Meetup.objects.create(
         convention=convention,
         name="Meetup To Delete",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
         created_by=regular_user,
     )
 
@@ -258,8 +261,8 @@ def test_save_and_going_require_authentication(convention: Convention) -> None:
     meetup = Meetup.objects.create(
         convention=convention,
         name="Saved Meetup Test",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
     )
     client = APIClient()
 
@@ -274,8 +277,8 @@ def test_toggle_save_meetup(convention: Convention, regular_user: User) -> None:
     meetup = Meetup.objects.create(
         convention=convention,
         name="Save Toggle Meetup",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
     )
     client = APIClient()
     client.force_authenticate(user=regular_user)
@@ -302,8 +305,8 @@ def test_toggle_going_meetup(convention: Convention, regular_user: User) -> None
     meetup = Meetup.objects.create(
         convention=convention,
         name="RSVP Meetup",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
     )
     client = APIClient()
     client.force_authenticate(user=regular_user)
@@ -330,14 +333,14 @@ def test_filter_saved_meetups(convention: Convention, regular_user: User) -> Non
     m1 = Meetup.objects.create(
         convention=convention,
         name="Saved Meetup",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
     )
-    m2 = Meetup.objects.create(
+    Meetup.objects.create(
         convention=convention,
         name="Unsaved Meetup",
-        starts_at=datetime(2027, 7, 2, 15, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 17, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 15, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 17, 0, tzinfo=UTC),
     )
 
     client = APIClient()
@@ -384,8 +387,8 @@ def test_update_meetup_clear_image(convention: Convention, regular_user: User) -
     meetup = Meetup.objects.create(
         convention=convention,
         name="Meetup with banner",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
         created_by=regular_user,
         image=image_file,
     )
@@ -405,8 +408,8 @@ def test_staff_can_edit_and_delete_any_meetup(
     meetup = Meetup.objects.create(
         convention=convention,
         name="User Community Meetup",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
         created_by=regular_user,
         is_official=False,
     )
@@ -435,8 +438,8 @@ def test_save_and_going_multi_user_isolation(
     meetup = Meetup.objects.create(
         convention=convention,
         name="Multi-user Gathering",
-        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 12, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 14, 0, tzinfo=UTC),
     )
 
     client1 = APIClient()
@@ -518,8 +521,8 @@ def test_update_meetup_image_layout(convention: Convention, regular_user: User) 
     meetup = Meetup.objects.create(
         convention=convention,
         name="Solo Leveling Gathering",
-        starts_at=datetime(2027, 7, 2, 10, 0, tzinfo=timezone.utc),
-        ends_at=datetime(2027, 7, 2, 11, 0, tzinfo=timezone.utc),
+        starts_at=datetime(2027, 7, 2, 10, 0, tzinfo=UTC),
+        ends_at=datetime(2027, 7, 2, 11, 0, tzinfo=UTC),
         created_by=regular_user,
         image_layout="banner",
     )
@@ -531,5 +534,3 @@ def test_update_meetup_image_layout(convention: Convention, regular_user: User) 
 
     meetup.refresh_from_db()
     assert meetup.image_layout == "poster"
-
-

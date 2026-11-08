@@ -156,6 +156,7 @@ def test_convention_admin_form_saves_r2_key() -> None:
     test_key = "conventions/banners/_pytest_save_test.webp"
     default_storage.save(test_key, ContentFile(b"test"))
     try:
+
         class DummyConventionForm(forms.ModelForm):
             banner = R2ImageFormField(required=False)
 

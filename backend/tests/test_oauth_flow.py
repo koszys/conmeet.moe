@@ -127,9 +127,9 @@ def test_post_login_non_social_delegates_to_base() -> None:
 
 
 def _google_app() -> SocialApp:
-    site = Site.objects.get_or_create(
-        pk=1, defaults={"domain": "localhost", "name": "localhost"}
-    )[0]
+    site = Site.objects.get_or_create(pk=1, defaults={"domain": "localhost", "name": "localhost"})[
+        0
+    ]
     app, _ = SocialApp.objects.get_or_create(
         provider="google", defaults={"name": "Google", "client_id": "x", "secret": "y"}
     )
@@ -137,9 +137,7 @@ def _google_app() -> SocialApp:
     return app
 
 
-def _google_sociallogin(
-    provider_email: str, provider_email_verified: bool
-) -> SocialLogin:
+def _google_sociallogin(provider_email: str, provider_email_verified: bool) -> SocialLogin:
     request = RequestFactory().get("/accounts/google/login/callback/")
     request.session = SessionStore()
     provider = GoogleProvider(request, app=SocialApp(provider="google"))
@@ -147,9 +145,7 @@ def _google_sociallogin(
         user=get_user_model()(),
         provider=provider,
         account=SocialAccount(provider="google", uid="999999"),
-        email_addresses=[
-            EmailAddress(email=provider_email, verified=provider_email_verified)
-        ],
+        email_addresses=[EmailAddress(email=provider_email, verified=provider_email_verified)],
     )
 
 
@@ -174,9 +170,7 @@ def test_email_authentication_resolves_and_connects_existing_user() -> None:
     with context.request_context(request):
         sociallogin._accept_login(request)
 
-    assert SocialAccount.objects.filter(
-        user=existing, provider="google", uid="999999"
-    ).exists()
+    assert SocialAccount.objects.filter(user=existing, provider="google", uid="999999").exists()
 
 
 def test_email_authentication_ignores_unverified_provider_email() -> None:

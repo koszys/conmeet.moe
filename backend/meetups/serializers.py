@@ -1,4 +1,5 @@
 import json
+
 from conventions.models import Convention
 from rest_framework import serializers
 

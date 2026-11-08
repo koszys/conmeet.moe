@@ -71,9 +71,7 @@ def test_convention_list_works_for_guests() -> None:
 
 def test_convention_detail_returns_full_fields_by_slug() -> None:
     con = _make_convention("Anime NYC", slug="anime-nyc")
-    con.description = json.dumps(
-        {"delta": [{"insert": "Big con!"}], "html": "<p>Big con!</p>"}
-    )
+    con.description = json.dumps({"delta": [{"insert": "Big con!"}], "html": "<p>Big con!</p>"})
     con.map_url = "https://maps.example.com/anime-nyc"
     con.save()
 
@@ -183,5 +181,3 @@ def test_convention_featured_priority_serialization() -> None:
     data = resp.json()
     assert data["is_featured"] is True
     assert data["featured_priority"] == 1
-
-

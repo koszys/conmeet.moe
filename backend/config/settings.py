@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     "accounts",
     "comments",
     "conventions",
-    "events",
     "freebies",
     "meetups",
     "notifications",

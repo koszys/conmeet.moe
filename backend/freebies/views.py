@@ -37,8 +37,7 @@ class FreebieListCreateView(generics.ListCreateAPIView):
         if convention_param:
             if convention_param.isdigit():
                 qs = qs.filter(
-                    Q(convention_id=int(convention_param))
-                    | Q(convention__slug=convention_param)
+                    Q(convention_id=int(convention_param)) | Q(convention__slug=convention_param)
                 )
             else:
                 qs = qs.filter(convention__slug=convention_param)
@@ -162,9 +161,7 @@ class FreebieClaimToggleView(APIView):
             {
                 "is_claimed": user_freebie.claimed,
                 "claimed_at": (
-                    user_freebie.claimed_at.isoformat()
-                    if user_freebie.claimed_at
-                    else None
+                    user_freebie.claimed_at.isoformat() if user_freebie.claimed_at else None
                 ),
             },
             status=status.HTTP_200_OK,
@@ -190,8 +187,7 @@ class VendorListView(generics.ListAPIView):
         q_param = self.request.query_params.get("q")
         if q_param:
             qs = qs.filter(
-                Q(name__icontains=q_param.strip())
-                | Q(description__icontains=q_param.strip())
+                Q(name__icontains=q_param.strip()) | Q(description__icontains=q_param.strip())
             )
 
         return qs

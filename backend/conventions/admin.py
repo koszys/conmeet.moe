@@ -98,7 +98,7 @@ class ConventionAdmin(R2AdminMediaMixin, ModelAdmin):
                     initial.setdefault("map_url", req.map_url)
                 if req.banner:
                     initial.setdefault("banner", req.banner)
-            except (ConventionRequest.DoesNotExist, ValueError):
+            except ConventionRequest.DoesNotExist, ValueError:
                 pass
         return initial
 
@@ -116,10 +116,13 @@ class ConventionAdmin(R2AdminMediaMixin, ModelAdmin):
                 req.save(update_fields=["status", "created_convention", "updated_at"])
                 self.message_user(
                     request,
-                    f"Convention created from Request #{req.id} ('{req.name}'). Request marked as Approved.",
+                    (
+                        f"Convention created from Request #{req.id} ('{req.name}'). "
+                        "Request marked as Approved."
+                    ),
                     messages.SUCCESS,
                 )
-            except (ConventionRequest.DoesNotExist, ValueError):
+            except ConventionRequest.DoesNotExist, ValueError:
                 pass
 
 
@@ -193,7 +196,8 @@ class ConventionRequestAdmin(R2AdminMediaMixin, ModelAdmin):
         }
         style = colors.get(obj.status, "")
         return format_html(
-            '<span style="padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; {}">{}</span>',
+            '<span style="padding: 2px 8px; border-radius: 4px; font-weight: bold; '
+            'font-size: 11px; text-transform: uppercase; {}">{}</span>',
             style,
             obj.get_status_display(),
         )
@@ -210,7 +214,9 @@ class ConventionRequestAdmin(R2AdminMediaMixin, ModelAdmin):
     def created_convention_link(self, obj: ConventionRequest):
         if obj.created_convention:
             url = reverse("admin:conventions_convention_change", args=[obj.created_convention.id])
-            return format_html('<a href="{}" class="font-bold underline">{}</a>', url, obj.created_convention.name)
+            return format_html(
+                '<a href="{}" class="font-bold underline">{}</a>', url, obj.created_convention.name
+            )
         return "-"
 
     @display(description="Banner")
@@ -232,7 +238,9 @@ class ConventionRequestAdmin(R2AdminMediaMixin, ModelAdmin):
         req.save(update_fields=["status", "updated_at"])
         self.message_user(request, f"Request '{req.name}' marked as rejected.", messages.WARNING)
         return HttpResponseRedirect(
-            request.META.get("HTTP_REFERER", reverse("admin:conventions_conventionrequest_changelist"))
+            request.META.get(
+                "HTTP_REFERER", reverse("admin:conventions_conventionrequest_changelist")
+            )
         )
 
     @admin.action(description="Mark selected requests as Rejected")

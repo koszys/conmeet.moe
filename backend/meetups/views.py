@@ -33,14 +33,14 @@ class ConventionMeetupListCreateView(generics.ListCreateAPIView):
             # Pre-cache user's saved and going meetup IDs for this convention to prevent N+1 queries
             slug = self.kwargs.get("slug")
             context["saved_meetups_set"] = set(
-                SavedMeetup.objects.filter(
-                    user=user, meetup__convention__slug=slug
-                ).values_list("meetup_id", flat=True)
+                SavedMeetup.objects.filter(user=user, meetup__convention__slug=slug).values_list(
+                    "meetup_id", flat=True
+                )
             )
             context["going_meetups_set"] = set(
-                Going.objects.filter(
-                    user=user, meetup__convention__slug=slug
-                ).values_list("meetup_id", flat=True)
+                Going.objects.filter(user=user, meetup__convention__slug=slug).values_list(
+                    "meetup_id", flat=True
+                )
             )
         return context
 
@@ -96,12 +96,9 @@ class ConventionMeetupListCreateView(generics.ListCreateAPIView):
 
 class MeetupDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthorOrReadOnly]
-    queryset = (
-        Meetup.objects.select_related("convention", "created_by")
-        .annotate(
-            _going_count=Count("going", distinct=True),
-            _save_count=Count("saved_by", distinct=True),
-        )
+    queryset = Meetup.objects.select_related("convention", "created_by").annotate(
+        _going_count=Count("going", distinct=True),
+        _save_count=Count("saved_by", distinct=True),
     )
 
     def get_serializer_class(self):

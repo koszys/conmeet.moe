@@ -99,6 +99,4 @@ class Command(BaseCommand):
                 f"  {status} {convention.name} ({convention.starts_at} → {convention.ends_at})"
             )
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Done — {created} created, {updated} updated.")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Done — {created} created, {updated} updated."))

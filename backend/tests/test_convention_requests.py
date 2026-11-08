@@ -16,8 +16,8 @@ User = get_user_model()
 
 
 def _make_admin_request(factory_request):
-    setattr(factory_request, "session", "session")
-    setattr(factory_request, "_messages", FallbackStorage(factory_request))
+    factory_request.session = "session"
+    factory_request._messages = FallbackStorage(factory_request)
     return factory_request
 
 
@@ -156,7 +156,9 @@ def test_admin_initial_data_prefilled_from_request() -> None:
     )
 
     factory = RequestFactory()
-    request = _make_admin_request(factory.get(f"/admin/conventions/convention/add/?from_request={req.id}"))
+    request = _make_admin_request(
+        factory.get(f"/admin/conventions/convention/add/?from_request={req.id}")
+    )
     site = AdminSite()
     con_admin = ConventionAdmin(Convention, site)
 
@@ -181,7 +183,9 @@ def test_admin_save_model_auto_approves_request() -> None:
     )
 
     factory = RequestFactory()
-    request = _make_admin_request(factory.post(f"/admin/conventions/convention/add/?from_request={req.id}"))
+    request = _make_admin_request(
+        factory.post(f"/admin/conventions/convention/add/?from_request={req.id}")
+    )
     site = AdminSite()
     con_admin = ConventionAdmin(Convention, site)
 

@@ -17,4 +17,3 @@ urlpatterns = [
 
 if settings.DEBUG and not settings.AWS_ACCESS_KEY_ID:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

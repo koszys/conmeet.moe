@@ -48,7 +48,6 @@ export function VendorPicker({
     handleSelectVendor,
     handleVendorKeyDown,
     refreshVendors,
-    isRefreshingVendors,
     refreshStatus,
   } = suggestions;
 

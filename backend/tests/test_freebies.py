@@ -466,5 +466,3 @@ def test_freebie_is_owner_field() -> None:
     resp3 = client_anon.get(f"/api/v1/freebies/{freebie.id}/")
     assert resp3.status_code == status.HTTP_200_OK
     assert resp3.json()["is_owner"] is False
-
-

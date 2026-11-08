@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Calendar, Clock, MapPin, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Calendar, MapPin, Sparkles } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';

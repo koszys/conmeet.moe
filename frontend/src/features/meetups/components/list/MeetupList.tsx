@@ -91,13 +91,13 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
             {activeTab === 'saved'
               ? 'No Saved Meetups Yet'
               : activeTab === 'official'
-                ? 'No Official Programming Listed'
+                ? 'No Official Meetups Listed'
                 : 'No Meetups Scheduled Yet'}
           </h3>
           <p className="mt-1.5 max-w-sm text-xs text-zinc-600 sm:text-sm dark:text-zinc-400">
             {activeTab === 'saved'
               ? 'Bookmark meetups to build your convention plan and schedule.'
-              : 'Organize a fan gathering, cosplay photoshoot, or fandom meetup for this con!'}
+              : 'Organize a fandom meetup for this con!'}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link

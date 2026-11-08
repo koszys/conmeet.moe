@@ -1,3 +1,5 @@
+export type MeetupImageLayout = 'banner' | 'poster';
+
 export interface Meetup {
   id: number;
   convention: number;
@@ -9,6 +11,7 @@ export interface Meetup {
   ends_at: string;
   image: string | null;
   image_thumb: string | null;
+  image_layout?: MeetupImageLayout;
   is_official: boolean;
   created_by: number | null;
   created_by_name: string | null;

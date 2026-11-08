@@ -84,7 +84,7 @@ export function DeleteMeetupModal({ meetup, isOpen, onClose, onSuccess }: Delete
               <span className="font-bold text-zinc-900 dark:text-zinc-100">
                 &ldquo;{meetup.name}&rdquo;
               </span>
-              ? This action cannot be undone and will permanently remove this gathering from the
+              ? This action cannot be undone and will permanently remove this meetup from the
               schedule.
             </p>
           </div>

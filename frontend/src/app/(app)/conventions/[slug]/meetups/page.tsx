@@ -3,7 +3,7 @@ import { MeetupList } from '@/features/meetups';
 
 export const metadata: Metadata = {
   title: 'Cosplay Meetups',
-  description: 'Community & official gatherings, cosplay meetups, and fan photoshoots.',
+  description: 'Community & official meetups, cosplay photoshoots, and fan gatherings.',
 };
 
 export default async function ConventionMeetupsPage({

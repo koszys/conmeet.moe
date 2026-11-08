@@ -72,7 +72,13 @@ export function ConventionDetail({
                   src={convention.banner}
                   alt=""
                   aria-hidden="true"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl dark:opacity-40"
+                />
+                <img
+                  src={convention.banner}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-cover object-top"
                 />
                 <div
                   aria-hidden="true"

@@ -4,7 +4,7 @@ import { MeetupForm } from '@/features/meetups';
 
 export const metadata: Metadata = {
   title: 'Post a Meetup',
-  description: 'Organize a meetup or cosplay gathering for this convention.',
+  description: 'Post a community or official meetup for this convention.',
 };
 
 export default async function NewMeetupPage({ params }: { params: Promise<{ slug: string }> }) {

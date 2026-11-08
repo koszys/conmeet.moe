@@ -27,7 +27,7 @@ export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderPro
               Cosplay Meetups
             </h1>
             <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
-              Community & official gatherings, fan photoshoots, and group meetups.
+              Community & official meetups, fan photoshoots, and group gatherings.
             </p>
           </div>
         </div>

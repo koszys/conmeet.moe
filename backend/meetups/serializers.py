@@ -29,6 +29,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
             "ends_at",
             "image",
             "image_thumb",
+            "image_layout",
             "is_official",
             "created_by",
             "created_by_name",
@@ -156,6 +157,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
             "description",
             "image",
             "image_thumb",
+            "image_layout",
             "is_official",
             "created_at",
         ]
@@ -201,6 +203,7 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
             "ends_at",
             "description",
             "image",
+            "image_layout",
             "clear_image",
             "is_official",
             "updated_at",

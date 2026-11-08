@@ -490,3 +490,46 @@ def test_convention_slug_not_found() -> None:
     assert resp.status_code == status.HTTP_404_NOT_FOUND
 
 
+def test_create_meetup_with_image_layout_poster(convention: Convention, regular_user: User) -> None:
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+    payload = {
+        "name": "Frieren Cosplay Gathering",
+        "location": "North Hall Lobby",
+        "starts_at": "2027-07-02T14:00:00Z",
+        "ends_at": "2027-07-02T15:00:00Z",
+        "image_layout": "poster",
+    }
+    resp = client.post(f"/api/v1/conventions/{convention.slug}/meetups/", payload)
+    assert resp.status_code == status.HTTP_201_CREATED
+    data = resp.json()
+    assert data["image_layout"] == "poster"
+
+    meetup_obj = Meetup.objects.get(id=data["id"])
+    assert meetup_obj.image_layout == "poster"
+
+    # Detail view check
+    detail_resp = client.get(f"/api/v1/meetups/{meetup_obj.id}/")
+    assert detail_resp.status_code == status.HTTP_200_OK
+    assert detail_resp.json()["image_layout"] == "poster"
+
+
+def test_update_meetup_image_layout(convention: Convention, regular_user: User) -> None:
+    meetup = Meetup.objects.create(
+        convention=convention,
+        name="Solo Leveling Gathering",
+        starts_at=datetime(2027, 7, 2, 10, 0, tzinfo=timezone.utc),
+        ends_at=datetime(2027, 7, 2, 11, 0, tzinfo=timezone.utc),
+        created_by=regular_user,
+        image_layout="banner",
+    )
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+    resp = client.patch(f"/api/v1/meetups/{meetup.id}/", {"image_layout": "poster"})
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json()["image_layout"] == "poster"
+
+    meetup.refresh_from_db()
+    assert meetup.image_layout == "poster"
+
+

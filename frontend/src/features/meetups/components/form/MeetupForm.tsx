@@ -121,6 +121,9 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.image || initialData?.image_thumb || null
   );
+  const [imageLayout, setImageLayout] = useState<'banner' | 'poster'>(
+    initialData?.image_layout || 'banner'
+  );
   const [clearImage, setClearImage] = useState(false);
 
   // Errors & Loading
@@ -131,9 +134,22 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
     if (imagePreview && imagePreview.startsWith('blob:')) {
       URL.revokeObjectURL(imagePreview);
     }
+    const preview = URL.createObjectURL(file);
     setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    setImagePreview(preview);
     setClearImage(false);
+
+    if (typeof window !== 'undefined') {
+      const img = new window.Image();
+      img.onload = () => {
+        if (img.naturalHeight > img.naturalWidth * 1.05) {
+          setImageLayout('poster');
+        } else {
+          setImageLayout('banner');
+        }
+      };
+      img.src = preview;
+    }
   };
 
   const handleImageRemove = () => {
@@ -185,6 +201,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
         formData.append('description', description.trim());
       }
       formData.append('is_official', isOfficial ? 'true' : 'false');
+      formData.append('image_layout', imageLayout);
       if (imageFile) {
         formData.append('image', imageFile);
       } else if (clearImage) {
@@ -294,7 +311,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
               setName(e.target.value);
               if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
             }}
-            placeholder="e.g. Genshin Impact Cosplay Gathering, Chainsaw Man Fan Meetup"
+            placeholder="e.g. Genshin Impact Cosplay Meetup, Chainsaw Man Fan Meetup"
             className={cn(
               'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
               errors.name && 'border-red-500 bg-red-50 dark:bg-red-950/30'
@@ -535,8 +552,62 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             previewUrl={imagePreview}
             onFileSelect={handleImageSelect}
             onRemove={handleImageRemove}
-            aspectRatioClass="aspect-[16/9]"
+            aspectRatioClass={imageLayout === 'poster' ? 'aspect-[3/4] max-w-xs' : 'aspect-[16/9]'}
           />
+
+          {/* Image Format Selector */}
+          {(imagePreview || (initialData?.image && !clearImage)) && (
+            <div className="border-ink mt-3 border-2 bg-zinc-50 p-3 shadow-[2px_2px_0_var(--ink)] sm:p-4 dark:bg-zinc-900">
+              <span className="font-display block text-xs tracking-wider uppercase">
+                Display Format
+              </span>
+              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                Choose how this image is displayed on the meetup page.
+              </p>
+
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setImageLayout('poster')}
+                  className={cn(
+                    CONBLOCK,
+                    'flex flex-col items-start p-3 text-left',
+                    imageLayout === 'poster'
+                      ? 'bg-accent/15 ring-accent font-bold ring-2'
+                      : 'bg-white hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/60'
+                  )}
+                >
+                  <span className="font-display block text-xs tracking-wide uppercase">
+                    Portrait Flyer (Vertical)
+                  </span>
+                  <span className="mt-1 block text-[11px] leading-snug font-normal text-zinc-500 dark:text-zinc-400">
+                    Featured vertical poster on the meetup page. Best for event flyers and manga
+                    covers.
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setImageLayout('banner')}
+                  className={cn(
+                    CONBLOCK,
+                    'flex flex-col items-start p-3 text-left',
+                    imageLayout === 'banner'
+                      ? 'bg-accent/15 ring-accent font-bold ring-2'
+                      : 'bg-white hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/60'
+                  )}
+                >
+                  <span className="font-display block text-xs tracking-wide uppercase">
+                    Landscape Banner (Horizontal)
+                  </span>
+                  <span className="mt-1 block text-[11px] leading-snug font-normal text-zinc-500 dark:text-zinc-400">
+                    Full-width 16:9 banner across the top of the meetup page. Best for landscape
+                    banners and wide photos.
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Description */}

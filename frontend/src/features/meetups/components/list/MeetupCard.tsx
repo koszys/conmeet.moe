@@ -41,27 +41,32 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
   };
 
   const meetupHref = `/conventions/${conventionSlug}/meetups/${meetup.id}`;
+  const imageUrl = meetup.image_thumb || meetup.image;
 
   return (
     <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
-      {/* Banner / Artwork preview */}
+      {/* Clickable area for meetup navigation (excludes bottom action footer) */}
       <Link
         href={meetupHref}
-        className="border-ink relative block aspect-[16/9] w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800"
-      >
-        {meetup.image || meetup.image_thumb ? (
+        aria-label={`View ${meetup.name}`}
+        className="absolute inset-x-0 top-0 bottom-14 z-0 cursor-pointer"
+      />
+
+      {/* Banner / Artwork preview */}
+      <div className="border-ink pointer-events-none relative block aspect-[16/9] w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800">
+        {imageUrl ? (
           <Image
-            src={meetup.image_thumb || meetup.image || ''}
+            src={imageUrl}
             alt={meetup.name}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center p-4 text-center text-zinc-400 dark:text-zinc-500">
             <Users className="h-10 w-10 opacity-30" />
             <span className="font-display mt-2 text-[11px] tracking-wider uppercase opacity-60">
-              Community Cosplay Gathering
+              Community Cosplay Meetup
             </span>
           </div>
         )}
@@ -70,7 +75,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
           {meetup.is_official ? (
             <span className="border-ink bg-accent-pop px-2 py-0.5 text-[10px] font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)]">
-              ★ Official Meetup
+              Official Meetup
             </span>
           ) : (
             <span className="border-ink bg-white/95 px-2 py-0.5 text-[10px] font-bold text-zinc-800 uppercase shadow-[2px_2px_0_var(--ink)] backdrop-blur-xs dark:bg-zinc-900/95 dark:text-zinc-200">
@@ -85,12 +90,12 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
           onClick={handleToggleSave}
           title={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
           ariaLabel={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
-          className="absolute top-2.5 right-2.5"
+          className="pointer-events-auto absolute top-2.5 right-2.5 z-10"
         />
-      </Link>
+      </div>
 
       {/* Card Content */}
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+      <div className="pointer-events-none flex flex-1 flex-col p-4 sm:p-5">
         {/* Date & Time pill */}
         <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-teal-700 dark:text-teal-400">
           <Clock className="h-3.5 w-3.5 shrink-0" />
@@ -101,7 +106,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
 
         {/* Title */}
         <h3 className="font-display group-hover:text-accent-pop text-base leading-snug tracking-wide uppercase transition-colors sm:text-lg">
-          <Link href={meetupHref}>{meetup.name}</Link>
+          {meetup.name}
         </h3>
 
         {/* Location */}
@@ -124,7 +129,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         </div>
 
         {/* Action footer */}
-        <div className="mt-4 flex items-center justify-between border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <div className="pointer-events-auto relative z-10 mt-4 flex items-center justify-between border-t border-zinc-200 pt-3 dark:border-zinc-800">
           {/* Going button */}
           <button
             type="button"
@@ -133,7 +138,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
             aria-label={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
             className={cn(
               CONBLOCK,
-              'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase',
+              'pointer-events-auto relative z-10 inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase',
               meetup.is_going
                 ? 'bg-accent text-white dark:text-zinc-950'
                 : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'

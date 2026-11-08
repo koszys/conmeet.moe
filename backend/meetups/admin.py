@@ -26,7 +26,7 @@ class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
             None,
             {"fields": ("convention", "name", "location", "starts_at", "ends_at", "is_official")},
         ),
-        ("Media", {"fields": ("image", "image_preview")}),
+        ("Media", {"fields": ("image", "image_layout", "image_preview")}),
         ("Content", {"fields": ("description",)}),
     )
     readonly_fields = ("image_preview",)

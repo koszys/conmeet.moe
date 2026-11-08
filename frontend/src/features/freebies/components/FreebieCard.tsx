@@ -20,7 +20,7 @@ import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
 import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
-import { FreebieImageModal } from './FreebieImageModal';
+import { FreebieDetailModal } from './FreebieDetailModal';
 import { EditFreebieModal } from './EditFreebieModal';
 import { DeleteFreebieModal } from './DeleteFreebieModal';
 
@@ -44,7 +44,7 @@ export function FreebieCard({
   const { user } = useAuth();
 
   const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
-  const [isImageOpen, setIsImageOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isCondensed = externalCondensed !== undefined ? externalCondensed : internalCondensed;
@@ -92,13 +92,13 @@ export function FreebieCard({
     }
   }
 
-  function handleCardBodyClick(e: React.MouseEvent) {
-    // If the user selected text, don't trigger condense
+  function handleCardBodyClick() {
+    // If the user selected text, don't trigger modal
     const selection = typeof window !== 'undefined' ? window.getSelection() : null;
     if (selection && selection.toString().length > 0) {
       return;
     }
-    handleToggleCondensed(e);
+    setIsDetailOpen(true);
   }
 
   const imageUrl = freebie.image_thumb || freebie.image;
@@ -112,39 +112,43 @@ export function FreebieCard({
         className
       )}
     >
-      {/* Clickable Card Body (Click free space to condense/expand) */}
+      {/* Clickable Card Body (Click anywhere to open full details modal) */}
       <div
         onClick={handleCardBodyClick}
-        className="cursor-pointer"
-        title={isCondensed ? 'Click card to expand' : 'Click card to condense'}
+        className="flex flex-1 cursor-pointer flex-col justify-between"
+        title="Click to view full details"
       >
-        <div className={cn('p-4 sm:p-5', isCondensed && 'p-3 sm:p-3.5')}>
-          {/* Header Row: Vendor Name, Booth Location, Claimed Badge, and Collapse Toggle */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
+        <div className={cn('flex flex-1 flex-col p-4 sm:p-5', isCondensed && 'p-3 sm:p-3.5')}>
+          {/* Header Row: Vendor Name, Booth Location, and Collapse Toggle */}
+          <div className="flex h-7 items-center justify-between gap-2">
+            <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
+              <span className="truncate text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-200">
                 {freebie.vendor.name}
               </span>
               {freebie.location ? (
-                <span className="border-ink bg-accent-soft/25 text-ink inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] font-bold uppercase shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100">
+                <span className="border-ink bg-accent-soft/25 text-ink inline-flex max-w-[130px] shrink-0 items-center gap-1 border px-2 py-0.5 font-mono text-[10px] font-bold uppercase shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100">
                   <MapPin className="text-accent h-3 w-3 shrink-0" />
-                  {freebie.location}
+                  <span className="truncate">{freebie.location}</span>
                 </span>
               ) : null}
             </div>
 
-            <div className="flex shrink-0 items-center gap-1.5">
+            {/* Upgraded Expand / Condense Button with CONBLOCK */}
+            <div className="flex shrink-0 items-center">
               <button
                 type="button"
                 onClick={handleToggleCondensed}
                 aria-label={isCondensed ? 'Expand card' : 'Condense card'}
                 title={isCondensed ? 'Expand card' : 'Condense card'}
-                className="border-ink hover:text-ink flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center border text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-black hover:shadow-[1px_1px_0_var(--ink)] dark:text-white dark:hover:bg-zinc-800"
+                className={cn(
+                  CONBLOCK,
+                  'flex h-7 w-7 shrink-0 items-center justify-center bg-white text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+                )}
               >
                 {isCondensed ? (
-                  <ChevronDown className="h-3.5 w-3.5" />
+                  <ChevronDown className="h-4 w-4 stroke-[2.5]" />
                 ) : (
-                  <ChevronUp className="h-3.5 w-3.5" />
+                  <ChevronUp className="h-4 w-4 stroke-[2.5]" />
                 )}
               </button>
             </div>
@@ -160,10 +164,10 @@ export function FreebieCard({
             <div className="min-w-0 flex-1">
               <h3
                 className={cn(
-                  'font-display tracking-wide uppercase',
+                  'font-display line-clamp-2 tracking-wide uppercase',
                   isCondensed
-                    ? 'text-sm leading-snug sm:text-base'
-                    : 'text-base leading-snug sm:text-lg',
+                    ? 'min-h-[2.5rem] text-sm leading-snug sm:min-h-[2.75rem] sm:text-base'
+                    : 'min-h-[2.75rem] text-base leading-snug sm:min-h-[3rem] sm:text-lg',
                   freebie.is_claimed
                     ? 'text-zinc-600 dark:text-zinc-300'
                     : 'text-zinc-900 dark:text-zinc-50'
@@ -172,15 +176,17 @@ export function FreebieCard({
                 {freebie.name}
               </h3>
 
-              {uploadDateTime ? (
-                <div
-                  className="mt-1 flex items-center gap-1 font-mono text-[10px] font-semibold text-zinc-500 dark:text-zinc-300"
-                  title={`Uploaded on ${uploadDateTime}`}
-                >
-                  <Clock className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-300" />
-                  <span>{uploadDateTime}</span>
-                </div>
-              ) : null}
+              <div
+                className="mt-1 flex h-4 items-center gap-1 font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-300"
+                title={uploadDateTime ? `Uploaded on ${uploadDateTime}` : undefined}
+              >
+                {uploadDateTime ? (
+                  <>
+                    <Clock className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-300" />
+                    <span>{uploadDateTime}</span>
+                  </>
+                ) : null}
+              </div>
             </div>
 
             {imageUrl ? (
@@ -189,12 +195,13 @@ export function FreebieCard({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setIsImageOpen(true);
+                  setIsDetailOpen(true);
                 }}
-                aria-label={`View photo of ${freebie.name}`}
-                title="View photo"
+                aria-label={`View photo and details of ${freebie.name}`}
+                title="View full details and photo"
                 className={cn(
-                  'border-ink group/thumb relative shrink-0 cursor-pointer overflow-hidden border-2 bg-zinc-100 shadow-[2px_2px_0_var(--ink)] transition-transform hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--ink)] dark:bg-zinc-800',
+                  CONBLOCK,
+                  'group/thumb relative shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800',
                   isCondensed ? 'h-9 w-9' : 'h-11 w-11'
                 )}
               >
@@ -214,26 +221,36 @@ export function FreebieCard({
 
           {/* Expanded-only Content */}
           {!isCondensed && (
-            <>
+            <div className="mt-3 flex flex-1 flex-col justify-between">
               {/* Requirements Box */}
-              {freebie.requirements ? (
-                <div className="border-ink mt-3 border bg-zinc-50/80 p-2.5 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800/60">
-                  <span className="block text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
-                    How to get it:
-                  </span>
-                  <p className="mt-0.5 text-xs leading-relaxed font-medium text-zinc-800 dark:text-zinc-200">
-                    {freebie.requirements}
-                  </p>
-                </div>
-              ) : null}
+              <div className="border-ink flex min-h-[58px] flex-col justify-center border bg-zinc-50/80 p-2.5 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800/60">
+                <span className="block text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
+                  How to get it:
+                </span>
+                <p
+                  className={cn(
+                    'mt-0.5 line-clamp-2 text-xs leading-relaxed font-medium',
+                    freebie.requirements
+                      ? 'text-zinc-800 dark:text-zinc-100'
+                      : 'text-zinc-600 italic dark:text-zinc-300'
+                  )}
+                >
+                  {freebie.requirements || 'No requirements provided'}
+                </p>
+              </div>
 
               {/* Description */}
-              {freebie.description ? (
-                <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-200">
-                  {freebie.description}
-                </p>
-              ) : null}
-            </>
+              <p
+                className={cn(
+                  'mt-2.5 line-clamp-2 min-h-[2rem] text-xs leading-relaxed',
+                  freebie.description
+                    ? 'text-zinc-700 dark:text-zinc-200'
+                    : 'text-zinc-500 italic dark:text-zinc-300'
+                )}
+              >
+                {freebie.description || 'No additional notes provided.'}
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -241,7 +258,7 @@ export function FreebieCard({
       {/* Action Footer */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="border-ink border-t-2 bg-zinc-50 p-2.5 sm:px-3.5 dark:bg-zinc-800/40"
+        className="border-ink mt-auto shrink-0 border-t-2 bg-zinc-50 p-2.5 sm:px-3.5 dark:bg-zinc-800/40"
       >
         <div className="flex items-center justify-between gap-2">
           {/* Check off / Claim button */}
@@ -322,13 +339,14 @@ export function FreebieCard({
         </div>
       </div>
 
-      {imageUrl ? (
-        <FreebieImageModal
-          freebie={freebie}
-          isOpen={isImageOpen}
-          onClose={() => setIsImageOpen(false)}
-        />
-      ) : null}
+      <FreebieDetailModal
+        freebie={freebie}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        canManage={canManage}
+        onEdit={() => setIsEditOpen(true)}
+        onDelete={() => setIsDeleteOpen(true)}
+      />
 
       {isEditOpen ? (
         <EditFreebieModal

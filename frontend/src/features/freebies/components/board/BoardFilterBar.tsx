@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import { CONBLOCK } from '@/shared/components/ui';
 import type { FreebieBoardState } from './types';
 
 interface BoardFilterBarProps {
@@ -203,42 +204,38 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             </select>
           ) : null}
 
-          {/* View Density Segmented Toggle (Cards vs Condensed) */}
-          <div
-            className="border-ink inline-flex h-10 shrink-0 items-stretch border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:bg-zinc-900"
-            role="group"
-            aria-label="View density"
+          {/* View Density Buttons (Separated with individual CONBLOCK hover) */}
+          <button
+            type="button"
+            onClick={() => allCondensed && handleToggleAllCondensed()}
+            aria-label="Card view"
+            title="Card view (expanded)"
+            className={cn(
+              CONBLOCK,
+              'inline-flex h-10 w-10 shrink-0 items-center justify-center transition-colors',
+              !allCondensed
+                ? 'bg-accent text-white dark:text-zinc-950'
+                : 'bg-white text-zinc-700 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
           >
-            <button
-              type="button"
-              onClick={() => allCondensed && handleToggleAllCondensed()}
-              aria-label="Card view"
-              title="Card view (expanded)"
-              className={cn(
-                'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
-                !allCondensed
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
-              )}
-            >
-              <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
-            </button>
-            <div className="border-ink border-r-2" />
-            <button
-              type="button"
-              onClick={() => !allCondensed && handleToggleAllCondensed()}
-              aria-label="Compact view"
-              title="Compact view (condensed)"
-              className={cn(
-                'flex h-full w-10 cursor-pointer items-center justify-center transition-colors',
-                allCondensed
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'text-zinc-700 hover:bg-zinc-100 hover:text-black dark:text-white dark:hover:bg-zinc-800'
-              )}
-            >
-              <Rows3 className="h-4 w-4 stroke-[2.5]" />
-            </button>
-          </div>
+            <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => !allCondensed && handleToggleAllCondensed()}
+            aria-label="Compact view"
+            title="Compact view (condensed)"
+            className={cn(
+              CONBLOCK,
+              'inline-flex h-10 w-10 shrink-0 items-center justify-center transition-colors',
+              allCondensed
+                ? 'bg-accent text-white dark:text-zinc-950'
+                : 'bg-white text-zinc-700 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            )}
+          >
+            <Rows3 className="h-4 w-4 stroke-[2.5]" />
+          </button>
 
           {/* Compact Refresh Board Button */}
           <button

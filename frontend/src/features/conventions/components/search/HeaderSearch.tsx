@@ -280,6 +280,7 @@ export function HeaderSearch({
             onKeyDown={onKeyDown}
             placeholder="Search conventions..."
             aria-label="Search conventions"
+            autoCapitalize="characters"
             className="border-ink focus:border-accent-pop h-9 w-full border-2 bg-white pr-8 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
           />
           {query && (
@@ -318,6 +319,7 @@ export function HeaderSearch({
             onKeyDown={onKeyDown}
             placeholder="Search conventions..."
             aria-label="Search conventions"
+            autoCapitalize="characters"
             className="border-ink focus:border-accent-pop w-40 border-2 bg-white py-2 pr-3 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none xl:w-52 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
           />
           {open && trimmed.length >= 2 && (
@@ -370,6 +372,7 @@ export function HeaderSearch({
                   onKeyDown={onKeyDown}
                   placeholder="Search conventions..."
                   aria-label="Search conventions"
+                  autoCapitalize="characters"
                   className="border-ink focus:border-accent-pop h-12 w-full border-2 bg-white py-2 pr-3 pl-10 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
                 />
               </div>
@@ -400,6 +403,7 @@ export function HeaderSearch({
                 onKeyDown={onKeyDown}
                 placeholder="Search conventions..."
                 aria-label="Search conventions"
+                autoCapitalize="characters"
                 className="border-ink focus:border-accent-pop h-10 w-full border-2 bg-white py-2 pr-8 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
               />
               {query && (

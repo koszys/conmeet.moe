@@ -4,9 +4,17 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Camera, Check, Clock, Edit3, MapPin, Trash2, User, Users, X } from 'lucide-react';
+import { Camera, Check, Clock, Edit3, MapPin, Trash2, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BackLink, BookmarkButton, CONBLOCK, CopyLinkButton } from '@/shared/components/ui';
+import {
+  BackLink,
+  Badge,
+  BookmarkButton,
+  CONBLOCK,
+  CopyLinkButton,
+  EmptyState,
+  ImageLightbox,
+} from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { useMeetup, useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
@@ -34,20 +42,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [isEditing]);
 
-  useEffect(() => {
-    if (!isLightboxOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsLightboxOpen(false);
-    };
-    const orig = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = orig;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isLightboxOpen]);
-
   const handleOpenEdit = () => {
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -67,7 +61,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       <div className="mx-auto max-w-4xl px-4 py-12 text-center sm:px-6">
         <div className="border-ink inline-block border-2 bg-white p-8 shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
           <h2 className="font-display text-xl font-bold uppercase">Meetup Not Found</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
             This meetup may have been moved or removed by the host.
           </p>
           <div className="mt-6">
@@ -197,13 +191,13 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                   {/* Status Badges */}
                   <div className="mb-3 flex flex-wrap items-center gap-2">
                     {meetup.is_official ? (
-                      <span className="border-ink bg-accent-pop px-2.5 py-1 text-xs font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+                      <Badge variant="pop" size="md">
                         Official Convention Meetup
-                      </span>
+                      </Badge>
                     ) : (
-                      <span className="border-ink bg-zinc-100 px-2.5 py-1 text-xs font-bold text-zinc-800 uppercase shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-200">
+                      <Badge variant="default" size="md">
                         Community Meetup
-                      </span>
+                      </Badge>
                     )}
                   </div>
 
@@ -320,13 +314,13 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
               {/* Status Badges */}
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 {meetup.is_official ? (
-                  <span className="border-ink bg-accent-pop px-2.5 py-1 text-xs font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+                  <Badge variant="pop" size="md">
                     Official Convention Meetup
-                  </span>
+                  </Badge>
                 ) : (
-                  <span className="border-ink bg-zinc-100 px-2.5 py-1 text-xs font-bold text-zinc-800 uppercase shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-200">
+                  <Badge variant="default" size="md">
                     Community Meetup
-                  </span>
+                  </Badge>
                 )}
               </div>
 
@@ -428,23 +422,19 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                 Photo Collections & Albums
               </h2>
             </div>
-            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
               Attendee photos, albums, and photographer credits for this meetup.
             </p>
           </div>
         </div>
 
         {/* Empty / Intro state */}
-        <div className="mt-6 border-2 border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-          <Camera className="mx-auto h-10 w-10 text-zinc-400 opacity-60" />
-          <h3 className="font-display mt-3 text-sm font-bold tracking-wider uppercase">
-            No Albums Added Yet
-          </h3>
-          <p className="mx-auto mt-1 max-w-md text-xs text-zinc-500 dark:text-zinc-400">
-            Attended this meetup? Soon you will be able to share your photoshoot folders, credit
-            your socials, and download attendee photos right here!
-          </p>
-        </div>
+        <EmptyState
+          icon={Camera}
+          title="No Albums Added Yet"
+          description="Attended this meetup? Soon you will be able to share your photoshoot folders, credit your socials, and download attendee photos right here!"
+          className="mt-6 border-zinc-300 dark:border-zinc-700"
+        />
       </section>
 
       {/* Delete Confirmation Modal Popup */}
@@ -456,50 +446,14 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       />
 
       {/* Full Flyer / Artwork Lightbox Modal */}
-      {isLightboxOpen && meetup.image && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Full size artwork"
-          onClick={() => setIsLightboxOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs sm:p-6"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative flex max-h-[92vh] max-w-4xl flex-col items-center"
-          >
-            <div className="mb-2 flex w-full items-center justify-between text-white">
-              <span className="font-display truncate text-xs tracking-wider uppercase sm:text-sm">
-                {meetup.name}
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsLightboxOpen(false)}
-                className={cn(
-                  CONBLOCK,
-                  'flex h-8 w-8 items-center justify-center bg-white text-zinc-950 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
-                )}
-                title="Close lightbox (Esc)"
-                aria-label="Close"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="border-ink relative max-h-[82vh] overflow-hidden border-2 bg-zinc-950 shadow-[6px_6px_0_var(--ink)]">
-              <img
-                src={meetup.image}
-                alt={meetup.name}
-                className="max-h-[80vh] w-auto max-w-full object-contain"
-              />
-            </div>
-
-            <span className="mt-2 font-mono text-[11px] text-zinc-400">
-              Click anywhere outside or press Esc to close
-            </span>
-          </div>
-        </div>
-      )}
+      <ImageLightbox
+        isOpen={isLightboxOpen && Boolean(meetup.image)}
+        onClose={() => setIsLightboxOpen(false)}
+        src={meetup.image || ''}
+        alt={meetup.name}
+        title={meetup.name}
+        subtitle="Click anywhere outside or press Esc to close"
+      />
     </div>
   );
 }

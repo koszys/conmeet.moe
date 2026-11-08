@@ -84,7 +84,7 @@ export function FreebieItemCard({
               }
             }
           }}
-          className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+          className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
         />
         {itemErrors?.name ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -129,7 +129,7 @@ export function FreebieItemCard({
           maxLength={200}
           placeholder="e.g. Follow @HoYoverse on X and show badge, or play demo"
           {...register(`items.${index}.requirements`)}
-          className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+          className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
         />
         {itemErrors?.requirements ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -155,7 +155,7 @@ export function FreebieItemCard({
           maxLength={300}
           placeholder="e.g. Limited to 200 per day! Drops start at 11:00 AM."
           {...register(`items.${index}.description`)}
-          className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+          className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
         />
         {itemErrors?.description ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">

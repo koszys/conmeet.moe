@@ -219,7 +219,9 @@ export function ConventionRequestForm() {
             <span className="font-semibold text-zinc-800 dark:text-zinc-200">Submitting as:</span>
             <span className="text-accent-pop font-display">@{user.username}</span>
           </div>
-          <span className="hidden text-[11px] text-zinc-500 sm:inline">Linked to your account</span>
+          <span className="hidden text-[11px] text-zinc-500 sm:inline dark:text-zinc-300">
+            Linked to your account
+          </span>
         </div>
       ) : null}
 
@@ -495,7 +497,7 @@ export function ConventionRequestForm() {
                   errors.contact_email && 'border-red-500 focus:border-red-500'
                 )}
               />
-              <p className="mt-1 text-[11px] text-zinc-500">
+              <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
                 Optional: if we need to clarify details before publishing.
               </p>
               {errors.contact_email && (

@@ -25,7 +25,7 @@ export function VendorSection({
         <h2 className="font-display text-xs tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
           Vendor Details
         </h2>
-        <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+        <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-300">
           All freebies below will be posted under this vendor.
         </p>
       </div>

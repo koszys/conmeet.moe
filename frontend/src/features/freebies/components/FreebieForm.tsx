@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
+import { useConvention } from '@/features/conventions/data/api';
 import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useCreateFreebie } from '../api/mutations';
@@ -23,6 +24,8 @@ export function FreebieForm({
   conventionSlug: string;
   conventionName?: string;
 }) {
+  const { data: convention } = useConvention(conventionSlug);
+  const resolvedConventionName = conventionName || convention?.name;
   const router = useRouter();
   const createMutation = useCreateFreebie();
 
@@ -141,14 +144,14 @@ export function FreebieForm({
     <div className="mx-auto max-w-2xl space-y-6">
       {/* Header */}
       <div className="border-ink border-b-2 pb-5">
-        <BackLink href={`/conventions/${conventionSlug}/freebies`}>Back to Freebies Board</BackLink>
+        <BackLink href={`/conventions/${conventionSlug}/freebies`}>Back to Freebies</BackLink>
 
         <h1 className="font-display mt-3 text-2xl tracking-wide uppercase sm:text-3xl">
           Post Freebie Drops
         </h1>
         <p className="mt-1 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
           Share giveaways, limited merch drops, or stamp rallies for{' '}
-          {conventionName || 'this convention'}.
+          {resolvedConventionName || 'this convention'}.
         </p>
       </div>
 

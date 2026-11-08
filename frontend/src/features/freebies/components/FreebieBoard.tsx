@@ -1,6 +1,7 @@
 'use client';
 
 import { RotateCw } from 'lucide-react';
+import { useConvention } from '@/features/conventions/data/api';
 import { cn } from '@/shared/lib/utils';
 import { useFreebieBoardState } from './board/useFreebieBoardState';
 import { BoardHeader, BoardFilterBar, BoardAllTab, BoardSavedTab, BoardUploadedTab } from './board';
@@ -13,11 +14,13 @@ export function FreebieBoard({
   conventionSlug: string;
   conventionName?: string;
 }) {
+  const { data: convention } = useConvention(conventionSlug);
+  const resolvedName = conventionName || convention?.name;
   const state = useFreebieBoardState(conventionSlug);
 
   return (
     <div className="space-y-6">
-      <BoardHeader conventionSlug={conventionSlug} conventionName={conventionName} />
+      <BoardHeader conventionSlug={conventionSlug} conventionName={resolvedName} />
       <BoardFilterBar state={state} />
 
       {state.isLoading ? (

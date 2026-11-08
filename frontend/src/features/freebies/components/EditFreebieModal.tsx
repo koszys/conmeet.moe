@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { Check, Loader2, X } from 'lucide-react';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import type { Freebie } from '../types';
 import { useUpdateFreebie } from '../api/mutations';
 import {
@@ -73,11 +74,10 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
         onClose();
       }
     }
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockBodyScroll();
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = originalOverflow;
+      unlock();
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [onClose, updateMutation.isPending]);
@@ -210,7 +210,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
             >
               Edit Freebie Drop
             </h2>
-            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-300">
               Update booth location, requirements, or photos for this drop.
             </p>
           </div>
@@ -264,7 +264,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Genshin Impact Acrylic Standee"
-                className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+                className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
               />
               {errors.name ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -300,7 +300,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 value={requirements}
                 onChange={(e) => setRequirements(e.target.value)}
                 placeholder="e.g. Follow @HoYoverse on X and show badge"
-                className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-2.5 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+                className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-2.5 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
               />
               {errors.requirements ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -327,7 +327,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. Drops start at 11:00 AM, limited to 100/day"
-                className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-2.5 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+                className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-2.5 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
               />
               {errors.description ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">

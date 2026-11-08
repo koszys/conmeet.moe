@@ -12,6 +12,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { ConventionSidebar } from './ConventionSidebar';
 import { cn } from '@/shared/lib/utils';
+import { lockBodyScroll } from '@/shared/lib/scrollLock';
 
 const CONVENTION_PATH = /^\/conventions\/(?!(?:featured|request)(?:\/|$))([^/]+)(?:\/.*)?$/;
 
@@ -117,10 +118,9 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!open) return;
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockBodyScroll();
     return () => {
-      document.body.style.overflow = overflow;
+      unlock();
     };
   }, [open]);
 

@@ -115,7 +115,7 @@ export function VendorSuggestDropdown({
             <p className="font-bold text-zinc-900 dark:text-zinc-100">
               New vendor: &ldquo;{trimmedName}&rdquo;
             </p>
-            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-300">
               Will be registered automatically upon posting.
             </p>
           </div>

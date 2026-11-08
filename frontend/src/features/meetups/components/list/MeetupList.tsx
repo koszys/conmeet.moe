@@ -94,7 +94,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
                 ? 'No Official Meetups Listed'
                 : 'No Meetups Scheduled Yet'}
           </h3>
-          <p className="mt-1.5 max-w-sm text-xs text-zinc-600 sm:text-sm dark:text-zinc-400">
+          <p className="mt-1.5 max-w-sm text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
             {activeTab === 'saved'
               ? 'Bookmark meetups to build your convention plan and schedule.'
               : 'Organize a fandom meetup for this con!'}

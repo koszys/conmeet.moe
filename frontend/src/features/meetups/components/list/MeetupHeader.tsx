@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
+import { useConvention } from '@/features/conventions/data/api';
 import { BackLink, CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
@@ -11,11 +12,18 @@ interface MeetupHeaderProps {
 }
 
 export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderProps) {
+  const { data: convention } = useConvention(conventionSlug);
+  const displayName =
+    conventionName ||
+    convention?.name ||
+    conventionSlug
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+
   return (
     <div className="border-ink @container border-b-2 pb-5">
-      <BackLink href={`/conventions/${conventionSlug}`}>
-        Back to {conventionName || 'Convention'} Overview
-      </BackLink>
+      <BackLink href={`/conventions/${conventionSlug}`}>Back to {displayName} Overview</BackLink>
 
       <div className="mt-3 flex flex-col justify-between gap-4 @min-[640px]:flex-row @min-[640px]:items-end">
         <div className="flex items-center gap-3">

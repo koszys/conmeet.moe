@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Bookmark, HeartHandshake, Search, Sparkles, Users } from 'lucide-react';
-import { CONBLOCK } from '@/shared/components/ui';
+import { Bookmark, Calendar, HeartHandshake, Sparkles, Users } from 'lucide-react';
+import { CONBLOCK, SearchInput } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
 import { format } from 'date-fns';
@@ -60,21 +60,20 @@ export function MeetupFilterBar({
       {/* Search & Day Row: Search has its own line on tablet and mobile */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {/* Search input */}
-        <div className="relative w-full lg:max-w-md">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-          <input
-            type="text"
+        <div className="w-full lg:max-w-md">
+          <SearchInput
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={onSearchChange}
+            onClear={() => onSearchChange('')}
             placeholder="Search by cosplay, character, or room..."
-            className="border-ink w-full border-2 bg-zinc-50 py-2 pr-3 pl-9 text-xs shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
           />
         </div>
 
         {/* Date Filter Pills: Single row, no stacking, responsive compact labels on mobile */}
         {conventionDays.length > 0 && (
           <div className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-1 pb-1 sm:gap-2">
-            <span className="font-display hidden text-[11px] font-bold tracking-wider text-zinc-500 uppercase sm:inline">
+            <span className="font-display hidden items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase sm:inline-flex dark:text-zinc-300">
+              <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               Day:
             </span>
             <button

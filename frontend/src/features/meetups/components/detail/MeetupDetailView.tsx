@@ -42,20 +42,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [isEditing]);
 
-  useEffect(() => {
-    if (!isLightboxOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsLightboxOpen(false);
-    };
-    const orig = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = orig;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isLightboxOpen]);
-
   const handleOpenEdit = () => {
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: 'instant' });

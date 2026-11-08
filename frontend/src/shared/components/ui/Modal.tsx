@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { CONBLOCK } from './button';
 import { cn } from '@/shared/lib/utils';
+import { lockBodyScroll } from '@/shared/lib/scrollLock';
 
 const emptySubscribe = () => () => {};
 
@@ -56,12 +57,11 @@ export function Modal({
       }
     }
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockBodyScroll();
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      unlock();
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose, preventClose]);

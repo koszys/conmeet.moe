@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { Check, Loader2, X } from 'lucide-react';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import type { Freebie } from '../types';
 import { useUpdateFreebie } from '../api/mutations';
 import {
@@ -73,11 +74,10 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
         onClose();
       }
     }
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockBodyScroll();
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = originalOverflow;
+      unlock();
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [onClose, updateMutation.isPending]);

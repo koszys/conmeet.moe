@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import {
-  Bookmark,
   Camera,
   Check,
   ChevronDown,
@@ -16,7 +15,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { CONBLOCK } from '@/shared/components/ui/button';
+import { BookmarkButton, CONBLOCK } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
@@ -273,24 +272,13 @@ export function FreebieCard({
 
           <div className="flex shrink-0 items-center gap-1.5">
             {/* Save / Bookmark button */}
-            <button
-              type="button"
+            <BookmarkButton
+              isSaved={freebie.is_saved}
               onClick={handleSave}
               disabled={toggleSave.isPending}
-              aria-label={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
+              ariaLabel={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
               title={freebie.is_saved ? 'Saved' : 'Save'}
-              className={cn(
-                CONBLOCK,
-                'inline-flex h-8 w-8 shrink-0 items-center justify-center text-xs font-bold transition-all',
-                freebie.is_saved
-                  ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                  : 'bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-              )}
-            >
-              <Bookmark
-                className={cn('h-4 w-4', freebie.is_saved ? 'fill-current stroke-2' : 'stroke-2')}
-              />
-            </button>
+            />
 
             {/* Owner Edit & Delete Buttons (Only in My Uploads) */}
             {canManage && isOwner ? (

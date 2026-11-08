@@ -16,7 +16,7 @@ class Meetup(models.Model):
         upload_to="meetups/",
         blank=True,
         null=True,
-        processors=[ResizeToFit(1000, 1000)],
+        processors=[ResizeToFit(1600, 1600)],
         format="WEBP",
         options={"quality": 85},
     )
@@ -25,6 +25,16 @@ class Meetup(models.Model):
         processors=[ResizeToFill(480, 320)],
         format="JPEG",
         options={"quality": 60},
+    )
+    IMAGE_LAYOUT_CHOICES = [
+        ("banner", "Banner"),
+        ("poster", "Poster"),
+    ]
+    image_layout = models.CharField(
+        max_length=10,
+        choices=IMAGE_LAYOUT_CHOICES,
+        default="banner",
+        help_text="Display style: 'banner' (landscape) or 'poster' (portrait)",
     )
     description = QuillField(blank=True)
     is_official = models.BooleanField(default=False)

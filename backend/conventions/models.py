@@ -17,7 +17,7 @@ class Convention(models.Model):
         upload_to="conventions/banners/",
         blank=True,
         null=True,
-        processors=[ResizeToFit(1600, 800)],
+        processors=[ResizeToFit(1920, 1920)],
         format="WEBP",
         options={"quality": 85},
     )
@@ -73,7 +73,7 @@ class ConventionRequest(models.Model):
         upload_to="conventions/request_banners/",
         blank=True,
         null=True,
-        processors=[ResizeToFit(1600, 800)],
+        processors=[ResizeToFit(1920, 1920)],
         format="WEBP",
         options={"quality": 85},
     )

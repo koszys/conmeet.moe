@@ -34,3 +34,16 @@ export function formatDateTime(dateStr?: string | null): string | null {
     return null;
   }
 }
+
+export function formatMeetupTimeRange(startsAt: string, endsAt: string): string {
+  try {
+    const start = parseDate(startsAt);
+    const end = parseDate(endsAt);
+    const dayStr = format(start, 'EEE, MMM d');
+    const startTime = format(start, 'h:mm a');
+    const endTime = format(end, 'h:mm a');
+    return `${dayStr} \u00b7 ${startTime} \u2013 ${endTime}`;
+  } catch {
+    return `${startsAt} \u2013 ${endsAt}`;
+  }
+}

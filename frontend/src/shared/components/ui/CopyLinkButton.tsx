@@ -87,8 +87,8 @@ export function CopyLinkButton({
         className={cn(
           'border-ink inline-flex shrink-0 cursor-pointer items-center justify-center border-2 bg-white font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-zinc-900',
           size === 'sm'
-            ? 'h-8 w-8 p-0 text-xs @min-[680px]:w-auto @min-[680px]:gap-1.5 @min-[680px]:px-3'
-            : 'h-10 w-10 p-0 text-xs @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-4',
+            ? 'h-8 w-8 p-0 text-xs sm:w-auto sm:gap-1.5 sm:px-3 @min-[680px]:w-auto @min-[680px]:gap-1.5 @min-[680px]:px-3'
+            : 'h-10 w-10 p-0 text-xs sm:w-auto sm:gap-2 sm:px-4 @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-4',
           copied
             ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
             : 'text-zinc-900 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-800',
@@ -103,12 +103,14 @@ export function CopyLinkButton({
                 size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4'
               )}
             />
-            <span className="animate-pill-pop hidden @min-[680px]:inline">{copiedLabel}</span>
+            <span className="animate-pill-pop hidden sm:inline @min-[680px]:inline">
+              {copiedLabel}
+            </span>
           </>
         ) : (
           <>
             <LinkIcon className={cn('shrink-0', size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4')} />
-            <span className="hidden @min-[680px]:inline">{label}</span>
+            <span className="hidden sm:inline @min-[680px]:inline">{label}</span>
           </>
         )}
       </button>

@@ -11,6 +11,7 @@ import {
   Badge,
   BookmarkButton,
   CONBLOCK,
+  CONBLOCK_PRIMARY,
   CopyLinkButton,
   EmptyState,
   ImageLightbox,
@@ -67,7 +68,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           <div className="mt-6">
             <Link
               href={`/conventions/${conventionSlug}/meetups`}
-              className="border-ink bg-accent inline-flex items-center border-2 px-4 py-2 text-xs font-bold text-white uppercase shadow-[2px_2px_0_var(--ink)] hover:opacity-95 dark:text-zinc-950"
+              className={cn(CONBLOCK_PRIMARY, 'inline-flex items-center px-4 py-2')}
             >
               Back to All Meetups
             </Link>

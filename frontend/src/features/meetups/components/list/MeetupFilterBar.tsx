@@ -56,11 +56,11 @@ export function MeetupFilterBar({
   }, [conventionStartsAt, conventionEndsAt]);
 
   return (
-    <div className="space-y-4">
+    <div className="@container space-y-4">
       {/* Search & Day Row: Search has its own line on tablet and mobile */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-3 @min-[880px]:flex-row @min-[880px]:items-center @min-[880px]:justify-between">
         {/* Search input */}
-        <div className="w-full lg:max-w-md">
+        <div className="w-full max-w-md min-w-[200px] sm:min-w-[240px]">
           <SearchInput
             value={searchQuery}
             onChange={onSearchChange}

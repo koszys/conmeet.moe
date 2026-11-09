@@ -19,12 +19,12 @@ export function FreebieBoard({
   const state = useFreebieBoardState(conventionSlug);
 
   return (
-    <div className="space-y-6">
+    <div className="@container space-y-6">
       <BoardHeader conventionSlug={conventionSlug} conventionName={resolvedName} />
       <BoardFilterBar state={state} />
 
       {state.isLoading ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <FreebieSkeleton key={i} withImage={i % 2 === 0} />
           ))}

@@ -47,7 +47,7 @@ export function BoardUploadedTab({ state, conventionSlug }: BoardUploadedTabProp
   }
 
   return (
-    <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
       {uploadedDrops.map((freebie) => (
         <FreebieCard
           key={freebie.id}

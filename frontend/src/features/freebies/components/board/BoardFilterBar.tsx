@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import {
   Bookmark,
   Check,
@@ -38,10 +39,44 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
     refreshStatus,
   } = state;
 
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [tabsWidth, setTabsWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    const el = tabsRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const children = Array.from(el.children) as HTMLElement[];
+      if (children.length > 0) {
+        const first = children[0].getBoundingClientRect();
+        const last = children[children.length - 1].getBoundingClientRect();
+        const w = Math.round(last.right - first.left + el.scrollLeft);
+        if (w > 0) {
+          setTabsWidth(w);
+          return;
+        }
+      }
+      if (el.scrollWidth > 0) {
+        setTabsWidth(el.scrollWidth);
+      }
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    Array.from(el.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="border-ink @container flex flex-col gap-3 border-b-2 pb-5 lg:flex-row lg:items-center lg:justify-between">
-      {/* Filter Tabs - Neo-Brutalist Block Buttons */}
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+    <div className="border-ink @container flex flex-col gap-3 border-b-2 pb-5">
+      {/* Row 1: Filter Tabs */}
+      <div
+        ref={tabsRef}
+        className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2"
+      >
         {/* All Freebies */}
         <button
           type="button"
@@ -49,7 +84,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           title={`All Freebies (${counts.all})`}
           aria-label={`All Freebies (${counts.all})`}
           className={cn(
-            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none @min-[680px]:px-4',
+            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
             activeTab === 'all'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -63,7 +98,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
-          <span className="hidden @min-[680px]:inline">All</span>
+          <span>All</span>
           <span
             className={cn(
               'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
@@ -83,7 +118,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           title={`Saved Freebies (${counts.saved})`}
           aria-label={`Saved Freebies (${counts.saved})`}
           className={cn(
-            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none @min-[680px]:px-4',
+            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
             activeTab === 'saved'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -97,8 +132,8 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
-          <span className="hidden @min-[680px]:inline">
-            <span className="hidden xl:inline">My </span>Saved
+          <span>
+            <span className="hidden sm:inline">My </span>Saved
           </span>
           <span
             className={cn(
@@ -119,7 +154,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           title={`My Uploads (${counts.uploaded})`}
           aria-label={`My Uploads (${counts.uploaded})`}
           className={cn(
-            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none @min-[680px]:px-4',
+            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
             activeTab === 'uploaded'
               ? 'bg-accent text-white dark:text-zinc-950'
               : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
@@ -133,8 +168,8 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
             )}
           />
-          <span className="hidden @min-[680px]:inline">
-            <span className="hidden xl:inline">My </span>Uploads
+          <span>
+            <span className="hidden sm:inline">My </span>Uploads
           </span>
           <span
             className={cn(
@@ -149,10 +184,13 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
         </button>
       </div>
 
-      {/* Search, Vendor Filter, and Density Toggle */}
-      <div className="flex flex-1 flex-wrap items-center gap-2.5 lg:max-w-xl">
-        {/* Search Box */}
-        <div className="relative w-full min-w-0 @min-[540px]:w-auto @min-[540px]:flex-1">
+      {/* Row 2: Search & Controls - sized to match tabs above it, wraps to own row when needed, shrinks on mobile */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+        {/* Search Box - matches tabs width, wraps to own row when needed, shrinks on mobile */}
+        <div
+          style={tabsWidth ? { width: `${tabsWidth}px` } : undefined}
+          className="relative w-full max-w-full shrink-0"
+        >
           <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
           <input
             type="text"
@@ -183,8 +221,8 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           ) : null}
         </div>
 
-        {/* Controls Cluster: Vendor Filter, View Density Toggle, and Refresh (Stay together) */}
-        <div className="flex shrink-0 items-center gap-2">
+        {/* Controls Cluster: Vendor Filter, View Density Toggle, and Refresh */}
+        <div className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2">
           {/* Vendor Filter */}
           {vendors && vendors.length > 0 ? (
             <select
@@ -193,7 +231,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 setSelectedVendor(e.target.value ? Number(e.target.value) : undefined)
               }
               aria-label="Filter by vendor"
-              className="border-ink h-10 max-w-[150px] cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none sm:max-w-[180px] dark:bg-zinc-900"
+              className="border-ink h-10 max-w-[150px] shrink-0 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none sm:max-w-[180px] dark:bg-zinc-900"
             >
               <option value="">All Vendors ({vendors.length})</option>
               {vendors.map((v) => (

@@ -32,7 +32,7 @@ export function getDefaultConventionSections(convention: Convention): Convention
     },
     {
       id: 'meetups',
-      title: 'Cosplay Meetups',
+      title: 'Meetups',
       icon: Users,
       activityHeader: 'Upcoming Meetups',
       activities: [],

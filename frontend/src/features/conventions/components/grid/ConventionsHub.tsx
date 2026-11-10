@@ -19,7 +19,7 @@ import {
 } from '../../utils/dates';
 import { matchesConventionFilters } from '../../utils/filters';
 import { parseDate } from '@/shared/lib/dates';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionsHubProps {

@@ -3,7 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Loader2, X } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import type { Freebie } from '../types';

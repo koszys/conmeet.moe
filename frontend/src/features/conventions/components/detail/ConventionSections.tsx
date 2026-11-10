@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useFreebies } from '@/features/freebies';
 import { useMeetups } from '@/features/meetups';

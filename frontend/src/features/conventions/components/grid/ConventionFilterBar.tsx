@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
-import { CONBLOCK } from '@/shared/components/ui/button';
+import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { ConventionFilterPopover } from './ConventionFilterPopover';
 

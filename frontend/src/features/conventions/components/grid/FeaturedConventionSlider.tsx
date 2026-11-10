@@ -15,7 +15,7 @@ import {
 import type { Convention, ConventionPhase } from '../../types';
 import { getConventionPhase } from '../../utils/dates';
 import { formatDateRange } from '@/shared/lib/dates';
-import { CONBLOCK } from '@/shared/components/ui/button';
+import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
 

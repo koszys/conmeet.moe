@@ -3,7 +3,7 @@
 import { useEffect, useId, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { CONBLOCK } from './button';
+import { CONBLOCK } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 

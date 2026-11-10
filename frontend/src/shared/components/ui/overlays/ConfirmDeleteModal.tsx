@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
 import { Modal } from './Modal';
-import { CONBLOCK } from './button';
+import { CONBLOCK } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConfirmDeleteModalProps {

@@ -264,7 +264,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                       savedLabel="Saved"
                       unsavedLabel="Save Meetup"
                     />
-                    <CopyLinkButton variant="responsive" size="md" label="Share Link" />
+                    <CopyLinkButton variant="responsive" size="md" />
                   </div>
                 </div>
               </div>
@@ -375,7 +375,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                     savedLabel="Saved"
                     unsavedLabel="Save Meetup"
                   />
-                  <CopyLinkButton variant="responsive" size="md" label="Share Link" />
+                  <CopyLinkButton variant="responsive" size="md" />
                 </div>
               </div>
             </div>

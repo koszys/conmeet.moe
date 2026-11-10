@@ -7,7 +7,7 @@ import { ConventionCard } from './ConventionCard';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../data/api';
 import { isPast } from '../../utils/dates';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { AllConsButton } from '../links';
 

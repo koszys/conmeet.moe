@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { UserRound } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { IconButton, iconButtonClasses } from '@/shared/components/ui/button';
+import { IconButton, iconButtonClasses } from '@/shared/components/ui';
 
 export function AccountButton({ onToggle }: { onToggle: () => void }) {
   const { user, loading } = useAuth();

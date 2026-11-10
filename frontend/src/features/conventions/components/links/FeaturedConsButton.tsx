@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight, Star } from 'lucide-react';
-import { CONBLOCK } from '@/shared/components/ui/button';
+import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface FeaturedConsButtonProps {

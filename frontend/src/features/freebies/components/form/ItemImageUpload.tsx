@@ -1,6 +1,6 @@
 'use client';
 
-import { ImageUpload, type ImageUploadProps } from '@/shared/components/ui/ImageUpload';
+import { ImageUpload, type ImageUploadProps } from '@/shared/components/ui';
 
 export type ItemImageUploadProps = ImageUploadProps;
 

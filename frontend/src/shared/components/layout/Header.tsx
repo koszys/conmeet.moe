@@ -7,7 +7,7 @@ import { PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { isConventionDetailPath, useConventionNav } from '@/features/conventions';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
-import { IconButton } from '@/shared/components/ui/button';
+import { IconButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { AccountDropdown } from './AccountDropdown';
 import { HeaderActions } from './HeaderActions';

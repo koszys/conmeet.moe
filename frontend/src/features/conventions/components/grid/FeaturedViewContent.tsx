@@ -3,7 +3,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { ConventionCard } from './ConventionCard';
 import type { Convention } from '../../types';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface FeaturedViewContentProps {

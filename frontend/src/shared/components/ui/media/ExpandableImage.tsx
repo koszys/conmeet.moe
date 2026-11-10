@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/shared/lib/utils';
-import { ImageLightbox } from './ImageLightbox';
+import { ImageLightbox } from '../overlays/ImageLightbox';
 
 export interface ExpandableImageProps {
   /** Full-size image URL opened in the lightbox */

@@ -130,14 +130,6 @@ export function FreebieDetailModal({
               sizes="(max-width: 768px) 100vw, 672px"
               priority
             />
-
-            {freebie.is_claimed && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-                <span className="border-ink bg-accent border-2 px-3 py-1 font-mono text-xs font-black tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                  CLAIMED
-                </span>
-              </div>
-            )}
           </ExpandableImage>
         ) : null}
 

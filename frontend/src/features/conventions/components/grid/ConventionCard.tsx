@@ -46,7 +46,7 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
   return (
     <article
       className={cn(
-        'border-ink group relative flex min-h-60 flex-col justify-between overflow-hidden border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] sm:min-h-64 md:min-h-72 dark:bg-zinc-900',
+        'border-ink group relative flex min-h-60 w-full max-w-full min-w-0 flex-col justify-between overflow-hidden border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] sm:min-h-64 md:min-h-72 dark:bg-zinc-900',
         phase === 'past' && 'opacity-85 hover:opacity-100',
         className
       )}
@@ -81,8 +81,8 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
       />
 
       {/* Card Content & Action Footer */}
-      <div className="relative z-10 flex flex-1 flex-col justify-between">
-        <div className="p-5 sm:p-6 md:p-8">
+      <div className="relative z-10 flex w-full min-w-0 flex-1 flex-col justify-between">
+        <div className="min-w-0 p-4 sm:p-6 md:p-8">
           {/* Phase Badge */}
           <div className="mb-3 flex items-center">
             <span
@@ -97,31 +97,33 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
           </div>
 
           {/* Convention Title */}
-          <Link href={`/conventions/${convention.slug}`} className="group/link block">
-            <h3 className="font-display group-hover/link:text-accent-pop text-xl font-bold tracking-wide uppercase transition-colors sm:text-2xl md:text-3xl">
+          <Link href={`/conventions/${convention.slug}`} className="group/link block min-w-0">
+            <h3 className="font-display group-hover/link:text-accent-pop text-lg font-bold tracking-wide break-words uppercase transition-colors min-[360px]:text-xl sm:text-2xl md:text-3xl">
               {convention.name}
               {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
             </h3>
           </Link>
 
           {/* Date & Location */}
-          <div className="mt-3 flex flex-col gap-1.5 sm:mt-4 sm:gap-2">
-            <div className="text-accent flex items-center gap-2 text-xs font-semibold sm:text-sm sm:font-medium">
+          <div className="mt-3 flex min-w-0 flex-col gap-1.5 sm:mt-4 sm:gap-2">
+            <div className="text-accent flex min-w-0 items-center gap-2 text-xs font-semibold sm:text-sm sm:font-medium">
               <Calendar className="h-4 w-4 shrink-0" />
-              <span>{formatDateRange(convention.starts_at, convention.ends_at)}</span>
+              <span className="min-w-0 truncate">
+                {formatDateRange(convention.starts_at, convention.ends_at)}
+              </span>
             </div>
 
             {location && (
-              <div className="flex items-center gap-2 text-xs text-zinc-700 sm:text-sm dark:text-zinc-300">
+              <div className="flex min-w-0 items-center gap-2 text-xs text-zinc-700 sm:text-sm dark:text-zinc-300">
                 <MapPin className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" />
-                <span className="truncate">{location}</span>
+                <span className="min-w-0 truncate">{location}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Card Action Footer */}
-        <div className="border-ink relative z-10 flex items-center justify-between border-t-2 border-dashed bg-white/60 px-5 py-3.5 backdrop-blur-xs sm:px-6 md:px-8 dark:bg-zinc-950/60">
+        <div className="border-ink relative z-10 flex min-w-0 flex-wrap items-center justify-between gap-2 border-t-2 border-dashed bg-white/60 px-4 py-3 backdrop-blur-xs sm:px-6 md:px-8 dark:bg-zinc-950/60">
           <ConventionExternalLinks
             websiteUrl={convention.website_url}
             mapUrl={convention.map_url}
@@ -132,7 +134,7 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
             href={`/conventions/${convention.slug}`}
             className={cn(
               CONBLOCK,
-              'font-display bg-accent hover:bg-accent-pop inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs tracking-wider text-white uppercase dark:text-zinc-950 dark:hover:text-white'
+              'font-display bg-accent hover:bg-accent-pop inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs tracking-wider text-white uppercase min-[380px]:px-3.5 dark:text-zinc-950 dark:hover:text-white'
             )}
           >
             <span>View Con</span>

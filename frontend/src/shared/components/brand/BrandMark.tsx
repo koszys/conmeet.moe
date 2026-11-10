@@ -45,7 +45,7 @@ export function BrandMark({
       {withSparkles && (
         <Sparkles
           className={cn(
-            'text-accent rotate-12 transition-transform group-hover:rotate-45',
+            'text-accent hidden rotate-12 transition-transform group-hover:rotate-45 min-[390px]:inline-block',
             BRAND_SPARKLE[size]
           )}
         />

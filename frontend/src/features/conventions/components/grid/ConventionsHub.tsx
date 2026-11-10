@@ -211,8 +211,8 @@ export function ConventionsHub({
     <section
       id="conventions-hub"
       className={cn(
-        'mx-auto scroll-mt-20 px-4 py-16 transition-all md:px-6 md:py-20',
-        view === 'featured' ? 'max-w-7xl' : 'max-w-6xl',
+        'mx-auto w-full max-w-full min-w-0 scroll-mt-20 px-3 py-12 transition-all min-[380px]:px-4 min-[380px]:py-16 md:px-6 md:py-20',
+        view === 'featured' ? 'md:max-w-7xl' : 'md:max-w-6xl',
         className
       )}
     >
@@ -227,7 +227,7 @@ export function ConventionsHub({
               </span>
             </div>
           )}
-          <h1 className="font-display mt-3 text-2xl tracking-wide uppercase sm:text-4xl">
+          <h1 className="font-display mt-3 text-xl tracking-wide uppercase min-[380px]:text-2xl sm:text-4xl">
             {view === 'featured' ? 'featured conventions' : 'all conventions'}
             <span className={view === 'featured' ? 'text-accent ml-3' : 'text-accent-pop ml-3'}>
               {view === 'featured' ? '★' : '✦'}

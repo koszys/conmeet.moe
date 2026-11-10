@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Calendar, MapPin, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, Sparkles } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
-import { CONBLOCK } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { getConventionPhase } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
@@ -72,17 +71,13 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
         </div>
       )}
 
-      {/* Background clickable area for navigation */}
-      <Link
-        href={`/conventions/${convention.slug}`}
-        tabIndex={-1}
-        aria-hidden="true"
-        className="absolute inset-0 z-0"
-      />
-
       {/* Card Content & Action Footer */}
       <div className="relative z-10 flex w-full min-w-0 flex-1 flex-col justify-between">
-        <div className="min-w-0 p-4 sm:p-6 md:p-8">
+        {/* Top Area: Clickable link spanning title, badge, dates, and background banner image */}
+        <Link
+          href={`/conventions/${convention.slug}`}
+          className="group/top block min-w-0 flex-1 p-4 sm:p-6 md:p-8"
+        >
           {/* Phase Badge */}
           <div className="mb-3 flex items-center">
             <span
@@ -97,12 +92,10 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
           </div>
 
           {/* Convention Title */}
-          <Link href={`/conventions/${convention.slug}`} className="group/link block min-w-0">
-            <h3 className="font-display group-hover/link:text-accent-pop text-lg font-bold tracking-wide break-words uppercase transition-colors min-[360px]:text-xl sm:text-2xl md:text-3xl">
-              {convention.name}
-              {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
-            </h3>
-          </Link>
+          <h3 className="font-display group-hover/top:text-accent-pop text-lg font-bold tracking-wide break-words uppercase transition-colors min-[360px]:text-xl sm:text-2xl md:text-3xl">
+            {convention.name}
+            {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
+          </h3>
 
           {/* Date & Location */}
           <div className="mt-3 flex min-w-0 flex-col gap-1.5 sm:mt-4 sm:gap-2">
@@ -120,27 +113,18 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
               </div>
             )}
           </div>
-        </div>
+        </Link>
 
         {/* Card Action Footer */}
-        <div className="border-ink relative z-10 flex min-w-0 flex-wrap items-center justify-between gap-2 border-t-2 border-dashed bg-white/60 px-4 py-3 backdrop-blur-xs sm:px-6 md:px-8 dark:bg-zinc-950/60">
-          <ConventionExternalLinks
-            websiteUrl={convention.website_url}
-            mapUrl={convention.map_url}
-            variant="icon"
-          />
-
-          <Link
-            href={`/conventions/${convention.slug}`}
-            className={cn(
-              CONBLOCK,
-              'font-display bg-accent hover:bg-accent-pop inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs tracking-wider text-white uppercase min-[380px]:px-3.5 dark:text-zinc-950 dark:hover:text-white'
-            )}
-          >
-            <span>View Con</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
+        {(convention.website_url || convention.map_url) && (
+          <div className="border-ink relative z-10 flex min-w-0 flex-wrap items-center justify-start gap-2 border-t-2 border-dashed bg-white/60 px-4 py-3 backdrop-blur-xs sm:px-6 md:px-8 dark:bg-zinc-950/60">
+            <ConventionExternalLinks
+              websiteUrl={convention.website_url}
+              mapUrl={convention.map_url}
+              variant="icon"
+            />
+          </div>
+        )}
       </div>
     </article>
   );

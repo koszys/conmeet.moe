@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bookmark, Calendar, HeartHandshake, Sparkles, Users } from 'lucide-react';
 import { CONBLOCK, SearchInput } from '@/shared/components/ui';
+import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
 import { format } from 'date-fns';
@@ -58,6 +59,9 @@ export function MeetupFilterBar({
   const tabsRef = useRef<HTMLDivElement>(null);
   const [tabsWidth, setTabsWidth] = useState<number | null>(null);
 
+  const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({ ref: tabsRef });
+  const { ref: datePillsRef, maskStyle: datePillsMaskStyle } = useHorizontalScrollAffordance();
+
   useEffect(() => {
     const el = tabsRef.current;
     if (!el) return;
@@ -91,6 +95,7 @@ export function MeetupFilterBar({
       {/* Row 1: Category Filter Tabs */}
       <div
         ref={tabsRef}
+        style={tabsMaskStyle}
         className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2"
       >
         {/* All Meetups */}
@@ -215,7 +220,11 @@ export function MeetupFilterBar({
 
         {/* Date Filter Pills */}
         {conventionDays.length > 0 && (
-          <div className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2">
+          <div
+            ref={datePillsRef}
+            style={datePillsMaskStyle}
+            className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2"
+          >
             <span className="font-display inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
               <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               Day:

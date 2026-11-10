@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { CONBLOCK } from '@/shared/components/ui';
+import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import type { FreebieBoardState } from './types';
 
 interface BoardFilterBarProps {
@@ -41,6 +42,9 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const [tabsWidth, setTabsWidth] = useState<number | null>(null);
+
+  const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({ ref: tabsRef });
+  const { ref: controlsRef, maskStyle: controlsMaskStyle } = useHorizontalScrollAffordance();
 
   useEffect(() => {
     const el = tabsRef.current;
@@ -75,6 +79,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
       {/* Row 1: Filter Tabs */}
       <div
         ref={tabsRef}
+        style={tabsMaskStyle}
         className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2"
       >
         {/* All Freebies */}
@@ -222,7 +227,11 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
         </div>
 
         {/* Controls Cluster: Vendor Filter, View Density Toggle, and Refresh */}
-        <div className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2">
+        <div
+          ref={controlsRef}
+          style={controlsMaskStyle}
+          className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2"
+        >
           {/* Vendor Filter */}
           {vendors && vendors.length > 0 ? (
             <select

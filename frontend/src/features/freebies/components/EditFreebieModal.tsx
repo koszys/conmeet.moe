@@ -374,7 +374,8 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
               ) : (
                 <>
                   <Check className="h-3.5 w-3.5 stroke-3" />
-                  Save Changes
+                  <span className="hidden sm:inline">Save Changes</span>
+                  <span className="sm:hidden">Save</span>
                 </>
               )}
             </button>

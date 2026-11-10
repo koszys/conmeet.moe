@@ -704,7 +704,19 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
 
         {/* Form Actions */}
         <FormActions
-          submitLabel={isEditing ? 'Save Changes' : 'Publish Meetup'}
+          submitLabel={
+            isEditing ? (
+              <>
+                <span className="hidden sm:inline">Save Changes</span>
+                <span className="sm:hidden">Save</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">Publish Meetup</span>
+                <span className="sm:hidden">Publish</span>
+              </>
+            )
+          }
           cancelHref={
             onCancel
               ? undefined

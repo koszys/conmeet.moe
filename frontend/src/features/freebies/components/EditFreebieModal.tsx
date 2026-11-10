@@ -192,13 +192,13 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-freebie-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 p-4 backdrop-blur-xs"
       onClick={() => {
         if (!updateMutation.isPending) onClose();
       }}
     >
       <div
-        className="border-ink flex max-h-[92vh] w-full max-w-xl flex-col border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900"
+        className="border-ink flex max-h-[92vh] w-full max-w-xl flex-col overscroll-contain border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -228,7 +228,10 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
         </div>
 
         {/* Modal Body (Scrollable) */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6"
+        >
           <div className="space-y-4">
             {serverError ? (
               <div className="border-ink border-2 bg-rose-50 p-3 text-xs font-bold text-rose-600 dark:bg-rose-950/30 dark:text-rose-400">

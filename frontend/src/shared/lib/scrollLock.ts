@@ -1,9 +1,10 @@
 let lockCount = 0;
-let previousOverflow = '';
+let previousBodyOverflow = '';
+let previousHtmlOverflow = '';
 
 /**
- * Ref-counted body scroll lock.
- * Prevents body scrolling while one or more modals or lightboxes are open,
+ * Ref-counted body and document scroll lock.
+ * Prevents body and root page scrolling while one or more modals or lightboxes are open,
  * and restores scrolling safely when the last one closes.
  */
 export function lockBodyScroll(): () => void {
@@ -12,8 +13,10 @@ export function lockBodyScroll(): () => void {
   }
 
   if (lockCount === 0) {
-    previousOverflow = document.body.style.overflow;
+    previousBodyOverflow = document.body.style.overflow;
+    previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
   }
   lockCount++;
 
@@ -23,7 +26,8 @@ export function lockBodyScroll(): () => void {
     unlocked = true;
     lockCount = Math.max(0, lockCount - 1);
     if (lockCount === 0) {
-      document.body.style.overflow = previousOverflow || '';
+      document.body.style.overflow = previousBodyOverflow || '';
+      document.documentElement.style.overflow = previousHtmlOverflow || '';
     }
   };
 }

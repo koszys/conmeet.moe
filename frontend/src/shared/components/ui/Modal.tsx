@@ -74,14 +74,14 @@ export function Modal({
       aria-modal="true"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 p-4 backdrop-blur-xs"
       onClick={() => {
         if (!preventClose) onClose();
       }}
     >
       <div
         className={cn(
-          'border-ink w-full border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900',
+          'border-ink w-full overscroll-contain border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900',
           MAX_WIDTH_MAP[maxWidth],
           className
         )}

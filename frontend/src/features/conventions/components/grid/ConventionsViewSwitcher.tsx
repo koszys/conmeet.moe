@@ -31,8 +31,8 @@ export function ConventionsViewSwitcher({
           CONBLOCK,
           'font-display flex w-full min-w-0 items-center justify-center gap-1 px-1 py-1.5 text-[8.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[360px]:gap-1 min-[360px]:px-1.5 min-[360px]:text-[9.5px] min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
           view === 'featured'
-            ? 'bg-accent hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
-            : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            ? 'bg-accent text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+            : 'hover:bg-accent-pop dark:hover:bg-accent-pop bg-white text-zinc-800 hover:text-white dark:bg-zinc-900 dark:text-white dark:hover:text-white'
         )}
       >
         <Star
@@ -55,15 +55,12 @@ export function ConventionsViewSwitcher({
           CONBLOCK,
           'font-display flex w-full min-w-0 items-center justify-center gap-1 px-1 py-1.5 text-[8.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[360px]:gap-1 min-[360px]:px-1.5 min-[360px]:text-[9.5px] min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
           view === 'list'
-            ? 'bg-accent hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
-            : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            ? 'bg-accent text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
+            : 'hover:bg-accent-pop dark:hover:bg-accent-pop bg-white text-zinc-800 hover:text-white dark:bg-zinc-900 dark:text-white dark:hover:text-white'
         )}
       >
         <List className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
-        <span className="min-w-0 truncate">
-          <span className="hidden min-[440px]:inline">List of Cons</span>
-          <span className="min-[440px]:hidden">All Cons</span>
-        </span>
+        <span className="min-w-0 truncate">All Cons</span>
       </button>
     </div>
   );

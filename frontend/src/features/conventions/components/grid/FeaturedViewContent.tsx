@@ -36,7 +36,7 @@ export function FeaturedViewContent({
                 'inline-flex items-center gap-2 px-4 py-2 text-xs min-[380px]:px-5 min-[380px]:py-2.5'
               )}
             >
-              <span>View All Cons List</span>
+              <span>View All Cons</span>
               <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>

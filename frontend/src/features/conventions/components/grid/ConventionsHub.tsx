@@ -245,7 +245,7 @@ export function ConventionsHub({
       <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:gap-4">
         <ConventionsViewSwitcher view={view} onViewChange={handleViewChange} />
 
-        {/* Filter Bar with Drawer: Only for List of Cons */}
+        {/* Filter Bar with Drawer: Only for All Cons */}
         {view === 'list' && (
           <div className="border-ink flex flex-col border-b-2 pb-3 sm:pb-4">
             <ConventionFilterBar

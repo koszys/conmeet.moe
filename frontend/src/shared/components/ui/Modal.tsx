@@ -75,7 +75,8 @@ export function Modal({
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 p-4 backdrop-blur-xs"
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         if (!preventClose) onClose();
       }}
     >
@@ -142,7 +143,10 @@ export function ModalHeader({
       {onClose && (
         <button
           type="button"
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           disabled={closeDisabled}
           className={cn(
             CONBLOCK,

@@ -8,6 +8,7 @@ export * from './BookmarkButton';
 export * from './Modal';
 export * from './ConfirmDeleteModal';
 export * from './ImageLightbox';
+export * from './ExpandableImage';
 export * from './EmptyState';
 export * from './Badge';
 export * from './SearchInput';

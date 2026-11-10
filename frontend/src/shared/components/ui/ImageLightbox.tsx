@@ -61,7 +61,10 @@ export function ImageLightbox({
       role="dialog"
       aria-modal="true"
       aria-label={title || alt || 'Full size image viewer'}
-      onClick={onClose}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
       className="fixed inset-0 z-[60] flex items-center justify-center overscroll-contain bg-black/85 p-4 backdrop-blur-xs sm:p-6"
     >
       <div
@@ -83,7 +86,10 @@ export function ImageLightbox({
             {actions}
             <button
               type="button"
-              onClick={onClose}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
               className={cn(
                 CONBLOCK,
                 'flex h-8 w-8 items-center justify-center bg-white text-zinc-950 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'

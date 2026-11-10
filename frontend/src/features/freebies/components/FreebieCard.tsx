@@ -15,7 +15,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BookmarkButton, CONBLOCK, ImageLightbox } from '@/shared/components/ui';
+import { BookmarkButton, CONBLOCK, ExpandableImage } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
@@ -45,7 +45,6 @@ export function FreebieCard({
 
   const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isCondensed = externalCondensed !== undefined ? externalCondensed : internalCondensed;
@@ -191,20 +190,24 @@ export function FreebieCard({
             </div>
 
             {imageUrl ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsLightboxOpen(true);
-                }}
-                aria-label={`Expand photo of ${freebie.name}`}
+              <ExpandableImage
+                src={freebie.image || freebie.image_thumb || ''}
+                thumbnailSrc={imageUrl}
+                alt={freebie.name}
+                ariaLabel={`Expand photo of ${freebie.name}`}
                 title="Click to expand photo"
                 className={cn(
                   CONBLOCK,
-                  'group/thumb relative shrink-0 cursor-zoom-in overflow-hidden bg-zinc-100 dark:bg-zinc-800',
+                  'group/thumb relative shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800',
                   isCondensed ? 'h-9 w-9' : 'h-11 w-11'
                 )}
+                lightboxTitle={freebie.name}
+                lightboxSubtitle={
+                  <span>
+                    {freebie.vendor.name}
+                    {freebie.location ? ` • ${freebie.location}` : ''}
+                  </span>
+                }
               >
                 <Image
                   src={imageUrl}
@@ -216,7 +219,7 @@ export function FreebieCard({
                 <div className="border-ink absolute -right-0.5 -bottom-0.5 flex h-3.5 w-3.5 items-center justify-center border bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
                   <Camera className="h-2 w-2" />
                 </div>
-              </button>
+              </ExpandableImage>
             ) : null}
           </div>
 
@@ -348,22 +351,6 @@ export function FreebieCard({
         onEdit={() => setIsEditOpen(true)}
         onDelete={() => setIsDeleteOpen(true)}
       />
-
-      {imageUrl ? (
-        <ImageLightbox
-          isOpen={isLightboxOpen}
-          onClose={() => setIsLightboxOpen(false)}
-          src={freebie.image || freebie.image_thumb || ''}
-          alt={freebie.name}
-          title={freebie.name}
-          subtitle={
-            <span>
-              {freebie.vendor.name}
-              {freebie.location ? ` • ${freebie.location}` : ''}
-            </span>
-          }
-        />
-      ) : null}
 
       {isEditOpen ? (
         <EditFreebieModal

@@ -14,7 +14,7 @@ import {
   CONBLOCK_PRIMARY,
   CopyLinkButton,
   EmptyState,
-  ImageLightbox,
+  ExpandableImage,
 } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
@@ -37,7 +37,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -152,18 +151,13 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
               {/* Poster Column */}
               <div className="mx-auto w-full max-w-[280px] shrink-0 sm:max-w-[320px] md:mx-0">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setIsLightboxOpen(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setIsLightboxOpen(true);
-                    }
-                  }}
-                  className="border-ink group/poster relative aspect-[3/4] w-full cursor-zoom-in overflow-hidden border-2 bg-zinc-950 shadow-[4px_4px_0_var(--ink)]"
+                <ExpandableImage
+                  src={meetup.image}
+                  alt={meetup.name}
                   title="Click to expand full flyer"
+                  className="border-ink group/poster relative aspect-[3/4] w-full overflow-hidden border-2 bg-zinc-950 shadow-[4px_4px_0_var(--ink)]"
+                  lightboxTitle={meetup.name}
+                  lightboxSubtitle="Click anywhere outside or press Esc to close"
                 >
                   {/* Ambient backdrop */}
                   <Image
@@ -183,7 +177,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                     sizes="(max-width: 768px) 320px, 400px"
                     className="object-contain transition-transform duration-300 group-hover/poster:scale-102"
                   />
-                </div>
+                </ExpandableImage>
               </div>
 
               {/* Details Column */}
@@ -280,28 +274,17 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           /* Classic Banner Layout */
           <>
             {meetup.image ? (
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => setIsLightboxOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setIsLightboxOpen(true);
-                  }
-                }}
-                className="border-ink group/banner relative aspect-[21/9] w-full cursor-zoom-in overflow-hidden border-b-2 bg-zinc-100 sm:aspect-[24/9] dark:bg-zinc-800"
+              <ExpandableImage
+                src={meetup.image}
+                alt={meetup.name}
                 title="Click to view full image"
-              >
-                <Image
-                  src={meetup.image}
-                  alt={meetup.name}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                  className="object-cover object-top transition-transform duration-300 group-hover/banner:scale-102"
-                />
-              </div>
+                className="border-ink group/banner relative aspect-[21/9] w-full overflow-hidden border-b-2 bg-zinc-100 sm:aspect-[24/9] dark:bg-zinc-800"
+                imageClassName="object-cover object-top transition-transform duration-300 group-hover/banner:scale-102"
+                priority
+                sizes="(max-width: 1024px) 100vw, 896px"
+                lightboxTitle={meetup.name}
+                lightboxSubtitle="Click anywhere outside or press Esc to close"
+              />
             ) : (
               <div className="border-ink border-b-2 bg-zinc-50 py-10 text-center dark:bg-zinc-950">
                 <Users className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-700" />
@@ -444,16 +427,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onSuccess={() => router.push(`/conventions/${conventionSlug}/meetups`)}
-      />
-
-      {/* Full Flyer / Artwork Lightbox Modal */}
-      <ImageLightbox
-        isOpen={isLightboxOpen && Boolean(meetup.image)}
-        onClose={() => setIsLightboxOpen(false)}
-        src={meetup.image || ''}
-        alt={meetup.name}
-        title={meetup.name}
-        subtitle="Click anywhere outside or press Esc to close"
       />
     </div>
   );

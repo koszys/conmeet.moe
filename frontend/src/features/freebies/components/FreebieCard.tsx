@@ -15,7 +15,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BookmarkButton, CONBLOCK } from '@/shared/components/ui';
+import { BookmarkButton, CONBLOCK, ImageLightbox } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
@@ -45,6 +45,7 @@ export function FreebieCard({
 
   const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isCondensed = externalCondensed !== undefined ? externalCondensed : internalCondensed;
@@ -195,13 +196,13 @@ export function FreebieCard({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setIsDetailOpen(true);
+                  setIsLightboxOpen(true);
                 }}
-                aria-label={`View photo and details of ${freebie.name}`}
-                title="View full details and photo"
+                aria-label={`Expand photo of ${freebie.name}`}
+                title="Click to expand photo"
                 className={cn(
                   CONBLOCK,
-                  'group/thumb relative shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800',
+                  'group/thumb relative shrink-0 cursor-zoom-in overflow-hidden bg-zinc-100 dark:bg-zinc-800',
                   isCondensed ? 'h-9 w-9' : 'h-11 w-11'
                 )}
               >
@@ -347,6 +348,22 @@ export function FreebieCard({
         onEdit={() => setIsEditOpen(true)}
         onDelete={() => setIsDeleteOpen(true)}
       />
+
+      {imageUrl ? (
+        <ImageLightbox
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          src={freebie.image || freebie.image_thumb || ''}
+          alt={freebie.name}
+          title={freebie.name}
+          subtitle={
+            <span>
+              {freebie.vendor.name}
+              {freebie.location ? ` • ${freebie.location}` : ''}
+            </span>
+          }
+        />
+      ) : null}
 
       {isEditOpen ? (
         <EditFreebieModal

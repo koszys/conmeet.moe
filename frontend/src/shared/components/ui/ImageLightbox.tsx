@@ -40,16 +40,17 @@ export function ImageLightbox({
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
+        e.stopPropagation();
         onClose();
       }
     }
 
     const unlock = lockBodyScroll();
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown, true);
 
     return () => {
       unlock();
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown, true);
     };
   }, [isOpen, onClose]);
 
@@ -61,7 +62,7 @@ export function ImageLightbox({
       aria-modal="true"
       aria-label={title || alt || 'Full size image viewer'}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs sm:p-6"
+      className="fixed inset-0 z-[60] flex items-center justify-center overscroll-contain bg-black/85 p-4 backdrop-blur-xs sm:p-6"
     >
       <div
         onClick={(e) => e.stopPropagation()}

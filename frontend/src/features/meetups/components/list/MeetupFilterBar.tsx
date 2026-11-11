@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bookmark, Calendar, HeartHandshake, Sparkles, Users } from 'lucide-react';
-import { CONBLOCK, SearchInput } from '@/shared/components/ui';
+import { FilterTab, SearchInput } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
@@ -106,109 +106,85 @@ export function MeetupFilterBar({
         style={tabsMaskStyle}
         className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2"
       >
-        {/* All Meetups */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'all'}
           onClick={() => onTabChange('all')}
           title="All Meetups"
-          aria-label="All Meetups"
-          className={cn(
-            CONBLOCK,
-            'group inline-flex h-10 shrink-0 items-center justify-center gap-1.5 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase sm:px-4',
-            activeTab === 'all'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Users
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'all'
-                ? 'stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>
-            All<span className="hidden sm:inline"> Meetups</span>
-          </span>
-        </button>
+          ariaLabel="All Meetups"
+          label={
+            <span>
+              All<span className="hidden sm:inline"> Meetups</span>
+            </span>
+          }
+          icon={
+            <Users
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'all'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
 
-        {/* Official */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'official'}
           onClick={() => onTabChange('official')}
           title="Official Meetups"
-          aria-label="Official Meetups"
-          className={cn(
-            CONBLOCK,
-            'group inline-flex h-10 shrink-0 items-center justify-center gap-1.5 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase sm:px-4',
-            activeTab === 'official'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Sparkles
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'official'
-                ? 'fill-current stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>Official</span>
-        </button>
+          ariaLabel="Official Meetups"
+          label="Official"
+          icon={
+            <Sparkles
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'official'
+                  ? 'fill-current stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
 
-        {/* Community */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'community'}
           onClick={() => onTabChange('community')}
           title="Community / Fan Meetups"
-          aria-label="Community / Fan Meetups"
-          className={cn(
-            CONBLOCK,
-            'group inline-flex h-10 shrink-0 items-center justify-center gap-1.5 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase sm:px-4',
-            activeTab === 'community'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <HeartHandshake
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'community'
-                ? 'stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>
-            Community<span className="hidden sm:inline">/Fan</span>
-          </span>
-        </button>
+          ariaLabel="Community / Fan Meetups"
+          label={
+            <span>
+              Community<span className="hidden sm:inline">/Fan</span>
+            </span>
+          }
+          icon={
+            <HeartHandshake
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'community'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
 
-        {/* Saved */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'saved'}
           onClick={() => onTabChange('saved')}
           title="Saved Meetups"
-          aria-label="Saved Meetups"
-          className={cn(
-            CONBLOCK,
-            'group inline-flex h-10 shrink-0 items-center justify-center gap-1.5 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase sm:px-4',
-            activeTab === 'saved'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Bookmark
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'saved'
-                ? 'fill-current stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>Saved</span>
-        </button>
+          ariaLabel="Saved Meetups"
+          label="Saved"
+          icon={
+            <Bookmark
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'saved'
+                  ? 'fill-current stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
       </div>
 
       {/* Row 2: Search & Day Filter - sized to match tabs above it, wraps to own row when needed, shrinks on mobile */}
@@ -237,36 +213,22 @@ export function MeetupFilterBar({
               <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               Day:
             </span>
-            <button
-              type="button"
+            <FilterTab
+              variant="pill"
+              isActive={!selectedDate}
               onClick={() => onDateChange(undefined)}
-              className={cn(
-                CONBLOCK,
-                'shrink-0 px-2 py-1 text-xs font-bold whitespace-nowrap uppercase sm:px-2.5',
-                !selectedDate
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-              )}
-            >
-              <span className="hidden sm:inline">All Days</span>
-              <span className="sm:hidden">All</span>
-            </button>
+              label="All Days"
+              shortLabel="All"
+            />
             {conventionDays.map((day) => (
-              <button
+              <FilterTab
                 key={day.dateStr}
-                type="button"
+                variant="pill"
+                isActive={selectedDate === day.dateStr}
                 onClick={() => onDateChange(day.dateStr)}
-                className={cn(
-                  CONBLOCK,
-                  'shrink-0 px-2 py-1 text-xs font-bold whitespace-nowrap uppercase sm:px-2.5',
-                  selectedDate === day.dateStr
-                    ? 'bg-accent text-white dark:text-zinc-950'
-                    : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-                )}
-              >
-                <span className="hidden sm:inline">{day.label}</span>
-                <span className="sm:hidden">{day.shortLabel}</span>
-              </button>
+                label={day.label}
+                shortLabel={day.shortLabel}
+              />
             ))}
           </div>
         )}

@@ -2,12 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Check, Clock, MapPin, User, Users } from 'lucide-react';
+import { Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { Badge, BookmarkButton, CONBLOCK } from '@/shared/components/ui';
+import { Badge, BookmarkButton } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
-import { cn } from '@/shared/lib/utils';
-import { useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
+import { useToggleSaveMeetup } from '../../api';
+import { GoingButton } from '../GoingButton';
 import type { Meetup } from '../../types';
 
 interface MeetupCardProps {
@@ -18,7 +18,6 @@ interface MeetupCardProps {
 export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
   const { user } = useAuth();
   const toggleSave = useToggleSaveMeetup();
-  const toggleGoing = useToggleGoingMeetup();
 
   const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -28,16 +27,6 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
       return;
     }
     toggleSave.mutate(meetup.id);
-  };
-
-  const handleToggleGoing = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups`;
-      return;
-    }
-    toggleGoing.mutate(meetup.id);
   };
 
   const meetupHref = `/conventions/${conventionSlug}/meetups/${meetup.id}`;
@@ -127,36 +116,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
         <div className="pointer-events-auto relative z-10 mt-4 flex items-center justify-between border-t border-zinc-200 pt-3 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             {/* Going button */}
-            <button
-              type="button"
-              onClick={handleToggleGoing}
-              title={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
-              aria-label={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
-              className={cn(
-                CONBLOCK,
-                'pointer-events-auto relative z-10 inline-flex h-8 items-center gap-1.5 px-2.5 text-xs font-bold uppercase',
-                meetup.is_going
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
-              )}
-            >
-              {meetup.is_going ? (
-                <Check className="h-3.5 w-3.5" />
-              ) : (
-                <Users className="h-3.5 w-3.5" />
-              )}
-              <span>{meetup.is_going ? "I'm Going!" : 'Going!'}</span>
-              <span
-                className={cn(
-                  'ml-1 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-                  meetup.is_going
-                    ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                    : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-                )}
-              >
-                {meetup.going_count}
-              </span>
-            </button>
+            <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="sm" />
 
             {/* Bookmark button */}
             <BookmarkButton

@@ -2,8 +2,7 @@
 
 import { useEffect, useId, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
-import { CONBLOCK } from '../actions/Button';
+import { CloseButton } from '../actions/CloseButton';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 
@@ -145,24 +144,7 @@ export function ModalHeader({
         </div>
       )}
 
-      {onClose && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-          disabled={closeDisabled}
-          className={cn(
-            CONBLOCK,
-            'shrink-0 self-start p-1.5 hover:bg-zinc-200 disabled:opacity-50 dark:hover:bg-zinc-800'
-          )}
-          title="Close"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
+      {onClose && <CloseButton onClose={onClose} disabled={closeDisabled} className="self-start" />}
     </div>
   );
 }

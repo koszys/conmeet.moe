@@ -3,23 +3,20 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import {
-  Camera,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  MapPin,
-  Pencil,
-  Square,
-  Trash2,
-} from 'lucide-react';
+import { Camera, ChevronDown, ChevronUp, Clock, MapPin } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BookmarkButton, CONBLOCK, ExpandableImage } from '@/shared/components/ui';
+import {
+  BookmarkButton,
+  CONBLOCK,
+  DeleteButton,
+  EditButton,
+  ExpandableImage,
+} from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
-import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
+import { useToggleSaveFreebie } from '../api/mutations';
+import { ClaimButton } from './ClaimButton';
 import { FreebieDetailModal } from './FreebieDetailModal';
 import { EditFreebieModal } from './EditFreebieModal';
 import { DeleteFreebieModal } from './DeleteFreebieModal';
@@ -62,7 +59,6 @@ export function FreebieCard({
   );
 
   const toggleSave = useToggleSaveFreebie();
-  const toggleClaim = useToggleClaimFreebie();
 
   function requireAuthAction(action: () => void) {
     if (!user) {
@@ -77,14 +73,6 @@ export function FreebieCard({
     e.stopPropagation();
     requireAuthAction(() => {
       toggleSave.mutate(freebie.id);
-    });
-  }
-
-  function handleClaim(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    requireAuthAction(() => {
-      toggleClaim.mutate(freebie.id);
     });
   }
 
@@ -278,30 +266,11 @@ export function FreebieCard({
       >
         <div className="flex items-center justify-between gap-2">
           {/* Check off / Claim button */}
-          <button
-            type="button"
-            onClick={handleClaim}
-            disabled={toggleClaim.isPending}
-            className={cn(
-              CONBLOCK,
-              'flex-1 px-2.5 py-1.5 text-xs font-bold uppercase transition-all',
-              freebie.is_claimed
-                ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-            )}
-          >
-            {freebie.is_claimed ? (
-              <span className="inline-flex items-center justify-center gap-1.5">
-                <Check className="h-3.5 w-3.5 stroke-3" />
-                <span>CLAIMED</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center justify-center gap-1.5 text-zinc-800 dark:text-zinc-200">
-                <Square className="h-3.5 w-3.5 stroke-2" />
-                <span>CHECK OFF</span>
-              </span>
-            )}
-          </button>
+          <ClaimButton
+            freebie={freebie}
+            conventionSlug={freebie.convention_slug || undefined}
+            variant="button"
+          />
 
           <div className="flex shrink-0 items-center gap-1.5">
             {/* Save / Bookmark button */}
@@ -316,8 +285,10 @@ export function FreebieCard({
             {/* Owner Edit & Delete Buttons (Only in My Uploads) */}
             {canManage && isOwner ? (
               <>
-                <button
-                  type="button"
+                <EditButton
+                  variant="icon"
+                  title="Edit freebie"
+                  ariaLabel={`Edit ${freebie.name}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -327,18 +298,13 @@ export function FreebieCard({
                       setIsEditOpen(true);
                     }
                   }}
-                  aria-label={`Edit ${freebie.name}`}
-                  title="Edit freebie"
-                  className={cn(
-                    CONBLOCK,
-                    'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-zinc-700 transition-all hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
-                  )}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </button>
+                />
 
-                <button
-                  type="button"
+                <DeleteButton
+                  variant="icon"
+                  colorStyle="danger-subtle"
+                  title="Delete freebie"
+                  ariaLabel={`Delete ${freebie.name}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -348,15 +314,7 @@ export function FreebieCard({
                       setIsDeleteOpen(true);
                     }
                   }}
-                  aria-label={`Delete ${freebie.name}`}
-                  title="Delete freebie"
-                  className={cn(
-                    CONBLOCK,
-                    'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-rose-600 transition-all hover:bg-rose-50 hover:text-rose-700 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-rose-950/40'
-                  )}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                />
               </>
             ) : null}
           </div>

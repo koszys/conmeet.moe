@@ -4,21 +4,23 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Camera, Check, Clock, Edit3, MapPin, Trash2, User, Users } from 'lucide-react';
+import { Camera, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import {
   BackLink,
   Badge,
   BookmarkButton,
-  CONBLOCK,
   CONBLOCK_PRIMARY,
   CopyLinkButton,
+  DeleteButton,
+  EditButton,
   EmptyState,
   ExpandableImage,
 } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
-import { useMeetup, useToggleGoingMeetup, useToggleSaveMeetup } from '../../api';
+import { useMeetup, useToggleSaveMeetup } from '../../api';
+import { GoingButton } from '../GoingButton';
 import { MeetupForm } from '../form';
 import { MeetupDetailSkeleton } from './MeetupDetailSkeleton';
 import { DeleteMeetupModal } from './DeleteMeetupModal';
@@ -33,7 +35,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   const { user } = useAuth();
   const { data: meetup, isLoading, isError } = useMeetup(meetupId);
   const toggleSave = useToggleSaveMeetup();
-  const toggleGoing = useToggleGoingMeetup();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -100,14 +101,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
     toggleSave.mutate(meetup.id);
   };
 
-  const handleToggleGoing = () => {
-    if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupId}`;
-      return;
-    }
-    toggleGoing.mutate(meetup.id);
-  };
-
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-8 sm:px-6">
       {/* Top Navigation Row */}
@@ -116,29 +109,12 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
         {isOwnerOrAdmin && (
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleOpenEdit}
-              className={cn(
-                CONBLOCK,
-                'inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-bold text-zinc-800 uppercase dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
-              )}
-            >
-              <Edit3 className="h-3.5 w-3.5" />
-              <span>Edit</span>
-            </button>
-
-            <button
-              type="button"
+            <EditButton variant="button" onClick={handleOpenEdit} />
+            <DeleteButton
+              variant="button"
+              colorStyle="danger-solid"
               onClick={() => setIsDeleteOpen(true)}
-              className={cn(
-                CONBLOCK,
-                'inline-flex items-center gap-1.5 bg-red-500 px-3 py-1.5 text-xs font-bold text-white uppercase hover:bg-red-600'
-              )}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span>Delete</span>
-            </button>
+            />
           </div>
         )}
       </div>
@@ -229,32 +205,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
                 {/* Action Row */}
                 <div className="mt-6 flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-6 sm:gap-3 dark:border-zinc-800">
-                  <button
-                    type="button"
-                    onClick={handleToggleGoing}
-                    title={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
-                    aria-label={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
-                    className={cn(
-                      CONBLOCK,
-                      'inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase sm:px-5',
-                      meetup.is_going
-                        ? 'bg-accent text-white dark:text-zinc-950'
-                        : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
-                    )}
-                  >
-                    <Check className={cn('h-4 w-4', meetup.is_going && 'stroke-[3]')} />
-                    <span>{meetup.is_going ? "I'm Going!" : 'Going!'}</span>
-                    <span
-                      className={cn(
-                        'ml-1 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-                        meetup.is_going
-                          ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                          : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-                      )}
-                    >
-                      {meetup.going_count}
-                    </span>
-                  </button>
+                  <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="md" />
 
                   <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                     <BookmarkButton
@@ -340,32 +291,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
               {/* Action Row */}
               <div className="mt-6 flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-6 sm:gap-3 dark:border-zinc-800">
-                <button
-                  type="button"
-                  onClick={handleToggleGoing}
-                  title={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
-                  aria-label={meetup.is_going ? "Cancel I'm Going" : "I'm Going!"}
-                  className={cn(
-                    CONBLOCK,
-                    'inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase sm:px-5',
-                    meetup.is_going
-                      ? 'bg-accent text-white dark:text-zinc-950'
-                      : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700'
-                  )}
-                >
-                  <Check className={cn('h-4 w-4', meetup.is_going && 'stroke-[3]')} />
-                  <span>{meetup.is_going ? "I'm Going!" : 'Going!'}</span>
-                  <span
-                    className={cn(
-                      'ml-1 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-                      meetup.is_going
-                        ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                        : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-                    )}
-                  >
-                    {meetup.going_count}
-                  </span>
-                </button>
+                <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="md" />
 
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   <BookmarkButton

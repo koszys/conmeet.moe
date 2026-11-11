@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { CONBLOCK } from '@/shared/components/ui';
+import { CONBLOCK, FilterTab } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import type { FreebieBoardState } from './types';
 
@@ -82,111 +82,70 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
         style={tabsMaskStyle}
         className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2"
       >
-        {/* All Freebies */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'all'}
           onClick={() => handleTabClick('all')}
           title={`All Freebies (${counts.all})`}
-          aria-label={`All Freebies (${counts.all})`}
-          className={cn(
-            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
-            activeTab === 'all'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Gift
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'all'
-                ? 'stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>All</span>
-          <span
-            className={cn(
-              'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-              activeTab === 'all'
-                ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-            )}
-          >
-            {counts.all}
-          </span>
-        </button>
+          ariaLabel={`All Freebies (${counts.all})`}
+          label="All"
+          count={counts.all}
+          icon={
+            <Gift
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'all'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
 
-        {/* Saved Freebies */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'saved'}
           onClick={() => handleTabClick('saved')}
           title={`Saved Freebies (${counts.saved})`}
-          aria-label={`Saved Freebies (${counts.saved})`}
-          className={cn(
-            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
-            activeTab === 'saved'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Bookmark
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'saved'
-                ? 'fill-current stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>
-            <span className="hidden sm:inline">My </span>Saved
-          </span>
-          <span
-            className={cn(
-              'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-              activeTab === 'saved'
-                ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-            )}
-          >
-            {counts.saved}
-          </span>
-        </button>
+          ariaLabel={`Saved Freebies (${counts.saved})`}
+          label={
+            <span>
+              <span className="hidden sm:inline">My </span>Saved
+            </span>
+          }
+          count={counts.saved}
+          icon={
+            <Bookmark
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'saved'
+                  ? 'fill-current stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
 
-        {/* Uploaded Freebies */}
-        <button
-          type="button"
+        <FilterTab
+          isActive={activeTab === 'uploaded'}
           onClick={() => handleTabClick('uploaded')}
           title={`My Uploads (${counts.uploaded})`}
-          aria-label={`My Uploads (${counts.uploaded})`}
-          className={cn(
-            'group border-ink inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 px-2.5 text-center text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
-            activeTab === 'uploaded'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <UploadCloud
-            className={cn(
-              'h-4 w-4 shrink-0',
-              activeTab === 'uploaded'
-                ? 'stroke-[2.5]'
-                : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-            )}
-          />
-          <span>
-            <span className="hidden sm:inline">My </span>Uploads
-          </span>
-          <span
-            className={cn(
-              'ml-0.5 inline-flex items-center justify-center rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] leading-none font-bold',
-              activeTab === 'uploaded'
-                ? 'border border-white/40 bg-white/20 text-white dark:border-black/30 dark:bg-black/20 dark:text-zinc-950'
-                : 'border-ink/20 border bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-            )}
-          >
-            {counts.uploaded}
-          </span>
-        </button>
+          ariaLabel={`My Uploads (${counts.uploaded})`}
+          label={
+            <span>
+              <span className="hidden sm:inline">My </span>Uploads
+            </span>
+          }
+          count={counts.uploaded}
+          icon={
+            <UploadCloud
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'uploaded'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
       </div>
 
       {/* Row 2: Search & Controls - sized to match tabs above it, wraps to own row when needed, shrinks on mobile */}

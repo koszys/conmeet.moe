@@ -3,9 +3,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { X } from 'lucide-react';
-import { CONBLOCK } from '../actions/Button';
-import { cn } from '@/shared/lib/utils';
+import { CloseButton } from '../actions/CloseButton';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 
 const emptySubscribe = () => () => {};
@@ -84,21 +82,7 @@ export function ImageLightbox({
 
           <div className="flex shrink-0 items-center gap-2">
             {actions}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-              }}
-              className={cn(
-                CONBLOCK,
-                'flex h-8 w-8 items-center justify-center bg-white text-zinc-950 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
-              )}
-              title="Close"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <CloseButton onClose={onClose} size="sm" />
           </div>
         </div>
 

@@ -2,19 +2,14 @@
 
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Check, Clock, MapPin, Square } from 'lucide-react';
+import { Clock, MapPin, Check, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import {
-  BookmarkButton,
-  CONBLOCK,
-  ExpandableImage,
-  Modal,
-  ModalHeader,
-} from '@/shared/components/ui';
+import { BookmarkButton, ExpandableImage, Modal, ModalHeader } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
-import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
+import { useToggleSaveFreebie } from '../api/mutations';
+import { ClaimButton } from './ClaimButton';
 
 export function FreebieDetailModal({
   freebie,
@@ -30,7 +25,6 @@ export function FreebieDetailModal({
   const { user } = useAuth();
 
   const toggleSave = useToggleSaveFreebie();
-  const toggleClaim = useToggleClaimFreebie();
 
   const fullImageUrl = freebie.image || freebie.image_thumb;
   const uploadDateTime = formatDateTime(freebie.created_at);
@@ -48,14 +42,6 @@ export function FreebieDetailModal({
     e.stopPropagation();
     requireAuthAction(() => {
       toggleSave.mutate(freebie.id);
-    });
-  }
-
-  function handleClaim(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    requireAuthAction(() => {
-      toggleClaim.mutate(freebie.id);
     });
   }
 
@@ -183,26 +169,7 @@ export function FreebieDetailModal({
           {/* Action Buttons on Right (Check off & Bookmark same compact size) */}
           <div className="flex shrink-0 items-center gap-2">
             {/* Check off / Claim button */}
-            <button
-              type="button"
-              onClick={handleClaim}
-              disabled={toggleClaim.isPending}
-              aria-label={freebie.is_claimed ? 'Claimed' : 'Check off freebie'}
-              title={freebie.is_claimed ? 'Claimed (click to unclaim)' : 'Check off freebie'}
-              className={cn(
-                CONBLOCK,
-                'inline-flex h-8 w-8 shrink-0 items-center justify-center transition-all',
-                freebie.is_claimed
-                  ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                  : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
-              )}
-            >
-              {freebie.is_claimed ? (
-                <Check className="h-4 w-4 stroke-3" />
-              ) : (
-                <Square className="h-4 w-4 stroke-2" />
-              )}
-            </button>
+            <ClaimButton freebie={freebie} variant="icon" />
 
             {/* Save / Bookmark button */}
             <BookmarkButton

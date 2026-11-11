@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Search, UploadCloud, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { FreebieCard } from '../FreebieCard';
 import { BoardEmptyState } from './BoardEmptyState';
 import type { FreebieBoardState } from './types';
@@ -23,7 +23,7 @@ export function BoardUploadedTab({ state, conventionSlug }: BoardUploadedTabProp
   if (uploadedDrops.length === 0) {
     return (
       <BoardEmptyState
-        icon={isFiltered ? Search : UploadCloud}
+        speech={isFiltered ? 'No uploads match!' : 'Share freebies with others!'}
         title={isFiltered ? 'No Matching Uploads' : 'No Uploaded Freebies Yet'}
         description={
           isFiltered

@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
+import { MikuGif } from '@/shared/components/miku';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
@@ -14,22 +15,23 @@ export interface BoardEmptyStateAction {
 }
 
 interface BoardEmptyStateProps {
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  speech?: string;
   title: string;
   description: string;
   action?: BoardEmptyStateAction;
 }
 
-export function BoardEmptyState({ icon: Icon, title, description, action }: BoardEmptyStateProps) {
+export function BoardEmptyState({ speech, title, description, action }: BoardEmptyStateProps) {
   return (
-    <div className="border-ink border-2 border-dashed bg-white p-12 text-center shadow-[4px_4px_0_var(--ink)] dark:bg-zinc-900">
-      <div className="border-ink bg-accent-soft/25 mx-auto flex h-14 w-14 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
-        <Icon className="text-ink h-7 w-7 dark:text-white" />
+    <div className="border-ink border-2 border-dashed bg-white p-10 text-center shadow-[4px_4px_0_var(--ink)] sm:p-12 dark:bg-zinc-900">
+      <div className="mb-4 flex justify-center">
+        <MikuGif size="md" variant="framed" speech={speech} speechPosition="top" />
       </div>
 
-      <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">{title}</h3>
+      <h3 className="font-display mt-2 text-lg tracking-wide uppercase sm:text-xl">{title}</h3>
 
-      <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 dark:text-zinc-300">
+      <p className="mx-auto mt-2 max-w-md text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
         {description}
       </p>
 

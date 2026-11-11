@@ -3,6 +3,7 @@
 import { ConventionRow } from './ConventionRow';
 import type { Convention, ConventionPhase } from '../../types';
 import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { MikuGif } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionGroup {
@@ -25,6 +26,9 @@ export interface ListViewContentProps {
 function FilterEmptyState({ onReset }: { onReset: () => void }) {
   return (
     <div className="border-ink mt-8 border-2 border-dashed bg-white p-8 text-center sm:p-12 dark:bg-zinc-900">
+      <div className="mb-4 flex justify-center">
+        <MikuGif size="md" variant="framed" speech="No cons matched!" speechPosition="top" />
+      </div>
       <p className="font-display text-sm tracking-wide uppercase sm:text-base">
         No conventions match your filters
       </p>

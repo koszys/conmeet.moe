@@ -2,10 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Plus, RotateCw, Users } from 'lucide-react';
+import { Plus, RotateCw } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
-import { MikuLoader } from '@/shared/components/miku';
+import { MikuGif, MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { useMeetups } from '../../api';
 import { MeetupCard } from './MeetupCard';
@@ -86,10 +86,21 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
       ) : (
         /* Empty State */
         <div className="border-ink flex flex-col items-center justify-center border-2 border-dashed bg-white p-8 text-center sm:p-12 dark:bg-zinc-900">
-          <div className="border-ink flex h-14 w-14 items-center justify-center rounded-full border-2 bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
-            <Users className="h-7 w-7" />
+          <div className="mb-3 flex justify-center">
+            <MikuGif
+              size="md"
+              variant="framed"
+              speech={
+                activeTab === 'saved'
+                  ? 'Save some meetups!'
+                  : activeTab === 'official'
+                    ? 'Checking with staff!'
+                    : 'Host a meetup!'
+              }
+              speechPosition="top"
+            />
           </div>
-          <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
+          <h3 className="font-display mt-2 text-lg tracking-wide uppercase sm:text-xl">
             {activeTab === 'saved'
               ? 'No Saved Meetups Yet'
               : activeTab === 'official'

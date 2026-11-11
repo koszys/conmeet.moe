@@ -340,7 +340,8 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
         {/* Empty / Intro state */}
         <EmptyState
-          icon={Camera}
+          mascot
+          mascotSpeech="Photoshoots coming soon!"
           title="No Albums Added Yet"
           description="Attended this meetup? Soon you will be able to share your photoshoot folders, credit your socials, and download attendee photos right here!"
           className="mt-6 border-zinc-300 dark:border-zinc-700"

@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookmark, Gift, Plus, Search, X } from 'lucide-react';
+import { Bookmark, Plus, X } from 'lucide-react';
 import { FreebieCard } from '../FreebieCard';
 import { BoardEmptyState } from './BoardEmptyState';
 import type { FreebieBoardState } from './types';
@@ -24,7 +24,7 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
   if (allDrops.length === 0) {
     return (
       <BoardEmptyState
-        icon={isFiltered ? Search : Gift}
+        speech={isFiltered ? 'Try clearing your search!' : 'Be the first to upload!'}
         title={isFiltered ? 'No Matching Freebies Found' : 'No Active Freebies Found'}
         description={
           isFiltered

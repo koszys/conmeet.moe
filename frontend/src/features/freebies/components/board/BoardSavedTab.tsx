@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookmark, Check, CheckSquare, ChevronDown, Gift, Search, X } from 'lucide-react';
+import { Check, CheckSquare, ChevronDown, Gift, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { FreebieCard } from '../FreebieCard';
 import { BoardEmptyState } from './BoardEmptyState';
@@ -30,7 +30,7 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
   if (counts.saved === 0) {
     return (
       <BoardEmptyState
-        icon={isFiltered ? Search : Bookmark}
+        speech={isFiltered ? 'No saved matches!' : 'Track your convention !'}
         title={isFiltered ? 'No Matching Saved Freebies' : 'No Saved Freebies Yet'}
         description={
           isFiltered

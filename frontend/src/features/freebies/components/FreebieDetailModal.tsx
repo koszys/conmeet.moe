@@ -69,8 +69,8 @@ export function FreebieDetailModal({
       overlayClassName="py-6 px-3.5 sm:p-6"
     >
       {/* Modal Header */}
-      <ModalHeader onClose={onClose} className="shrink-0 p-3.5 sm:p-5">
-        <div className="min-w-0 pr-2">
+      <ModalHeader onClose={onClose} className="shrink-0 items-start p-3.5 sm:p-5">
+        <div className="min-w-0 flex-1 pr-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
               {freebie.vendor.name}

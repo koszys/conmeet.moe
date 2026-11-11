@@ -125,7 +125,7 @@ export function ModalHeader({
   return (
     <div
       className={cn(
-        'border-ink flex items-center justify-between border-b-2 p-4 sm:px-6',
+        'border-ink flex items-start justify-between border-b-2 p-4 sm:px-6',
         className
       )}
     >
@@ -155,7 +155,7 @@ export function ModalHeader({
           disabled={closeDisabled}
           className={cn(
             CONBLOCK,
-            'shrink-0 p-1.5 hover:bg-zinc-200 disabled:opacity-50 dark:hover:bg-zinc-800'
+            'shrink-0 self-start p-1.5 hover:bg-zinc-200 disabled:opacity-50 dark:hover:bg-zinc-800'
           )}
           title="Close"
           aria-label="Close"

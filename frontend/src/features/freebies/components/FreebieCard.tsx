@@ -24,6 +24,18 @@ import { FreebieDetailModal } from './FreebieDetailModal';
 import { EditFreebieModal } from './EditFreebieModal';
 import { DeleteFreebieModal } from './DeleteFreebieModal';
 
+export interface FreebieCardProps {
+  freebie: Freebie;
+  className?: string;
+  defaultCondensed?: boolean;
+  condensed?: boolean;
+  onToggleCondensed?: () => void;
+  canManage?: boolean;
+  onOpenDetail?: () => void;
+  onEdit?: (freebie: Freebie) => void;
+  onDelete?: (freebie: Freebie) => void;
+}
+
 export function FreebieCard({
   freebie,
   className,
@@ -31,14 +43,10 @@ export function FreebieCard({
   condensed: externalCondensed,
   onToggleCondensed,
   canManage = false,
-}: {
-  freebie: Freebie;
-  className?: string;
-  defaultCondensed?: boolean;
-  condensed?: boolean;
-  onToggleCondensed?: () => void;
-  canManage?: boolean;
-}) {
+  onOpenDetail,
+  onEdit,
+  onDelete,
+}: FreebieCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
@@ -98,7 +106,11 @@ export function FreebieCard({
     if (selection && selection.toString().length > 0) {
       return;
     }
-    setIsDetailOpen(true);
+    if (onOpenDetail) {
+      onOpenDetail();
+    } else {
+      setIsDetailOpen(true);
+    }
   }
 
   const imageUrl = freebie.image_thumb || freebie.image;
@@ -309,7 +321,11 @@ export function FreebieCard({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsEditOpen(true);
+                    if (onEdit) {
+                      onEdit(freebie);
+                    } else {
+                      setIsEditOpen(true);
+                    }
                   }}
                   aria-label={`Edit ${freebie.name}`}
                   title="Edit freebie"
@@ -326,7 +342,11 @@ export function FreebieCard({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsDeleteOpen(true);
+                    if (onDelete) {
+                      onDelete(freebie);
+                    } else {
+                      setIsDeleteOpen(true);
+                    }
                   }}
                   aria-label={`Delete ${freebie.name}`}
                   title="Delete freebie"
@@ -343,16 +363,18 @@ export function FreebieCard({
         </div>
       </div>
 
-      <FreebieDetailModal
-        freebie={freebie}
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        canManage={canManage}
-        onEdit={() => setIsEditOpen(true)}
-        onDelete={() => setIsDeleteOpen(true)}
-      />
+      {!onOpenDetail && (
+        <FreebieDetailModal
+          freebie={freebie}
+          isOpen={isDetailOpen}
+          onClose={() => setIsDetailOpen(false)}
+          canManage={canManage}
+          onEdit={() => setIsEditOpen(true)}
+          onDelete={() => setIsDeleteOpen(true)}
+        />
+      )}
 
-      {isEditOpen ? (
+      {!onEdit && isEditOpen ? (
         <EditFreebieModal
           freebie={freebie}
           isOpen={isEditOpen}
@@ -360,7 +382,7 @@ export function FreebieCard({
         />
       ) : null}
 
-      {isDeleteOpen ? (
+      {!onDelete && isDeleteOpen ? (
         <DeleteFreebieModal
           freebie={freebie}
           isOpen={isDeleteOpen}

@@ -84,6 +84,9 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
                   freebie={freebie}
                   condensed={isCardCondensed(freebie.id)}
                   onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                  onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+                  onEdit={(f) => state.setEditingFreebie(f)}
+                  onDelete={(f) => state.setDeletingFreebie(f)}
                 />
               ))}
             </div>
@@ -152,6 +155,9 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
                   freebie={freebie}
                   condensed={isCardCondensed(freebie.id)}
                   onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                  onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+                  onEdit={(f) => state.setEditingFreebie(f)}
+                  onDelete={(f) => state.setDeletingFreebie(f)}
                 />
               ))}
             </div>

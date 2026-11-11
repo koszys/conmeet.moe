@@ -46,4 +46,12 @@ export interface FreebieBoardState {
   setIsToClaimCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   isClaimedCollapsed: boolean;
   setIsClaimedCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  // Hoisted modal state
+  selectedFreebieId: number | null;
+  setSelectedFreebieId: (id: number | null) => void;
+  selectedFreebie: Freebie | null;
+  editingFreebie: Freebie | null;
+  setEditingFreebie: (freebie: Freebie | null) => void;
+  deletingFreebie: Freebie | null;
+  setDeletingFreebie: (freebie: Freebie | null) => void;
 }

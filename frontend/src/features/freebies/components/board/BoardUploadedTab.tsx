@@ -55,6 +55,9 @@ export function BoardUploadedTab({ state, conventionSlug }: BoardUploadedTabProp
           condensed={isCardCondensed(freebie.id)}
           onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
           canManage
+          onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+          onEdit={(f) => state.setEditingFreebie(f)}
+          onDelete={(f) => state.setDeletingFreebie(f)}
         />
       ))}
     </div>

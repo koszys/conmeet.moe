@@ -1,11 +1,15 @@
 'use client';
 
 import { RotateCw } from 'lucide-react';
+import { useAuth } from '@/features/auth';
 import { useConvention } from '@/features/conventions/data/api';
 import { cn } from '@/shared/lib/utils';
 import { useFreebieBoardState } from './board/useFreebieBoardState';
 import { BoardHeader, BoardFilterBar, BoardAllTab, BoardSavedTab, BoardUploadedTab } from './board';
 import { FreebieSkeleton } from './FreebieSkeleton';
+import { FreebieDetailModal } from './FreebieDetailModal';
+import { EditFreebieModal } from './EditFreebieModal';
+import { DeleteFreebieModal } from './DeleteFreebieModal';
 
 export function FreebieBoard({
   conventionSlug,
@@ -15,6 +19,7 @@ export function FreebieBoard({
   conventionName?: string;
 }) {
   const { data: convention } = useConvention(conventionSlug);
+  const { user } = useAuth();
   const resolvedName = conventionName || convention?.name;
   const state = useFreebieBoardState(conventionSlug);
 
@@ -52,6 +57,49 @@ export function FreebieBoard({
         <BoardUploadedTab state={state} conventionSlug={conventionSlug} />
       ) : (
         <BoardSavedTab state={state} />
+      )}
+
+      {state.selectedFreebie && (
+        <FreebieDetailModal
+          freebie={state.selectedFreebie}
+          isOpen={Boolean(state.selectedFreebie)}
+          onClose={() => state.setSelectedFreebieId(null)}
+          canManage={
+            state.activeTab === 'uploaded' ||
+            Boolean(
+              user &&
+              (state.selectedFreebie.is_owner ||
+                (state.selectedFreebie.created_by !== null &&
+                  state.selectedFreebie.created_by === user.id))
+            )
+          }
+          onEdit={() => {
+            const f = state.selectedFreebie;
+            state.setSelectedFreebieId(null);
+            state.setEditingFreebie(f);
+          }}
+          onDelete={() => {
+            const f = state.selectedFreebie;
+            state.setSelectedFreebieId(null);
+            state.setDeletingFreebie(f);
+          }}
+        />
+      )}
+
+      {state.editingFreebie && (
+        <EditFreebieModal
+          freebie={state.editingFreebie}
+          isOpen={Boolean(state.editingFreebie)}
+          onClose={() => state.setEditingFreebie(null)}
+        />
+      )}
+
+      {state.deletingFreebie && (
+        <DeleteFreebieModal
+          freebie={state.deletingFreebie}
+          isOpen={Boolean(state.deletingFreebie)}
+          onClose={() => state.setDeletingFreebie(null)}
+        />
       )}
     </div>
   );

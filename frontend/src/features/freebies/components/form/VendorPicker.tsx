@@ -96,7 +96,7 @@ export function VendorPicker({
           onFocus={() => setIsSuggestOpen(true)}
           onKeyDown={handleVendorKeyDown}
           placeholder="e.g. HoYoverse, Good Smile Company, Artist Table A12"
-          className="border-ink focus:ring-accent h-10 w-full border-2 bg-white pr-9 pl-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+          className="border-ink focus:ring-accent h-9.5 w-full border-2 bg-white pr-9 pl-2.5 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 sm:pl-3 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
         />
 
         {/* Instant Clear Button */}

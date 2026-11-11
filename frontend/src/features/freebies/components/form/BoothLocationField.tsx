@@ -43,7 +43,7 @@ export function BoothLocationField({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+        className="border-ink focus:ring-accent mt-1 h-9.5 w-full border-2 bg-white px-2.5 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:h-11 sm:px-3 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
       />
 
       {error ? (

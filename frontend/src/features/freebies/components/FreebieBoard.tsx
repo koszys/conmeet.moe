@@ -1,7 +1,6 @@
 'use client';
 
 import { RotateCw } from 'lucide-react';
-import { useAuth } from '@/features/auth';
 import { useConvention } from '@/features/conventions/data/api';
 import { cn } from '@/shared/lib/utils';
 import { useFreebieBoardState } from './board/useFreebieBoardState';
@@ -19,7 +18,6 @@ export function FreebieBoard({
   conventionName?: string;
 }) {
   const { data: convention } = useConvention(conventionSlug);
-  const { user } = useAuth();
   const resolvedName = conventionName || convention?.name;
   const state = useFreebieBoardState(conventionSlug);
 
@@ -64,25 +62,6 @@ export function FreebieBoard({
           freebie={state.selectedFreebie}
           isOpen={Boolean(state.selectedFreebie)}
           onClose={() => state.setSelectedFreebieId(null)}
-          canManage={
-            state.activeTab === 'uploaded' ||
-            Boolean(
-              user &&
-              (state.selectedFreebie.is_owner ||
-                (state.selectedFreebie.created_by !== null &&
-                  state.selectedFreebie.created_by === user.id))
-            )
-          }
-          onEdit={() => {
-            const f = state.selectedFreebie;
-            state.setSelectedFreebieId(null);
-            state.setEditingFreebie(f);
-          }}
-          onDelete={() => {
-            const f = state.selectedFreebie;
-            state.setSelectedFreebieId(null);
-            state.setDeletingFreebie(f);
-          }}
         />
       )}
 

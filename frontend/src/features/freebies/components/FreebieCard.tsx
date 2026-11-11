@@ -368,9 +368,6 @@ export function FreebieCard({
           freebie={freebie}
           isOpen={isDetailOpen}
           onClose={() => setIsDetailOpen(false)}
-          canManage={canManage}
-          onEdit={() => setIsEditOpen(true)}
-          onDelete={() => setIsDeleteOpen(true)}
         />
       )}
 

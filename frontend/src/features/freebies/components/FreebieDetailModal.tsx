@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Check, Clock, MapPin, Pencil, Square, Trash2 } from 'lucide-react';
+import { Check, Clock, MapPin, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import {
   BookmarkButton,
@@ -20,16 +20,10 @@ export function FreebieDetailModal({
   freebie,
   isOpen,
   onClose,
-  canManage = false,
-  onEdit,
-  onDelete,
 }: {
   freebie: Freebie;
   isOpen: boolean;
   onClose: () => void;
-  canManage?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,10 +31,6 @@ export function FreebieDetailModal({
 
   const toggleSave = useToggleSaveFreebie();
   const toggleClaim = useToggleClaimFreebie();
-
-  const isOwner = Boolean(
-    user && (freebie.is_owner || (freebie.created_by !== null && freebie.created_by === user.id))
-  );
 
   const fullImageUrl = freebie.image || freebie.image_thumb;
   const uploadDateTime = formatDateTime(freebie.created_at);
@@ -221,47 +211,6 @@ export function FreebieDetailModal({
               ariaLabel={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
               title={freebie.is_saved ? 'Saved' : 'Save'}
             />
-
-            {/* Owner Edit & Delete Buttons */}
-            {canManage && isOwner ? (
-              <>
-                {onEdit ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onEdit();
-                    }}
-                    aria-label={`Edit ${freebie.name}`}
-                    title="Edit freebie"
-                    className={cn(
-                      CONBLOCK,
-                      'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-zinc-700 transition-all hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
-                    )}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </button>
-                ) : null}
-
-                {onDelete ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onDelete();
-                    }}
-                    aria-label={`Delete ${freebie.name}`}
-                    title="Delete freebie"
-                    className={cn(
-                      CONBLOCK,
-                      'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-rose-600 transition-all hover:bg-rose-50 hover:text-rose-700 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-rose-950/40'
-                    )}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                ) : null}
-              </>
-            ) : null}
           </div>
         </div>
       </div>

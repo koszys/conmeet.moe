@@ -1,10 +1,10 @@
 'use client';
 
+import { X } from 'lucide-react';
+import { Button, EmptyState } from '@/shared/components/ui';
+import { cn } from '@/shared/lib/utils';
 import { ConventionRow } from './ConventionRow';
 import type { Convention, ConventionPhase } from '../../types';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
-import { MikuGif } from '@/shared/components/miku';
-import { cn } from '@/shared/lib/utils';
 
 export interface ConventionGroup {
   phase: ConventionPhase;
@@ -25,26 +25,20 @@ export interface ListViewContentProps {
 
 function FilterEmptyState({ onReset }: { onReset: () => void }) {
   return (
-    <div className="border-ink mt-8 border-2 border-dashed bg-white p-8 text-center sm:p-12 dark:bg-zinc-900">
-      <div className="mb-4 flex justify-center">
-        <MikuGif size="md" variant="framed" speech="No cons matched!" speechPosition="top" />
-      </div>
-      <p className="font-display text-sm tracking-wide uppercase sm:text-base">
-        No conventions match your filters
-      </p>
-      <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
-        Try searching for a different keyword or resetting your filters.
-      </p>
-      <div className="mt-6 flex justify-center">
-        <button
-          type="button"
-          onClick={onReset}
-          className={cn(CONBLOCK_PRIMARY, 'px-5 py-2 text-xs')}
-        >
-          Reset Filters
-        </button>
-      </div>
-    </div>
+    <EmptyState
+      mascot
+      mascotSpeech="No cons matched!"
+      title="No conventions match your filters"
+      description="Try searching for a different keyword or resetting your filters."
+      className="mt-8"
+      shadow
+      action={
+        <Button variant="primary" onClick={onReset}>
+          <X className="h-4 w-4" />
+          <span>Clear Filters</span>
+        </Button>
+      }
+    />
   );
 }
 

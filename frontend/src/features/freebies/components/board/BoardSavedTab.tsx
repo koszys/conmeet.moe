@@ -1,9 +1,9 @@
 'use client';
 
 import { Check, CheckSquare, ChevronDown, Gift, X } from 'lucide-react';
+import { Button, EmptyState } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { FreebieCard } from '../FreebieCard';
-import { BoardEmptyState } from './BoardEmptyState';
 import type { FreebieBoardState } from './types';
 
 interface BoardSavedTabProps {
@@ -14,7 +14,6 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
   const {
     counts,
     isFiltered,
-    debouncedSearch,
     handleClearFilters,
     setActiveTab,
     unclaimedSaved,
@@ -29,20 +28,34 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
 
   if (counts.saved === 0) {
     return (
-      <BoardEmptyState
-        speech={isFiltered ? 'No saved matches!' : 'Track your convention !'}
+      <EmptyState
+        mascot
+        mascotSpeech={isFiltered ? 'Nothing saved matches!' : 'Track your freebies!'}
         title={isFiltered ? 'No Matching Saved Freebies' : 'No Saved Freebies Yet'}
         description={
           isFiltered
-            ? debouncedSearch
-              ? `No saved freebies match \u201c${debouncedSearch}\u201d. Try clearing your search.`
-              : 'No saved freebies match the selected vendor filter.'
+            ? 'No freebies matched your search or vendor filter. Try clearing filters.'
             : 'Bookmark freebies to build your personal checklist for the convention floor.'
         }
+        shadow
         action={
-          isFiltered
-            ? { label: 'Clear Filters', onClick: handleClearFilters, icon: X }
-            : { label: 'Browse All', onClick: () => setActiveTab('all'), icon: Gift }
+          isFiltered ? (
+            <>
+              <Button variant="primary" onClick={handleClearFilters}>
+                <X className="h-4 w-4" />
+                <span>Clear Filters</span>
+              </Button>
+              <Button variant="secondary" onClick={() => setActiveTab('all')}>
+                <Gift className="h-4 w-4" />
+                <span>Browse All Freebies</span>
+              </Button>
+            </>
+          ) : (
+            <Button variant="primary" onClick={() => setActiveTab('all')}>
+              <Gift className="h-4 w-4" />
+              <span>Browse All Freebies</span>
+            </Button>
+          )
         }
       />
     );
@@ -93,15 +106,7 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
           ) : isFiltered ? (
             <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-5 text-center dark:bg-zinc-900/50">
               <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                No unclaimed freebies match{' '}
-                {debouncedSearch ? (
-                  <span className="font-bold text-zinc-900 dark:text-zinc-100">
-                    &ldquo;{debouncedSearch}&rdquo;
-                  </span>
-                ) : (
-                  'the active filter'
-                )}
-                .
+                No unclaimed freebies match your search or vendor filter.
               </p>
               <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
                 Check the Claimed section below for matching drops.

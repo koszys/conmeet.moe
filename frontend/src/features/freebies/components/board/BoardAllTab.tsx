@@ -1,8 +1,8 @@
 'use client';
 
 import { Bookmark, Plus, X } from 'lucide-react';
+import { Button, LinkButton, EmptyState } from '@/shared/components/ui';
 import { FreebieCard } from '../FreebieCard';
-import { BoardEmptyState } from './BoardEmptyState';
 import type { FreebieBoardState } from './types';
 
 interface BoardAllTabProps {
@@ -23,23 +23,34 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
 
   if (allDrops.length === 0) {
     return (
-      <BoardEmptyState
-        speech={isFiltered ? 'Try clearing your search!' : 'Be the first to upload!'}
+      <EmptyState
+        mascot
+        mascotSpeech={isFiltered ? 'Try another search!' : 'Be the first to upload!'}
         title={isFiltered ? 'No Matching Freebies Found' : 'No Active Freebies Found'}
         description={
           isFiltered
             ? 'No freebies matched your search or vendor filter. Try clearing filters.'
             : 'No active freebies found for this convention yet. Be the first to share one!'
         }
+        shadow
         action={
-          isFiltered
-            ? { label: 'Clear Filters', onClick: handleClearFilters, icon: X }
-            : {
-                label: 'Submit First Freebie',
-                href: `/conventions/${conventionSlug}/freebies/new`,
-                icon: Plus,
-                primary: true,
-              }
+          isFiltered ? (
+            <>
+              <Button variant="primary" onClick={handleClearFilters}>
+                <X className="h-4 w-4" />
+                <span>Clear Filters</span>
+              </Button>
+              <LinkButton variant="secondary" href={`/conventions/${conventionSlug}/freebies/new`}>
+                <Plus className="h-4 w-4" />
+                <span>Post a Freebie</span>
+              </LinkButton>
+            </>
+          ) : (
+            <LinkButton variant="primary" href={`/conventions/${conventionSlug}/freebies/new`}>
+              <Plus className="h-4 w-4" />
+              <span>Post a Freebie</span>
+            </LinkButton>
+          )
         }
       />
     );

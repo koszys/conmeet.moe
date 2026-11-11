@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'react';
+import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 
 export const CONBLOCK =
@@ -60,9 +61,30 @@ const BUTTON_VARIANT_MAP: Record<ButtonVariant, string> = {
 
 const BUTTON_SIZE_MAP: Record<ButtonSizeVariant, string> = {
   sm: 'px-3 py-1.5 text-xs',
-  md: 'px-4 py-2 text-xs',
+  md: 'px-5 py-2.5 text-xs',
   lg: 'px-6 py-3 text-sm',
 };
+
+export function buttonClasses({
+  variant = 'secondary',
+  size = 'md',
+  fullWidth = false,
+  className,
+}: {
+  variant?: ButtonVariant;
+  size?: ButtonSizeVariant;
+  fullWidth?: boolean;
+  className?: string;
+} = {}) {
+  return cn(
+    CONBLOCK,
+    'inline-flex items-center justify-center gap-2 font-bold tracking-wider uppercase',
+    BUTTON_VARIANT_MAP[variant],
+    BUTTON_SIZE_MAP[size],
+    fullWidth && 'w-full',
+    className
+  );
+}
 
 export interface ButtonProps extends ComponentProps<'button'> {
   variant?: ButtonVariant;
@@ -85,18 +107,34 @@ export function Button({
       type={type}
       disabled={disabled}
       className={cn(
-        CONBLOCK,
-        'inline-flex items-center justify-center gap-2 font-bold tracking-wider uppercase',
-        BUTTON_VARIANT_MAP[variant],
-        BUTTON_SIZE_MAP[size],
-        fullWidth && 'w-full',
+        buttonClasses({ variant, size, fullWidth, className }),
         disabled &&
-          'cursor-not-allowed opacity-50 hover:translate-x-0 hover:translate-y-0 hover:shadow-[2px_2px_0_var(--ink)]',
-        className
+          'cursor-not-allowed opacity-50 hover:translate-x-0 hover:translate-y-0 hover:shadow-[2px_2px_0_var(--ink)]'
       )}
       {...props}
     >
       {children}
     </button>
+  );
+}
+
+export interface LinkButtonProps extends ComponentProps<typeof Link> {
+  variant?: ButtonVariant;
+  size?: ButtonSizeVariant;
+  fullWidth?: boolean;
+}
+
+export function LinkButton({
+  variant = 'secondary',
+  size = 'md',
+  fullWidth = false,
+  className,
+  children,
+  ...props
+}: LinkButtonProps) {
+  return (
+    <Link className={buttonClasses({ variant, size, fullWidth, className })} {...props}>
+      {children}
+    </Link>
   );
 }

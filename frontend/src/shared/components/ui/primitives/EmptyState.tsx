@@ -67,7 +67,9 @@ export function EmptyState({
         </div>
       )}
 
-      {action && <div className="mt-5 flex justify-center">{action}</div>}
+      {action && (
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">{action}</div>
+      )}
     </div>
   );
 }

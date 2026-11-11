@@ -60,7 +60,15 @@ export function MeetupFilterBar({
   const [tabsWidth, setTabsWidth] = useState<number | null>(null);
 
   const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({ ref: tabsRef });
-  const { ref: datePillsRef, maskStyle: datePillsMaskStyle } = useHorizontalScrollAffordance();
+  const {
+    ref: datePillsRef,
+    maskStyle: datePillsMaskStyle,
+    checkScroll: checkDatePillsScroll,
+  } = useHorizontalScrollAffordance();
+
+  useEffect(() => {
+    checkDatePillsScroll();
+  }, [conventionDays, checkDatePillsScroll]);
 
   useEffect(() => {
     const el = tabsRef.current;

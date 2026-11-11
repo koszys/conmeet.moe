@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/shared/lib/utils';
 
+/**
+ * @deprecated Navigation progress bar is deprecated in favor of centered `<MikuLoader />` transitions.
+ * Preserved for reference or optional reactivation. Not mounted in active layout tree.
+ */
 export function NavigationProgressBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();

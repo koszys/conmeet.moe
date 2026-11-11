@@ -29,6 +29,7 @@ export interface ModalProps {
   ariaLabel?: string;
   ariaLabelledBy?: string;
   className?: string;
+  overlayClassName?: string;
   children: React.ReactNode;
 }
 
@@ -40,6 +41,7 @@ export function Modal({
   ariaLabel,
   ariaLabelledBy,
   className,
+  overlayClassName,
   children,
 }: ModalProps) {
   const isMounted = useSyncExternalStore(
@@ -74,7 +76,10 @@ export function Modal({
       aria-modal="true"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
-      className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 p-4 backdrop-blur-xs"
+      className={cn(
+        'fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 p-4 backdrop-blur-xs sm:p-6',
+        overlayClassName
+      )}
       onClick={(e) => {
         e.stopPropagation();
         if (!preventClose) onClose();

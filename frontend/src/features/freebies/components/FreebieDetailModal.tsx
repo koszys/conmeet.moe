@@ -65,10 +65,11 @@ export function FreebieDetailModal({
       onClose={onClose}
       maxWidth="2xl"
       ariaLabelledBy={`freebie-detail-title-${freebie.id}`}
-      className="overflow-hidden"
+      className="flex max-h-[72vh] flex-col overflow-hidden sm:max-h-[85vh]"
+      overlayClassName="py-6 px-3.5 sm:p-6"
     >
       {/* Modal Header */}
-      <ModalHeader onClose={onClose}>
+      <ModalHeader onClose={onClose} className="shrink-0 p-3.5 sm:p-5">
         <div className="min-w-0 pr-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
@@ -96,14 +97,14 @@ export function FreebieDetailModal({
         </div>
       </ModalHeader>
 
-      <div className="max-h-[calc(85vh-130px)] overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Large Image View (if present) */}
         {fullImageUrl ? (
           <ExpandableImage
             src={fullImageUrl}
             alt={freebie.name}
             title="Click to view full image"
-            className="group/lightbox relative aspect-video max-h-[380px] w-full overflow-hidden bg-zinc-950"
+            className="group/lightbox relative aspect-video max-h-[190px] w-full overflow-hidden bg-zinc-950 sm:max-h-[340px] md:max-h-[380px]"
             lightboxTitle={freebie.name}
             lightboxSubtitle={
               <span>
@@ -124,7 +125,7 @@ export function FreebieDetailModal({
         ) : null}
 
         {/* Full Details Content */}
-        <div className="space-y-4 p-4 sm:p-5">
+        <div className="space-y-3.5 p-3.5 sm:space-y-4 sm:p-5">
           {/* Requirements Box */}
           <div className="border-ink border bg-zinc-50 p-3.5 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800/60">
             <span className="block text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
@@ -162,7 +163,7 @@ export function FreebieDetailModal({
       </div>
 
       {/* Modal Actions Footer */}
-      <div className="border-ink border-t-2 bg-zinc-50 p-3 sm:px-5 dark:bg-zinc-800/40">
+      <div className="border-ink shrink-0 border-t-2 bg-zinc-50 p-2.5 sm:p-3 sm:px-5 dark:bg-zinc-800/40">
         <div className="flex items-center justify-between gap-3">
           {/* Claim Status Pill on Left */}
           <div className="flex items-center gap-2">

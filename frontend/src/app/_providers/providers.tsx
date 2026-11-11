@@ -1,12 +1,13 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthProvider } from '@/features/auth';
 import { ConventionNavProvider, isConventionDetailPath } from '@/features/conventions';
 import { Header } from '@/shared/components/layout/Header';
 import { Footer } from '@/shared/components/layout/Footer';
+import { NavigationProgressBar } from '@/shared/components/layout/NavigationProgressBar';
 import { ScrollToTopButton } from '@/shared/components/layout/ScrollToTopButton';
 import { ThemeProvider } from './ThemeProvider';
 
@@ -63,6 +64,9 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ConventionNavProvider>
+            <Suspense fallback={null}>
+              <NavigationProgressBar />
+            </Suspense>
             <ScrollToTop />
             <div className="flex min-h-full flex-1 flex-col">
               <Header />

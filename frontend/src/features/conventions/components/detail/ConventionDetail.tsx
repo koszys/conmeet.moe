@@ -3,6 +3,7 @@
 import { MapPin } from 'lucide-react';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
+import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 
 import { useConvention } from '../../data/api';
@@ -13,19 +14,9 @@ import type { ConventionSectionConfig } from '../../types';
 
 function DetailSkeleton() {
   return (
-    <main className="w-full animate-pulse">
-      <div className="border-ink min-h-48 border-b-2 bg-zinc-100 sm:min-h-56 md:h-64 lg:h-72 dark:bg-zinc-900" />
-      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
-        <div className="h-4 w-40 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="mt-6 h-8 w-1/2 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="mt-3 h-4 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="mt-8 h-40 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="h-64 border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" />
-          <div className="h-64 border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900" />
-        </div>
-      </div>
-    </main>
+    <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-16">
+      <MikuLoader message="Loading convention overview..." size="lg" />
+    </div>
   );
 }
 

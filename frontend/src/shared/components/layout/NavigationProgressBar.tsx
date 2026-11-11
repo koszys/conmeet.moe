@@ -1,22 +1,23 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/shared/lib/utils';
 
 export function NavigationProgressBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
 
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [opacity, setOpacity] = useState(1);
 
+  const startTimeRef = useRef<number>(0);
   const trickleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const completeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const resetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const safetyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const minWaitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Clear all pending timers
   const clearAllTimers = () => {
@@ -24,23 +25,25 @@ export function NavigationProgressBar() {
     if (completeTimeoutRef.current) clearTimeout(completeTimeoutRef.current);
     if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
     if (safetyTimeoutRef.current) clearTimeout(safetyTimeoutRef.current);
+    if (minWaitTimeoutRef.current) clearTimeout(minWaitTimeoutRef.current);
   };
 
   const startProgress = () => {
     clearAllTimers();
+    startTimeRef.current = Date.now();
     setOpacity(1);
     setIsLoading(true);
-    setProgress(28);
+    setProgress(35);
 
     // Progressive trickle curve
     trickleIntervalRef.current = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 88) return prev;
         const remaining = 90 - prev;
-        const step = Math.max(1, remaining * 0.15);
+        const step = Math.max(2, remaining * 0.2);
         return Math.min(88, prev + step);
       });
-    }, 200);
+    }, 150);
 
     // 10s safety reset
     safetyTimeoutRef.current = setTimeout(() => {
@@ -49,17 +52,22 @@ export function NavigationProgressBar() {
   };
 
   const completeProgress = () => {
-    clearAllTimers();
-    setProgress(100);
+    const elapsed = Date.now() - startTimeRef.current;
+    const remainingWait = Math.max(0, 260 - elapsed);
 
-    completeTimeoutRef.current = setTimeout(() => {
-      setOpacity(0);
-      resetTimeoutRef.current = setTimeout(() => {
-        setIsLoading(false);
-        setProgress(0);
-        setOpacity(1);
-      }, 200);
-    }, 150);
+    minWaitTimeoutRef.current = setTimeout(() => {
+      if (trickleIntervalRef.current) clearInterval(trickleIntervalRef.current);
+      setProgress(100);
+
+      completeTimeoutRef.current = setTimeout(() => {
+        setOpacity(0);
+        resetTimeoutRef.current = setTimeout(() => {
+          setIsLoading(false);
+          setProgress(0);
+          setOpacity(1);
+        }, 200);
+      }, 150);
+    }, remainingWait);
   };
 
   // When pathname or searchParams change, navigation has landed!
@@ -109,9 +117,7 @@ export function NavigationProgressBar() {
         }
 
         // Internal navigation detected!
-        startTransition(() => {
-          startProgress();
-        });
+        startProgress();
       } catch {
         // Fallback: ignore malformed URLs
       }

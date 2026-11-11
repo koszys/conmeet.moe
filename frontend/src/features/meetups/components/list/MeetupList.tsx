@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { Plus, RotateCw, Users } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { useMeetups } from '../../api';
 import { MeetupCard } from './MeetupCard';
 import { MeetupFilterBar, type TabType } from './MeetupFilterBar';
 import { MeetupHeader } from './MeetupHeader';
-import { MeetupSkeleton } from './MeetupSkeleton';
 
 interface MeetupListProps {
   conventionSlug: string;
@@ -36,6 +36,14 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
 
   const { data: meetups, isLoading, isError, refetch, isFetching } = useMeetups(queryFilters);
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-12">
+        <MikuLoader message="Gathering meetups..." size="lg" />
+      </div>
+    );
+  }
+
   return (
     <div className="@container space-y-6">
       {/* Header */}
@@ -54,13 +62,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
       />
 
       {/* Content Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <MeetupSkeleton key={i} />
-          ))}
-        </div>
-      ) : isError ? (
+      {isError ? (
         <div className="border-ink border-2 border-dashed bg-rose-50 p-8 text-center dark:bg-rose-950/20">
           <p className="text-sm font-bold text-rose-600 dark:text-rose-400">
             Failed to load meetups. Please refresh or check connection.

@@ -15,7 +15,7 @@ import {
 import type { Convention, ConventionPhase } from '../../types';
 import { getConventionPhase } from '../../utils/dates';
 import { formatDateRange } from '@/shared/lib/dates';
-import { CONBLOCK } from '@/shared/components/ui/button';
+import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
 
@@ -499,7 +499,7 @@ export function FeaturedConventionSlider({
       </div>
 
       {/* Main Content Body */}
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between gap-6 p-5 pb-4 sm:p-7 md:flex-row md:p-8 md:pb-4">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between gap-6 p-4 pb-3 sm:p-7 md:flex-row md:p-8 md:pb-4">
         {/* Left Spotlight Info Area */}
         <div
           key={`info-${current.id}`}
@@ -522,7 +522,7 @@ export function FeaturedConventionSlider({
           {/* Center Title, Date, and Venue */}
           <div className="my-6 max-w-xl">
             <Link href={`/conventions/${current.slug}`} className="group/link inline-block">
-              <h3 className="font-display group-hover/link:text-accent-pop border-ink line-clamp-2 border-2 bg-white px-3.5 py-1.5 text-2xl font-bold tracking-wide text-zinc-950 uppercase shadow-[3px_3px_0_var(--ink)] transition-colors sm:text-3xl md:text-4xl dark:bg-zinc-950 dark:text-white">
+              <h3 className="font-display group-hover/link:text-accent-pop border-ink line-clamp-2 border-2 bg-white px-3 py-1.5 text-xl font-bold tracking-wide break-words text-zinc-950 uppercase shadow-[3px_3px_0_var(--ink)] transition-colors min-[380px]:px-3.5 min-[380px]:text-2xl sm:text-3xl md:text-4xl dark:bg-zinc-950 dark:text-white">
                 {current.name}
                 {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
               </h3>
@@ -622,7 +622,7 @@ export function FeaturedConventionSlider({
       </div>
 
       {/* Bottom Action Row: External Links, View Con, and Slider Controls */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 p-5 pt-0 sm:p-7 md:px-8 md:pb-8">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5 p-4 pt-0 sm:gap-3 sm:p-7 md:px-8 md:pb-8">
         {/* Left: Website, Location, and View Con */}
         <div className="flex flex-wrap items-center gap-2">
           <ConventionExternalLinks
@@ -635,7 +635,7 @@ export function FeaturedConventionSlider({
             href={`/conventions/${current.slug}`}
             className={cn(
               CONBLOCK,
-              'font-display bg-accent hover:bg-accent-pop inline-flex h-9 items-center gap-1.5 px-4 text-xs tracking-wider text-white uppercase transition-all dark:text-zinc-950 dark:hover:text-white'
+              'font-display bg-accent hover:bg-accent-pop inline-flex h-9 items-center gap-1.5 px-3 text-[11px] tracking-wider text-white uppercase transition-all min-[380px]:px-4 min-[380px]:text-xs dark:text-zinc-950 dark:hover:text-white'
             )}
           >
             <span>View Con</span>
@@ -647,7 +647,7 @@ export function FeaturedConventionSlider({
         <div className="flex items-center gap-2">
           {/* Mobile-Only Slide Counter Badge */}
           {total > 1 && (
-            <div className="border-ink font-display flex h-9 items-center justify-center border-2 bg-white px-2.5 text-xs font-bold tracking-wider text-zinc-950 shadow-[1px_1px_0_var(--ink)] md:hidden dark:bg-zinc-900 dark:text-zinc-100">
+            <div className="border-ink font-display flex h-9 items-center justify-center border-2 bg-white px-2 text-[11px] font-bold tracking-wider text-zinc-950 shadow-[1px_1px_0_var(--ink)] min-[380px]:px-2.5 min-[380px]:text-xs md:hidden dark:bg-zinc-900 dark:text-zinc-100">
               <span className="text-accent-pop">{String(currentIndex + 1).padStart(2, '0')}</span>
               <span className="mx-1 text-zinc-400 dark:text-zinc-600">/</span>
               <span>{String(total).padStart(2, '0')}</span>

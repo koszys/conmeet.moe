@@ -2,8 +2,7 @@
 
 import { useEffect, useId, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
-import { CONBLOCK } from './button';
+import { CloseButton } from '../actions/CloseButton';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 
@@ -29,6 +28,7 @@ export interface ModalProps {
   ariaLabel?: string;
   ariaLabelledBy?: string;
   className?: string;
+  overlayClassName?: string;
   children: React.ReactNode;
 }
 
@@ -40,6 +40,7 @@ export function Modal({
   ariaLabel,
   ariaLabelledBy,
   className,
+  overlayClassName,
   children,
 }: ModalProps) {
   const isMounted = useSyncExternalStore(
@@ -74,14 +75,18 @@ export function Modal({
       aria-modal="true"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
-      onClick={() => {
+      className={cn(
+        'fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 p-4 backdrop-blur-xs sm:p-6',
+        overlayClassName
+      )}
+      onClick={(e) => {
+        e.stopPropagation();
         if (!preventClose) onClose();
       }}
     >
       <div
         className={cn(
-          'border-ink w-full border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900',
+          'border-ink w-full overscroll-contain border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900',
           MAX_WIDTH_MAP[maxWidth],
           className
         )}
@@ -119,7 +124,7 @@ export function ModalHeader({
   return (
     <div
       className={cn(
-        'border-ink flex items-center justify-between border-b-2 p-4 sm:px-6',
+        'border-ink flex items-start justify-between border-b-2 p-4 sm:px-6',
         className
       )}
     >
@@ -139,21 +144,7 @@ export function ModalHeader({
         </div>
       )}
 
-      {onClose && (
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={closeDisabled}
-          className={cn(
-            CONBLOCK,
-            'shrink-0 p-1.5 hover:bg-zinc-200 disabled:opacity-50 dark:hover:bg-zinc-800'
-          )}
-          title="Close"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
+      {onClose && <CloseButton onClose={onClose} disabled={closeDisabled} className="self-start" />}
     </div>
   );
 }

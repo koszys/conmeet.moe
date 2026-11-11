@@ -7,7 +7,7 @@ import { useConventions } from '../../data/api';
 import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { parseDate } from '@/shared/lib/dates';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { AllConsButton, FeaturedConsButton } from '../links';
 

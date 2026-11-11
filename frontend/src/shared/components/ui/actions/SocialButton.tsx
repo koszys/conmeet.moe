@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { cn } from '@/shared/lib/utils';
-import { CONBLOCK } from '@/shared/components/ui/button';
+import { CONBLOCK } from './Button';
 import discordLogo from '@/assets/social/discordlogo.png';
 import kofiLogo from '@/assets/social/kofilogo.webp';
 

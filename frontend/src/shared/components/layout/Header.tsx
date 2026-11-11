@@ -7,7 +7,7 @@ import { PanelLeft, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { isConventionDetailPath, useConventionNav } from '@/features/conventions';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
-import { IconButton } from '@/shared/components/ui/button';
+import { IconButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { AccountDropdown } from './AccountDropdown';
 import { HeaderActions } from './HeaderActions';
@@ -60,13 +60,13 @@ export function Header() {
       ref={headerRef}
       className="border-ink sticky top-0 z-50 border-b-2 bg-white/90 backdrop-blur dark:bg-[#373b3e]/90"
     >
-      <div className="relative flex h-16 items-center justify-between px-4 md:px-6">
+      <div className="relative flex h-16 items-center justify-between px-2.5 min-[380px]:px-4 md:px-6">
         <div className="flex items-center gap-4 lg:gap-7">
           <Link
             href="/"
             onClick={SCROLL_TO_TOP}
             className={cn(
-              'group flex items-center gap-3',
+              'group flex items-center gap-1.5 min-[380px]:gap-3',
               isConventionPage && 'max-[900px]:hidden'
             )}
           >
@@ -79,7 +79,7 @@ export function Header() {
             >
               <span
                 className={cn(
-                  'font-display inline-block text-base tracking-wide transition-all duration-200 [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] group-hover:translate-y-0.5 group-hover:[text-shadow:1px_1px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] sm:text-2xl',
+                  'font-display inline-block text-sm tracking-tight transition-all duration-200 [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] group-hover:translate-y-0.5 group-hover:[text-shadow:1px_1px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] min-[380px]:text-base min-[380px]:tracking-wide sm:text-2xl',
                   nav?.isMounted && 'transition-opacity duration-150 ease-in-out',
                   isConventionPage && nav?.sidebarCollapsed ? 'opacity-0' : 'opacity-100 delay-300'
                 )}
@@ -90,7 +90,7 @@ export function Header() {
                 </span>
               </span>
             </span>
-            <BrandMark className="gap-3" withSparkles />
+            <BrandMark className="gap-2 min-[380px]:gap-3" withSparkles />
           </Link>
 
           {isConventionPage && (

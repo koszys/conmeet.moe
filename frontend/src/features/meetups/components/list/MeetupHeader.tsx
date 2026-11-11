@@ -26,13 +26,13 @@ export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderPro
       <BackLink href={`/conventions/${conventionSlug}`}>Back to {displayName} Overview</BackLink>
 
       <div className="mt-3 flex flex-col justify-between gap-4 @min-[640px]:flex-row @min-[640px]:items-end">
-        <div className="flex items-center gap-3">
-          <div className="border-ink bg-accent-soft/25 flex h-11 w-11 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="border-ink bg-accent-soft/25 mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
             <Users className="text-ink h-5 w-5 dark:text-zinc-100" />
           </div>
-          <div>
-            <h1 className="font-display text-2xl tracking-wide uppercase sm:text-3xl">
-              Cosplay Meetups
+          <div className="min-w-0">
+            <h1 className="font-display text-xl tracking-wide whitespace-nowrap uppercase min-[380px]:text-2xl sm:text-3xl">
+              Meetups
             </h1>
             <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
               Community & official meetups, fan photoshoots, and group gatherings.
@@ -51,8 +51,9 @@ export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderPro
               'inline-flex h-10 items-center justify-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase @min-[680px]:gap-2 @min-[680px]:px-5'
             )}
           >
-            <Plus className="h-4 w-4" />
-            <span>Post a Meetup</span>
+            <Plus className="h-4 w-4 shrink-0 stroke-3" />
+            <span className="hidden @min-[680px]:inline">Post a Meetup</span>
+            <span className="@min-[680px]:hidden">Post</span>
           </Link>
         </div>
       </div>

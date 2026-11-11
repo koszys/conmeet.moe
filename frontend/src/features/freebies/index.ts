@@ -1,6 +1,7 @@
 export * from './types';
 export * from './api/queries';
 export * from './api/mutations';
+export * from './components/ClaimButton';
 export * from './components/FreebieCard';
 export * from './components/FreebieBoard';
 export * from './components/FreebieForm';

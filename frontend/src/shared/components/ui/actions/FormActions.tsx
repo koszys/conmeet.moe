@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Loader2, Sparkles } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from './button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface FormActionsProps {

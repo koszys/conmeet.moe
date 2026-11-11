@@ -3,8 +3,7 @@
 import type { RefObject } from 'react';
 import { Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from '@/app/_providers';
-import { SocialButton } from '@/shared/components/ui/SocialButton';
-import { IconButton } from '@/shared/components/ui/button';
+import { IconButton, SocialButton } from '@/shared/components/ui';
 import { HeaderSearch } from '@/features/conventions';
 import { AccountButton } from './AccountButton';
 

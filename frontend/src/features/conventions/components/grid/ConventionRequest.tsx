@@ -3,7 +3,7 @@ import { Mail } from 'lucide-react';
 
 export function ConventionRequest() {
   return (
-    <div className="border-ink bg-accent-soft/50 mt-14 border-2 p-6 shadow-[4px_4px_0_var(--ink)] md:p-8 dark:bg-zinc-900">
+    <div className="border-ink bg-accent-soft/50 mt-14 border-2 p-4 shadow-[4px_4px_0_var(--ink)] sm:p-6 md:p-8 dark:bg-zinc-900">
       <h3 className="font-display text-lg tracking-wide uppercase sm:text-xl">
         don&apos;t see your con?
       </h3>
@@ -15,7 +15,7 @@ export function ConventionRequest() {
       <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
         <Link
           href="/conventions/request"
-          className="font-display border-ink text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex items-center gap-2 rounded-none border-2 bg-white px-5 py-2.5 text-xs tracking-wide uppercase shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] active:translate-x-1 active:translate-y-1 active:shadow-none dark:bg-zinc-900 dark:text-zinc-100"
+          className="font-display border-ink text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex items-center gap-2 rounded-none border-2 bg-white px-3.5 py-2 text-[10px] tracking-wide uppercase shadow-[3px_3px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] active:translate-x-1 active:translate-y-1 active:shadow-none min-[380px]:px-5 min-[380px]:py-2.5 min-[380px]:text-xs dark:bg-zinc-900 dark:text-zinc-100"
         >
           <Mail className="text-accent-pop h-4 w-4" />
           Submit a request

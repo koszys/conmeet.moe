@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
 import { Modal } from './Modal';
-import { CONBLOCK } from './button';
+import { CONBLOCK } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConfirmDeleteModalProps {
@@ -15,6 +15,7 @@ export interface ConfirmDeleteModalProps {
   title?: string;
   warningMessage?: string;
   confirmText?: string;
+  confirmTextMobile?: string;
   isPending?: boolean;
   error?: string | null;
 }
@@ -28,6 +29,7 @@ export function ConfirmDeleteModal({
   title,
   warningMessage,
   confirmText,
+  confirmTextMobile,
   isPending = false,
   error: controlledError,
 }: ConfirmDeleteModalProps) {
@@ -114,7 +116,8 @@ export function ConfirmDeleteModal({
             ) : (
               <>
                 <Trash2 className="h-3.5 w-3.5" />
-                {confirmText || `Delete ${itemType}`}
+                <span className="sm:hidden">{confirmTextMobile || 'Delete'}</span>
+                <span className="hidden sm:inline">{confirmText || `Delete ${itemType}`}</span>
               </>
             )}
           </button>

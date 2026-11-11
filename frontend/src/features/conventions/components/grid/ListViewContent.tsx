@@ -2,7 +2,7 @@
 
 import { ConventionRow } from './ConventionRow';
 import type { Convention, ConventionPhase } from '../../types';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionGroup {

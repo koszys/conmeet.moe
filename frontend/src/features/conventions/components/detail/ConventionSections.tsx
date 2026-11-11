@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useFreebies } from '@/features/freebies';
 import { useMeetups } from '@/features/meetups';
@@ -118,18 +118,10 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
         {/* Activity Items List or Empty State */}
         {hasActivities ? (
           <>
-            <div className="mt-3.5 mb-2.5 flex items-center justify-between gap-2">
+            <div className="mt-3.5 mb-2.5">
               <span className="font-display text-[11px] tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
                 {section.activityHeader ?? 'Recent Activity'}
               </span>
-              <Link
-                href={section.primaryAction.href}
-                className="text-accent hover:text-accent-pop inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider uppercase"
-              >
-                <span className="hidden @min-[360px]:inline">View all</span>
-                <span className="@min-[360px]:hidden">All</span>
-                <ArrowRight className="h-3 w-3" />
-              </Link>
             </div>
             <div className="border-ink divide-ink divide-y-2 border-2 border-dashed bg-zinc-50/70 dark:bg-zinc-950/40">
               {section.activities.map((item) => (

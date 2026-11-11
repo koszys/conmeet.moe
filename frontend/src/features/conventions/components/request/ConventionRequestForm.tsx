@@ -516,7 +516,7 @@ export function ConventionRequestForm() {
         submitLabel={
           <>
             <span className="hidden sm:inline">Submit Convention Request</span>
-            <span className="sm:hidden">Submit Request</span>
+            <span className="sm:hidden">Submit</span>
           </>
         }
         submittingLabel="Submitting..."

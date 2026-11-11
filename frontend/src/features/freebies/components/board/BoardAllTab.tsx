@@ -49,13 +49,16 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
     <div className="space-y-8">
       {/* Unsaved drops (Top) */}
       {unsavedDrops.length > 0 && (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
           {unsavedDrops.map((freebie) => (
             <FreebieCard
               key={freebie.id}
               freebie={freebie}
               condensed={isCardCondensed(freebie.id)}
               onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+              onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+              onEdit={(f) => state.setEditingFreebie(f)}
+              onDelete={(f) => state.setDeletingFreebie(f)}
             />
           ))}
         </div>
@@ -74,13 +77,16 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
             {savedDrops.map((freebie) => (
               <FreebieCard
                 key={freebie.id}
                 freebie={freebie}
                 condensed={isCardCondensed(freebie.id)}
                 onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+                onEdit={(f) => state.setEditingFreebie(f)}
+                onDelete={(f) => state.setDeletingFreebie(f)}
               />
             ))}
           </div>

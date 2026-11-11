@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { MeetupList } from '@/features/meetups';
 
 export const metadata: Metadata = {
-  title: 'Cosplay Meetups',
+  title: 'Meetups',
   description: 'Community & official meetups, cosplay photoshoots, and fan gatherings.',
 };
 

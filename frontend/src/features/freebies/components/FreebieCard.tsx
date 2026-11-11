@@ -3,26 +3,35 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import {
-  Camera,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  MapPin,
-  Pencil,
-  Square,
-  Trash2,
-} from 'lucide-react';
+import { Camera, ChevronDown, ChevronUp, Clock, MapPin } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BookmarkButton, CONBLOCK } from '@/shared/components/ui';
+import {
+  BookmarkButton,
+  CONBLOCK,
+  DeleteButton,
+  EditButton,
+  ExpandableImage,
+} from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
-import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
+import { useToggleSaveFreebie } from '../api/mutations';
+import { ClaimButton } from './ClaimButton';
 import { FreebieDetailModal } from './FreebieDetailModal';
 import { EditFreebieModal } from './EditFreebieModal';
 import { DeleteFreebieModal } from './DeleteFreebieModal';
+
+export interface FreebieCardProps {
+  freebie: Freebie;
+  className?: string;
+  defaultCondensed?: boolean;
+  condensed?: boolean;
+  onToggleCondensed?: () => void;
+  canManage?: boolean;
+  onOpenDetail?: () => void;
+  onEdit?: (freebie: Freebie) => void;
+  onDelete?: (freebie: Freebie) => void;
+}
 
 export function FreebieCard({
   freebie,
@@ -31,14 +40,10 @@ export function FreebieCard({
   condensed: externalCondensed,
   onToggleCondensed,
   canManage = false,
-}: {
-  freebie: Freebie;
-  className?: string;
-  defaultCondensed?: boolean;
-  condensed?: boolean;
-  onToggleCondensed?: () => void;
-  canManage?: boolean;
-}) {
+  onOpenDetail,
+  onEdit,
+  onDelete,
+}: FreebieCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
@@ -54,7 +59,6 @@ export function FreebieCard({
   );
 
   const toggleSave = useToggleSaveFreebie();
-  const toggleClaim = useToggleClaimFreebie();
 
   function requireAuthAction(action: () => void) {
     if (!user) {
@@ -69,14 +73,6 @@ export function FreebieCard({
     e.stopPropagation();
     requireAuthAction(() => {
       toggleSave.mutate(freebie.id);
-    });
-  }
-
-  function handleClaim(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    requireAuthAction(() => {
-      toggleClaim.mutate(freebie.id);
     });
   }
 
@@ -98,7 +94,11 @@ export function FreebieCard({
     if (selection && selection.toString().length > 0) {
       return;
     }
-    setIsDetailOpen(true);
+    if (onOpenDetail) {
+      onOpenDetail();
+    } else {
+      setIsDetailOpen(true);
+    }
   }
 
   const imageUrl = freebie.image_thumb || freebie.image;
@@ -190,20 +190,24 @@ export function FreebieCard({
             </div>
 
             {imageUrl ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsDetailOpen(true);
-                }}
-                aria-label={`View photo and details of ${freebie.name}`}
-                title="View full details and photo"
+              <ExpandableImage
+                src={freebie.image || freebie.image_thumb || ''}
+                thumbnailSrc={imageUrl}
+                alt={freebie.name}
+                ariaLabel={`Expand photo of ${freebie.name}`}
+                title="Click to expand photo"
                 className={cn(
                   CONBLOCK,
                   'group/thumb relative shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800',
                   isCondensed ? 'h-9 w-9' : 'h-11 w-11'
                 )}
+                lightboxTitle={freebie.name}
+                lightboxSubtitle={
+                  <span>
+                    {freebie.vendor.name}
+                    {freebie.location ? ` • ${freebie.location}` : ''}
+                  </span>
+                }
               >
                 <Image
                   src={imageUrl}
@@ -215,7 +219,7 @@ export function FreebieCard({
                 <div className="border-ink absolute -right-0.5 -bottom-0.5 flex h-3.5 w-3.5 items-center justify-center border bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
                   <Camera className="h-2 w-2" />
                 </div>
-              </button>
+              </ExpandableImage>
             ) : null}
           </div>
 
@@ -262,30 +266,11 @@ export function FreebieCard({
       >
         <div className="flex items-center justify-between gap-2">
           {/* Check off / Claim button */}
-          <button
-            type="button"
-            onClick={handleClaim}
-            disabled={toggleClaim.isPending}
-            className={cn(
-              CONBLOCK,
-              'flex-1 px-2.5 py-1.5 text-xs font-bold uppercase transition-all',
-              freebie.is_claimed
-                ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-            )}
-          >
-            {freebie.is_claimed ? (
-              <span className="inline-flex items-center justify-center gap-1.5">
-                <Check className="h-3.5 w-3.5 stroke-3" />
-                <span>CLAIMED</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center justify-center gap-1.5 text-zinc-800 dark:text-zinc-200">
-                <Square className="h-3.5 w-3.5 stroke-2" />
-                <span>CHECK OFF</span>
-              </span>
-            )}
-          </button>
+          <ClaimButton
+            freebie={freebie}
+            conventionSlug={freebie.convention_slug || undefined}
+            variant="button"
+          />
 
           <div className="flex shrink-0 items-center gap-1.5">
             {/* Save / Bookmark button */}
@@ -300,55 +285,51 @@ export function FreebieCard({
             {/* Owner Edit & Delete Buttons (Only in My Uploads) */}
             {canManage && isOwner ? (
               <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsEditOpen(true);
-                  }}
-                  aria-label={`Edit ${freebie.name}`}
+                <EditButton
+                  variant="icon"
                   title="Edit freebie"
-                  className={cn(
-                    CONBLOCK,
-                    'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-zinc-700 transition-all hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
-                  )}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </button>
-
-                <button
-                  type="button"
+                  ariaLabel={`Edit ${freebie.name}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsDeleteOpen(true);
+                    if (onEdit) {
+                      onEdit(freebie);
+                    } else {
+                      setIsEditOpen(true);
+                    }
                   }}
-                  aria-label={`Delete ${freebie.name}`}
+                />
+
+                <DeleteButton
+                  variant="icon"
+                  colorStyle="danger-subtle"
                   title="Delete freebie"
-                  className={cn(
-                    CONBLOCK,
-                    'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-rose-600 transition-all hover:bg-rose-50 hover:text-rose-700 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-rose-950/40'
-                  )}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                  ariaLabel={`Delete ${freebie.name}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (onDelete) {
+                      onDelete(freebie);
+                    } else {
+                      setIsDeleteOpen(true);
+                    }
+                  }}
+                />
               </>
             ) : null}
           </div>
         </div>
       </div>
 
-      <FreebieDetailModal
-        freebie={freebie}
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        canManage={canManage}
-        onEdit={() => setIsEditOpen(true)}
-        onDelete={() => setIsDeleteOpen(true)}
-      />
+      {!onOpenDetail && (
+        <FreebieDetailModal
+          freebie={freebie}
+          isOpen={isDetailOpen}
+          onClose={() => setIsDetailOpen(false)}
+        />
+      )}
 
-      {isEditOpen ? (
+      {!onEdit && isEditOpen ? (
         <EditFreebieModal
           freebie={freebie}
           isOpen={isEditOpen}
@@ -356,7 +337,7 @@ export function FreebieCard({
         />
       ) : null}
 
-      {isDeleteOpen ? (
+      {!onDelete && isDeleteOpen ? (
         <DeleteFreebieModal
           freebie={freebie}
           isOpen={isDeleteOpen}

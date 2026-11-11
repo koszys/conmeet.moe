@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Calendar, Check, Globe, RotateCcw, SlidersHorizontal, X } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import type { ConventionFilters } from './ConventionFilterBar';
 

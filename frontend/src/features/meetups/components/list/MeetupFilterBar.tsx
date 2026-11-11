@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bookmark, Calendar, HeartHandshake, Sparkles, Users } from 'lucide-react';
-import { CONBLOCK, SearchInput } from '@/shared/components/ui';
+import { FilterTab, SearchInput } from '@/shared/components/ui';
+import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
 import { format } from 'date-fns';
@@ -55,12 +56,144 @@ export function MeetupFilterBar({
     }
   }, [conventionStartsAt, conventionEndsAt]);
 
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [tabsWidth, setTabsWidth] = useState<number | null>(null);
+
+  const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({ ref: tabsRef });
+  const {
+    ref: datePillsRef,
+    maskStyle: datePillsMaskStyle,
+    checkScroll: checkDatePillsScroll,
+  } = useHorizontalScrollAffordance();
+
+  useEffect(() => {
+    checkDatePillsScroll();
+  }, [conventionDays, checkDatePillsScroll]);
+
+  useEffect(() => {
+    const el = tabsRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const children = Array.from(el.children) as HTMLElement[];
+      if (children.length > 0) {
+        const first = children[0].getBoundingClientRect();
+        const last = children[children.length - 1].getBoundingClientRect();
+        const w = Math.round(last.right - first.left + el.scrollLeft);
+        if (w > 0) {
+          setTabsWidth(w);
+          return;
+        }
+      }
+      if (el.scrollWidth > 0) {
+        setTabsWidth(el.scrollWidth);
+      }
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    Array.from(el.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="space-y-4">
-      {/* Search & Day Row: Search has its own line on tablet and mobile */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        {/* Search input */}
-        <div className="w-full lg:max-w-md">
+    <div className="border-ink @container flex flex-col gap-3 border-b-2 pb-5">
+      {/* Row 1: Category Filter Tabs */}
+      <div
+        ref={tabsRef}
+        style={tabsMaskStyle}
+        className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pb-0.5 sm:gap-2"
+      >
+        <FilterTab
+          isActive={activeTab === 'all'}
+          onClick={() => onTabChange('all')}
+          title="All Meetups"
+          ariaLabel="All Meetups"
+          label={
+            <span>
+              All<span className="hidden sm:inline"> Meetups</span>
+            </span>
+          }
+          icon={
+            <Users
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'all'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
+
+        <FilterTab
+          isActive={activeTab === 'official'}
+          onClick={() => onTabChange('official')}
+          title="Official Meetups"
+          ariaLabel="Official Meetups"
+          label="Official"
+          icon={
+            <Sparkles
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'official'
+                  ? 'fill-current stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
+
+        <FilterTab
+          isActive={activeTab === 'community'}
+          onClick={() => onTabChange('community')}
+          title="Community / Fan Meetups"
+          ariaLabel="Community / Fan Meetups"
+          label={
+            <span>
+              Community<span className="hidden sm:inline">/Fan</span>
+            </span>
+          }
+          icon={
+            <HeartHandshake
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'community'
+                  ? 'stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
+
+        <FilterTab
+          isActive={activeTab === 'saved'}
+          onClick={() => onTabChange('saved')}
+          title="Saved Meetups"
+          ariaLabel="Saved Meetups"
+          label="Saved"
+          icon={
+            <Bookmark
+              className={cn(
+                'h-4 w-4 shrink-0',
+                activeTab === 'saved'
+                  ? 'fill-current stroke-[2.5]'
+                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+              )}
+            />
+          }
+        />
+      </div>
+
+      {/* Row 2: Search & Day Filter - sized to match tabs above it, wraps to own row when needed, shrinks on mobile */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+        {/* Search Input - matches tabs width, wraps to own row when needed, shrinks on mobile */}
+        <div
+          style={tabsWidth ? { width: `${tabsWidth}px` } : undefined}
+          className="relative w-full max-w-full shrink-0"
+        >
           <SearchInput
             value={searchQuery}
             onChange={onSearchChange}
@@ -69,112 +202,36 @@ export function MeetupFilterBar({
           />
         </div>
 
-        {/* Date Filter Pills: Single row, no stacking, responsive compact labels on mobile */}
+        {/* Date Filter Pills */}
         {conventionDays.length > 0 && (
-          <div className="flex shrink-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-1 pb-1 sm:gap-2">
-            <span className="font-display hidden items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase sm:inline-flex dark:text-zinc-300">
+          <div
+            ref={datePillsRef}
+            style={datePillsMaskStyle}
+            className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2"
+          >
+            <span className="font-display inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
               <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               Day:
             </span>
-            <button
-              type="button"
+            <FilterTab
+              variant="pill"
+              isActive={!selectedDate}
               onClick={() => onDateChange(undefined)}
-              className={cn(
-                CONBLOCK,
-                'px-2 py-1 text-xs font-bold whitespace-nowrap uppercase sm:px-2.5',
-                !selectedDate
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-              )}
-            >
-              <span className="hidden sm:inline">All Days</span>
-              <span className="sm:hidden">All</span>
-            </button>
+              label="All Days"
+              shortLabel="All"
+            />
             {conventionDays.map((day) => (
-              <button
+              <FilterTab
                 key={day.dateStr}
-                type="button"
+                variant="pill"
+                isActive={selectedDate === day.dateStr}
                 onClick={() => onDateChange(day.dateStr)}
-                className={cn(
-                  CONBLOCK,
-                  'px-2 py-1 text-xs font-bold whitespace-nowrap uppercase sm:px-2.5',
-                  selectedDate === day.dateStr
-                    ? 'bg-accent text-white dark:text-zinc-950'
-                    : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-                )}
-              >
-                <span className="hidden sm:inline">{day.label}</span>
-                <span className="sm:hidden">{day.shortLabel}</span>
-              </button>
+                label={day.label}
+                shortLabel={day.shortLabel}
+              />
             ))}
           </div>
         )}
-      </div>
-
-      {/* Primary Category Tabs without count badges */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pr-1 pb-3 dark:border-zinc-800">
-        <button
-          type="button"
-          onClick={() => onTabChange('all')}
-          className={cn(
-            CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
-            activeTab === 'all'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-          )}
-        >
-          <Users className="h-3.5 w-3.5 shrink-0" />
-          <span>All Meetups</span>
-        </button>
-
-        {/* Divider between All Meetups and the rest */}
-        <div className="border-ink/30 mx-0.5 h-6 shrink-0 self-center border-r-2 border-dashed sm:mx-1" />
-
-        <button
-          type="button"
-          onClick={() => onTabChange('official')}
-          className={cn(
-            CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
-            activeTab === 'official'
-              ? 'bg-accent-pop text-white'
-              : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-          )}
-        >
-          <Sparkles className="h-3.5 w-3.5 shrink-0 fill-current" />
-          <span>Official</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onTabChange('community')}
-          className={cn(
-            CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
-            activeTab === 'community'
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-          )}
-        >
-          <HeartHandshake className="h-3.5 w-3.5 shrink-0" />
-          <span>Community/Fan</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onTabChange('saved')}
-          className={cn(
-            CONBLOCK,
-            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase sm:px-3.5',
-            activeTab === 'saved'
-              ? 'bg-accent-pop text-white'
-              : 'bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800'
-          )}
-        >
-          <Bookmark className="h-3.5 w-3.5 shrink-0 fill-current" />
-          <span>Saved</span>
-        </button>
       </div>
     </div>
   );

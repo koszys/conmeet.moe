@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Loader2, X } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { Check, Loader2 } from 'lucide-react';
+import { CloseButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import type { Freebie } from '../types';
@@ -192,44 +192,43 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-freebie-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/60 px-3.5 py-6 backdrop-blur-xs sm:p-6"
       onClick={() => {
         if (!updateMutation.isPending) onClose();
       }}
     >
       <div
-        className="border-ink flex max-h-[92vh] w-full max-w-xl flex-col border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900"
+        className="border-ink flex max-h-[78vh] w-full max-w-xl flex-col overscroll-contain border-2 bg-white shadow-[6px_6px_0_var(--ink)] sm:max-h-[88vh] dark:bg-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="border-ink flex items-center justify-between border-b-2 p-4 sm:px-6">
+        <div className="border-ink flex items-start justify-between border-b-2 px-4 py-3 sm:px-6 sm:py-4">
           <div>
             <h2
               id="edit-freebie-title"
-              className="font-display text-base tracking-wide uppercase sm:text-lg dark:text-zinc-100"
+              className="font-display text-sm font-bold tracking-wide uppercase sm:text-lg dark:text-zinc-100"
             >
               Edit Freebie Drop
             </h2>
-            <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-300">
+            <p className="mt-0.5 text-[10px] text-zinc-500 sm:text-[11px] dark:text-zinc-300">
               Update booth location, requirements, or photos for this drop.
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
+          <CloseButton
+            onClose={onClose}
             disabled={updateMutation.isPending}
-            className={cn(CONBLOCK, 'shrink-0 p-1.5 hover:bg-zinc-200 dark:hover:bg-zinc-800')}
-            title="Close"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
+            size="sm"
+            className="self-start"
+          />
         </div>
 
         {/* Modal Body (Scrollable) */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3.5 sm:p-6"
+        >
+          <div className="space-y-3 sm:space-y-4">
             {serverError ? (
               <div className="border-ink border-2 bg-rose-50 p-3 text-xs font-bold text-rose-600 dark:bg-rose-950/30 dark:text-rose-400">
                 {serverError}
@@ -264,7 +263,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Genshin Impact Acrylic Standee"
-                className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+                className="border-ink focus:ring-accent mt-1 h-9.5 w-full border-2 bg-white px-2.5 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:h-11 sm:px-3 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
               />
               {errors.name ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -300,7 +299,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 value={requirements}
                 onChange={(e) => setRequirements(e.target.value)}
                 placeholder="e.g. Follow @HoYoverse on X and show badge"
-                className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-2.5 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+                className="border-ink focus:ring-accent mt-1 w-full border-2 bg-white p-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:p-2.5 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
               />
               {errors.requirements ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -327,7 +326,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. Drops start at 11:00 AM, limited to 100/day"
-                className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-2.5 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+                className="border-ink focus:ring-accent mt-1 w-full border-2 bg-white p-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:p-2.5 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
               />
               {errors.description ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -345,16 +344,17 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
               onRemove={handleRemovePhoto}
               canUndoRemove={Boolean(clearImage && freebie.image)}
               onUndoRemove={handleUndoRemovePhoto}
+              aspectRatioClass="aspect-[21/9] sm:aspect-video"
             />
           </div>
 
           {/* Modal Actions */}
-          <div className="border-ink mt-6 flex items-center justify-end gap-2.5 border-t-2 pt-4">
+          <div className="border-ink mt-4 flex items-center justify-end gap-2 border-t-2 pt-3 sm:mt-6 sm:gap-2.5 sm:pt-4">
             <button
               type="button"
               onClick={onClose}
               disabled={updateMutation.isPending}
-              className={cn(CONBLOCK, 'px-4 py-2 text-xs font-bold uppercase')}
+              className={cn(CONBLOCK, 'px-3.5 py-1.5 text-xs font-bold uppercase sm:px-4 sm:py-2')}
             >
               Cancel
             </button>
@@ -363,7 +363,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
               disabled={updateMutation.isPending}
               className={cn(
                 CONBLOCK_PRIMARY,
-                'inline-flex items-center gap-1.5 px-5 py-2 text-xs font-bold uppercase'
+                'inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold uppercase sm:px-5 sm:py-2'
               )}
             >
               {updateMutation.isPending ? (
@@ -374,7 +374,8 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
               ) : (
                 <>
                   <Check className="h-3.5 w-3.5 stroke-3" />
-                  Save Changes
+                  <span className="hidden sm:inline">Save Changes</span>
+                  <span className="sm:hidden">Save</span>
                 </>
               )}
             </button>

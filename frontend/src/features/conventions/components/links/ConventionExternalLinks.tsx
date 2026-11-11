@@ -20,7 +20,7 @@ export function ConventionExternalLinks({
   return (
     <div
       className={cn(
-        variant === 'full' ? 'flex flex-col gap-2' : 'flex items-center gap-2',
+        variant === 'full' ? 'flex flex-col gap-2' : 'flex shrink-0 items-center gap-2',
         className
       )}
     >

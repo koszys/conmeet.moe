@@ -37,7 +37,7 @@ export function SearchInput({
         <button
           type="button"
           onClick={onClear}
-          className="absolute top-1/2 right-2.5 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+          className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-1 text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
           title="Clear search"
           aria-label="Clear search"
         >

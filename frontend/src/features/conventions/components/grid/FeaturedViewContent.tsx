@@ -3,7 +3,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { ConventionCard } from './ConventionCard';
 import type { Convention } from '../../types';
-import { CONBLOCK_PRIMARY } from '@/shared/components/ui/button';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface FeaturedViewContentProps {
@@ -18,10 +18,10 @@ export function FeaturedViewContent({
   className,
 }: FeaturedViewContentProps) {
   return (
-    <div className={cn('mt-8 flex flex-col gap-6', className)}>
+    <div className={cn('mt-8 flex w-full max-w-full min-w-0 flex-col gap-6', className)}>
       {conventions.length === 0 ? (
-        <div className="border-ink border-2 border-dashed bg-white p-8 text-center sm:p-12 dark:bg-zinc-900">
-          <p className="font-display text-sm tracking-wide uppercase sm:text-base">
+        <div className="border-ink border-2 border-dashed bg-white p-6 text-center sm:p-12 dark:bg-zinc-900">
+          <p className="font-display text-xs tracking-wide uppercase sm:text-base">
             No featured conventions right now!
           </p>
           <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
@@ -31,9 +31,12 @@ export function FeaturedViewContent({
             <button
               type="button"
               onClick={onSwitchToList}
-              className={cn(CONBLOCK_PRIMARY, 'inline-flex items-center gap-2 px-5 py-2.5 text-xs')}
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex items-center gap-2 px-4 py-2 text-xs min-[380px]:px-5 min-[380px]:py-2.5'
+              )}
             >
-              <span>View All Cons List</span>
+              <span>View All Cons</span>
               <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>

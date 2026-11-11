@@ -6,6 +6,9 @@ import { cn } from '@/shared/lib/utils';
 import { useFreebieBoardState } from './board/useFreebieBoardState';
 import { BoardHeader, BoardFilterBar, BoardAllTab, BoardSavedTab, BoardUploadedTab } from './board';
 import { FreebieSkeleton } from './FreebieSkeleton';
+import { FreebieDetailModal } from './FreebieDetailModal';
+import { EditFreebieModal } from './EditFreebieModal';
+import { DeleteFreebieModal } from './DeleteFreebieModal';
 
 export function FreebieBoard({
   conventionSlug,
@@ -19,12 +22,12 @@ export function FreebieBoard({
   const state = useFreebieBoardState(conventionSlug);
 
   return (
-    <div className="space-y-6">
+    <div className="@container space-y-6">
       <BoardHeader conventionSlug={conventionSlug} conventionName={resolvedName} />
       <BoardFilterBar state={state} />
 
       {state.isLoading ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <FreebieSkeleton key={i} withImage={i % 2 === 0} />
           ))}
@@ -52,6 +55,30 @@ export function FreebieBoard({
         <BoardUploadedTab state={state} conventionSlug={conventionSlug} />
       ) : (
         <BoardSavedTab state={state} />
+      )}
+
+      {state.selectedFreebie && (
+        <FreebieDetailModal
+          freebie={state.selectedFreebie}
+          isOpen={Boolean(state.selectedFreebie)}
+          onClose={() => state.setSelectedFreebieId(null)}
+        />
+      )}
+
+      {state.editingFreebie && (
+        <EditFreebieModal
+          freebie={state.editingFreebie}
+          isOpen={Boolean(state.editingFreebie)}
+          onClose={() => state.setEditingFreebie(null)}
+        />
+      )}
+
+      {state.deletingFreebie && (
+        <DeleteFreebieModal
+          freebie={state.deletingFreebie}
+          isOpen={Boolean(state.deletingFreebie)}
+          onClose={() => state.setDeletingFreebie(null)}
+        />
       )}
     </div>
   );

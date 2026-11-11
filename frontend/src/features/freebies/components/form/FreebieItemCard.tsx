@@ -169,7 +169,7 @@ export function FreebieItemCard({
         id={`image-upload-${fieldId}`}
         label={`Photo of Item #${index + 1} (Optional)`}
         previewUrl={currentImage?.preview}
-        onFileSelect={(file) => {
+        onFileSelect={(file: File) => {
           if (onImageFileSelect) {
             onImageFileSelect(fieldId, file);
           } else if (onImageChange) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { Bookmark } from 'lucide-react';
-import { CONBLOCK } from './button';
+import { CONBLOCK } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface BookmarkButtonProps {

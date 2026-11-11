@@ -37,11 +37,13 @@ export function ConventionRow({
           </span>
         </div>
 
-        <div>
-          <h3 className="font-display text-base tracking-wide uppercase md:text-xl">
-            {convention.name}
-            {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
-          </h3>
+        <div className="min-w-0">
+          <Link href={`/conventions/${convention.slug}`} className="group/title inline-block">
+            <h3 className="font-display group-hover/title:text-accent-pop text-base tracking-wide uppercase transition-colors md:text-xl">
+              {convention.name}
+              {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
+            </h3>
+          </Link>
           <p className="text-accent mt-1 text-sm font-medium">
             {formatDateRange(convention.starts_at, convention.ends_at)}
           </p>

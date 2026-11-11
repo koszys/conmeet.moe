@@ -37,7 +37,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
   const { data: meetups, isLoading, isError, refetch, isFetching } = useMeetups(queryFilters);
 
   return (
-    <div className="space-y-6">
+    <div className="@container space-y-6">
       {/* Header */}
       <MeetupHeader conventionSlug={conventionSlug} conventionName={convention?.name} />
 
@@ -55,7 +55,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
 
       {/* Content Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <MeetupSkeleton key={i} />
           ))}
@@ -76,7 +76,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
           </button>
         </div>
       ) : meetups && meetups.length > 0 ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2">
           {meetups.map((meetup) => (
             <MeetupCard key={meetup.id} meetup={meetup} conventionSlug={conventionSlug} />
           ))}

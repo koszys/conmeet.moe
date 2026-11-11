@@ -2,39 +2,29 @@
 
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Check, Clock, MapPin, Pencil, Square, Trash2 } from 'lucide-react';
+import { Clock, MapPin, Check, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { BookmarkButton, CONBLOCK, Modal, ModalHeader } from '@/shared/components/ui';
+import { BookmarkButton, ExpandableImage, Modal, ModalHeader } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../types';
-import { useToggleClaimFreebie, useToggleSaveFreebie } from '../api/mutations';
+import { useToggleSaveFreebie } from '../api/mutations';
+import { ClaimButton } from './ClaimButton';
 
 export function FreebieDetailModal({
   freebie,
   isOpen,
   onClose,
-  canManage = false,
-  onEdit,
-  onDelete,
 }: {
   freebie: Freebie;
   isOpen: boolean;
   onClose: () => void;
-  canManage?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
 
   const toggleSave = useToggleSaveFreebie();
-  const toggleClaim = useToggleClaimFreebie();
-
-  const isOwner = Boolean(
-    user && (freebie.is_owner || (freebie.created_by !== null && freebie.created_by === user.id))
-  );
 
   const fullImageUrl = freebie.image || freebie.image_thumb;
   const uploadDateTime = formatDateTime(freebie.created_at);
@@ -55,25 +45,18 @@ export function FreebieDetailModal({
     });
   }
 
-  function handleClaim(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    requireAuthAction(() => {
-      toggleClaim.mutate(freebie.id);
-    });
-  }
-
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="2xl"
       ariaLabelledBy={`freebie-detail-title-${freebie.id}`}
-      className="overflow-hidden"
+      className="flex max-h-[72vh] flex-col overflow-hidden sm:max-h-[85vh]"
+      overlayClassName="py-6 px-3.5 sm:p-6"
     >
       {/* Modal Header */}
-      <ModalHeader onClose={onClose}>
-        <div className="min-w-0 pr-2">
+      <ModalHeader onClose={onClose} className="shrink-0 items-start p-3.5 sm:p-5">
+        <div className="min-w-0 flex-1 pr-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
               {freebie.vendor.name}
@@ -100,31 +83,35 @@ export function FreebieDetailModal({
         </div>
       </ModalHeader>
 
-      <div className="max-h-[calc(85vh-130px)] overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Large Image View (if present) */}
         {fullImageUrl ? (
-          <div className="relative aspect-video max-h-[380px] w-full overflow-hidden bg-zinc-950">
+          <ExpandableImage
+            src={fullImageUrl}
+            alt={freebie.name}
+            title="Click to view full image"
+            className="group/lightbox relative aspect-video max-h-[190px] w-full overflow-hidden bg-zinc-950 sm:max-h-[340px] md:max-h-[380px]"
+            lightboxTitle={freebie.name}
+            lightboxSubtitle={
+              <span>
+                {freebie.vendor.name}
+                {freebie.location ? ` • ${freebie.location}` : ''}
+              </span>
+            }
+          >
             <Image
               src={fullImageUrl}
               alt={freebie.name}
               fill
-              className="object-contain"
+              className="object-contain transition-transform duration-300 group-hover/lightbox:scale-[1.02]"
               sizes="(max-width: 768px) 100vw, 672px"
               priority
             />
-
-            {freebie.is_claimed && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-                <span className="border-ink bg-accent border-2 px-3 py-1 font-mono text-xs font-black tracking-widest text-white uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950">
-                  CLAIMED
-                </span>
-              </div>
-            )}
-          </div>
+          </ExpandableImage>
         ) : null}
 
         {/* Full Details Content */}
-        <div className="space-y-4 p-4 sm:p-5">
+        <div className="space-y-3.5 p-3.5 sm:space-y-4 sm:p-5">
           {/* Requirements Box */}
           <div className="border-ink border bg-zinc-50 p-3.5 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800/60">
             <span className="block text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
@@ -162,7 +149,7 @@ export function FreebieDetailModal({
       </div>
 
       {/* Modal Actions Footer */}
-      <div className="border-ink border-t-2 bg-zinc-50 p-3 sm:px-5 dark:bg-zinc-800/40">
+      <div className="border-ink shrink-0 border-t-2 bg-zinc-50 p-2.5 sm:p-3 sm:px-5 dark:bg-zinc-800/40">
         <div className="flex items-center justify-between gap-3">
           {/* Claim Status Pill on Left */}
           <div className="flex items-center gap-2">
@@ -182,26 +169,7 @@ export function FreebieDetailModal({
           {/* Action Buttons on Right (Check off & Bookmark same compact size) */}
           <div className="flex shrink-0 items-center gap-2">
             {/* Check off / Claim button */}
-            <button
-              type="button"
-              onClick={handleClaim}
-              disabled={toggleClaim.isPending}
-              aria-label={freebie.is_claimed ? 'Claimed' : 'Check off freebie'}
-              title={freebie.is_claimed ? 'Claimed (click to unclaim)' : 'Check off freebie'}
-              className={cn(
-                CONBLOCK,
-                'inline-flex h-8 w-8 shrink-0 items-center justify-center transition-all',
-                freebie.is_claimed
-                  ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-                  : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
-              )}
-            >
-              {freebie.is_claimed ? (
-                <Check className="h-4 w-4 stroke-3" />
-              ) : (
-                <Square className="h-4 w-4 stroke-2" />
-              )}
-            </button>
+            <ClaimButton freebie={freebie} variant="icon" />
 
             {/* Save / Bookmark button */}
             <BookmarkButton
@@ -211,47 +179,6 @@ export function FreebieDetailModal({
               ariaLabel={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
               title={freebie.is_saved ? 'Saved' : 'Save'}
             />
-
-            {/* Owner Edit & Delete Buttons */}
-            {canManage && isOwner ? (
-              <>
-                {onEdit ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onEdit();
-                    }}
-                    aria-label={`Edit ${freebie.name}`}
-                    title="Edit freebie"
-                    className={cn(
-                      CONBLOCK,
-                      'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-zinc-700 transition-all hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white'
-                    )}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </button>
-                ) : null}
-
-                {onDelete ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onDelete();
-                    }}
-                    aria-label={`Delete ${freebie.name}`}
-                    title="Delete freebie"
-                    className={cn(
-                      CONBLOCK,
-                      'inline-flex h-8 w-8 shrink-0 items-center justify-center bg-white text-xs font-bold text-rose-600 transition-all hover:bg-rose-50 hover:text-rose-700 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-rose-950/40'
-                    )}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                ) : null}
-              </>
-            ) : null}
           </div>
         </div>
       </div>

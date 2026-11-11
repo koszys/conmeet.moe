@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth';
 import { useDebounce } from '@/shared/hooks';
+import type { Freebie } from '../../types';
 import { freebieKeys, useFreebies, useVendors } from '../../api/queries';
 import type { BoardRefreshStatus, FilterTab, FreebieBoardState } from './types';
 
@@ -21,6 +22,9 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
   const [cardOverrides, setCardOverrides] = useState<Record<number, boolean>>({});
   const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
   const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
+  const [selectedFreebieId, setSelectedFreebieId] = useState<number | null>(null);
+  const [editingFreebie, setEditingFreebie] = useState<Freebie | null>(null);
+  const [deletingFreebie, setDeletingFreebie] = useState<Freebie | null>(null);
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   const [refreshStatus, setRefreshStatus] = useState<BoardRefreshStatus>('idle');
@@ -151,6 +155,11 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     return allFreebies.filter((f) => f.is_saved && f.is_claimed);
   }, [allFreebies]);
 
+  const selectedFreebie = useMemo(() => {
+    if (!allFreebies || selectedFreebieId === null) return null;
+    return allFreebies.find((f) => f.id === selectedFreebieId) ?? null;
+  }, [allFreebies, selectedFreebieId]);
+
   return {
     activeTab,
     setActiveTab,
@@ -183,5 +192,12 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     setIsToClaimCollapsed,
     isClaimedCollapsed,
     setIsClaimedCollapsed,
+    selectedFreebieId,
+    setSelectedFreebieId,
+    selectedFreebie,
+    editingFreebie,
+    setEditingFreebie,
+    deletingFreebie,
+    setDeletingFreebie,
   };
 }

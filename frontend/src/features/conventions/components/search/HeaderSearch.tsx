@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MapPin, Search, X } from 'lucide-react';
 import { formatDateRange, parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
-import { IconButton } from '@/shared/components/ui/button';
+import { IconButton } from '@/shared/components/ui';
 
 import { useConventions } from '@/features/conventions/data/api';
 import { getConventionPhase, isPast } from '../../utils/dates';

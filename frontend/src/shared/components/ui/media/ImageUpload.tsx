@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { ImagePlus, Undo2, X } from 'lucide-react';
-import { CONBLOCK } from './button';
+import { CONBLOCK } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ImageUploadProps {

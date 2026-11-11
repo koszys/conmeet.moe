@@ -7,7 +7,7 @@ import { ArrowUpRight, CalendarDays, Gift, Home, MapPin, Sparkles, Users, X } fr
 import { formatDateRange, parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
-import { IconButton } from '@/shared/components/ui/button';
+import { IconButton } from '@/shared/components/ui';
 
 import { useConvention } from '../../data/api';
 import { useConventionNav } from './ConventionNavProvider';

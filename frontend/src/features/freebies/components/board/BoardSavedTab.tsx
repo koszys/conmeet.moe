@@ -1,9 +1,9 @@
 'use client';
 
-import { Check, CheckSquare, ChevronDown, Gift, X } from 'lucide-react';
-import { Button, EmptyState } from '@/shared/components/ui';
+import { Check, CheckSquare, ChevronDown } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { FreebieCard } from '../FreebieCard';
+import { FreebieEmptyState } from './FreebieEmptyState';
 import type { FreebieBoardState } from './types';
 
 interface BoardSavedTabProps {
@@ -28,35 +28,11 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
 
   if (counts.saved === 0) {
     return (
-      <EmptyState
-        mascot
-        mascotSpeech={isFiltered ? 'Nothing saved matches!' : 'Track your freebies!'}
-        title={isFiltered ? 'No Matching Saved Freebies' : 'No Saved Freebies Yet'}
-        description={
-          isFiltered
-            ? 'No freebies matched your search or vendor filter. Try clearing filters.'
-            : 'Bookmark freebies to build your personal checklist for the convention floor.'
-        }
-        shadow
-        action={
-          isFiltered ? (
-            <>
-              <Button variant="primary" onClick={handleClearFilters}>
-                <X className="h-4 w-4" />
-                <span>Clear Filters</span>
-              </Button>
-              <Button variant="secondary" onClick={() => setActiveTab('all')}>
-                <Gift className="h-4 w-4" />
-                <span>Browse All Freebies</span>
-              </Button>
-            </>
-          ) : (
-            <Button variant="primary" onClick={() => setActiveTab('all')}>
-              <Gift className="h-4 w-4" />
-              <span>Browse All Freebies</span>
-            </Button>
-          )
-        }
+      <FreebieEmptyState
+        tab="saved"
+        isFiltered={isFiltered}
+        onClearFilters={handleClearFilters}
+        onBrowseAll={() => setActiveTab('all')}
       />
     );
   }

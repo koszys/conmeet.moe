@@ -1,8 +1,7 @@
 'use client';
 
-import { Plus, X } from 'lucide-react';
-import { Button, LinkButton, EmptyState } from '@/shared/components/ui';
 import { FreebieCard } from '../FreebieCard';
+import { FreebieEmptyState } from './FreebieEmptyState';
 import type { FreebieBoardState } from './types';
 
 interface BoardUploadedTabProps {
@@ -21,35 +20,11 @@ export function BoardUploadedTab({ state, conventionSlug }: BoardUploadedTabProp
 
   if (uploadedDrops.length === 0) {
     return (
-      <EmptyState
-        mascot
-        mascotSpeech={isFiltered ? 'No uploads match!' : 'Share some freebies!'}
-        title={isFiltered ? 'No Matching Uploads' : 'No Uploaded Freebies Yet'}
-        description={
-          isFiltered
-            ? 'No freebies matched your search or vendor filter. Try clearing filters.'
-            : 'You haven\u2019t posted any freebies for this convention yet. Share one with the community!'
-        }
-        shadow
-        action={
-          isFiltered ? (
-            <>
-              <Button variant="primary" onClick={handleClearFilters}>
-                <X className="h-4 w-4" />
-                <span>Clear Filters</span>
-              </Button>
-              <LinkButton variant="secondary" href={`/conventions/${conventionSlug}/freebies/new`}>
-                <Plus className="h-4 w-4" />
-                <span>Post a Freebie</span>
-              </LinkButton>
-            </>
-          ) : (
-            <LinkButton variant="primary" href={`/conventions/${conventionSlug}/freebies/new`}>
-              <Plus className="h-4 w-4" />
-              <span>Post a Freebie</span>
-            </LinkButton>
-          )
-        }
+      <FreebieEmptyState
+        tab="uploaded"
+        isFiltered={isFiltered}
+        onClearFilters={handleClearFilters}
+        conventionSlug={conventionSlug}
       />
     );
   }

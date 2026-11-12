@@ -1,4 +1,5 @@
 export * from './Button';
+export * from './ClearFiltersButton';
 export * from './BookmarkButton';
 export * from './CloseButton';
 export * from './CopyLinkButton';

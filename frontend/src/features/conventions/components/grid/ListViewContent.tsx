@@ -1,7 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { Button, EmptyState } from '@/shared/components/ui';
+import { ClearFiltersButton, EmptyState } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { ConventionRow } from './ConventionRow';
 import type { Convention, ConventionPhase } from '../../types';
@@ -32,12 +31,7 @@ function FilterEmptyState({ onReset }: { onReset: () => void }) {
       description="Try searching for a different keyword or resetting your filters."
       className="mt-8"
       shadow
-      action={
-        <Button variant="primary" onClick={onReset}>
-          <X className="h-4 w-4" />
-          <span>Clear Filters</span>
-        </Button>
-      }
+      action={<ClearFiltersButton onClear={onReset} />}
     />
   );
 }

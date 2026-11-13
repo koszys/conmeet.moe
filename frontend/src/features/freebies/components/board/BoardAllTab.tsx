@@ -19,7 +19,6 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
     handleClearFilters,
     isCardCondensed,
     handleToggleCardCondensed,
-    handleToggleAllCondensed,
   } = state;
 
   if (allDrops.length === 0) {
@@ -46,23 +45,6 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
               {unsavedDrops.length}
             </span>
           </div>
-
-          {unsavedDrops.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
-                Compact
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={allDrops.some((d) => isCardCondensed(d.id))}
-                onClick={handleToggleAllCondensed}
-                className="cursor-pointer text-xs font-bold text-zinc-500 underline decoration-zinc-400 underline-offset-4 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                {allDrops.some((d) => isCardCondensed(d.id)) ? 'Expand' : 'Collapse'}
-              </button>
-            </div>
-          )}
         </div>
 
         {unsavedDrops.length > 0 ? (

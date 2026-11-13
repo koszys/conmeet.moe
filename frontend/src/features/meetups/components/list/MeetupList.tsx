@@ -1,27 +1,31 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { Plus, RotateCw, Users } from 'lucide-react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { RotateCw } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { MikuLoader } from '@/shared/components/miku';
+import { type RefreshStatus } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useMeetups } from '../../api';
+import { meetupKeys, useMeetups } from '../../api';
 import { MeetupCard } from './MeetupCard';
+import { MeetupEmptyState } from './MeetupEmptyState';
 import { MeetupFilterBar, type TabType } from './MeetupFilterBar';
 import { MeetupHeader } from './MeetupHeader';
-import { MeetupSkeleton } from './MeetupSkeleton';
 
 interface MeetupListProps {
   conventionSlug: string;
 }
 
 export function MeetupList({ conventionSlug }: MeetupListProps) {
+  const queryClient = useQueryClient();
   const { data: convention } = useConvention(conventionSlug);
 
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
+  const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Compute filters for the API query
   const queryFilters = useMemo(() => {
@@ -35,6 +39,41 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
   }, [conventionSlug, selectedDate, activeTab, searchQuery]);
 
   const { data: meetups, isLoading, isError, refetch, isFetching } = useMeetups(queryFilters);
+
+  async function handleRefresh() {
+    if (refreshStatus !== 'idle') return;
+    setRefreshStatus('refreshing');
+    try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 800));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: meetupKeys.all }),
+        refetch(),
+        minDelay,
+      ]);
+      setRefreshStatus('success');
+      refreshTimeoutRef.current = setTimeout(() => {
+        setRefreshStatus('idle');
+      }, 1200);
+    } catch {
+      setRefreshStatus('idle');
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-12">
+        <MikuLoader message="Gathering meetups..." size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="@container space-y-6">
@@ -51,16 +90,12 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
         onDateChange={setSelectedDate}
         conventionStartsAt={convention?.starts_at}
         conventionEndsAt={convention?.ends_at}
+        onRefresh={handleRefresh}
+        refreshStatus={refreshStatus}
       />
 
       {/* Content Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <MeetupSkeleton key={i} />
-          ))}
-        </div>
-      ) : isError ? (
+      {isError ? (
         <div className="border-ink border-2 border-dashed bg-rose-50 p-8 text-center dark:bg-rose-950/20">
           <p className="text-sm font-bold text-rose-600 dark:text-rose-400">
             Failed to load meetups. Please refresh or check connection.
@@ -82,52 +117,17 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
           ))}
         </div>
       ) : (
-        /* Empty State */
-        <div className="border-ink flex flex-col items-center justify-center border-2 border-dashed bg-white p-8 text-center sm:p-12 dark:bg-zinc-900">
-          <div className="border-ink flex h-14 w-14 items-center justify-center rounded-full border-2 bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
-            <Users className="h-7 w-7" />
-          </div>
-          <h3 className="font-display mt-4 text-lg tracking-wide uppercase sm:text-xl">
-            {activeTab === 'saved'
-              ? 'No Saved Meetups Yet'
-              : activeTab === 'official'
-                ? 'No Official Meetups Listed'
-                : 'No Meetups Scheduled Yet'}
-          </h3>
-          <p className="mt-1.5 max-w-sm text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
-            {activeTab === 'saved'
-              ? 'Bookmark meetups to build your convention plan and schedule.'
-              : 'Organize a fandom meetup for this con!'}
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link
-              href={`/conventions/${conventionSlug}/meetups/new`}
-              className={cn(
-                CONBLOCK_PRIMARY,
-                'inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase'
-              )}
-            >
-              <Plus className="h-4 w-4" />
-              <span>Post a Meetup</span>
-            </Link>
-            {(activeTab !== 'all' || searchQuery || selectedDate) && (
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('all');
-                  setSearchQuery('');
-                  setSelectedDate(undefined);
-                }}
-                className={cn(
-                  CONBLOCK,
-                  'inline-flex items-center gap-1.5 bg-zinc-50 px-4 py-2 text-xs font-bold uppercase hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700'
-                )}
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-        </div>
+        <MeetupEmptyState
+          activeTab={activeTab}
+          isFiltered={Boolean(searchQuery.trim() || selectedDate)}
+          hasSearchQuery={Boolean(searchQuery.trim())}
+          onClearFilters={() => {
+            setSearchQuery('');
+            setSelectedDate(undefined);
+          }}
+          onBrowseAll={() => setActiveTab('all')}
+          conventionSlug={conventionSlug}
+        />
       )}
     </div>
   );

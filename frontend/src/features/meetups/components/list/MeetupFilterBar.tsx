@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bookmark, Calendar, HeartHandshake, Sparkles, Users } from 'lucide-react';
-import { FilterTab, SearchInput } from '@/shared/components/ui';
+import { FilterTab, RefreshButton, type RefreshStatus, SearchInput } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { parseDate } from '@/shared/lib/dates';
@@ -19,6 +19,8 @@ interface MeetupFilterBarProps {
   onDateChange: (date?: string) => void;
   conventionStartsAt?: string;
   conventionEndsAt?: string;
+  onRefresh?: () => void;
+  refreshStatus?: RefreshStatus;
 }
 
 export function MeetupFilterBar({
@@ -30,6 +32,8 @@ export function MeetupFilterBar({
   onDateChange,
   conventionStartsAt,
   conventionEndsAt,
+  onRefresh,
+  refreshStatus,
 }: MeetupFilterBarProps) {
   // Generate date day options between convention starts_at and ends_at
   const conventionDays = useMemo(() => {
@@ -202,36 +206,44 @@ export function MeetupFilterBar({
           />
         </div>
 
-        {/* Date Filter Pills */}
-        {conventionDays.length > 0 && (
-          <div
-            ref={datePillsRef}
-            style={datePillsMaskStyle}
-            className="flex w-full max-w-full min-w-0 scrollbar-none items-center gap-1.5 overflow-x-auto pr-3 pb-0.5 sm:w-auto sm:gap-2"
-          >
-            <span className="font-display inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
-              <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
-              Day:
-            </span>
-            <FilterTab
-              variant="pill"
-              isActive={!selectedDate}
-              onClick={() => onDateChange(undefined)}
-              label="All Days"
-              shortLabel="All"
-            />
-            {conventionDays.map((day) => (
+        {/* Right side cluster: Date Filter Pills + Refresh Button */}
+        <div className="flex w-full max-w-full min-w-0 items-center justify-between gap-2.5 sm:w-auto sm:justify-end sm:gap-3">
+          {/* Date Filter Pills */}
+          {conventionDays.length > 0 && (
+            <div
+              ref={datePillsRef}
+              style={datePillsMaskStyle}
+              className="flex max-w-full min-w-0 flex-1 scrollbar-none items-center gap-1.5 overflow-x-auto pr-2 pb-0.5 sm:w-auto sm:flex-initial sm:gap-2"
+            >
+              <span className="font-display inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
+                <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
+                Day:
+              </span>
               <FilterTab
-                key={day.dateStr}
                 variant="pill"
-                isActive={selectedDate === day.dateStr}
-                onClick={() => onDateChange(day.dateStr)}
-                label={day.label}
-                shortLabel={day.shortLabel}
+                isActive={!selectedDate}
+                onClick={() => onDateChange(undefined)}
+                label="All Days"
+                shortLabel="All"
               />
-            ))}
-          </div>
-        )}
+              {conventionDays.map((day) => (
+                <FilterTab
+                  key={day.dateStr}
+                  variant="pill"
+                  isActive={selectedDate === day.dateStr}
+                  onClick={() => onDateChange(day.dateStr)}
+                  label={day.label}
+                  shortLabel={day.shortLabel}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Refresh Button - positioned to the right of Day */}
+          {onRefresh && (
+            <RefreshButton onRefresh={onRefresh} status={refreshStatus} entityName="meetups" />
+          )}
+        </div>
       </div>
     </div>
   );

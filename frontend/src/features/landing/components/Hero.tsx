@@ -6,8 +6,8 @@ import { useConventions } from '@/features/conventions/data/api';
 import { isFeaturedVisible } from '@/features/conventions';
 
 export function Hero() {
-  const { data = [], isLoading } = useConventions();
-  const hasFeatured = isLoading || data.some((convention) => isFeaturedVisible(convention));
+  const { data = [] } = useConventions();
+  const hasFeatured = data.some((convention) => isFeaturedVisible(convention));
 
   function scrollToSection(id: string) {
     return (e: React.MouseEvent<HTMLAnchorElement>) => {

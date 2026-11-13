@@ -1,8 +1,9 @@
 'use client';
 
-import { Bookmark, Gift, Plus, Search, X } from 'lucide-react';
+import { Bookmark, Gift } from 'lucide-react';
 import { FreebieCard } from '../FreebieCard';
-import { BoardEmptyState } from './BoardEmptyState';
+import { BoardSectionHeader } from './BoardSectionHeader';
+import { FreebieEmptyState } from './FreebieEmptyState';
 import type { FreebieBoardState } from './types';
 
 interface BoardAllTabProps {
@@ -19,28 +20,19 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
     handleClearFilters,
     isCardCondensed,
     handleToggleCardCondensed,
+    isAvailableCollapsed,
+    setIsAvailableCollapsed,
+    isSavedCollapsed,
+    setIsSavedCollapsed,
   } = state;
 
   if (allDrops.length === 0) {
     return (
-      <BoardEmptyState
-        icon={isFiltered ? Search : Gift}
-        title={isFiltered ? 'No Matching Freebies Found' : 'No Active Freebies Found'}
-        description={
-          isFiltered
-            ? 'No freebies matched your search or vendor filter. Try clearing filters.'
-            : 'No active freebies found for this convention yet. Be the first to share one!'
-        }
-        action={
-          isFiltered
-            ? { label: 'Clear Filters', onClick: handleClearFilters, icon: X }
-            : {
-                label: 'Submit First Freebie',
-                href: `/conventions/${conventionSlug}/freebies/new`,
-                icon: Plus,
-                primary: true,
-              }
-        }
+      <FreebieEmptyState
+        tab="all"
+        isFiltered={isFiltered}
+        onClearFilters={handleClearFilters}
+        conventionSlug={conventionSlug}
       />
     );
   }
@@ -48,49 +40,72 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
   return (
     <div className="space-y-8">
       {/* Unsaved drops (Top) */}
-      {unsavedDrops.length > 0 && (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
-          {unsavedDrops.map((freebie) => (
-            <FreebieCard
-              key={freebie.id}
-              freebie={freebie}
-              condensed={isCardCondensed(freebie.id)}
-              onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
-              onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
-              onEdit={(f) => state.setEditingFreebie(f)}
-              onDelete={(f) => state.setDeletingFreebie(f)}
-            />
-          ))}
-        </div>
-      )}
+      <section className="space-y-4">
+        <BoardSectionHeader
+          title="Available to Claim"
+          count={unsavedDrops.length}
+          icon={Gift}
+          isCollapsed={isAvailableCollapsed}
+          onToggle={() => setIsAvailableCollapsed((prev) => !prev)}
+        />
 
-      {/* Saved Drops (Bottom - Separated out of the way) */}
-      {savedDrops.length > 0 && (
-        <div className="space-y-4 pt-2">
-          <div className="border-ink flex items-center justify-between border-b pb-2">
-            <div className="flex items-center gap-2">
-              <Bookmark className="text-accent h-4 w-4 fill-current" />
-              <h2 className="font-display text-sm tracking-wider uppercase sm:text-base">Saved</h2>
-              <span className="border-ink/20 border bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] font-bold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                {savedDrops.length}
-              </span>
+        {!isAvailableCollapsed &&
+          (unsavedDrops.length > 0 ? (
+            <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
+              {unsavedDrops.map((freebie) => (
+                <FreebieCard
+                  key={freebie.id}
+                  freebie={freebie}
+                  condensed={isCardCondensed(freebie.id)}
+                  onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                  onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+                  onEdit={(f) => state.setEditingFreebie(f)}
+                  onDelete={(f) => state.setDeletingFreebie(f)}
+                />
+              ))}
             </div>
-          </div>
+          ) : (
+            <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
+              <div className="border-ink mx-auto flex h-9 w-9 items-center justify-center border-2 bg-zinc-100 text-zinc-400 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-500">
+                <Bookmark className="h-4 w-4" />
+              </div>
+              <p className="mt-2 text-xs font-bold text-zinc-700 uppercase dark:text-zinc-200">
+                All Available Drops Claimed
+              </p>
+              <p className="mx-auto mt-1 max-w-sm text-[11px] text-zinc-500 dark:text-zinc-400">
+                You&apos;ve added every available drop on the board to your saved checklist!
+              </p>
+            </div>
+          ))}
+      </section>
 
-          <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
-            {savedDrops.map((freebie) => (
-              <FreebieCard
-                key={freebie.id}
-                freebie={freebie}
-                condensed={isCardCondensed(freebie.id)}
-                onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
-                onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
-                onEdit={(f) => state.setEditingFreebie(f)}
-                onDelete={(f) => state.setDeletingFreebie(f)}
-              />
-            ))}
-          </div>
-        </div>
+      {/* Saved drops (Bottom) */}
+      {savedDrops.length > 0 && (
+        <section className="space-y-4 pt-2">
+          <BoardSectionHeader
+            title="Saved to Your List"
+            count={savedDrops.length}
+            icon={Bookmark}
+            isCollapsed={isSavedCollapsed}
+            onToggle={() => setIsSavedCollapsed((prev) => !prev)}
+          />
+
+          {!isSavedCollapsed && (
+            <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
+              {savedDrops.map((freebie) => (
+                <FreebieCard
+                  key={freebie.id}
+                  freebie={freebie}
+                  condensed={isCardCondensed(freebie.id)}
+                  onToggleCondensed={() => handleToggleCardCondensed(freebie.id)}
+                  onOpenDetail={() => state.setSelectedFreebieId(freebie.id)}
+                  onEdit={(f) => state.setEditingFreebie(f)}
+                  onDelete={(f) => state.setDeletingFreebie(f)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       )}
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
+import { MikuLoader } from '@/shared/components/miku';
 import { useAuth } from './AuthProvider';
 
 export function RequireAuth({ children }: { children: ReactNode }) {
@@ -18,7 +19,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">Loading…</span>
+        <MikuLoader message="Checking account status..." size="lg" />
       </div>
     );
   }

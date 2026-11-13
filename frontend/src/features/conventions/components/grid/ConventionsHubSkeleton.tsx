@@ -1,3 +1,5 @@
+import { MikuLoader } from '@/shared/components/miku';
+
 export function CardSkeleton() {
   return (
     <div className="border-ink relative flex min-h-60 animate-pulse flex-col justify-between overflow-hidden border-2 bg-zinc-100 shadow-[4px_4px_0_var(--ink)] sm:min-h-64 md:min-h-72 dark:bg-zinc-900">
@@ -30,24 +32,14 @@ export function RowSkeleton() {
 }
 
 export interface ConventionsHubSkeletonProps {
-  view: 'featured' | 'list';
+  view?: 'featured' | 'list';
 }
 
-export function ConventionsHubSkeleton({ view }: ConventionsHubSkeletonProps) {
+export function ConventionsHubSkeleton(props?: ConventionsHubSkeletonProps) {
+  void props;
   return (
-    <div className="mt-8">
-      {view === 'featured' ? (
-        <div className="flex flex-col gap-6">
-          <CardSkeleton />
-          <CardSkeleton />
-        </div>
-      ) : (
-        <div>
-          <RowSkeleton />
-          <RowSkeleton />
-          <RowSkeleton />
-        </div>
-      )}
+    <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-16">
+      <MikuLoader message="Finding conventions..." size="lg" />
     </div>
   );
 }

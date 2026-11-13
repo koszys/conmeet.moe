@@ -8,6 +8,7 @@ import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
 import type { Convention, ConventionPhase } from '../../types';
 import { parseDate } from '@/shared/lib/dates';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { AllConsButton, FeaturedConsButton } from '../links';
 
@@ -32,18 +33,6 @@ interface ConventionGridProps {
   showRequest?: boolean;
   initialTab?: 'upcoming' | 'past' | 'recently-ended';
   className?: string;
-}
-
-function RowSkeleton() {
-  return (
-    <div className="border-ink flex animate-pulse items-center gap-4 border-b-2 border-dashed px-2 py-6 md:px-4">
-      <div className="border-ink h-14 w-14 bg-zinc-200 dark:bg-zinc-800" />
-      <div className="flex-1 space-y-2.5">
-        <div className="h-4 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-3 w-1/4 bg-zinc-200 dark:bg-zinc-800" />
-      </div>
-    </div>
-  );
 }
 
 export function ConventionGrid({
@@ -187,10 +176,8 @@ export function ConventionGrid({
       </div>
 
       {isLoading && (
-        <div className="mt-4">
-          <RowSkeleton />
-          <RowSkeleton />
-          <RowSkeleton />
+        <div className="flex min-h-[35vh] w-full flex-col items-center justify-center py-12">
+          <MikuLoader message="Finding conventions..." size="lg" />
         </div>
       )}
 

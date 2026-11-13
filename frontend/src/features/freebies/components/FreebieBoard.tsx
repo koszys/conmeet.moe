@@ -2,10 +2,10 @@
 
 import { RotateCw } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
+import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { useFreebieBoardState } from './board/useFreebieBoardState';
 import { BoardHeader, BoardFilterBar, BoardAllTab, BoardSavedTab, BoardUploadedTab } from './board';
-import { FreebieSkeleton } from './FreebieSkeleton';
 import { FreebieDetailModal } from './FreebieDetailModal';
 import { EditFreebieModal } from './EditFreebieModal';
 import { DeleteFreebieModal } from './DeleteFreebieModal';
@@ -21,18 +21,20 @@ export function FreebieBoard({
   const resolvedName = conventionName || convention?.name;
   const state = useFreebieBoardState(conventionSlug);
 
+  if (state.isLoading) {
+    return (
+      <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-12">
+        <MikuLoader message="Scanning for freebies..." size="lg" />
+      </div>
+    );
+  }
+
   return (
     <div className="@container space-y-6">
       <BoardHeader conventionSlug={conventionSlug} conventionName={resolvedName} />
       <BoardFilterBar state={state} />
 
-      {state.isLoading ? (
-        <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 xl:grid-cols-3 @min-[880px]:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <FreebieSkeleton key={i} withImage={i % 2 === 0} />
-          ))}
-        </div>
-      ) : state.isError ? (
+      {state.isError ? (
         <div className="border-ink border-2 border-dashed bg-rose-50 p-8 text-center dark:bg-rose-950/20">
           <p className="text-sm font-bold text-rose-600 dark:text-rose-400">
             Failed to load freebies. Please refresh or check connection.

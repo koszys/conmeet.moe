@@ -8,6 +8,8 @@ import { cn } from '@/shared/lib/utils';
 
 import { useConvention } from '../../data/api';
 import { getConventionPhase } from '../../utils/dates';
+import { useFreebies } from '@/features/freebies';
+import { useMeetups } from '@/features/meetups';
 import { OfficialSiteButton, ViewOnMapButton } from '../links';
 import { ConventionSections } from './ConventionSections';
 import type { ConventionSectionConfig } from '../../types';
@@ -27,7 +29,24 @@ export function ConventionDetail({
   slug: string;
   extraSections?: ConventionSectionConfig[];
 }) {
-  const { data: convention, isLoading, isError, refetch } = useConvention(slug);
+  const {
+    data: convention,
+    isLoading: isLoadingConvention,
+    isError: isErrorConvention,
+    refetch,
+  } = useConvention(slug);
+  const { isLoading: isLoadingFreebies, isError: isErrorFreebies } = useFreebies({
+    convention: slug,
+  });
+  const { isLoading: isLoadingMeetups, isError: isErrorMeetups } = useMeetups({
+    conventionSlug: slug,
+  });
+
+  const isLoading =
+    isLoadingConvention ||
+    (!isErrorConvention && isLoadingFreebies && !isErrorFreebies) ||
+    (!isErrorConvention && isLoadingMeetups && !isErrorMeetups);
+  const isError = isErrorConvention;
   const hasOverview = Boolean(convention?.description && convention.description.trim().length > 0);
 
   return (

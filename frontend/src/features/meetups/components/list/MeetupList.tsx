@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { RotateCw } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { MikuLoader } from '@/shared/components/miku';
+import { type RefreshStatus } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useMeetups } from '../../api';
+import { meetupKeys, useMeetups } from '../../api';
 import { MeetupCard } from './MeetupCard';
 import { MeetupEmptyState } from './MeetupEmptyState';
 import { MeetupFilterBar, type TabType } from './MeetupFilterBar';
@@ -16,11 +18,14 @@ interface MeetupListProps {
 }
 
 export function MeetupList({ conventionSlug }: MeetupListProps) {
+  const queryClient = useQueryClient();
   const { data: convention } = useConvention(conventionSlug);
 
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
+  const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Compute filters for the API query
   const queryFilters = useMemo(() => {
@@ -34,6 +39,33 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
   }, [conventionSlug, selectedDate, activeTab, searchQuery]);
 
   const { data: meetups, isLoading, isError, refetch, isFetching } = useMeetups(queryFilters);
+
+  async function handleRefresh() {
+    if (refreshStatus !== 'idle') return;
+    setRefreshStatus('refreshing');
+    try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 800));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: meetupKeys.all }),
+        refetch(),
+        minDelay,
+      ]);
+      setRefreshStatus('success');
+      refreshTimeoutRef.current = setTimeout(() => {
+        setRefreshStatus('idle');
+      }, 1200);
+    } catch {
+      setRefreshStatus('idle');
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -58,6 +90,8 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
         onDateChange={setSelectedDate}
         conventionStartsAt={convention?.starts_at}
         conventionEndsAt={convention?.ends_at}
+        onRefresh={handleRefresh}
+        refreshStatus={refreshStatus}
       />
 
       {/* Content Grid */}

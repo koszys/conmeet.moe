@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Bookmark, Check, Gift, LayoutGrid, RotateCw, Rows3, UploadCloud } from 'lucide-react';
+import { Bookmark, Gift, LayoutGrid, Rows3, UploadCloud } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { CONBLOCK, FilterTab, SearchInput } from '@/shared/components/ui';
+import { CONBLOCK, FilterTab, RefreshButton, SearchInput } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import type { FreebieBoardState } from './types';
 
@@ -218,35 +218,11 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           </button>
 
           {/* Compact Refresh Board Button */}
-          <button
-            type="button"
-            onClick={() => refreshBoard()}
-            disabled={refreshStatus !== 'idle'}
-            title={
-              refreshStatus === 'success'
-                ? 'Freebies synced!'
-                : refreshStatus === 'refreshing'
-                  ? 'Syncing freebies…'
-                  : 'Refresh freebies board'
-            }
-            aria-label="Refresh freebies board"
-            className={cn(
-              'border-ink inline-flex h-10 w-10 shrink-0 items-center justify-center border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all dark:bg-zinc-900',
-              refreshStatus === 'idle'
-                ? 'cursor-pointer text-zinc-900 hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-50 hover:shadow-none dark:text-white dark:hover:bg-zinc-800'
-                : refreshStatus === 'success'
-                  ? 'cursor-default bg-emerald-50 dark:bg-emerald-950/30'
-                  : 'cursor-not-allowed opacity-75'
-            )}
-          >
-            {refreshStatus === 'success' ? (
-              <Check className="animate-pill-pop h-4 w-4 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
-            ) : refreshStatus === 'refreshing' ? (
-              <RotateCw className="h-4 w-4 animate-spin stroke-[2.5]" />
-            ) : (
-              <RotateCw className="h-4 w-4 stroke-[2.5]" />
-            )}
-          </button>
+          <RefreshButton
+            onRefresh={refreshBoard}
+            status={refreshStatus}
+            entityName="freebies board"
+          />
         </div>
       </div>
     </div>

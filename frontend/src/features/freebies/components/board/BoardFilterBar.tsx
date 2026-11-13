@@ -1,20 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  Bookmark,
-  Check,
-  Gift,
-  LayoutGrid,
-  Loader2,
-  RotateCw,
-  Rows3,
-  Search,
-  UploadCloud,
-  X,
-} from 'lucide-react';
+import { Bookmark, Check, Gift, LayoutGrid, RotateCw, Rows3, UploadCloud } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { CONBLOCK, FilterTab } from '@/shared/components/ui';
+import { CONBLOCK, FilterTab, SearchInput } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import type { FreebieBoardState } from './types';
 
@@ -155,11 +144,11 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           style={tabsWidth ? { width: `${tabsWidth}px` } : undefined}
           className="relative w-full max-w-full shrink-0"
         >
-          <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
-          <input
-            type="text"
+          <SearchInput
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={setSearchQuery}
+            onClear={() => setSearchQuery('')}
+            isLoading={Boolean(isFetching && debouncedSearch)}
             placeholder={
               activeTab === 'saved'
                 ? 'Search saved freebies, booths...'
@@ -167,22 +156,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                   ? 'Search your uploaded freebies...'
                   : 'Search items, booths...'
             }
-            className="border-ink h-10 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
           />
-          {isFetching && debouncedSearch ? (
-            <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            </div>
-          ) : searchQuery ? (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
-              aria-label="Clear search"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          ) : null}
         </div>
 
         {/* Controls Cluster: Vendor Filter, View Density Toggle, and Refresh */}

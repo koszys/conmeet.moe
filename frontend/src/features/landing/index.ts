@@ -3,3 +3,4 @@ export { Hero } from './components/Hero';
 export { LedDisplay } from './components/LedDisplay';
 export { Features } from './components/Features';
 export { FeaturedConventions } from './components/FeaturedConventions';
+export * from './hooks';

@@ -8,16 +8,15 @@ import {
   isFeaturedVisible,
   sortFeaturedConventions,
 } from '@/features/conventions';
-import { MikuLoader } from '@/shared/components/miku';
 
 export function FeaturedConventions() {
-  const { data = [], isLoading } = useConventions();
+  const { data = [] } = useConventions();
 
   const featured = sortFeaturedConventions(
     data.filter((convention) => isFeaturedVisible(convention))
   );
 
-  if (!isLoading && featured.length === 0) {
+  if (featured.length === 0) {
     return null;
   }
 
@@ -46,12 +45,7 @@ export function FeaturedConventions() {
       </div>
 
       <div className="mt-8">
-        {isLoading && (
-          <div className="flex min-h-[300px] w-full flex-col items-center justify-center py-8">
-            <MikuLoader message="Spotlighting featured cons..." size="lg" />
-          </div>
-        )}
-        {!isLoading && <FeaturedConventionSlider conventions={featured} />}
+        <FeaturedConventionSlider conventions={featured} />
       </div>
 
       <div className="border-ink mt-12 border-b-2 border-dashed md:mt-16" aria-hidden="true" />

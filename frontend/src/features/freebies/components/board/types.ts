@@ -42,6 +42,10 @@ export interface FreebieBoardState {
   unclaimedSaved: Freebie[];
   claimedSaved: Freebie[];
   // Accordion state
+  isAvailableCollapsed: boolean;
+  setIsAvailableCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  isSavedCollapsed: boolean;
+  setIsSavedCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   isToClaimCollapsed: boolean;
   setIsToClaimCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   isClaimedCollapsed: boolean;

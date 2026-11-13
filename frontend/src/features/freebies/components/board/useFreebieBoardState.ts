@@ -20,6 +20,8 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
   const [searchQuery, setSearchQuery] = useState('');
   const [allCondensed, setAllCondensed] = useState(false);
   const [cardOverrides, setCardOverrides] = useState<Record<number, boolean>>({});
+  const [isAvailableCollapsed, setIsAvailableCollapsed] = useState(false);
+  const [isSavedCollapsed, setIsSavedCollapsed] = useState(false);
   const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
   const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
   const [selectedFreebieId, setSelectedFreebieId] = useState<number | null>(null);
@@ -188,6 +190,10 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     uploadedDrops,
     unclaimedSaved,
     claimedSaved,
+    isAvailableCollapsed,
+    setIsAvailableCollapsed,
+    isSavedCollapsed,
+    setIsSavedCollapsed,
     isToClaimCollapsed,
     setIsToClaimCollapsed,
     isClaimedCollapsed,

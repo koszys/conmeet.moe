@@ -1,5 +1,5 @@
 import type { Convention } from '../types';
-import type { ConventionFilters } from '../components/grid/ConventionFilterBar';
+import type { ConventionFilters } from '../components/grid/filters';
 import { parseDate } from '@/shared/lib/dates';
 
 export function matchesConventionFilters(

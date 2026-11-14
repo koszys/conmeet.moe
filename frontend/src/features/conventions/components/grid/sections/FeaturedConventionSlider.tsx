@@ -12,12 +12,12 @@ import {
   Play,
   Sparkles,
 } from 'lucide-react';
-import type { Convention, ConventionPhase } from '../../types';
-import { getConventionPhase } from '../../utils/dates';
+import type { Convention, ConventionPhase } from '../../../types';
+import { getConventionPhase } from '../../../utils/dates';
 import { formatDateRange } from '@/shared/lib/dates';
 import { CONBLOCK } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
+import { ConventionExternalLinks } from '../../links/ConventionExternalLinks';
 
 const PHASE_CONFIG: Record<ConventionPhase, { label: string; chipClass: string }> = {
   now: {

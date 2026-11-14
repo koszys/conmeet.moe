@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { ConventionRow } from './ConventionRow';
+import { ConventionRow } from '../items';
 import { ConventionRequest } from './ConventionRequest';
-import { useConventions } from '../../data/api';
-import { getConventionPhase, isPast, isRecentlyEnded } from '../../utils/dates';
-import type { Convention, ConventionPhase } from '../../types';
+import { useConventions } from '../../../data/api';
+import { getConventionPhase, isPast, isRecentlyEnded } from '../../../utils/dates';
+import type { Convention, ConventionPhase } from '../../../types';
 import { parseDate } from '@/shared/lib/dates';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
-import { AllConsButton, FeaturedConsButton } from '../links';
+import { AllConsButton, FeaturedConsButton } from '../../links';
 
 interface ConventionGroup {
   phase: ConventionPhase;
@@ -19,7 +19,7 @@ interface ConventionGroup {
   conventions: Convention[];
 }
 
-interface ConventionGridProps {
+export interface ConventionGridProps {
   id?: string;
   heading?: string;
   tagline?: string;

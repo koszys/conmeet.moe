@@ -2,8 +2,8 @@
 
 import { ClearFiltersButton, EmptyState } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { ConventionRow } from './ConventionRow';
-import type { Convention, ConventionPhase } from '../../types';
+import { ConventionRow } from '../items';
+import type { Convention, ConventionPhase } from '../../../types';
 
 export interface ConventionGroup {
   phase: ConventionPhase;

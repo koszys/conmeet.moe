@@ -3,21 +3,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Star } from 'lucide-react';
-import { ConventionRequest } from './ConventionRequest';
-import { ConventionFilterBar, type ConventionFilters } from './ConventionFilterBar';
-import { ConventionsViewSwitcher } from './ConventionsViewSwitcher';
+import { ConventionRequest } from '../sections/ConventionRequest';
+import { ConventionFilterBar, type ConventionFilters, ConventionsViewSwitcher } from '../filters';
 import { FeaturedViewContent } from './FeaturedViewContent';
 import { ListViewContent, type ConventionGroup } from './ListViewContent';
 import { ConventionsHubSkeleton } from './ConventionsHubSkeleton';
-import { useConventions } from '../../data/api';
+import { useConventions } from '../../../data/api';
 import {
   getConventionPhase,
   isFeaturedVisible,
   isPast,
   isRecentlyEnded,
   sortFeaturedConventions,
-} from '../../utils/dates';
-import { matchesConventionFilters } from '../../utils/filters';
+} from '../../../utils/dates';
+import { matchesConventionFilters } from '../../../utils/filters';
 import { parseDate } from '@/shared/lib/dates';
 import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';

@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Star } from 'lucide-react';
-import { ConventionCard } from './ConventionCard';
+import { ConventionCard } from '../items';
 import { ConventionRequest } from './ConventionRequest';
-import { useConventions } from '../../data/api';
-import { isPast } from '../../utils/dates';
+import { useConventions } from '../../../data/api';
+import { isPast } from '../../../utils/dates';
 import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
-import { AllConsButton } from '../links';
+import { AllConsButton } from '../../links';
 
 export interface FeaturedConventionGridProps {
   initialTab?: 'upcoming' | 'past';

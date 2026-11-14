@@ -6,17 +6,17 @@ import { Check, Loader2 } from 'lucide-react';
 import { CloseButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
-import type { Freebie } from '../types';
-import { useUpdateFreebie } from '../api/mutations';
+import type { Freebie } from '../../types';
+import { useUpdateFreebie } from '../../api/mutations';
 import {
   BoothLocationField,
   CharCounter,
   ItemImageUpload,
   useVendorSuggestions,
   VendorPicker,
-} from './form';
+} from '../form';
 
-interface EditFreebieModalProps {
+export interface EditFreebieModalProps {
   freebie: Freebie;
   isOpen: boolean;
   onClose: () => void;

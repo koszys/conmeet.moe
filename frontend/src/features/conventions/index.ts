@@ -1,4 +1,5 @@
 export * from './components';
+export { CONVENTION_PAGES, type ConventionPageConfig } from './data/conventionPages';
 export { getDefaultConventionSections } from './data/sections';
 export { formatSlugToTitle, getConventionServer } from './data/server';
 export { matchesConventionFilters } from './utils/filters';

@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { formatDateRange, parseDate } from '@/shared/lib/dates';
-import type { Convention, ConventionPhase } from '../../types';
+import type { Convention, ConventionPhase } from '../../../types';
 import { cn } from '@/shared/lib/utils';
-import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
+import { ConventionExternalLinks } from '../../links/ConventionExternalLinks';
 
 const STAMP: Record<ConventionPhase, string> = {
   now: 'now!',
@@ -39,7 +39,7 @@ export function ConventionRow({
 
         <div className="min-w-0">
           <Link href={`/conventions/${convention.slug}`} className="group/title inline-block">
-            <h3 className="font-display group-hover/title:text-accent-pop text-base tracking-wide uppercase transition-colors md:text-xl">
+            <h3 className="font-display group-hover:text-accent-pop group-hover/title:text-accent-pop dark:group-hover:text-accent-pop dark:group-hover/title:text-accent-pop text-base tracking-wide uppercase transition-colors md:text-xl">
               {convention.name}
               {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
             </h3>

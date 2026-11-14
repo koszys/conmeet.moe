@@ -14,12 +14,10 @@ import {
 } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
-import type { Freebie } from '../types';
-import { useToggleSaveFreebie } from '../api/mutations';
-import { ClaimButton } from './ClaimButton';
-import { FreebieDetailModal } from './FreebieDetailModal';
-import { EditFreebieModal } from './EditFreebieModal';
-import { DeleteFreebieModal } from './DeleteFreebieModal';
+import type { Freebie } from '../../types';
+import { useToggleSaveFreebie } from '../../api/mutations';
+import { ClaimButton } from '../ClaimButton';
+import { FreebieDetailModal, EditFreebieModal, DeleteFreebieModal } from '../modals';
 
 export interface FreebieCardProps {
   freebie: Freebie;

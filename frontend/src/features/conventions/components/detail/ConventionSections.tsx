@@ -68,7 +68,7 @@ export function ConventionSections({
             Convention Activity Hub
           </h2>
           <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-            Freebies, meetups, and schedules for {convention.name}
+            Meetups, freebies, and schedules for {convention.name}
           </p>
         </div>
       </div>

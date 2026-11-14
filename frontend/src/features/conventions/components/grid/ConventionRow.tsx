@@ -39,7 +39,7 @@ export function ConventionRow({
 
         <div className="min-w-0">
           <Link href={`/conventions/${convention.slug}`} className="group/title inline-block">
-            <h3 className="font-display group-hover/title:text-accent-pop text-base tracking-wide uppercase transition-colors md:text-xl">
+            <h3 className="font-display group-hover:text-accent-pop group-hover/title:text-accent-pop dark:group-hover:text-accent-pop dark:group-hover/title:text-accent-pop text-base tracking-wide uppercase transition-colors md:text-xl">
               {convention.name}
               {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
             </h3>

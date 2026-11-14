@@ -397,7 +397,7 @@ export function FeaturedConventionSlider({
 
           <div className="my-6 max-w-xl">
             <Link href={`/conventions/${convention.slug}`} className="group/link inline-block">
-              <h3 className="font-display group-hover/link:text-accent-pop border-ink line-clamp-2 border-2 bg-white px-3.5 py-1.5 text-2xl font-bold tracking-wide text-zinc-950 uppercase shadow-[3px_3px_0_var(--ink)] transition-colors sm:text-3xl md:text-4xl dark:bg-zinc-950 dark:text-white">
+              <h3 className="font-display group-hover/link:text-accent-pop dark:group-hover/link:text-accent-pop border-ink line-clamp-2 border-2 bg-white px-3.5 py-1.5 text-2xl font-bold tracking-wide text-zinc-950 uppercase shadow-[3px_3px_0_var(--ink)] transition-colors sm:text-3xl md:text-4xl dark:bg-zinc-950 dark:text-white">
                 {convention.name}
                 {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
               </h3>
@@ -522,7 +522,7 @@ export function FeaturedConventionSlider({
           {/* Center Title, Date, and Venue */}
           <div className="my-6 max-w-xl">
             <Link href={`/conventions/${current.slug}`} className="group/link inline-block">
-              <h3 className="font-display group-hover/link:text-accent-pop border-ink line-clamp-2 border-2 bg-white px-3 py-1.5 text-xl font-bold tracking-wide break-words text-zinc-950 uppercase shadow-[3px_3px_0_var(--ink)] transition-colors min-[380px]:px-3.5 min-[380px]:text-2xl sm:text-3xl md:text-4xl dark:bg-zinc-950 dark:text-white">
+              <h3 className="font-display group-hover/link:text-accent-pop dark:group-hover/link:text-accent-pop border-ink line-clamp-2 border-2 bg-white px-3 py-1.5 text-xl font-bold tracking-wide break-words text-zinc-950 uppercase shadow-[3px_3px_0_var(--ink)] transition-colors min-[380px]:px-3.5 min-[380px]:text-2xl sm:text-3xl md:text-4xl dark:bg-zinc-950 dark:text-white">
                 {current.name}
                 {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
               </h3>

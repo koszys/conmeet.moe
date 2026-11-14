@@ -92,7 +92,7 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
           </div>
 
           {/* Convention Title */}
-          <h3 className="font-display group-hover/top:text-accent-pop text-lg font-bold tracking-wide break-words uppercase transition-colors min-[360px]:text-xl sm:text-2xl md:text-3xl">
+          <h3 className="font-display group-hover/top:text-accent-pop dark:group-hover/top:text-accent-pop text-lg font-bold tracking-wide break-words uppercase transition-colors min-[360px]:text-xl sm:text-2xl md:text-3xl">
             {convention.name}
             {phase !== 'past' && <span className="text-accent-pop ml-2">!</span>}
           </h3>

@@ -1,3 +1,6 @@
+export * from './FreebieBoard';
+export * from './FreebieCard';
+export * from './FreebieSkeleton';
 export * from './types';
 export * from './useFreebieBoardState';
 export * from './BoardEmptyState';

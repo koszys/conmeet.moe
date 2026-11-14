@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, CheckSquare } from 'lucide-react';
-import { FreebieCard } from '../FreebieCard';
+import { FreebieCard } from './FreebieCard';
 import { BoardSectionHeader } from './BoardSectionHeader';
 import { FreebieEmptyState } from './FreebieEmptyState';
 import type { FreebieBoardState } from './types';

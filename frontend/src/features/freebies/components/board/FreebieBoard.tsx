@@ -4,19 +4,20 @@ import { RotateCw } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
-import { useFreebieBoardState } from './board/useFreebieBoardState';
-import { BoardHeader, BoardFilterBar, BoardAllTab, BoardSavedTab, BoardUploadedTab } from './board';
-import { FreebieDetailModal } from './FreebieDetailModal';
-import { EditFreebieModal } from './EditFreebieModal';
-import { DeleteFreebieModal } from './DeleteFreebieModal';
+import { useFreebieBoardState } from './useFreebieBoardState';
+import { BoardHeader } from './BoardHeader';
+import { BoardFilterBar } from './BoardFilterBar';
+import { BoardAllTab } from './BoardAllTab';
+import { BoardSavedTab } from './BoardSavedTab';
+import { BoardUploadedTab } from './BoardUploadedTab';
+import { FreebieDetailModal, EditFreebieModal, DeleteFreebieModal } from '../modals';
 
-export function FreebieBoard({
-  conventionSlug,
-  conventionName,
-}: {
+export interface FreebieBoardProps {
   conventionSlug: string;
   conventionName?: string;
-}) {
+}
+
+export function FreebieBoard({ conventionSlug, conventionName }: FreebieBoardProps) {
   const { data: convention } = useConvention(conventionSlug);
   const resolvedName = conventionName || convention?.name;
   const state = useFreebieBoardState(conventionSlug);

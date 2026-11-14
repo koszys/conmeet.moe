@@ -7,19 +7,17 @@ import { useAuth } from '@/features/auth';
 import { BookmarkButton, ExpandableImage, Modal, ModalHeader } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
-import type { Freebie } from '../types';
-import { useToggleSaveFreebie } from '../api/mutations';
-import { ClaimButton } from './ClaimButton';
+import type { Freebie } from '../../types';
+import { useToggleSaveFreebie } from '../../api/mutations';
+import { ClaimButton } from '../ClaimButton';
 
-export function FreebieDetailModal({
-  freebie,
-  isOpen,
-  onClose,
-}: {
+export interface FreebieDetailModalProps {
   freebie: Freebie;
   isOpen: boolean;
   onClose: () => void;
-}) {
+}
+
+export function FreebieDetailModal({ freebie, isOpen, onClose }: FreebieDetailModalProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();

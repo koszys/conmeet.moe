@@ -1,10 +1,10 @@
 'use client';
 
-import type { Freebie } from '../types';
-import { useDeleteFreebie } from '../api/mutations';
+import type { Freebie } from '../../types';
+import { useDeleteFreebie } from '../../api/mutations';
 import { ConfirmDeleteModal } from '@/shared/components/ui';
 
-interface DeleteFreebieModalProps {
+export interface DeleteFreebieModalProps {
   freebie: Freebie;
   isOpen: boolean;
   onClose: () => void;

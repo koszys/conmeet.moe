@@ -1,6 +1,6 @@
 'use client';
 
-import { FreebieCard } from '../FreebieCard';
+import { FreebieCard } from './FreebieCard';
 import { FreebieEmptyState } from './FreebieEmptyState';
 import type { FreebieBoardState } from './types';
 

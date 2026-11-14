@@ -8,22 +8,18 @@ import { Plus } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useCreateFreebie } from '../api/mutations';
-import {
-  multiFreebieSchema,
-  type MultiFreebieFormValues,
-  useVendorSuggestions,
-  VendorSection,
-  FreebieItemCard,
-} from './form';
+import { useCreateFreebie } from '../../api/mutations';
+import { multiFreebieSchema, type MultiFreebieFormValues } from './schema';
+import { useVendorSuggestions } from './useVendorSuggestions';
+import { VendorSection } from './VendorSection';
+import { FreebieItemCard } from './FreebieItemCard';
 
-export function FreebieForm({
-  conventionSlug,
-  conventionName,
-}: {
+export interface FreebieFormProps {
   conventionSlug: string;
   conventionName?: string;
-}) {
+}
+
+export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps) {
   const { data: convention } = useConvention(conventionSlug);
   const resolvedConventionName = conventionName || convention?.name;
   const router = useRouter();

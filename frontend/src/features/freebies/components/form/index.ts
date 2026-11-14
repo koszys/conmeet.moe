@@ -1,3 +1,4 @@
+export * from './FreebieForm';
 export * from './schema';
 export * from './CharCounter';
 export * from './ItemImageUpload';

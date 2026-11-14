@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
-import { ArrowUpRight, CalendarDays, Gift, Home, MapPin, Sparkles, Users, X } from 'lucide-react';
+import { ArrowUpRight, MapPin, Sparkles, X } from 'lucide-react';
 import { formatDateRange, parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
@@ -11,10 +10,9 @@ import { IconButton } from '@/shared/components/ui';
 
 import { useConvention } from '../../data/api';
 import { useConventionNav } from './ConventionNavProvider';
+import { ConventionNavList } from './ConventionNavList';
 import { HeaderSearch } from '../search/HeaderSearch';
 import { ConventionExternalLinks } from '../links/ConventionExternalLinks';
-
-const COMING_SOON = [{ label: 'Schedule', icon: CalendarDays }];
 
 export function ConventionSidebar({
   slug,
@@ -25,11 +23,6 @@ export function ConventionSidebar({
   variant?: 'desktop' | 'drawer';
   onClose?: () => void;
 }) {
-  const pathname = usePathname();
-  const isOverview = pathname === `/conventions/${slug}`;
-  const isFreebies = pathname.startsWith(`/conventions/${slug}/freebies`);
-  const isMeetups = pathname.startsWith(`/conventions/${slug}/meetups`);
-
   const { data: convention } = useConvention(slug);
   const nav = useConventionNav();
 
@@ -84,60 +77,7 @@ export function ConventionSidebar({
         className="border-ink flex flex-col border-b-2 border-dashed px-2 py-2"
         aria-label="Convention sections"
       >
-        <Link
-          href={`/conventions/${convention.slug}`}
-          aria-current={isOverview ? 'page' : undefined}
-          onClick={onClose}
-          className={cn(
-            'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
-            isOverview
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Home className="h-4 w-4" />
-          Overview
-        </Link>
-        <Link
-          href={`/conventions/${convention.slug}/freebies`}
-          aria-current={isFreebies ? 'page' : undefined}
-          onClick={onClose}
-          className={cn(
-            'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
-            isFreebies
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Gift className="h-4 w-4" />
-          Freebies
-        </Link>
-        <Link
-          href={`/conventions/${convention.slug}/meetups`}
-          aria-current={isMeetups ? 'page' : undefined}
-          onClick={onClose}
-          className={cn(
-            'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
-            isMeetups
-              ? 'bg-accent text-white dark:text-zinc-950'
-              : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
-          )}
-        >
-          <Users className="h-4 w-4" />
-          Meetups
-        </Link>
-        {COMING_SOON.map(({ label, icon: Icon }) => (
-          <span
-            key={label}
-            className="border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest text-zinc-400 uppercase dark:text-zinc-500"
-          >
-            <Icon className="h-4 w-4" />
-            {label}
-            <span className="font-display ml-auto -rotate-3 border-2 border-current px-1.5 py-0.5 text-[9px]">
-              soon
-            </span>
-          </span>
-        ))}
+        <ConventionNavList variant="expanded" slug={convention.slug} onClose={onClose} />
       </nav>
 
       {(convention.website_url || convention.map_url) && (
@@ -227,58 +167,7 @@ export function ConventionSidebar({
         >
           <HeaderSearch variant="collapsed" />
           <div className="border-ink mt-1 w-7 border-t-2 border-dashed" />
-          <Link
-            href={`/conventions/${convention.slug}`}
-            aria-current={isOverview ? 'page' : undefined}
-            aria-label="Overview"
-            title="Overview"
-            className={cn(
-              'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
-              isOverview
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
-          >
-            <Home className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`/conventions/${convention.slug}/freebies`}
-            aria-current={isFreebies ? 'page' : undefined}
-            aria-label="Freebies"
-            title="Freebies"
-            className={cn(
-              'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
-              isFreebies
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
-          >
-            <Gift className="h-4 w-4" />
-          </Link>
-          <Link
-            href={`/conventions/${convention.slug}/meetups`}
-            aria-current={isMeetups ? 'page' : undefined}
-            aria-label="Meetups"
-            title="Meetups"
-            className={cn(
-              'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
-              isMeetups
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
-          >
-            <Users className="h-4 w-4" />
-          </Link>
-          {COMING_SOON.map(({ label, icon: Icon }) => (
-            <span
-              key={label}
-              title={`${label} (soon)`}
-              aria-label={`${label} (soon)`}
-              className="border-ink flex h-9 w-9 cursor-not-allowed items-center justify-center border-2 text-zinc-400 dark:text-zinc-500"
-            >
-              <Icon className="h-4 w-4" />
-            </span>
-          ))}
+          <ConventionNavList variant="collapsed" slug={convention.slug} />
 
           {(convention.website_url || convention.map_url) && (
             <>

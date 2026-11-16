@@ -142,13 +142,18 @@ export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps
       <div className="border-ink border-b-2 pb-5">
         <BackLink href={`/conventions/${conventionSlug}/freebies`}>Back to Freebies</BackLink>
 
-        <h1 className="font-display mt-3 text-2xl tracking-wide uppercase sm:text-3xl">
-          Post Freebie Drops
-        </h1>
-        <p className="mt-1 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
-          Share giveaways, limited merch drops, or stamp rallies for{' '}
-          {resolvedConventionName || 'this convention'}.
-        </p>
+        <div className="mt-3">
+          <span className="font-display text-accent-pop text-xs tracking-wider uppercase">
+            {resolvedConventionName || 'Convention'}
+          </span>
+          <h1 className="font-display text-2xl font-black tracking-wider uppercase sm:text-3xl">
+            Post Freebie Drops
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+            Share giveaways, limited merch drops, or stamp rallies for{' '}
+            {resolvedConventionName || 'this convention'}.
+          </p>
+        </div>
       </div>
 
       {serverError ? (

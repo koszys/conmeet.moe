@@ -2,6 +2,7 @@
 
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Trash2 } from 'lucide-react';
+import { TextArea, TextInput } from '@/shared/components/ui';
 import type { FreebieItemFormValues, MultiFreebieFormValues } from './schema';
 import { CharCounter } from './CharCounter';
 import { BoothLocationField } from './BoothLocationField';
@@ -68,12 +69,15 @@ export function FreebieItemCard({
           </label>
           <CharCounter current={(itemVal.name || '').length} max={60} />
         </div>
-        <input
+        <TextInput
           id={`items.${index}.name`}
-          type="text"
           maxLength={60}
           placeholder="e.g. Genshin Impact Acrylic Standee"
           {...register(`items.${index}.name`)}
+          value={itemVal.name || ''}
+          onClear={() => setValue(`items.${index}.name`, '', { shouldValidate: true })}
+          error={Boolean(itemErrors?.name)}
+          wrapperClassName="mt-1.5"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
@@ -84,7 +88,6 @@ export function FreebieItemCard({
               }
             }
           }}
-          className="border-ink focus:ring-accent mt-1.5 h-10 w-full border-2 bg-white px-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
         />
         {itemErrors?.name ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -123,13 +126,14 @@ export function FreebieItemCard({
           </label>
           <CharCounter current={(itemVal.requirements || '').length} max={200} />
         </div>
-        <textarea
+        <TextArea
           id={`items.${index}.requirements`}
           rows={2}
           maxLength={200}
           placeholder="e.g. Follow @HoYoverse on X and show badge, or play demo"
           {...register(`items.${index}.requirements`)}
-          className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+          error={Boolean(itemErrors?.requirements)}
+          className="mt-1.5"
         />
         {itemErrors?.requirements ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -149,13 +153,14 @@ export function FreebieItemCard({
           </label>
           <CharCounter current={(itemVal.description || '').length} max={300} />
         </div>
-        <textarea
+        <TextArea
           id={`items.${index}.description`}
           rows={3}
           maxLength={300}
           placeholder="e.g. Limited to 200 per day! Drops start at 11:00 AM."
           {...register(`items.${index}.description`)}
-          className="border-ink focus:ring-accent mt-1.5 w-full border-2 bg-white p-3 text-sm font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+          error={Boolean(itemErrors?.description)}
+          className="mt-1.5"
         />
         {itemErrors?.description ? (
           <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">

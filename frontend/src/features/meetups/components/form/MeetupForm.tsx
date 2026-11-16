@@ -5,7 +5,14 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Calendar, Clock, HeartHandshake, MapPin, Sparkles, AlertCircle } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
-import { BackLink, FormActions, ImageUpload, CONBLOCK } from '@/shared/components/ui';
+import {
+  BackLink,
+  FormActions,
+  ImageUpload,
+  CONBLOCK,
+  TextArea,
+  TextInput,
+} from '@/shared/components/ui';
 import { parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { useCreateMeetup, useUpdateMeetup } from '../../api';
@@ -302,20 +309,21 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           >
             Meetup Title <span className="text-red-500">*</span>
           </label>
-          <input
+          <TextInput
             id="meetup-name"
-            type="text"
             required
             value={name}
             onChange={(e) => {
               setName(e.target.value);
               if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
             }}
+            onClear={() => {
+              setName('');
+              if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+            }}
             placeholder="e.g. Genshin Impact Cosplay Meetup, Chainsaw Man Fan Meetup"
-            className={cn(
-              'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black',
-              errors.name && 'border-red-500 bg-red-50 dark:bg-red-950/30'
-            )}
+            error={Boolean(errors.name)}
+            wrapperClassName="mt-1.5"
           />
           {errors.name && (
             <p className="mt-1.5 text-xs font-bold text-red-600 dark:text-red-400">{errors.name}</p>
@@ -330,24 +338,23 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           >
             Location / Gathering Spot <span className="text-red-500">*</span>
           </label>
-          <div className="relative mt-1.5">
-            <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
-            <input
-              id="meetup-location"
-              type="text"
-              required
-              value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-                if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
-              }}
-              placeholder="e.g. River Pavilion Meetup #1, Site #1, Room 402B"
-              className={cn(
-                'border-ink w-full border-2 bg-zinc-50 py-2.5 pr-3.5 pl-9 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black',
-                errors.location && 'border-red-500 bg-red-50 dark:bg-red-950/30'
-              )}
-            />
-          </div>
+          <TextInput
+            id="meetup-location"
+            required
+            icon={MapPin}
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
+            }}
+            onClear={() => {
+              setLocation('');
+              if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
+            }}
+            placeholder="e.g. River Pavilion Meetup #1, Site #1, Room 402B"
+            error={Boolean(errors.location)}
+            wrapperClassName="mt-1.5"
+          />
           {errors.location ? (
             <p className="mt-1.5 text-xs font-bold text-red-600 dark:text-red-400">
               {errors.location}
@@ -618,13 +625,13 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           >
             Description & Details (Optional)
           </label>
-          <textarea
+          <TextArea
             id="meetup-description"
             rows={5}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Introduce the meetup! Include photoshoot schedules, rules for cosplay weapons/props, contact info, Discord invite, or social handles..."
-            className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2.5 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors placeholder:text-zinc-500 focus:bg-white focus:outline-none dark:bg-zinc-950 dark:placeholder:text-zinc-300 dark:focus:bg-black"
+            className="mt-1.5"
           />
         </div>
 

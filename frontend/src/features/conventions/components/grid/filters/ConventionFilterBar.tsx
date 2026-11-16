@@ -59,7 +59,7 @@ export function ConventionFilterBar({
       <div className="flex items-center gap-2 sm:gap-2.5">
         {/* Search Input */}
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
+          <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
           <input
             type="text"
             value={filters.query}
@@ -67,16 +67,16 @@ export function ConventionFilterBar({
             placeholder="Search by name, city, venue..."
             aria-label="Search conventions"
             autoCapitalize="characters"
-            className="border-ink focus:border-accent-pop h-10 w-full border-2 bg-white pr-8 pl-9 text-xs font-medium tracking-widest text-zinc-900 uppercase placeholder:tracking-normal placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+            className="border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white pr-9 pl-9 text-xs font-medium tracking-widest text-zinc-900 uppercase placeholder:tracking-normal placeholder:text-zinc-500 placeholder:normal-case focus:outline-none sm:h-10 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
           />
           {filters.query && (
             <button
               type="button"
               onClick={() => onFilterChange({ query: '' })}
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-0.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
               aria-label="Clear search"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
           )}
         </div>

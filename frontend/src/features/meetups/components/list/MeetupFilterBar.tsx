@@ -122,12 +122,7 @@ export function MeetupFilterBar({
           }
           icon={
             <Users
-              className={cn(
-                'h-4 w-4 shrink-0',
-                activeTab === 'all'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-              )}
+              className={cn('h-4 w-4 shrink-0', activeTab === 'all' ? 'stroke-[2.5]' : 'stroke-2')}
             />
           }
         />
@@ -142,9 +137,7 @@ export function MeetupFilterBar({
             <Sparkles
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'official'
-                  ? 'fill-current stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'official' ? 'fill-current stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
@@ -164,9 +157,7 @@ export function MeetupFilterBar({
             <HeartHandshake
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'community'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'community' ? 'stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
@@ -182,9 +173,7 @@ export function MeetupFilterBar({
             <Bookmark
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'saved'
-                  ? 'fill-current stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'saved' ? 'fill-current stroke-[2.5]' : 'stroke-2'
               )}
             />
           }

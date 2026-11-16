@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bookmark, Gift, LayoutGrid, Rows3, UploadCloud } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { CONBLOCK, FilterTab, RefreshButton, SearchInput } from '@/shared/components/ui';
+import { FilterTab, RefreshButton, SearchInput, tabButtonClasses } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import type { FreebieBoardState } from './types';
 
@@ -80,12 +80,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
           count={counts.all}
           icon={
             <Gift
-              className={cn(
-                'h-4 w-4 shrink-0',
-                activeTab === 'all'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-              )}
+              className={cn('h-4 w-4 shrink-0', activeTab === 'all' ? 'stroke-[2.5]' : 'stroke-2')}
             />
           }
         />
@@ -105,9 +100,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             <Bookmark
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'saved'
-                  ? 'fill-current stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'saved' ? 'fill-current stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
@@ -128,9 +121,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             <UploadCloud
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'uploaded'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'uploaded' ? 'stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
@@ -184,19 +175,13 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             </select>
           ) : null}
 
-          {/* View Density Buttons (Separated with individual CONBLOCK hover) */}
+          {/* View Density Buttons */}
           <button
             type="button"
             onClick={() => allCondensed && handleToggleAllCondensed()}
             aria-label="Card view"
             title="Card view (expanded)"
-            className={cn(
-              CONBLOCK,
-              'inline-flex h-10 w-10 shrink-0 items-center justify-center transition-colors',
-              !allCondensed
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
+            className={tabButtonClasses(!allCondensed, 'h-10 w-10 shrink-0 p-0')}
           >
             <LayoutGrid className="h-4 w-4 stroke-[2.5]" />
           </button>
@@ -206,13 +191,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
             onClick={() => !allCondensed && handleToggleAllCondensed()}
             aria-label="Compact view"
             title="Compact view (condensed)"
-            className={cn(
-              CONBLOCK,
-              'inline-flex h-10 w-10 shrink-0 items-center justify-center transition-colors',
-              allCondensed
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-700 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
+            className={tabButtonClasses(allCondensed, 'h-10 w-10 shrink-0 p-0')}
           >
             <Rows3 className="h-4 w-4 stroke-[2.5]" />
           </button>

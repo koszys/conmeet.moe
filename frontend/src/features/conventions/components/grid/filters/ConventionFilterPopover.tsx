@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Calendar, Check, Globe, RotateCcw, SlidersHorizontal, X } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY, tabButtonClasses } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import type { ConventionFilters } from './ConventionFilterBar';
 
@@ -114,10 +114,7 @@ export function ConventionFilterPopover({
         <button
           type="button"
           onClick={onClose}
-          className={cn(
-            CONBLOCK,
-            'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop shrink-0 p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-          )}
+          className={cn(CONBLOCK_SECONDARY, 'shrink-0 p-1')}
           title="Close filters"
           aria-label="Close filters"
         >
@@ -138,11 +135,9 @@ export function ConventionFilterPopover({
             <button
               type="button"
               onClick={() => onTabChange('upcoming')}
-              className={cn(
-                'border-ink flex w-full cursor-pointer items-center justify-between border-2 px-3 py-2 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
-                tab === 'upcoming'
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+              className={tabButtonClasses(
+                tab === 'upcoming',
+                'flex w-full justify-between px-3 py-2 text-xs'
               )}
             >
               <span>Upcoming</span>
@@ -155,11 +150,9 @@ export function ConventionFilterPopover({
             <button
               type="button"
               onClick={() => onTabChange('recently-ended')}
-              className={cn(
-                'border-ink flex w-full cursor-pointer items-center justify-between border-2 px-3 py-2 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
-                tab === 'recently-ended'
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+              className={tabButtonClasses(
+                tab === 'recently-ended',
+                'flex w-full justify-between px-3 py-2 text-xs'
               )}
             >
               <span>Recently Ended</span>
@@ -172,11 +165,9 @@ export function ConventionFilterPopover({
             <button
               type="button"
               onClick={() => onTabChange('past')}
-              className={cn(
-                'border-ink flex w-full cursor-pointer items-center justify-between border-2 px-3 py-2 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
-                tab === 'past'
-                  ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+              className={tabButtonClasses(
+                tab === 'past',
+                'flex w-full justify-between px-3 py-2 text-xs'
               )}
             >
               <span>Past Cons</span>
@@ -258,8 +249,8 @@ export function ConventionFilterPopover({
             title="Reset filters"
             aria-label="Reset filters"
             className={cn(
-              CONBLOCK,
-              'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex h-8 shrink-0 items-center gap-1 bg-white px-2 text-[11px] font-bold whitespace-nowrap uppercase hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              CONBLOCK_SECONDARY,
+              'inline-flex h-8 shrink-0 items-center gap-1 px-2 text-[11px] font-bold whitespace-nowrap uppercase'
             )}
           >
             <RotateCcw className="h-3 w-3" />

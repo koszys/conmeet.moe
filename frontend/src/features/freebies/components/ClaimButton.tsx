@@ -2,7 +2,7 @@
 
 import { Check, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { CONBLOCK } from '@/shared/components/ui';
+import { CONBLOCK, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useToggleClaimFreebie } from '../api/mutations';
 import type { Freebie } from '../types';
@@ -109,8 +109,8 @@ export function ClaimButton({
         variant === 'responsive' &&
           'inline-flex h-8 w-8 shrink-0 items-center justify-center sm:h-auto sm:w-auto sm:flex-1 sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:text-xs',
         activeIsClaimed
-          ? 'bg-accent text-white hover:brightness-110 dark:text-zinc-950'
-          : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white',
+          ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+          : CONBLOCK_SECONDARY,
         isPending && 'cursor-not-allowed opacity-60',
         className
       )}

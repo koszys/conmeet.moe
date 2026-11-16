@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { CONBLOCK } from './Button';
+import { tabButtonClasses } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface FilterTabProps extends Omit<React.ComponentProps<'button'>, 'children'> {
@@ -39,13 +39,10 @@ export function FilterTab({
       aria-label={ariaLabel}
       aria-pressed={isActive}
       className={cn(
-        CONBLOCK,
-        'group inline-flex shrink-0 items-center justify-center gap-1.5 font-bold whitespace-nowrap uppercase transition-all select-none',
+        tabButtonClasses(isActive),
+        'group shrink-0 gap-1.5 whitespace-nowrap',
         variant === 'tab' && 'h-10 px-2.5 text-center text-xs sm:px-4',
         variant === 'pill' && 'px-2 py-1 text-xs sm:px-2.5',
-        isActive
-          ? 'bg-accent text-white dark:text-zinc-950'
-          : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800',
         className
       )}
       {...props}

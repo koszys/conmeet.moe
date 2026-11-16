@@ -1,6 +1,6 @@
 'use client';
 
-import { CONBLOCK } from '@/shared/components/ui';
+import { tabButtonClasses } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionsTimeTabsProps {
@@ -13,6 +13,9 @@ export interface ConventionsTimeTabsProps {
   };
   className?: string;
 }
+
+const TAB_SIZE_CLASSES =
+  'w-full px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider';
 
 export function ConventionsTimeTabs({
   tab,
@@ -27,13 +30,7 @@ export function ConventionsTimeTabs({
       <button
         type="button"
         onClick={() => onTabChange('upcoming')}
-        className={cn(
-          CONBLOCK,
-          'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
-          tab === 'upcoming'
-            ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-            : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-        )}
+        className={tabButtonClasses(tab === 'upcoming', TAB_SIZE_CLASSES)}
       >
         <span>Upcoming ({counts.upcoming})</span>
       </button>
@@ -41,13 +38,7 @@ export function ConventionsTimeTabs({
       <button
         type="button"
         onClick={() => onTabChange('past')}
-        className={cn(
-          CONBLOCK,
-          'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
-          tab === 'past'
-            ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-            : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-        )}
+        className={tabButtonClasses(tab === 'past', TAB_SIZE_CLASSES)}
       >
         <span className="hidden sm:inline">Past Cons</span>
         <span className="sm:hidden">Past</span>
@@ -57,13 +48,7 @@ export function ConventionsTimeTabs({
       <button
         type="button"
         onClick={() => onTabChange('recently-ended')}
-        className={cn(
-          CONBLOCK,
-          'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
-          tab === 'recently-ended'
-            ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-            : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-        )}
+        className={tabButtonClasses(tab === 'recently-ended', TAB_SIZE_CLASSES)}
       >
         <span className="hidden sm:inline">Recently Ended</span>
         <span className="sm:hidden">Recent</span>

@@ -1,7 +1,7 @@
 'use client';
 
 import { Bookmark } from 'lucide-react';
-import { CONBLOCK } from './Button';
+import { CONBLOCK_ACCENT, CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface BookmarkButtonProps {
@@ -38,11 +38,8 @@ export function BookmarkButton({
       title={title || defaultTitle}
       aria-label={ariaLabel || defaultAria}
       className={cn(
-        CONBLOCK,
         'font-bold uppercase transition-all',
-        isSaved
-          ? 'bg-accent-pop text-white hover:brightness-110'
-          : 'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white',
+        isSaved ? CONBLOCK_ACCENT : CONBLOCK_SECONDARY,
         variant === 'icon' && 'inline-flex h-8 w-8 shrink-0 items-center justify-center',
         variant === 'button' && 'inline-flex items-center gap-2 px-5 py-2.5 text-xs',
         variant === 'responsive' &&

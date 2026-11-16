@@ -2,7 +2,7 @@
 
 import { Check, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { CONBLOCK } from '@/shared/components/ui';
+import { CONBLOCK, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useToggleGoingMeetup } from '../api';
 import type { Meetup } from '../types';
@@ -111,8 +111,8 @@ export function GoingButton({
         size === 'md' && 'h-10 gap-2 px-4 py-2 text-xs sm:px-5',
         size === 'responsive' && 'h-8 gap-1.5 px-2.5 text-xs sm:h-10 sm:gap-2 sm:px-4',
         activeIsGoing
-          ? 'bg-accent text-white hover:brightness-105 active:brightness-95 dark:text-zinc-950'
-          : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100 hover:text-black dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white',
+          ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+          : CONBLOCK_SECONDARY,
         isPending && 'cursor-not-allowed opacity-60',
         className
       )}

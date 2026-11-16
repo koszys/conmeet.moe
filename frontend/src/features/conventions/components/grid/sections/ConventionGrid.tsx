@@ -7,7 +7,7 @@ import { useConventions } from '../../../data/api';
 import { getConventionPhase, isPast, isRecentlyEnded } from '../../../utils/dates';
 import type { Convention, ConventionPhase } from '../../../types';
 import { parseDate } from '@/shared/lib/dates';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { CONBLOCK_PRIMARY, tabButtonClasses } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { AllConsButton, FeaturedConsButton } from '../../links';
@@ -132,12 +132,9 @@ export function ConventionGrid({
           <button
             type="button"
             onClick={() => setTab('upcoming')}
-            className={cn(
-              CONBLOCK,
-              'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
-              tab === 'upcoming'
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            className={tabButtonClasses(
+              tab === 'upcoming',
+              'w-full px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider'
             )}
           >
             Upcoming
@@ -145,12 +142,9 @@ export function ConventionGrid({
           <button
             type="button"
             onClick={() => setTab('past')}
-            className={cn(
-              CONBLOCK,
-              'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
-              tab === 'past'
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            className={tabButtonClasses(
+              tab === 'past',
+              'w-full px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider'
             )}
           >
             <span className="hidden sm:inline">Past Cons</span>
@@ -159,12 +153,9 @@ export function ConventionGrid({
           <button
             type="button"
             onClick={() => setTab('recently-ended')}
-            className={cn(
-              CONBLOCK,
-              'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
-              tab === 'recently-ended'
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+            className={tabButtonClasses(
+              tab === 'recently-ended',
+              'w-full px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider'
             )}
           >
             <span className="hidden sm:inline">Recently Ended</span>

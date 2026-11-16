@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Loader2, Sparkles } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from './Button';
+import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface FormActionsProps {
@@ -45,8 +45,8 @@ export function FormActions({
         <Link
           href={cancelHref}
           className={cn(
-            CONBLOCK,
-            'bg-white px-5 py-2.5 text-xs font-bold tracking-wider uppercase dark:bg-zinc-800'
+            CONBLOCK_SECONDARY,
+            'px-5 py-2.5 text-xs font-bold tracking-wider uppercase'
           )}
         >
           {cancelLabel}
@@ -57,8 +57,8 @@ export function FormActions({
           onClick={onCancel}
           disabled={isSubmitting}
           className={cn(
-            CONBLOCK,
-            'bg-white px-5 py-2.5 text-xs font-bold tracking-wider uppercase disabled:opacity-50 dark:bg-zinc-800'
+            CONBLOCK_SECONDARY,
+            'px-5 py-2.5 text-xs font-bold tracking-wider uppercase disabled:opacity-50'
           )}
         >
           {cancelLabel}

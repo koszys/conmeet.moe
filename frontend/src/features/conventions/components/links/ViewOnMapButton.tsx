@@ -27,7 +27,7 @@ export function ViewOnMapButton({
         title={title}
         className={cn(
           CONBLOCK,
-          'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-8 w-8 shrink-0 items-center justify-center border-2 bg-white p-0 text-xs font-bold tracking-widest uppercase transition-all @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-3 dark:bg-zinc-900 dark:text-zinc-100',
+          'text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex h-8 w-8 shrink-0 items-center justify-center border-2 bg-white p-0 text-xs font-bold tracking-widest uppercase transition-all @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-3 dark:bg-zinc-900 dark:text-zinc-100',
           className
         )}
       >
@@ -45,7 +45,7 @@ export function ViewOnMapButton({
         rel="noopener noreferrer"
         className={cn(
           CONBLOCK,
-          'text-ink hover:border-accent-pop hover:text-accent-pop inline-flex items-center justify-center gap-2 bg-white px-4 py-2.5 text-xs font-bold tracking-widest uppercase dark:bg-zinc-900 dark:text-zinc-100',
+          'text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex items-center justify-center gap-2 bg-white px-4 py-2.5 text-xs font-bold tracking-widest uppercase dark:bg-zinc-900 dark:text-zinc-100',
           className
         )}
       >
@@ -63,7 +63,7 @@ export function ViewOnMapButton({
       aria-label={title}
       title={title}
       className={cn(
-        'border-ink text-ink hover:border-accent-pop hover:text-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-100 hover:shadow-none dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800',
+        'border-ink text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-100 hover:shadow-none dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800',
         className
       )}
     >

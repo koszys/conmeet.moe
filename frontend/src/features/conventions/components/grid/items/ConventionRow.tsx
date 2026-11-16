@@ -78,7 +78,7 @@ export function ConventionRow({
               href={`/conventions/${convention.slug}`}
               aria-label={`View ${convention.name} page`}
               title="View convention"
-              className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop inline-flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:bg-zinc-900 dark:text-zinc-100"
+              className="border-ink text-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex h-9 w-9 cursor-pointer items-center justify-center border-2 bg-white shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:bg-zinc-900 dark:text-zinc-100"
             >
               <ArrowUpRight className="h-4 w-4" />
             </Link>

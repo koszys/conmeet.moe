@@ -137,7 +137,7 @@ export function ConventionGrid({
               'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
               tab === 'upcoming'
                 ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             Upcoming
@@ -150,7 +150,7 @@ export function ConventionGrid({
               'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
               tab === 'past'
                 ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <span className="hidden sm:inline">Past Cons</span>
@@ -164,7 +164,7 @@ export function ConventionGrid({
               'font-display flex w-full items-center justify-center px-0.5 py-1 text-[8.5px] tracking-tighter whitespace-nowrap uppercase min-[350px]:px-1.5 min-[350px]:text-[9.5px] min-[350px]:tracking-tight sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:tracking-wider',
               tab === 'recently-ended'
                 ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
             )}
           >
             <span className="hidden sm:inline">Recently Ended</span>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useFreebies } from '@/features/freebies';
 import { useMeetups } from '@/features/meetups';
@@ -158,8 +158,8 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
             title={section.secondaryAction.label}
             aria-label={section.secondaryAction.label}
             className={cn(
-              CONBLOCK,
-              'inline-flex items-center justify-center gap-1.5 bg-white px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap text-zinc-900 uppercase hover:bg-zinc-50 @min-[440px]:px-3.5 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700'
+              CONBLOCK_SECONDARY,
+              'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase @min-[440px]:px-3.5'
             )}
           >
             {section.secondaryAction.icon && (

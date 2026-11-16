@@ -164,7 +164,7 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
                 setSelectedVendor(e.target.value ? Number(e.target.value) : undefined)
               }
               aria-label="Filter by vendor"
-              className="border-ink h-10 max-w-[150px] shrink-0 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none sm:max-w-[180px] dark:bg-zinc-900"
+              className="border-ink hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop h-10 max-w-[150px] shrink-0 cursor-pointer border-2 bg-white px-3 text-xs font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none focus:outline-none sm:max-w-[180px] dark:bg-zinc-900 dark:text-zinc-100"
             >
               <option value="">All Vendors ({vendors.length})</option>
               {vendors.map((v) => (

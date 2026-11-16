@@ -273,7 +273,7 @@ export function ConventionRequestForm() {
                   type="date"
                   {...register('starts_at')}
                   className={cn(
-                    'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                    'border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white px-3 text-xs font-medium text-zinc-900 focus:outline-none sm:h-11 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100',
                     errors.starts_at && 'border-red-500 focus:border-red-500'
                   )}
                 />
@@ -298,7 +298,7 @@ export function ConventionRequestForm() {
                   type="date"
                   {...register('ends_at')}
                   className={cn(
-                    'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                    'border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white px-3 text-xs font-medium text-zinc-900 focus:outline-none sm:h-11 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100',
                     errors.ends_at && 'border-red-500 focus:border-red-500'
                   )}
                 />

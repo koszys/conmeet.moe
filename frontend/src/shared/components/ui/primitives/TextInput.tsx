@@ -54,11 +54,11 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
         placeholder={placeholder}
         disabled={disabled}
         className={cn(
-          'border-ink focus:ring-accent w-full border-2 bg-white font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300',
+          'border-ink focus:border-accent-pop w-full border-2 bg-white font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300',
           sizeClasses,
           Icon && '!pl-9',
           showClear ? 'pr-9' : 'pr-2.5 sm:pr-3',
-          error && 'border-red-500 focus:ring-red-500 dark:border-red-500',
+          error ? 'focus:border-accent-pop border-red-500 dark:border-red-500' : '',
           disabled && 'cursor-not-allowed opacity-60',
           className
         )}

@@ -31,7 +31,7 @@ export function SearchInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'border-ink focus:ring-accent h-9.5 w-full border-2 bg-white py-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-10 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300',
+          'border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white py-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:outline-none sm:h-10 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300',
           hasRightAction ? 'pr-9 pl-9' : 'pr-3 pl-9',
           className
         )}

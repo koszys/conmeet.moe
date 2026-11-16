@@ -482,7 +482,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                     value={startTime}
                     onChange={(e) => handleStartTimeChange(e.target.value)}
                     className={cn(
-                      'border-ink w-full border-2 bg-white py-2.5 pr-3.5 pl-9 text-sm font-medium shadow-[2px_2px_0_var(--ink)] transition-colors focus:outline-none dark:bg-zinc-900',
+                      'border-ink focus:border-accent-pop w-full border-2 bg-white py-2.5 pr-3.5 pl-9 text-sm font-medium shadow-[2px_2px_0_var(--ink)] transition-colors focus:outline-none dark:bg-zinc-900',
                       errors.time && 'border-red-500 bg-red-50 dark:bg-red-950/30'
                     )}
                   />
@@ -509,7 +509,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                       if (errors.time) setErrors((prev) => ({ ...prev, time: '' }));
                     }}
                     className={cn(
-                      'border-ink w-full border-2 bg-white py-2.5 pr-3.5 pl-9 text-sm font-medium shadow-[2px_2px_0_var(--ink)] transition-colors focus:outline-none dark:bg-zinc-900',
+                      'border-ink focus:border-accent-pop w-full border-2 bg-white py-2.5 pr-3.5 pl-9 text-sm font-medium shadow-[2px_2px_0_var(--ink)] transition-colors focus:outline-none dark:bg-zinc-900',
                       errors.time && 'border-red-500 bg-red-50 dark:bg-red-950/30'
                     )}
                   />

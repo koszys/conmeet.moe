@@ -98,12 +98,12 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
       <div>
         {/* Card Header: Title + Icon */}
         <div className="border-ink flex items-center justify-between border-b-2 pb-4">
-          <div className="flex items-center gap-3">
+          <Link href={section.primaryAction.href} className="group/header flex items-center gap-3">
             <div className="border-ink bg-accent-soft/25 flex h-11 w-11 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
               <Icon className="text-ink h-5 w-5 dark:text-zinc-100" />
             </div>
             <div>
-              <h3 className="font-display text-base tracking-wide uppercase sm:text-lg">
+              <h3 className="font-display group-hover/header:text-accent-pop text-base tracking-wide uppercase transition-colors sm:text-lg dark:group-hover/header:text-[#ff5ea9]">
                 {section.title}
               </h3>
               {section.activityCountLabel && (
@@ -112,7 +112,7 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
                 </p>
               )}
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Activity Items List or Empty State */}
@@ -137,7 +137,7 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
             {section.emptyState?.actionLabel && section.emptyState?.actionHref && (
               <Link
                 href={section.emptyState.actionHref}
-                className="text-accent hover:text-accent-pop mt-2 inline-flex items-center gap-1 text-xs font-bold uppercase"
+                className="text-accent hover:text-accent-pop mt-2 inline-flex items-center gap-1 text-xs font-bold uppercase transition-colors dark:hover:text-[#ff5ea9]"
               >
                 {section.emptyState.actionLabel}
                 <ArrowRight className="h-3 w-3" />
@@ -224,7 +224,7 @@ function ActivityRow({ item }: { item: SectionActivityItem }) {
               {item.badge.text}
             </span>
           )}
-          <h4 className="group-hover/row:text-accent text-xs font-medium text-zinc-900 transition-colors sm:text-sm dark:text-zinc-100">
+          <h4 className="group-hover/row:text-accent-pop text-xs font-medium text-zinc-900 transition-colors sm:text-sm dark:text-zinc-100 dark:group-hover/row:text-[#ff5ea9]">
             {item.title}
           </h4>
         </div>

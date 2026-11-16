@@ -37,7 +37,7 @@ export function ConventionSections({
             subtitle: f.vendor.name,
             meta: f.requirements || undefined,
             badge: f.location ? { text: f.location, variant: 'accent' as const } : undefined,
-            href: `/conventions/${convention.slug}/freebies`,
+            href: `/conventions/${convention.slug}/freebies?freebie=${f.id}`,
           })),
         };
       }

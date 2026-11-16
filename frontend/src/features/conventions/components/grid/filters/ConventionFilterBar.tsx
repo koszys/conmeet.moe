@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
-import { CONBLOCK } from '@/shared/components/ui';
+import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { ConventionFilterPopover } from './ConventionFilterPopover';
 
@@ -91,11 +91,8 @@ export function ConventionFilterBar({
             aria-label="Filters"
             aria-expanded={isPopoverOpen}
             className={cn(
-              CONBLOCK,
-              'inline-flex h-10 shrink-0 cursor-pointer items-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:px-4',
-              isPopoverOpen || activeFiltersCount > 0
-                ? 'bg-accent text-white dark:text-zinc-950'
-                : 'bg-white text-zinc-800 hover:bg-zinc-50 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+              'inline-flex h-10 shrink-0 cursor-pointer items-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase sm:px-4',
+              isPopoverOpen || activeFiltersCount > 0 ? CONBLOCK_PRIMARY : CONBLOCK_SECONDARY
             )}
           >
             <SlidersHorizontal className="h-3.5 w-3.5 stroke-[2.5]" />
@@ -140,8 +137,8 @@ export function ConventionFilterBar({
             title="Reset filters"
             aria-label="Reset filters"
             className={cn(
-              CONBLOCK,
-              'inline-flex h-6.5 cursor-pointer items-center gap-1 bg-white px-2 text-[11px] font-bold whitespace-nowrap text-zinc-800 uppercase hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              CONBLOCK_SECONDARY,
+              'inline-flex h-6.5 cursor-pointer items-center gap-1 px-2 text-[11px] font-bold whitespace-nowrap uppercase'
             )}
           >
             <RotateCcw className="h-3 w-3" />

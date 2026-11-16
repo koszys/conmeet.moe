@@ -64,7 +64,7 @@ export function FreebieBoard({ conventionSlug, conventionName }: FreebieBoardPro
         <FreebieDetailModal
           freebie={state.selectedFreebie}
           isOpen={Boolean(state.selectedFreebie)}
-          onClose={() => state.setSelectedFreebieId(null)}
+          onClose={state.handleCloseDetail}
         />
       )}
 

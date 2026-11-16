@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
+import { CONBLOCK_PRIMARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export function ScrollToTopButton() {
@@ -68,15 +69,13 @@ export function ScrollToTopButton() {
       aria-label="Scroll back to top"
       style={footerOffset > 0 ? { bottom: `${footerOffset}px` } : undefined}
       className={cn(
-        'group border-ink fixed right-5 z-40 sm:right-6',
+        'group fixed right-5 z-40 sm:right-6',
         footerOffset === 0 && 'bottom-5 sm:bottom-6',
-        'inline-flex cursor-pointer items-center gap-1.5 border-2 px-3 py-2 text-xs font-bold uppercase select-none',
-        'bg-accent hover:bg-accent-pop dark:hover:bg-accent-pop text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white',
-        'hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1.5px_1.5px_0_var(--ink)] active:translate-x-1 active:translate-y-1 active:shadow-none',
+        CONBLOCK_PRIMARY,
+        'inline-flex items-center gap-1.5 px-3 py-2 select-none',
         'focus-visible:ring-accent focus-visible:ring-2 focus-visible:outline-none',
-        'transition-all duration-300 ease-in-out',
         isVisible
-          ? 'pointer-events-auto translate-y-0 opacity-100'
+          ? 'pointer-events-auto opacity-100'
           : 'pointer-events-none translate-y-3 opacity-0'
       )}
     >

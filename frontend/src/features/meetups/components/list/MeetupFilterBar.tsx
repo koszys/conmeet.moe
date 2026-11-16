@@ -122,12 +122,7 @@ export function MeetupFilterBar({
           }
           icon={
             <Users
-              className={cn(
-                'h-4 w-4 shrink-0',
-                activeTab === 'all'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
-              )}
+              className={cn('h-4 w-4 shrink-0', activeTab === 'all' ? 'stroke-[2.5]' : 'stroke-2')}
             />
           }
         />
@@ -142,9 +137,7 @@ export function MeetupFilterBar({
             <Sparkles
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'official'
-                  ? 'fill-current stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'official' ? 'fill-current stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
@@ -164,9 +157,7 @@ export function MeetupFilterBar({
             <HeartHandshake
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'community'
-                  ? 'stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'community' ? 'stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
@@ -182,38 +173,35 @@ export function MeetupFilterBar({
             <Bookmark
               className={cn(
                 'h-4 w-4 shrink-0',
-                activeTab === 'saved'
-                  ? 'fill-current stroke-[2.5]'
-                  : 'stroke-2 text-zinc-800 group-hover:text-black dark:text-white'
+                activeTab === 'saved' ? 'fill-current stroke-[2.5]' : 'stroke-2'
               )}
             />
           }
         />
       </div>
 
-      {/* Row 2: Search & Day Filter - sized to match tabs above it, wraps to own row when needed, shrinks on mobile */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
-        {/* Search Input - matches tabs width, wraps to own row when needed, shrinks on mobile */}
-        <div
-          style={tabsWidth ? { width: `${tabsWidth}px` } : undefined}
-          className="relative w-full max-w-full shrink-0"
-        >
-          <SearchInput
-            value={searchQuery}
-            onChange={onSearchChange}
-            onClear={() => onSearchChange('')}
-            placeholder="Search by cosplay, character, or room..."
-          />
-        </div>
+      {/* Row 2: Search Input */}
+      <div
+        style={tabsWidth ? { width: `${tabsWidth}px` } : undefined}
+        className="relative w-full max-w-full"
+      >
+        <SearchInput
+          value={searchQuery}
+          onChange={onSearchChange}
+          onClear={() => onSearchChange('')}
+          placeholder="Search by cosplay, character, or room..."
+        />
+      </div>
 
-        {/* Right side cluster: Date Filter Pills + Refresh Button */}
-        <div className="flex w-full max-w-full min-w-0 items-center justify-between gap-2.5 sm:w-auto sm:justify-end sm:gap-3">
+      {/* Row 3: Days Filter Pills & Refresh Button */}
+      {(conventionDays.length > 0 || onRefresh) && (
+        <div className="flex w-full max-w-full min-w-0 items-center justify-between gap-2.5 sm:gap-3">
           {/* Date Filter Pills */}
           {conventionDays.length > 0 && (
             <div
               ref={datePillsRef}
               style={datePillsMaskStyle}
-              className="flex max-w-full min-w-0 flex-1 scrollbar-none items-center gap-1.5 overflow-x-auto pr-2 pb-0.5 sm:w-auto sm:flex-initial sm:gap-2"
+              className="flex max-w-full min-w-0 flex-1 scrollbar-none items-center gap-1.5 overflow-x-auto pr-2 pb-0.5 sm:gap-2"
             >
               <span className="font-display inline-flex shrink-0 items-center gap-1 text-[11px] font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-300">
                 <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
@@ -239,12 +227,14 @@ export function MeetupFilterBar({
             </div>
           )}
 
-          {/* Refresh Button - positioned to the right of Day */}
+          {/* Refresh Button - positioned on the far right */}
           {onRefresh && (
-            <RefreshButton onRefresh={onRefresh} status={refreshStatus} entityName="meetups" />
+            <div className="ml-auto shrink-0">
+              <RefreshButton onRefresh={onRefresh} status={refreshStatus} entityName="meetups" />
+            </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

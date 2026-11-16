@@ -1,5 +1,7 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { FreebieBoard } from '@/features/freebies';
+import { MikuLoader } from '@/shared/components/miku';
 
 export const metadata: Metadata = {
   title: 'Freebies',
@@ -15,7 +17,15 @@ export default async function ConventionFreebiesPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <FreebieBoard conventionSlug={slug} />
+      <Suspense
+        fallback={
+          <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-12">
+            <MikuLoader message="Scanning for freebies..." size="lg" />
+          </div>
+        }
+      >
+        <FreebieBoard conventionSlug={slug} />
+      </Suspense>
     </div>
   );
 }

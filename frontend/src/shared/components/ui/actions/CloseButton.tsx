@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { CONBLOCK } from './Button';
+import { CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface CloseButtonProps extends Omit<React.ComponentProps<'button'>, 'children'> {
@@ -51,8 +51,8 @@ export function CloseButton({
       aria-label={ariaLabel}
       title={title}
       className={cn(
-        CONBLOCK,
-        'flex shrink-0 cursor-pointer items-center justify-center bg-white text-zinc-600 hover:bg-zinc-100 hover:text-black dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-white',
+        CONBLOCK_SECONDARY,
+        'flex shrink-0 items-center justify-center',
         SIZE_MAP[size],
         className
       )}

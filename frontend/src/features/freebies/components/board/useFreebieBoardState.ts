@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth';
 import { useDebounce } from '@/shared/hooks';
@@ -12,6 +12,7 @@ import type { BoardRefreshStatus, FilterTab, FreebieBoardState } from './types';
 export function useFreebieBoardState(conventionSlug: string): FreebieBoardState {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -24,7 +25,33 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
   const [isSavedCollapsed, setIsSavedCollapsed] = useState(false);
   const [isToClaimCollapsed, setIsToClaimCollapsed] = useState(false);
   const [isClaimedCollapsed, setIsClaimedCollapsed] = useState(false);
-  const [selectedFreebieId, setSelectedFreebieId] = useState<number | null>(null);
+
+  const freebieQuery = searchParams.get('freebie');
+  const initialFreebieId = freebieQuery ? Number(freebieQuery) : null;
+  const [selectedFreebieId, setSelectedFreebieId] = useState<number | null>(
+    initialFreebieId && !Number.isNaN(initialFreebieId) ? initialFreebieId : null
+  );
+
+  // Sync selectedFreebieId if query param changes dynamically
+  useEffect(() => {
+    if (freebieQuery) {
+      const parsedId = Number(freebieQuery);
+      if (!Number.isNaN(parsedId)) {
+        setSelectedFreebieId(parsedId);
+      }
+    }
+  }, [freebieQuery]);
+
+  function handleCloseDetail() {
+    setSelectedFreebieId(null);
+    if (searchParams.has('freebie')) {
+      const nextParams = new URLSearchParams(searchParams.toString());
+      nextParams.delete('freebie');
+      const nextQuery = nextParams.toString();
+      router.replace(`${pathname}${nextQuery ? `?${nextQuery}` : ''}`, { scroll: false });
+    }
+  }
+
   const [editingFreebie, setEditingFreebie] = useState<Freebie | null>(null);
   const [deletingFreebie, setDeletingFreebie] = useState<Freebie | null>(null);
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -201,6 +228,7 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     selectedFreebieId,
     setSelectedFreebieId,
     selectedFreebie,
+    handleCloseDetail,
     editingFreebie,
     setEditingFreebie,
     deletingFreebie,

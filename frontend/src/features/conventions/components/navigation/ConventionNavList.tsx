@@ -47,7 +47,7 @@ export function ConventionNavList({ variant, slug, onClose }: ConventionNavListP
                 'border-ink flex h-9 w-9 cursor-pointer items-center justify-center border-2 shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none',
                 active
                   ? 'bg-accent text-white dark:text-zinc-950'
-                  : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
+                  : 'hover:border-accent-pop hover:text-accent-pop bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:border-[#ff5ea9] dark:hover:bg-zinc-800 dark:hover:text-[#ff5ea9]'
               )}
             >
               <Icon className="h-4 w-4" />
@@ -81,7 +81,7 @@ export function ConventionNavList({ variant, slug, onClose }: ConventionNavListP
               'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
               active
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:text-accent-pop hover:bg-accent-pop/10 dark:hover:bg-accent-pop/20 text-zinc-700 dark:text-white dark:hover:text-[#ff5ea9]'
             )}
           >
             <Icon className="h-4 w-4" />

@@ -10,10 +10,26 @@ export const CONBLOCK_PRIMARY = cn(
   'bg-accent hover:bg-accent-pop cursor-pointer text-xs font-bold tracking-widest text-white uppercase dark:text-zinc-950 dark:hover:text-white'
 );
 
+export const CONBLOCK_SECONDARY = cn(
+  CONBLOCK,
+  'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+);
+
 export const CONBLOCK_ACCENT = cn(
   CONBLOCK,
   'bg-accent-pop hover:brightness-110 cursor-pointer text-xs font-bold tracking-widest text-white uppercase'
 );
+
+export function tabButtonClasses(isActive: boolean, extra?: string) {
+  return cn(
+    CONBLOCK,
+    'font-display inline-flex items-center justify-center font-bold tracking-wider uppercase transition-all select-none',
+    isActive
+      ? 'bg-accent hover:bg-accent-pop text-white shadow-[2px_2px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
+      : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800',
+    extra
+  );
+}
 
 const BUTTON_SIZES = {
   sm: 'h-8 w-8',
@@ -23,9 +39,10 @@ const BUTTON_SIZES = {
 
 export type ButtonSize = keyof typeof BUTTON_SIZES;
 
-const ICON_BUTTON =
-  CONBLOCK +
-  ' hover:border-accent-pop hover:text-accent-pop inline-flex cursor-pointer items-center justify-center rounded-none text-zinc-900 dark:text-white';
+const ICON_BUTTON = cn(
+  CONBLOCK,
+  'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop inline-flex cursor-pointer items-center justify-center rounded-none text-zinc-900 dark:text-white'
+);
 
 export interface IconButtonProps extends ComponentProps<'button'> {
   size?: ButtonSize;
@@ -52,7 +69,7 @@ export type ButtonSizeVariant = 'sm' | 'md' | 'lg';
 const BUTTON_VARIANT_MAP: Record<ButtonVariant, string> = {
   primary: 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white',
   secondary:
-    'bg-white hover:bg-zinc-100 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800',
+    'bg-white hover:bg-zinc-100 text-zinc-800 hover:border-accent-pop hover:text-accent-pop dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-accent-pop dark:hover:text-accent-pop dark:hover:bg-zinc-800',
   accent: 'bg-accent-pop hover:brightness-110 text-white',
   danger: 'bg-rose-600 hover:bg-rose-500 text-white',
   ghost:

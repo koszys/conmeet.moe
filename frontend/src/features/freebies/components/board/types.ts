@@ -54,6 +54,7 @@ export interface FreebieBoardState {
   selectedFreebieId: number | null;
   setSelectedFreebieId: (id: number | null) => void;
   selectedFreebie: Freebie | null;
+  handleCloseDetail: () => void;
   editingFreebie: Freebie | null;
   setEditingFreebie: (freebie: Freebie | null) => void;
   deletingFreebie: Freebie | null;

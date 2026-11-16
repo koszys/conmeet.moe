@@ -1,7 +1,7 @@
 'use client';
 
 import { List, Star } from 'lucide-react';
-import { CONBLOCK } from '@/shared/components/ui';
+import { tabButtonClasses } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConventionsViewSwitcherProps {
@@ -9,6 +9,9 @@ export interface ConventionsViewSwitcherProps {
   onViewChange: (view: 'featured' | 'list') => void;
   className?: string;
 }
+
+const SWITCHER_SIZE_CLASSES =
+  'w-full min-w-0 gap-1 px-1 py-1.5 text-[8.5px] tracking-tight whitespace-nowrap min-[360px]:gap-1 min-[360px]:px-1.5 min-[360px]:text-[9.5px] min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider';
 
 export function ConventionsViewSwitcher({
   view,
@@ -27,13 +30,7 @@ export function ConventionsViewSwitcher({
         type="button"
         onClick={() => onViewChange('featured')}
         aria-pressed={view === 'featured'}
-        className={cn(
-          CONBLOCK,
-          'font-display flex w-full min-w-0 items-center justify-center gap-1 px-1 py-1.5 text-[8.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[360px]:gap-1 min-[360px]:px-1.5 min-[360px]:text-[9.5px] min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
-          view === 'featured'
-            ? 'bg-accent text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-            : 'hover:bg-accent-pop dark:hover:bg-accent-pop bg-white text-zinc-800 hover:text-white dark:bg-zinc-900 dark:text-white dark:hover:text-white'
-        )}
+        className={tabButtonClasses(view === 'featured', SWITCHER_SIZE_CLASSES)}
       >
         <Star
           className={cn(
@@ -51,13 +48,7 @@ export function ConventionsViewSwitcher({
         type="button"
         onClick={() => onViewChange('list')}
         aria-pressed={view === 'list'}
-        className={cn(
-          CONBLOCK,
-          'font-display flex w-full min-w-0 items-center justify-center gap-1 px-1 py-1.5 text-[8.5px] tracking-tight whitespace-nowrap uppercase transition-all min-[360px]:gap-1 min-[360px]:px-1.5 min-[360px]:text-[9.5px] min-[380px]:gap-1.5 min-[380px]:px-2 min-[380px]:text-[10px] min-[440px]:text-[11px] min-[440px]:tracking-normal sm:w-auto sm:gap-2 sm:px-4 sm:py-2 sm:text-xs sm:tracking-wider',
-          view === 'list'
-            ? 'bg-accent text-white shadow-[3px_3px_0_var(--ink)] dark:text-zinc-950'
-            : 'hover:bg-accent-pop dark:hover:bg-accent-pop bg-white text-zinc-800 hover:text-white dark:bg-zinc-900 dark:text-white dark:hover:text-white'
-        )}
+        className={tabButtonClasses(view === 'list', SWITCHER_SIZE_CLASSES)}
       >
         <List className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
         <span className="min-w-0 truncate">All Cons</span>

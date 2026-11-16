@@ -7,7 +7,7 @@ import { ConventionCard } from '../items';
 import { ConventionRequest } from './ConventionRequest';
 import { useConventions } from '../../../data/api';
 import { isPast } from '../../../utils/dates';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { CONBLOCK_PRIMARY, tabButtonClasses } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { AllConsButton } from '../../links';
@@ -65,26 +65,14 @@ export function FeaturedConventionGrid({
           <button
             type="button"
             onClick={() => setTab('upcoming')}
-            className={cn(
-              CONBLOCK,
-              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-              tab === 'upcoming'
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
+            className={tabButtonClasses(tab === 'upcoming', 'px-3.5 py-1.5 text-xs')}
           >
             Upcoming
           </button>
           <button
             type="button"
             onClick={() => setTab('past')}
-            className={cn(
-              CONBLOCK,
-              'font-display px-3.5 py-1.5 text-xs tracking-wider uppercase',
-              tab === 'past'
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800'
-            )}
+            className={tabButtonClasses(tab === 'past', 'px-3.5 py-1.5 text-xs')}
           >
             Past Cons
           </button>

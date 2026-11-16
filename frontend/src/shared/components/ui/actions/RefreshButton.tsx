@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, RotateCw } from 'lucide-react';
+import { CONBLOCK, CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export type RefreshStatus = 'idle' | 'refreshing' | 'success';
@@ -64,12 +65,12 @@ export function RefreshButton({
       title={titleText}
       aria-label={titleText}
       className={cn(
-        'border-ink inline-flex shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] transition-all',
+        'inline-flex shrink-0 items-center justify-center font-bold tracking-wider uppercase transition-all',
+        isIdle && CONBLOCK_SECONDARY,
+        !isIdle && CONBLOCK,
         size === 'sm' ? 'h-8 px-2 text-xs' : 'h-10 text-sm',
         variant === 'icon' && (size === 'sm' ? 'w-8 px-0' : 'w-10 px-0'),
-        variant === 'button' && 'gap-2 px-3 font-bold tracking-wider uppercase',
-        isIdle &&
-          'cursor-pointer bg-white text-zinc-900 hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-zinc-50 hover:shadow-none dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800',
+        variant === 'button' && 'gap-2 px-3',
         isSuccess &&
           'cursor-default bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400',
         isRefreshing && 'cursor-not-allowed bg-white opacity-75 dark:bg-zinc-900',

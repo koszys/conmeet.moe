@@ -1,7 +1,7 @@
 'use client';
 
 import { Pencil } from 'lucide-react';
-import { CONBLOCK } from './Button';
+import { CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface EditButtonProps extends Omit<React.ComponentProps<'button'>, 'children'> {
@@ -32,9 +32,8 @@ export function EditButton({
       title={title}
       aria-label={ariaLabel}
       className={cn(
-        CONBLOCK,
+        CONBLOCK_SECONDARY,
         'font-bold uppercase transition-all select-none',
-        'bg-white text-zinc-800 hover:bg-zinc-100 hover:text-black dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white',
         variant === 'icon' && 'inline-flex h-8 w-8 shrink-0 items-center justify-center',
         variant === 'button' && 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs',
         variant === 'responsive' &&

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
 import { Modal } from './Modal';
-import { CONBLOCK } from '../actions/Button';
+import { CONBLOCK, CONBLOCK_SECONDARY } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface ConfirmDeleteModalProps {
@@ -95,7 +95,7 @@ export function ConfirmDeleteModal({
             type="button"
             onClick={onClose}
             disabled={pending}
-            className={cn(CONBLOCK, 'px-4 py-2 text-xs font-bold uppercase')}
+            className={cn(CONBLOCK_SECONDARY, 'px-4 py-2 text-xs font-bold uppercase')}
           >
             Cancel
           </button>

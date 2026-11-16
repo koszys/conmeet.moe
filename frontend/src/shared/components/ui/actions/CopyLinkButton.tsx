@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Check, Link as LinkIcon } from 'lucide-react';
+import { CONBLOCK, CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface CopyLinkButtonProps {
@@ -85,13 +86,16 @@ export function CopyLinkButton({
         title={tooltip}
         aria-label={tooltip}
         className={cn(
-          'border-ink inline-flex shrink-0 cursor-pointer items-center justify-center border-2 bg-white font-bold whitespace-nowrap uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-zinc-900',
+          'inline-flex shrink-0 cursor-pointer items-center justify-center font-bold whitespace-nowrap uppercase',
+          copied
+            ? cn(
+                CONBLOCK,
+                'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+              )
+            : CONBLOCK_SECONDARY,
           size === 'sm'
             ? 'h-8 w-8 p-0 text-xs sm:w-auto sm:gap-1.5 sm:px-3 @min-[680px]:w-auto @min-[680px]:gap-1.5 @min-[680px]:px-3'
             : 'h-10 w-10 p-0 text-xs sm:w-auto sm:gap-2 sm:px-4 @min-[680px]:w-auto @min-[680px]:gap-2 @min-[680px]:px-4',
-          copied
-            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-            : 'text-zinc-900 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-800',
           className
         )}
       >
@@ -125,11 +129,14 @@ export function CopyLinkButton({
         title={tooltip}
         aria-label={tooltip}
         className={cn(
-          'border-ink inline-flex shrink-0 cursor-pointer items-center justify-center border-2 bg-white shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-zinc-900',
-          size === 'sm' ? 'h-8 w-8' : 'h-10 w-10',
+          'inline-flex shrink-0 cursor-pointer items-center justify-center',
           copied
-            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-            : 'text-zinc-900 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-800',
+            ? cn(
+                CONBLOCK,
+                'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+              )
+            : CONBLOCK_SECONDARY,
+          size === 'sm' ? 'h-8 w-8' : 'h-10 w-10',
           className
         )}
       >
@@ -182,11 +189,14 @@ export function CopyLinkButton({
       title={tooltip}
       aria-label={tooltip}
       className={cn(
-        'border-ink inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 border-2 bg-white font-bold uppercase shadow-[2px_2px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-zinc-900',
-        size === 'sm' ? 'h-8 px-3 text-xs' : 'h-10 px-4 text-xs sm:px-4.5',
+        'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 font-bold uppercase',
         copied
-          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-          : 'text-zinc-900 hover:bg-zinc-50 dark:text-white dark:hover:bg-zinc-800',
+          ? cn(
+              CONBLOCK,
+              'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+            )
+          : CONBLOCK_SECONDARY,
+        size === 'sm' ? 'h-8 px-3 text-xs' : 'h-10 px-4 text-xs sm:px-4.5',
         className
       )}
     >

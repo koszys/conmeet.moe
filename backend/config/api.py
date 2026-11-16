@@ -15,10 +15,15 @@ from freebies.views import (
     VendorListView,
 )
 from meetups.views import (
+    AlbumDetailView,
+    AlbumFavoriteToggleView,
+    AlbumLikeToggleView,
     ConventionMeetupListCreateView,
+    MeetupAlbumListCreateView,
     MeetupDetailView,
     MeetupGoingToggleView,
     MeetupSaveToggleView,
+    PhotoLikeToggleView,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -42,6 +47,15 @@ urlpatterns = [
     path("meetups/<int:pk>/", MeetupDetailView.as_view(), name="meetup-detail"),
     path("meetups/<int:pk>/save/", MeetupSaveToggleView.as_view(), name="meetup-save"),
     path("meetups/<int:pk>/going/", MeetupGoingToggleView.as_view(), name="meetup-going"),
+    path(
+        "meetups/<int:meetup_id>/albums/",
+        MeetupAlbumListCreateView.as_view(),
+        name="meetup-album-list",
+    ),
+    path("albums/<int:pk>/", AlbumDetailView.as_view(), name="album-detail"),
+    path("albums/<int:pk>/like/", AlbumLikeToggleView.as_view(), name="album-like"),
+    path("albums/<int:pk>/favorite/", AlbumFavoriteToggleView.as_view(), name="album-favorite"),
+    path("photos/<int:pk>/like/", PhotoLikeToggleView.as_view(), name="photo-like"),
     path("freebies/", FreebieListCreateView.as_view(), name="freebie-list"),
     path("freebies/<int:pk>/", FreebieDetailView.as_view(), name="freebie-detail"),
     path("freebies/<int:pk>/save/", FreebieSaveToggleView.as_view(), name="freebie-save"),

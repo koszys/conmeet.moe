@@ -94,7 +94,7 @@ export function ConventionSidebar({
         <Link
           href="/conventions"
           onClick={onClose}
-          className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-[11px] font-bold tracking-widest uppercase"
+          className="text-accent hover:text-accent-pop inline-flex items-center gap-1.5 text-[11px] font-bold tracking-widest uppercase dark:hover:text-[#ff5ea9]"
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
           All conventions

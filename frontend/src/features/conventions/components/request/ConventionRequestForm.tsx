@@ -6,7 +6,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { CheckCircle2 } from 'lucide-react';
-import { CONBLOCK, CONBLOCK_PRIMARY, FormActions, ImageUpload } from '@/shared/components/ui';
+import {
+  CONBLOCK,
+  CONBLOCK_PRIMARY,
+  FormActions,
+  ImageUpload,
+  TextArea,
+  TextInput,
+} from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
 import { useSubmitConventionRequest } from '../../data/api';
@@ -87,6 +94,8 @@ export function ConventionRequestForm() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ConventionRequestFormValues>({
     resolver: zodResolver(conventionRequestSchema),
@@ -236,15 +245,14 @@ export function ConventionRequestForm() {
             <label htmlFor="name" className="font-display block text-xs tracking-wider uppercase">
               Convention Name <span className="text-accent-pop">*</span>
             </label>
-            <input
+            <TextInput
               id="name"
-              type="text"
               placeholder="e.g. AnimeNYC 2027"
               {...register('name')}
-              className={cn(
-                'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                errors.name && 'border-red-500 focus:border-red-500'
-              )}
+              value={watch('name') || ''}
+              onClear={() => setValue('name', '', { shouldValidate: true })}
+              error={Boolean(errors.name)}
+              wrapperClassName="mt-1.5"
             />
             {errors.name && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>
@@ -265,7 +273,7 @@ export function ConventionRequestForm() {
                   type="date"
                   {...register('starts_at')}
                   className={cn(
-                    'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                    'border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white px-3 text-xs font-medium text-zinc-900 focus:outline-none sm:h-11 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100',
                     errors.starts_at && 'border-red-500 focus:border-red-500'
                   )}
                 />
@@ -290,7 +298,7 @@ export function ConventionRequestForm() {
                   type="date"
                   {...register('ends_at')}
                   className={cn(
-                    'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
+                    'border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white px-3 text-xs font-medium text-zinc-900 focus:outline-none sm:h-11 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100',
                     errors.ends_at && 'border-red-500 focus:border-red-500'
                   )}
                 />
@@ -319,15 +327,14 @@ export function ConventionRequestForm() {
             >
               Venue Name <span className="text-accent-pop">*</span>
             </label>
-            <input
+            <TextInput
               id="venue_name"
-              type="text"
               placeholder="e.g. Javits Center"
               {...register('venue_name')}
-              className={cn(
-                'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                errors.venue_name && 'border-red-500 focus:border-red-500'
-              )}
+              value={watch('venue_name') || ''}
+              onClear={() => setValue('venue_name', '', { shouldValidate: true })}
+              error={Boolean(errors.venue_name)}
+              wrapperClassName="mt-1.5"
             />
             {errors.venue_name && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">
@@ -341,15 +348,14 @@ export function ConventionRequestForm() {
               <label htmlFor="city" className="font-display block text-xs tracking-wider uppercase">
                 City / State <span className="text-accent-pop">*</span>
               </label>
-              <input
+              <TextInput
                 id="city"
-                type="text"
                 placeholder="e.g. New York, NY"
                 {...register('city')}
-                className={cn(
-                  'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                  errors.city && 'border-red-500 focus:border-red-500'
-                )}
+                value={watch('city') || ''}
+                onClear={() => setValue('city', '', { shouldValidate: true })}
+                error={Boolean(errors.city)}
+                wrapperClassName="mt-1.5"
               />
               {errors.city && (
                 <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.city.message}</p>
@@ -363,15 +369,14 @@ export function ConventionRequestForm() {
               >
                 Country <span className="text-accent-pop">*</span>
               </label>
-              <input
+              <TextInput
                 id="country"
-                type="text"
                 placeholder="e.g. United States"
                 {...register('country')}
-                className={cn(
-                  'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                  errors.country && 'border-red-500 focus:border-red-500'
-                )}
+                value={watch('country') || ''}
+                onClear={() => setValue('country', '', { shouldValidate: true })}
+                error={Boolean(errors.country)}
+                wrapperClassName="mt-1.5"
               />
               {errors.country && (
                 <p className="mt-1 text-xs text-red-600 dark:text-red-400">
@@ -397,18 +402,16 @@ export function ConventionRequestForm() {
             >
               Official Website URL <span className="text-accent-pop">*</span>
             </label>
-            <div className="relative mt-1.5">
-              <input
-                id="website_url"
-                type="url"
-                placeholder="https://animenyc.com/"
-                {...register('website_url')}
-                className={cn(
-                  'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                  errors.website_url && 'border-red-500 focus:border-red-500'
-                )}
-              />
-            </div>
+            <TextInput
+              id="website_url"
+              type="url"
+              placeholder="https://animenyc.com/"
+              {...register('website_url')}
+              value={watch('website_url') || ''}
+              onClear={() => setValue('website_url', '', { shouldValidate: true })}
+              error={Boolean(errors.website_url)}
+              wrapperClassName="mt-1.5"
+            />
             {errors.website_url && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                 {errors.website_url.message}
@@ -423,18 +426,16 @@ export function ConventionRequestForm() {
             >
               Venue Map Link <span className="text-accent-pop">*</span>
             </label>
-            <div className="relative mt-1.5">
-              <input
-                id="map_url"
-                type="url"
-                placeholder="https://maps.google.com/?q=..."
-                {...register('map_url')}
-                className={cn(
-                  'border-ink w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                  errors.map_url && 'border-red-500 focus:border-red-500'
-                )}
-              />
-            </div>
+            <TextInput
+              id="map_url"
+              type="url"
+              placeholder="https://maps.google.com/?q=..."
+              {...register('map_url')}
+              value={watch('map_url') || ''}
+              onClear={() => setValue('map_url', '', { shouldValidate: true })}
+              error={Boolean(errors.map_url)}
+              wrapperClassName="mt-1.5"
+            />
             {errors.map_url && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                 {errors.map_url.message}
@@ -467,12 +468,13 @@ export function ConventionRequestForm() {
             <label htmlFor="notes" className="font-display block text-xs tracking-wider uppercase">
               Additional Info / Sources (Optional)
             </label>
-            <textarea
+            <TextArea
               id="notes"
               rows={3}
               placeholder="e.g. FanCons link, guest announcements, ticketing page..."
               {...register('notes')}
-              className="border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black"
+              error={Boolean(errors.notes)}
+              className="mt-1.5"
             />
             {errors.notes && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.notes.message}</p>
@@ -487,15 +489,15 @@ export function ConventionRequestForm() {
               >
                 Your Contact Email (Optional)
               </label>
-              <input
+              <TextInput
                 id="contact_email"
                 type="email"
                 placeholder="you@example.com"
                 {...register('contact_email')}
-                className={cn(
-                  'border-ink mt-1.5 w-full border-2 bg-zinc-50 px-3.5 py-2 text-sm shadow-[2px_2px_0_var(--ink)] transition-colors focus:bg-white focus:outline-none dark:bg-zinc-950 dark:focus:bg-black',
-                  errors.contact_email && 'border-red-500 focus:border-red-500'
-                )}
+                value={watch('contact_email') || ''}
+                onClear={() => setValue('contact_email', '', { shouldValidate: true })}
+                error={Boolean(errors.contact_email)}
+                wrapperClassName="mt-1.5"
               />
               <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
                 Optional: if we need to clarify details before publishing.

@@ -3,7 +3,13 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Loader2 } from 'lucide-react';
-import { CloseButton, CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import {
+  CloseButton,
+  CONBLOCK,
+  CONBLOCK_PRIMARY,
+  TextArea,
+  TextInput,
+} from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import type { Freebie } from '../../types';
@@ -256,14 +262,15 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 </label>
                 <CharCounter current={name.length} max={60} />
               </div>
-              <input
+              <TextInput
                 id="edit_item_name"
-                type="text"
                 maxLength={60}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                onClear={() => setName('')}
                 placeholder="e.g. Genshin Impact Acrylic Standee"
-                className="border-ink focus:ring-accent mt-1 h-9.5 w-full border-2 bg-white px-2.5 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:h-11 sm:px-3 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+                error={Boolean(errors.name)}
+                wrapperClassName="mt-1 sm:mt-1.5"
               />
               {errors.name ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -292,14 +299,15 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 </label>
                 <CharCounter current={requirements.length} max={200} />
               </div>
-              <textarea
+              <TextArea
                 id="edit_requirements"
                 rows={2}
                 maxLength={200}
                 value={requirements}
                 onChange={(e) => setRequirements(e.target.value)}
                 placeholder="e.g. Follow @HoYoverse on X and show badge"
-                className="border-ink focus:ring-accent mt-1 w-full border-2 bg-white p-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:p-2.5 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+                error={Boolean(errors.requirements)}
+                className="mt-1 sm:mt-1.5"
               />
               {errors.requirements ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -319,14 +327,15 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
                 </label>
                 <CharCounter current={description.length} max={300} />
               </div>
-              <textarea
+              <TextArea
                 id="edit_description"
                 rows={2}
                 maxLength={300}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. Drops start at 11:00 AM, limited to 100/day"
-                className="border-ink focus:ring-accent mt-1 w-full border-2 bg-white p-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:mt-1.5 sm:p-2.5 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+                error={Boolean(errors.description)}
+                className="mt-1 sm:mt-1.5"
               />
               {errors.description ? (
                 <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">

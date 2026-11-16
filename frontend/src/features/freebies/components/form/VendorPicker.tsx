@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, ChevronUp, Plus, RotateCw, X } from 'lucide-react';
+import { Check, ChevronUp, Plus, RotateCw } from 'lucide-react';
+import { TextInput } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { CharCounter } from './CharCounter';
 import { VendorSuggestDropdown } from './VendorSuggestDropdown';
@@ -67,9 +68,8 @@ export function VendorPicker({
       </div>
 
       <div className="relative mt-1.5" ref={inputWrapRef}>
-        <input
+        <TextInput
           id={id}
-          type="text"
           autoComplete="off"
           maxLength={50}
           value={value}
@@ -93,33 +93,22 @@ export function VendorPicker({
               }
             }
           }}
+          onClear={() => {
+            onChange('');
+            if (autoFilledFromVendor) {
+              if (onLocationAutoFill) {
+                onLocationAutoFill('');
+              }
+              setAutoFilledFromVendor(null);
+            }
+            setIsSuggestOpen(false);
+            setHighlightedIndex(-1);
+          }}
           onFocus={() => setIsSuggestOpen(true)}
           onKeyDown={handleVendorKeyDown}
           placeholder="e.g. HoYoverse, Good Smile Company, Artist Table A12"
-          className="border-ink focus:ring-accent h-9.5 w-full border-2 bg-white pr-9 pl-2.5 text-xs font-medium text-zinc-900 placeholder:text-zinc-500 focus:ring-2 focus:outline-none sm:h-11 sm:pl-3 sm:text-sm dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-300"
+          error={Boolean(error)}
         />
-
-        {/* Instant Clear Button */}
-        {value ? (
-          <button
-            type="button"
-            onClick={() => {
-              onChange('');
-              if (autoFilledFromVendor) {
-                if (onLocationAutoFill) {
-                  onLocationAutoFill('');
-                }
-                setAutoFilledFromVendor(null);
-              }
-              setIsSuggestOpen(false);
-              setHighlightedIndex(-1);
-            }}
-            className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
-            title="Clear vendor name"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        ) : null}
 
         {/* Auto-suggest Dropdown */}
         {isSuggestOpen && (

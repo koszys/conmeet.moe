@@ -281,7 +281,7 @@ export function HeaderSearch({
             placeholder="Search conventions..."
             aria-label="Search conventions"
             autoCapitalize="characters"
-            className="border-ink focus:border-accent-pop h-9 w-full border-2 bg-white pr-8 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
+            className="border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white pr-9 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
           />
           {query && (
             <button
@@ -290,10 +290,10 @@ export function HeaderSearch({
                 setQuery('');
                 setOpen(false);
               }}
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
               aria-label="Clear search"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
           )}
           {open && trimmed.length >= 2 && (
@@ -320,8 +320,21 @@ export function HeaderSearch({
             placeholder="Search conventions..."
             aria-label="Search conventions"
             autoCapitalize="characters"
-            className="border-ink focus:border-accent-pop w-40 border-2 bg-white py-2 pr-3 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none xl:w-52 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
+            className="border-ink focus:border-accent-pop h-9.5 w-40 border-2 bg-white pr-9 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none xl:w-52 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setOpen(false);
+              }}
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
           {open && trimmed.length >= 2 && (
             <div className="border-ink absolute right-0 z-50 mt-2 w-80 border-2 bg-white shadow-[3px_3px_0_var(--ink)] sm:w-96 dark:bg-[#373b3e]">
               {results.length > 0 ? list : empty}
@@ -373,8 +386,21 @@ export function HeaderSearch({
                   placeholder="Search conventions..."
                   aria-label="Search conventions"
                   autoCapitalize="characters"
-                  className="border-ink focus:border-accent-pop h-12 w-full border-2 bg-white py-2 pr-3 pl-10 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
+                  className="border-ink focus:border-accent-pop h-10 w-full border-2 bg-white pr-9 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
                 />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery('');
+                      setActiveIndex(0);
+                    }}
+                    className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
               {trimmed.length >= 2 && (results.length > 0 ? list : empty)}
             </div>
@@ -404,7 +430,7 @@ export function HeaderSearch({
                 placeholder="Search conventions..."
                 aria-label="Search conventions"
                 autoCapitalize="characters"
-                className="border-ink focus:border-accent-pop h-10 w-full border-2 bg-white py-2 pr-8 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
+                className="border-ink focus:border-accent-pop h-9.5 w-full border-2 bg-white pr-9 pl-9 text-xs tracking-widest text-zinc-900 uppercase placeholder:text-zinc-500 placeholder:normal-case focus:outline-none dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-300"
               />
               {query && (
                 <button
@@ -413,10 +439,10 @@ export function HeaderSearch({
                     setQuery('');
                     setActiveIndex(0);
                   }}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"
+                  className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
                   aria-label="Clear search"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-4 w-4" />
                 </button>
               )}
             </div>

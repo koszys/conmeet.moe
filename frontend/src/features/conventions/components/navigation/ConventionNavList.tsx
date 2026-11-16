@@ -81,7 +81,7 @@ export function ConventionNavList({ variant, slug, onClose }: ConventionNavListP
               'border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors',
               active
                 ? 'bg-accent text-white dark:text-zinc-950'
-                : 'text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-zinc-800'
+                : 'hover:text-accent-pop dark:hover:text-accent-pop hover:bg-accent-pop/10 dark:hover:bg-accent-pop/20 text-zinc-700 dark:text-white'
             )}
           >
             <Icon className="h-4 w-4" />

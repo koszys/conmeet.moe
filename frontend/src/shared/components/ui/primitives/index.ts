@@ -4,3 +4,4 @@ export * from './EmptyState';
 export * from './SearchInput';
 export * from './TextInput';
 export * from './TextArea';
+export * from './CharCounter';

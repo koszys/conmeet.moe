@@ -10,6 +10,7 @@ import {
   FormActions,
   ImageUpload,
   CONBLOCK,
+  CharCounter,
   TextArea,
   TextInput,
 } from '@/shared/components/ui';
@@ -170,6 +171,15 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
     }
   };
 
+  const handleBlur = (field: 'name' | 'location') => {
+    if (field === 'name' && !name.trim()) {
+      setErrors((prev) => ({ ...prev, name: 'Meetup title is required' }));
+    }
+    if (field === 'location' && !location.trim()) {
+      setErrors((prev) => ({ ...prev, location: 'Location or meetup spot is required' }));
+    }
+  };
+
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = 'Meetup title is required';
@@ -285,7 +295,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
           {isEditing
             ? 'Update the meetup details, schedule, or meetup location.'
-            : 'Organize a cosplay gathering, photoshoot, franchise fan meetup, or panel.'}
+            : 'Organize a cosplay meetup, photoshoot, franchise fan meetup, or panel.'}
         </p>
       </div>
 
@@ -299,64 +309,75 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
       {/* Main Form Box */}
       <form
         onSubmit={handleSubmit}
+        noValidate
         className="border-ink space-y-6 border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900"
       >
         {/* Title */}
         <div>
-          <label
-            htmlFor="meetup-name"
-            className="font-display block text-xs tracking-wider uppercase"
-          >
-            Meetup Title <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="meetup-name"
+              className="font-display block text-xs tracking-wider uppercase"
+            >
+              Meetup Title <span className="text-accent">*</span>
+            </label>
+            <CharCounter current={name.length} max={120} />
+          </div>
           <TextInput
             id="meetup-name"
-            required
+            maxLength={120}
             value={name}
             onChange={(e) => {
               setName(e.target.value);
               if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
             }}
+            onBlur={() => handleBlur('name')}
             onClear={() => {
               setName('');
-              if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+              setErrors((prev) => ({ ...prev, name: 'Meetup title is required' }));
             }}
             placeholder="e.g. Genshin Impact Cosplay Meetup, Chainsaw Man Fan Meetup"
             error={Boolean(errors.name)}
             wrapperClassName="mt-1.5"
           />
           {errors.name && (
-            <p className="mt-1.5 text-xs font-bold text-red-600 dark:text-red-400">{errors.name}</p>
+            <p className="mt-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
+              {errors.name}
+            </p>
           )}
         </div>
 
         {/* Location */}
         <div>
-          <label
-            htmlFor="meetup-location"
-            className="font-display block text-xs tracking-wider uppercase"
-          >
-            Location / Gathering Spot <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="meetup-location"
+              className="font-display block text-xs tracking-wider uppercase"
+            >
+              Location / Meetup Spot <span className="text-accent">*</span>
+            </label>
+            <CharCounter current={location.length} max={150} />
+          </div>
           <TextInput
             id="meetup-location"
-            required
+            maxLength={150}
             icon={MapPin}
             value={location}
             onChange={(e) => {
               setLocation(e.target.value);
               if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
             }}
+            onBlur={() => handleBlur('location')}
             onClear={() => {
               setLocation('');
-              if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
+              setErrors((prev) => ({ ...prev, location: 'Location or meetup spot is required' }));
             }}
             placeholder="e.g. River Pavilion Meetup #1, Site #1, Room 402B"
             error={Boolean(errors.location)}
             wrapperClassName="mt-1.5"
           />
           {errors.location ? (
-            <p className="mt-1.5 text-xs font-bold text-red-600 dark:text-red-400">
+            <p className="mt-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
               {errors.location}
             </p>
           ) : (
@@ -373,7 +394,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             <div className="flex flex-wrap items-baseline justify-between gap-1.5 sm:gap-2">
               <label className="font-display flex items-center gap-1.5 text-xs tracking-wider uppercase">
                 <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
-                Meetup Day <span className="text-red-500">*</span>
+                Meetup Day <span className="text-accent">*</span>
               </label>
               {convention?.name && (
                 <span className="truncate text-[11px] font-semibold text-zinc-500 dark:text-zinc-300">
@@ -441,7 +462,6 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
               <div className="mt-2">
                 <input
                   type="date"
-                  required
                   value={selectedDate}
                   onChange={(e) => {
                     setSelectedDate(e.target.value);
@@ -456,7 +476,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             )}
 
             {errors.date && (
-              <p className="mt-1.5 text-xs font-bold text-red-600 dark:text-red-400">
+              <p className="mt-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
                 {errors.date}
               </p>
             )}
@@ -471,14 +491,13 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   htmlFor="meetup-start-time"
                   className="font-display block text-xs tracking-wider uppercase"
                 >
-                  Start Time <span className="text-red-500">*</span>
+                  Start Time <span className="text-accent">*</span>
                 </label>
                 <div className="relative mt-1.5">
                   <Clock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
                   <input
                     id="meetup-start-time"
                     type="time"
-                    required
                     value={startTime}
                     onChange={(e) => handleStartTimeChange(e.target.value)}
                     className={cn(
@@ -495,14 +514,13 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   htmlFor="meetup-end-time"
                   className="font-display block text-xs tracking-wider uppercase"
                 >
-                  End Time <span className="text-red-500">*</span>
+                  End Time <span className="text-accent">*</span>
                 </label>
                 <div className="relative mt-1.5">
                   <Clock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-300" />
                   <input
                     id="meetup-end-time"
                     type="time"
-                    required
                     value={endTime}
                     onChange={(e) => {
                       setEndTime(e.target.value);
@@ -545,7 +563,9 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             </div>
 
             {errors.time && (
-              <p className="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{errors.time}</p>
+              <p className="mt-2 text-xs font-bold text-rose-600 dark:text-rose-400">
+                {errors.time}
+              </p>
             )}
           </div>
         </div>
@@ -555,7 +575,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
           <ImageUpload
             id="meetup_image"
             label="Meetup Banner / Flyer (Optional)"
-            description="Upload an official poster, gathering banner, or character artwork (Max 5MB)"
+            description="Upload an official poster, meetup banner, or character artwork (Max 5MB)"
             previewUrl={imagePreview}
             onFileSelect={handleImageSelect}
             onRemove={handleImageRemove}
@@ -619,15 +639,19 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
 
         {/* Description */}
         <div>
-          <label
-            htmlFor="meetup-description"
-            className="font-display block text-xs tracking-wider uppercase"
-          >
-            Description & Details (Optional)
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="meetup-description"
+              className="font-display block text-xs tracking-wider uppercase"
+            >
+              Description & Details (Optional)
+            </label>
+            <CharCounter current={description.length} max={1000} />
+          </div>
           <TextArea
             id="meetup-description"
             rows={5}
+            maxLength={1000}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Introduce the meetup! Include photoshoot schedules, rules for cosplay weapons/props, contact info, Discord invite, or social handles..."
@@ -641,7 +665,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             Meetup Type <span className="text-red-500">*</span>
           </label>
           <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-300">
-            Choose whether this gathering is a fan-hosted event or an official con event:
+            Choose whether this meetup is a fan-hosted event or an official con event:
           </p>
           <div className="mt-2.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
             {/* Fan/Community Option */}

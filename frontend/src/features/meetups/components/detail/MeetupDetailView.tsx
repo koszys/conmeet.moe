@@ -328,12 +328,15 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       <section className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <Camera className="text-accent-pop h-5 w-5" />
-              <h2 className="font-display text-base font-bold tracking-wider uppercase sm:text-lg">
-                Photo Collections & Albums
+            <Link
+              href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
+              className="group inline-flex items-center gap-2"
+            >
+              <Camera className="text-accent-pop h-5 w-5 transition-transform group-hover:scale-105" />
+              <h2 className="font-display group-hover:text-accent-pop text-base font-bold tracking-wider uppercase transition-colors sm:text-lg">
+                Photo Collections
               </h2>
-            </div>
+            </Link>
             <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
               A collection of photos for this meetup.
             </p>

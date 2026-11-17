@@ -269,6 +269,36 @@ def test_album_sorting(meetup: Meetup, regular_user: User):
     assert res.data[1]["id"] == a2.id
 
 
+def test_album_saved_filtering(meetup: Meetup, regular_user: User):
+    client = APIClient()
+    a1 = MeetupAlbum.objects.create(
+        meetup=meetup, created_by=regular_user, title="Saved Album"
+    )
+    a2 = MeetupAlbum.objects.create(
+        meetup=meetup, created_by=regular_user, title="Unsaved Album"
+    )
+
+    AlbumFavorite.objects.create(user=regular_user, album=a1)
+
+    # Anonymous user gets empty list when requesting saved
+    anon_res = client.get(f"/api/v1/meetups/{meetup.id}/albums/?sort=saved")
+    assert anon_res.status_code == status.HTTP_200_OK
+    assert len(anon_res.data) == 0
+
+    # Authenticated user gets only saved albums
+    client.force_authenticate(user=regular_user)
+    auth_res = client.get(f"/api/v1/meetups/{meetup.id}/albums/?sort=saved")
+    assert auth_res.status_code == status.HTTP_200_OK
+    assert len(auth_res.data) == 1
+    assert auth_res.data[0]["id"] == a1.id
+
+    # Also test with saved=true query param
+    param_res = client.get(f"/api/v1/meetups/{meetup.id}/albums/?saved=true")
+    assert param_res.status_code == status.HTTP_200_OK
+    assert len(param_res.data) == 1
+    assert param_res.data[0]["id"] == a1.id
+
+
 def test_meetup_photo_upload_path_and_cleanup(auth_client: APIClient, meetup: Meetup):
     """Verify that photo upload path follows meetups/{meetup_slug}/albums/{album_id}_{album_slug}/{order}_{uuid}.webp."""
     url = f"/api/v1/meetups/{meetup.id}/albums/"

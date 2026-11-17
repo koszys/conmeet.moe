@@ -50,6 +50,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
   // Validation & Error State
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,7 +75,9 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
       setErrors((prev) => ({ ...prev, photos: '' }));
     }
 
-    const newFiles = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
+    const isImageFile = (file: File) =>
+      file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|gif)$/i.test(file.name);
+    const newFiles = Array.from(fileList).filter(isImageFile);
     const totalCount = photos.length + newFiles.length;
 
     if (totalCount > 30) {
@@ -99,6 +102,25 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    handleFilesAdded(e.dataTransfer.files);
   };
 
   const removePhoto = (id: string) => {
@@ -280,8 +302,12 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
           </div>
 
           <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             className={cn(
-              'border-ink mt-1.5 border-2 bg-zinc-50/70 p-4 shadow-[3px_3px_0_var(--ink)] sm:p-5 dark:bg-zinc-950/60',
+              'border-ink mt-1.5 border-2 bg-zinc-50/70 p-4 shadow-[3px_3px_0_var(--ink)] transition-colors sm:p-5 dark:bg-zinc-950/60',
+              isDragging && 'border-accent bg-accent/10 dark:bg-accent/15',
               errors.photos && 'border-red-500 bg-red-50/40 dark:bg-red-950/20'
             )}
           >
@@ -290,7 +316,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
               id="album-photos-input"
               type="file"
               multiple
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
               onChange={(e) => handleFilesAdded(e.target.files)}
               className="hidden"
             />
@@ -303,7 +329,8 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                 Select Photos to Upload
               </h3>
               <p className="mt-1 max-w-md text-xs text-zinc-600 dark:text-zinc-400">
-                Choose up to 30 images (JPEG, PNG, WebP).
+                Choose up to 30 images (JPEG, PNG, WebP, Live Photos/HEIC). Drag & drop or browse
+                files.
               </p>
 
               <button

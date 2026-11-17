@@ -63,7 +63,7 @@ export const albumKeys = {
   detail: (id: number) => [...albumKeys.details(), id] as const,
 };
 
-export function useMeetupAlbums(meetupId: number, sort: AlbumSortOption = 'newest') {
+export function useMeetupAlbums(meetupId: number, sort: AlbumSortOption = 'all') {
   return useQuery({
     queryKey: albumKeys.list(meetupId, sort),
     queryFn: async () => {

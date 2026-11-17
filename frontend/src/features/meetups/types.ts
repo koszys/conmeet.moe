@@ -92,7 +92,7 @@ export interface MeetupAlbumDetail extends MeetupAlbum {
   photos: MeetupPhoto[];
 }
 
-export type AlbumSortOption = 'newest' | 'popular' | 'photos';
+export type AlbumSortOption = 'all' | 'popular' | 'newest' | 'photos';
 
 export interface AlbumLikeToggleResponse {
   is_liked: boolean;

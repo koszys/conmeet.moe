@@ -199,7 +199,7 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
             .prefetch_related("photos")
         )
 
-        sort_param = self.request.query_params.get("sort", "newest")
+        sort_param = self.request.query_params.get("sort", "all")
         if sort_param == "popular":
             qs = qs.order_by("-likes_count", "-created_at")
         elif sort_param == "photos":

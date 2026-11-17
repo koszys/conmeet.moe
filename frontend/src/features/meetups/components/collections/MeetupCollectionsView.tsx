@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
-import { BackLink, CONBLOCK_PRIMARY, EmptyState, tabButtonClasses } from '@/shared/components/ui';
+import { Camera, Clock, Images, Plus, Sparkles } from 'lucide-react';
+import {
+  BackLink,
+  CONBLOCK_PRIMARY,
+  CopyLinkButton,
+  EmptyState,
+  FilterTab,
+} from '@/shared/components/ui';
+import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { useMeetup, useMeetupAlbums } from '../../api';
 import type { AlbumSortOption } from '../../types';
@@ -16,7 +23,7 @@ export interface MeetupCollectionsViewProps {
 }
 
 export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollectionsViewProps) {
-  const [activeSort, setActiveSort] = useState<AlbumSortOption>('popular');
+  const [activeSort, setActiveSort] = useState<AlbumSortOption>('all');
 
   const { data: meetup } = useMeetup(meetupId);
   const { data: albums, isLoading: isAlbumsLoading } = useMeetupAlbums(meetupId, activeSort);
@@ -24,77 +31,116 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
   const meetupHref = `/conventions/${conventionSlug}/meetups/${meetupId}`;
   const uploadHref = `/conventions/${conventionSlug}/meetups/${meetupId}/collections/new`;
 
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({
+    ref: tabsRef,
+    fadeWidth: 24,
+  });
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-      {/* Top Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Standard Header Block matching MeetupHeader & BoardHeader */}
+      <div className="border-ink @container border-b-2 pb-5">
         <BackLink href={meetupHref}>
           {meetup?.name ? `Back to ${meetup.name}` : 'Back to Meetup'}
         </BackLink>
 
-        <Link
-          href={uploadHref}
-          className={cn(
-            CONBLOCK_PRIMARY,
-            'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider uppercase'
-          )}
+        <div className="mt-3 flex flex-col justify-between gap-4 @min-[720px]:flex-row @min-[720px]:items-end">
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            <div className="border-ink bg-accent-soft/25 mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
+              <Camera className="text-ink h-5 w-5 dark:text-zinc-100" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl tracking-wide uppercase min-[380px]:text-2xl sm:text-3xl">
+                Photo Collections
+              </h1>
+              <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
+                Attendee photos, albums, and photographer credits for this meetup.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+            <CopyLinkButton variant="responsive" />
+            <Link
+              href={uploadHref}
+              title="Add Photos"
+              aria-label="Add Photos"
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex h-10 items-center justify-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase @min-[680px]:gap-2 @min-[680px]:px-5'
+              )}
+            >
+              <Plus className="h-4 w-4 shrink-0 stroke-3" />
+              <span className="hidden @min-[680px]:inline">Add Photos</span>
+              <span className="@min-[680px]:hidden">Add</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Sorting Toolbar with horizontal scroll fade on mobile */}
+      <div className="border-ink flex flex-wrap items-center justify-between gap-3 border-b-2 pb-5">
+        <div
+          ref={tabsRef}
+          style={tabsMaskStyle}
+          className="flex min-w-0 flex-1 scrollbar-none items-center gap-1.5 overflow-x-auto p-0.5 sm:flex-initial sm:gap-2"
         >
-          <Plus className="h-4 w-4" />
-          <span>Add Photos</span>
-        </Link>
-      </div>
-
-      {/* Page Header */}
-      <div className="border-ink border-b-2 pb-6">
-        <span className="font-display text-accent-pop text-xs tracking-wider uppercase">
-          {meetup?.convention_name || 'Convention'} · Meetup Gallery
-        </span>
-        <h1 className="font-display mt-1 text-2xl font-black tracking-wider uppercase sm:text-3xl">
-          {meetup?.name || 'Meetup'} Photos
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-          Browse photo albums, cosplayer shots, and attendee galleries shared from this meetup.
-        </p>
-      </div>
-
-      {/* Sorting Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
+          <FilterTab
+            isActive={activeSort === 'all'}
+            onClick={() => setActiveSort('all')}
+            title="All Collections"
+            ariaLabel="All Collections"
+            label="All Collections"
+            shortLabel="All"
+            icon={
+              <Images
+                className={cn(
+                  'h-4 w-4 shrink-0',
+                  activeSort === 'all' ? 'stroke-[2.5]' : 'stroke-2'
+                )}
+              />
+            }
+          />
+          <FilterTab
+            isActive={activeSort === 'popular'}
             onClick={() => setActiveSort('popular')}
-            className={tabButtonClasses(
-              activeSort === 'popular',
-              'px-3.5 py-1.5 text-xs font-bold tracking-wider uppercase'
-            )}
-          >
-            Most Popular
-          </button>
-          <button
-            type="button"
+            title="Most Popular Albums"
+            ariaLabel="Most Popular Albums"
+            label="Most Popular"
+            shortLabel="Popular"
+            icon={
+              <Sparkles
+                className={cn(
+                  'h-4 w-4 shrink-0',
+                  activeSort === 'popular' ? 'fill-current stroke-[2.5]' : 'stroke-2'
+                )}
+              />
+            }
+          />
+          <FilterTab
+            isActive={activeSort === 'newest'}
             onClick={() => setActiveSort('newest')}
-            className={tabButtonClasses(
-              activeSort === 'newest',
-              'px-3.5 py-1.5 text-xs font-bold tracking-wider uppercase'
-            )}
-          >
-            Newest
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSort('photos')}
-            className={tabButtonClasses(
-              activeSort === 'photos',
-              'px-3.5 py-1.5 text-xs font-bold tracking-wider uppercase'
-            )}
-          >
-            Most Photos
-          </button>
+            title="Newest Albums"
+            ariaLabel="Newest Albums"
+            label="Newest"
+            shortLabel="Newest"
+            icon={
+              <Clock
+                className={cn(
+                  'h-4 w-4 shrink-0',
+                  activeSort === 'newest' ? 'stroke-[2.5]' : 'stroke-2'
+                )}
+              />
+            }
+          />
+          {/* Trailing spacer so the last tab ("Newest") is never cut off by the right fade mask */}
+          <div className="w-6 shrink-0 sm:hidden" aria-hidden="true" />
         </div>
 
         {/* Counter */}
         {albums && albums.length > 0 && (
-          <span className="font-mono text-xs font-bold text-zinc-500 uppercase dark:text-zinc-400">
+          <span className="shrink-0 font-mono text-xs font-bold text-zinc-500 uppercase dark:text-zinc-400">
             {albums.length} {albums.length === 1 ? 'Album' : 'Albums'}
           </span>
         )}

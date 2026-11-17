@@ -30,6 +30,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
         model = Meetup
         fields = [
             "id",
+            "slug",
             "convention",
             "convention_slug",
             "convention_name",
@@ -159,6 +160,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
         model = Meetup
         fields = [
             "id",
+            "slug",
             "convention",
             "name",
             "location",
@@ -171,7 +173,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
             "is_official",
             "created_at",
         ]
-        read_only_fields = ["id", "image_thumb", "created_at"]
+        read_only_fields = ["id", "slug", "image_thumb", "created_at"]
 
     def get_image_thumb(self, obj: Meetup) -> str | None:
         if obj.image:
@@ -207,6 +209,7 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
         model = Meetup
         fields = [
             "id",
+            "slug",
             "name",
             "location",
             "starts_at",
@@ -218,7 +221,7 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
             "is_official",
             "updated_at",
         ]
-        read_only_fields = ["id", "updated_at"]
+        read_only_fields = ["id", "slug", "updated_at"]
 
     def validate(self, attrs):
         instance = self.instance
@@ -284,6 +287,7 @@ class MeetupPhotoSerializer(serializers.ModelSerializer):
 
 
 class MeetupAlbumListSerializer(serializers.ModelSerializer):
+    meetup_slug = serializers.CharField(source="meetup.slug", read_only=True)
     cover_photo_url = serializers.SerializerMethodField()
     cover_thumb_url = serializers.SerializerMethodField()
     preview_photos = serializers.SerializerMethodField()
@@ -297,6 +301,7 @@ class MeetupAlbumListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "meetup",
+            "meetup_slug",
             "title",
             "description",
             "social_links",

@@ -268,3 +268,29 @@ def test_album_sorting(meetup: Meetup, regular_user: User):
     assert res.data[0]["id"] == a1.id
     assert res.data[1]["id"] == a2.id
 
+
+def test_meetup_photo_upload_path_and_cleanup(auth_client: APIClient, meetup: Meetup):
+    """Verify that photo upload path follows meetups/{meetup_slug}/albums/{album_id}_{album_slug}/{order}_{uuid}.webp."""
+    url = f"/api/v1/meetups/{meetup.id}/albums/"
+    data = {
+        "title": "Path Test Album",
+        "photos": [_create_test_image_file("sample1.webp"), _create_test_image_file("sample2.webp")],
+    }
+    res = auth_client.post(url, data, format="multipart")
+    assert res.status_code == status.HTTP_201_CREATED
+    album_id = res.data["id"]
+
+    photos = list(MeetupPhoto.objects.filter(album_id=album_id).order_by("order"))
+    assert len(photos) == 2
+    expected_prefix_0 = f"meetups/{meetup.slug}/albums/{album_id}_path-test-album/00_"
+    expected_prefix_1 = f"meetups/{meetup.slug}/albums/{album_id}_path-test-album/01_"
+    assert photos[0].image.name.startswith(expected_prefix_0)
+    assert photos[0].image.name.endswith(".webp")
+    assert photos[1].image.name.startswith(expected_prefix_1)
+
+    # Delete album and verify deletion completes without error
+    del_res = auth_client.delete(f"/api/v1/albums/{album_id}/")
+    assert del_res.status_code == status.HTTP_204_NO_CONTENT
+    assert not MeetupAlbum.objects.filter(id=album_id).exists()
+
+

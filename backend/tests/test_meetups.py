@@ -378,7 +378,7 @@ def test_create_meetup_with_image_upload(convention: Convention, regular_user: U
     assert resp.status_code == status.HTTP_201_CREATED
     data = resp.json()
     assert data["name"] == "Cosplay Showcase"
-    assert "poster" in data["image"]
+    assert "meetups/cosplay-showcase/banner_" in data["image"]
     assert data["image_thumb"] is not None
 
 

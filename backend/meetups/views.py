@@ -1,5 +1,6 @@
 from conventions.models import Convention
 from django.db.models import Count, Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import ValidationError
@@ -107,12 +108,33 @@ class ConventionMeetupListCreateView(generics.ListCreateAPIView):
         serializer.save(convention=convention, created_by=self.request.user)
 
 
+def get_meetup_by_pk_or_slug(lookup: str | int, queryset=None) -> Meetup:
+    """Resolve a Meetup by numeric ID or slug with 404 fallback."""
+    if queryset is None:
+        queryset = Meetup.objects.all()
+    lookup_str = str(lookup)
+    if lookup_str.isdigit():
+        obj = queryset.filter(Q(id=int(lookup_str)) | Q(slug=lookup_str)).first()
+    else:
+        obj = queryset.filter(slug=lookup_str).first()
+    if not obj:
+        raise Http404(f"No Meetup matches identifier: {lookup}")
+    return obj
+
+
 class MeetupDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthorOrReadOnly]
     queryset = Meetup.objects.select_related("convention", "created_by").annotate(
         _going_count=Count("going", distinct=True),
         _save_count=Count("saved_by", distinct=True),
     )
+
+    def get_object(self):
+        lookup = self.kwargs.get("pk")
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_meetup_by_pk_or_slug(lookup, queryset=queryset)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def get_serializer_class(self):
         if self.request.method in ("PUT", "PATCH"):
@@ -123,8 +145,8 @@ class MeetupDetailView(generics.RetrieveUpdateDestroyAPIView):
 class MeetupSaveToggleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, pk: int):
-        meetup = get_object_or_404(Meetup, pk=pk)
+    def post(self, request, pk: str | int):
+        meetup = get_meetup_by_pk_or_slug(pk)
         saved_obj = SavedMeetup.objects.filter(user=request.user, meetup=meetup).first()
 
         if saved_obj:
@@ -144,8 +166,8 @@ class MeetupSaveToggleView(APIView):
 class MeetupGoingToggleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, pk: int):
-        meetup = get_object_or_404(Meetup, pk=pk)
+    def post(self, request, pk: str | int):
+        meetup = get_meetup_by_pk_or_slug(pk)
         going_obj = Going.objects.filter(user=request.user, meetup=meetup).first()
 
         if going_obj:
@@ -173,26 +195,31 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
             return MeetupAlbumCreateUpdateSerializer
         return MeetupAlbumListSerializer
 
+    def get_meetup(self) -> Meetup:
+        if not hasattr(self, "_cached_meetup"):
+            lookup = self.kwargs.get("meetup_id")
+            self._cached_meetup = get_meetup_by_pk_or_slug(lookup)
+        return self._cached_meetup
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         user = self.request.user
         if user and user.is_authenticated:
-            meetup_id = self.kwargs.get("meetup_id")
+            meetup = self.get_meetup()
             context["liked_albums_set"] = set(
-                AlbumLike.objects.filter(user=user, album__meetup_id=meetup_id).values_list(
+                AlbumLike.objects.filter(user=user, album__meetup=meetup).values_list(
                     "album_id", flat=True
                 )
             )
             context["favorite_albums_set"] = set(
-                AlbumFavorite.objects.filter(user=user, album__meetup_id=meetup_id).values_list(
+                AlbumFavorite.objects.filter(user=user, album__meetup=meetup).values_list(
                     "album_id", flat=True
                 )
             )
         return context
 
     def get_queryset(self):
-        meetup_id = self.kwargs.get("meetup_id")
-        meetup = get_object_or_404(Meetup, id=meetup_id)
+        meetup = self.get_meetup()
         qs = (
             MeetupAlbum.objects.filter(meetup=meetup)
             .select_related("meetup", "created_by", "cover_photo")
@@ -210,8 +237,7 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
         return qs
 
     def perform_create(self, serializer):
-        meetup_id = self.kwargs.get("meetup_id")
-        meetup = get_object_or_404(Meetup, id=meetup_id)
+        meetup = self.get_meetup()
         photos = self.request.FILES.getlist("photos")
 
         if len(photos) > 30:

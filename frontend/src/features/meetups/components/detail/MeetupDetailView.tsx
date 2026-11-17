@@ -20,7 +20,7 @@ import {
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
 import { useMeetup, useMeetupAlbums, useToggleSaveMeetup } from '../../api';
-import { AlbumCard, AlbumCardSkeleton } from '../collections';
+import { AlbumCard, AlbumCardSkeleton } from '../gallery';
 import { GoingButton } from '../GoingButton';
 import { MeetupForm } from '../form';
 import { MeetupDetailSkeleton } from './MeetupDetailSkeleton';
@@ -357,16 +357,16 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           </div>
         </div>
 
-        {/* Live Albums Grid or Empty State */}
+        {/* Photo Albums */}
         {isAlbumsLoading ? (
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             <AlbumCardSkeleton />
             <AlbumCardSkeleton />
             <AlbumCardSkeleton />
           </div>
         ) : albums && albums.length > 0 ? (
           <div className="mt-6 space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
               {albums.slice(0, 3).map((album) => (
                 <AlbumCard
                   key={album.id}

@@ -23,17 +23,36 @@ class GoingInline(TabularInline):
     readonly_fields = ("user", "created_at")
 
 
+class MeetupAlbumInline(TabularInline):
+    model = MeetupAlbum
+    extra = 0
+    fields = ("title", "created_by", "photos_count", "likes_count", "created_at")
+    readonly_fields = ("photos_count", "likes_count", "created_at")
+    show_change_link = True
+
+
 @admin.register(Meetup)
 class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
-    list_display = ("name", "convention", "starts_at", "is_official", "going_count")
+    list_display = ("name", "slug", "convention", "starts_at", "is_official", "going_count")
     list_filter = ("is_official", "convention")
-    search_fields = ("name", "location", "convention__name")
+    search_fields = ("name", "slug", "location", "convention__name")
     list_editable = ("is_official",)
-    inlines = (GoingInline,)
+    prepopulated_fields = {"slug": ("name",)}
+    inlines = (GoingInline, MeetupAlbumInline)
     fieldsets = (
         (
             None,
-            {"fields": ("convention", "name", "location", "starts_at", "ends_at", "is_official")},
+            {
+                "fields": (
+                    "convention",
+                    "name",
+                    "slug",
+                    "location",
+                    "starts_at",
+                    "ends_at",
+                    "is_official",
+                )
+            },
         ),
         ("Media", {"fields": ("image", "image_layout", "image_preview")}),
         ("Content", {"fields": ("description",)}),

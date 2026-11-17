@@ -240,7 +240,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         {album.social_links && Object.keys(album.social_links).length > 0 && (
           <div className="border-t border-zinc-200 pt-2 dark:border-zinc-800">
             <span className="font-display mb-2 block text-[11px] tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
-              Photographer & Social Credits
+              Social Credits
             </span>
             <SocialBadges links={album.social_links} />
           </div>

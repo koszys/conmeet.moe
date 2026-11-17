@@ -250,7 +250,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
               setTitle('');
               setErrors((prev) => ({ ...prev, title: 'Album title is required' }));
             }}
-            placeholder="e.g. Friday Cosplay Gathering, Sunday Sunset Photoshoot"
+            placeholder="e.g. Hatsune Miku Meetup Pics"
             error={Boolean(errors.title)}
             wrapperClassName="mt-1.5"
           />

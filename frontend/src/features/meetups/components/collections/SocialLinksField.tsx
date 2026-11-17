@@ -58,11 +58,11 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
       <div className="flex items-center gap-2">
         <Globe className="text-accent dark:text-accent-soft h-4 w-4 shrink-0" />
         <span className="font-display text-xs tracking-wider uppercase">
-          Photographer & Social Credits (Optional)
+          Social Credits (Optional)
         </span>
       </div>
       <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-        Add your handles or links so cosplayers, models, and attendees know who to credit and tag.
+        Add your handles for credit or so others can find you!
       </p>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -18,6 +18,7 @@ import {
   BackLink,
   BookmarkButton,
   CONBLOCK,
+  CONBLOCK_ACCENT,
   CONBLOCK_PRIMARY,
   CONBLOCK_SECONDARY,
   CopyLinkButton,
@@ -182,7 +183,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
         {/* Action button cluster */}
         <div className="flex flex-wrap items-center gap-2">
-          <CopyLinkButton variant="responsive" />
+          <CopyLinkButton variant="responsive" size="sm" />
 
           {/* Download All (ZIP) button */}
           <button
@@ -191,12 +192,12 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             disabled={Boolean(downloadProgress) || photos.length === 0}
             className={cn(
               CONBLOCK_SECONDARY,
-              'inline-flex h-10 items-center gap-1.5 px-3 text-xs font-bold tracking-wider uppercase disabled:opacity-60 sm:px-3.5'
+              'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider uppercase disabled:opacity-60'
             )}
           >
             {downloadProgress ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 <span>
                   {downloadProgress.status === 'compressing'
                     ? 'Packaging...'
@@ -205,7 +206,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
               </>
             ) : (
               <>
-                <Download className="h-4 w-4" />
+                <Download className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Download ZIP</span>
                 <span className="sm:hidden">ZIP</span>
               </>
@@ -220,7 +221,6 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
               onClick={() => setIsDeleteOpen(true)}
               title="Delete Album"
               ariaLabel="Delete Album"
-              className="h-10 px-3.5"
             />
           )}
         </div>
@@ -292,17 +292,14 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             title={album.is_liked ? 'Liked' : 'Like Album'}
             aria-label={album.is_liked ? 'Liked' : 'Like Album'}
             className={cn(
-              CONBLOCK,
               'inline-flex h-9 items-center gap-1.5 px-3.5 text-xs font-bold uppercase transition-all sm:h-10 sm:px-4',
-              album.is_liked
-                ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60'
-                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              album.is_liked ? CONBLOCK_ACCENT : CONBLOCK_SECONDARY
             )}
           >
             <Heart
               className={cn(
                 'h-4 w-4 shrink-0 transition-transform active:scale-125',
-                album.is_liked ? 'fill-current text-rose-600 dark:text-rose-400' : 'text-current'
+                album.is_liked ? 'fill-current text-white' : 'text-current'
               )}
             />
             <span className="font-mono text-xs tabular-nums">{album.likes_count}</span>
@@ -338,7 +335,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                 CONBLOCK,
                 'inline-flex h-9 items-center gap-1.5 px-3 text-xs font-bold uppercase transition-all',
                 isSelectMode
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                  ? 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200'
                   : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
               )}
             >
@@ -356,7 +353,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           description="This album does not have any uploaded photos yet."
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 min-[500px]:grid-cols-2 md:grid-cols-3">
           {photos.map((photo, idx) => {
             const isSelected = selectedPhotoIds.has(photo.id);
 
@@ -381,7 +378,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                   src={photo.image_thumb || photo.image}
                   alt={photo.caption || `${album.title} - Photo ${idx + 1}`}
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                  sizes="(max-width: 500px) 100vw, (max-width: 768px) 50vw, 33vw"
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
 
@@ -415,7 +412,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                       className={cn(
                         'border-ink inline-flex items-center gap-1 rounded-sm border border-black/40 px-2 py-0.5 text-xs font-bold shadow-[1px_1px_0_rgba(0,0,0,0.5)] transition-transform hover:scale-105',
                         photo.is_liked
-                          ? 'bg-accent text-white dark:text-zinc-950'
+                          ? 'bg-accent-pop text-white'
                           : 'bg-white/90 text-zinc-800 dark:bg-zinc-800/90 dark:text-zinc-200'
                       )}
                     >
@@ -445,7 +442,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
               <button
                 type="button"
                 onClick={handleSelectAll}
-                className="text-accent ml-1 text-xs font-bold uppercase hover:underline"
+                className="text-accent ml-1 cursor-pointer text-xs font-bold uppercase hover:underline"
               >
                 {selectedPhotoIds.size === photos.length ? 'Deselect All' : 'Select All'}
               </button>

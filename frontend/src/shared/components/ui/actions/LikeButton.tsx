@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import { CONBLOCK_ACCENT, CONBLOCK_SECONDARY } from './Button';
+import { CONBLOCK, CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface LikeButtonProps {
@@ -28,7 +28,10 @@ export function LikeButton({
   const defaultTitle = isLiked ? 'Unlike' : 'Like';
   const defaultAria = isLiked ? 'Unlike' : 'Like';
 
-  const activeStyles = CONBLOCK_ACCENT;
+  const activeStyles = cn(
+    CONBLOCK,
+    'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+  );
 
   return (
     <button
@@ -52,7 +55,7 @@ export function LikeButton({
       <Heart
         className={cn(
           'h-4 w-4 shrink-0 transition-transform active:scale-125',
-          isLiked ? 'fill-current stroke-2 text-white' : 'stroke-2'
+          isLiked ? 'fill-current stroke-2 text-current' : 'stroke-2'
         )}
       />
       {typeof count === 'number' && <span className="font-mono text-xs tabular-nums">{count}</span>}

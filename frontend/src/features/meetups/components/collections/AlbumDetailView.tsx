@@ -181,40 +181,9 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           {meetup?.name ? `Back to ${meetup.name} Gallery` : 'Back to Photo Gallery'}
         </BackLink>
 
-        {/* Action button cluster */}
-        <div className="flex flex-wrap items-center gap-2">
-          <CopyLinkButton variant="responsive" size="sm" />
-
-          {/* Download All (ZIP) button */}
-          <button
-            type="button"
-            onClick={() => handleDownloadZip(photos)}
-            disabled={Boolean(downloadProgress) || photos.length === 0}
-            className={cn(
-              CONBLOCK_SECONDARY,
-              'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider uppercase disabled:opacity-60'
-            )}
-          >
-            {downloadProgress ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>
-                  {downloadProgress.status === 'compressing'
-                    ? 'Packaging...'
-                    : `${downloadProgress.current}/${downloadProgress.total}`}
-                </span>
-              </>
-            ) : (
-              <>
-                <Download className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Download ZIP</span>
-                <span className="sm:hidden">ZIP</span>
-              </>
-            )}
-          </button>
-
-          {/* Delete button if author/admin */}
-          {isOwnerOrAdmin && (
+        {/* Delete button if author/admin */}
+        {isOwnerOrAdmin && (
+          <div className="flex items-center gap-2">
             <DeleteButton
               variant="button"
               colorStyle="danger-solid"
@@ -222,8 +191,8 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
               title="Delete Album"
               ariaLabel="Delete Album"
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Main Album Header Card */}
@@ -292,14 +261,17 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             title={album.is_liked ? 'Liked' : 'Like Album'}
             aria-label={album.is_liked ? 'Liked' : 'Like Album'}
             className={cn(
+              CONBLOCK,
               'inline-flex h-9 items-center gap-1.5 px-3.5 text-xs font-bold uppercase transition-all sm:h-10 sm:px-4',
-              album.is_liked ? CONBLOCK_ACCENT : CONBLOCK_SECONDARY
+              album.is_liked
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
             )}
           >
             <Heart
               className={cn(
                 'h-4 w-4 shrink-0 transition-transform active:scale-125',
-                album.is_liked ? 'fill-current text-white' : 'text-current'
+                album.is_liked ? 'fill-current text-current' : 'text-current'
               )}
             />
             <span className="font-mono text-xs tabular-nums">{album.likes_count}</span>
@@ -314,6 +286,8 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             unsavedLabel="Save"
             className="h-9 sm:h-10"
           />
+
+          <CopyLinkButton variant="responsive" className="h-9 sm:h-10" />
         </div>
       </section>
 
@@ -324,6 +298,35 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         </h2>
 
         <div className="flex items-center gap-2">
+          {photos.length > 0 && (
+            <button
+              type="button"
+              onClick={() => handleDownloadZip(photos)}
+              disabled={Boolean(downloadProgress)}
+              className={cn(
+                CONBLOCK_SECONDARY,
+                'inline-flex h-9 items-center gap-1.5 px-3 text-xs font-bold uppercase disabled:opacity-60'
+              )}
+            >
+              {downloadProgress ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>
+                    {downloadProgress.status === 'compressing'
+                      ? 'Packaging...'
+                      : `${downloadProgress.current}/${downloadProgress.total}`}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Download ZIP</span>
+                  <span className="sm:hidden">ZIP</span>
+                </>
+              )}
+            </button>
+          )}
+
           {photos.length > 0 && (
             <button
               type="button"
@@ -412,7 +415,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                       className={cn(
                         'border-ink inline-flex items-center gap-1 rounded-sm border border-black/40 px-2 py-0.5 text-xs font-bold shadow-[1px_1px_0_rgba(0,0,0,0.5)] transition-transform hover:scale-105',
                         photo.is_liked
-                          ? 'bg-accent-pop text-white'
+                          ? 'bg-accent text-white dark:text-zinc-950'
                           : 'bg-white/90 text-zinc-800 dark:bg-zinc-800/90 dark:text-zinc-200'
                       )}
                     >

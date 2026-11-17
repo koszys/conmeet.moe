@@ -133,14 +133,17 @@ export function PhotoLightbox({
             onClick={handleLike}
             title={activePhoto.is_liked ? 'Liked' : 'Like Photo'}
             className={cn(
+              CONBLOCK,
               'inline-flex h-9 items-center gap-1.5 px-3 text-xs font-bold tracking-wider uppercase transition-all',
-              activePhoto.is_liked ? CONBLOCK_ACCENT : CONBLOCK_SECONDARY
+              activePhoto.is_liked
+                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
             )}
           >
             <Heart
               className={cn(
                 'h-3.5 w-3.5 shrink-0 transition-transform active:scale-125',
-                activePhoto.is_liked ? 'fill-current text-white' : 'text-current'
+                activePhoto.is_liked ? 'fill-current text-current' : 'text-current'
               )}
             />
             <span>{activePhoto.likes_count}</span>

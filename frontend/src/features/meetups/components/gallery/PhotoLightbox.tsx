@@ -212,7 +212,7 @@ export function PhotoLightbox({
       >
         {/* Previous (desktop) */}
         <div
-          className="z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
+          className="group/prev z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
           onClick={handlePrev}
         >
           {photos.length > 1 && (
@@ -222,8 +222,8 @@ export function PhotoLightbox({
               aria-label="Previous photo"
               title="Previous photo"
               className={cn(
-                CONBLOCK,
-                'border-ink bg-white/90 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] transition-all hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-100 dark:hover:bg-zinc-800'
+                CONBLOCK_SECONDARY,
+                'group-hover/prev:border-accent-pop group-hover/prev:text-accent-pop dark:group-hover/prev:border-accent-pop dark:group-hover/prev:text-accent-pop p-2 text-zinc-900 transition-all group-hover/prev:translate-x-0.5 group-hover/prev:translate-y-0.5 group-hover/prev:shadow-none dark:text-zinc-100'
               )}
             >
               <ChevronLeft className="h-6 w-6 stroke-3" />
@@ -272,7 +272,7 @@ export function PhotoLightbox({
 
         {/* Next (desktop) */}
         <div
-          className="z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
+          className="group/next z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
           onClick={handleNext}
         >
           {photos.length > 1 && (
@@ -282,8 +282,8 @@ export function PhotoLightbox({
               aria-label="Next photo"
               title="Next photo"
               className={cn(
-                CONBLOCK,
-                'border-ink bg-white/90 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] transition-all hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-100 dark:hover:bg-zinc-800'
+                CONBLOCK_SECONDARY,
+                'group-hover/next:border-accent-pop group-hover/next:text-accent-pop dark:group-hover/next:border-accent-pop dark:group-hover/next:text-accent-pop p-2 text-zinc-900 transition-all group-hover/next:translate-x-0.5 group-hover/next:translate-y-0.5 group-hover/next:shadow-none dark:text-zinc-100'
               )}
             >
               <ChevronRight className="h-6 w-6 stroke-3" />

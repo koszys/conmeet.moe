@@ -6,23 +6,22 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
   Archive,
-  Bookmark,
   Check,
   CheckSquare,
   Clock,
   Download,
   Heart,
   Loader2,
-  Maximize2,
-  Trash2,
   User as UserIcon,
 } from 'lucide-react';
 import {
   BackLink,
+  BookmarkButton,
   CONBLOCK,
   CONBLOCK_PRIMARY,
   CONBLOCK_SECONDARY,
   CopyLinkButton,
+  DeleteButton,
   EmptyState,
 } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
@@ -185,48 +184,6 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         <div className="flex flex-wrap items-center gap-2">
           <CopyLinkButton variant="responsive" />
 
-          {/* Like button */}
-          <button
-            type="button"
-            onClick={handleToggleLikeAlbum}
-            title={album.is_liked ? 'Liked' : 'Like Album'}
-            className={cn(
-              'inline-flex h-10 items-center gap-1.5 px-3 text-xs font-bold tracking-wider uppercase transition-all sm:px-3.5',
-              album.is_liked
-                ? 'border-accent bg-accent text-white dark:text-zinc-950'
-                : CONBLOCK_SECONDARY
-            )}
-          >
-            <Heart
-              className={cn(
-                'h-4 w-4',
-                album.is_liked ? 'fill-current text-white dark:text-zinc-950' : 'text-zinc-600'
-              )}
-            />
-            <span>{album.likes_count}</span>
-          </button>
-
-          {/* Favorite bookmark button */}
-          <button
-            type="button"
-            onClick={handleToggleFavoriteAlbum}
-            title={album.is_favorited ? 'Bookmarked' : 'Bookmark Album'}
-            className={cn(
-              'inline-flex h-10 items-center gap-1.5 px-3 text-xs font-bold tracking-wider uppercase transition-all sm:px-3.5',
-              album.is_favorited
-                ? 'border-accent-pop bg-accent-pop text-white dark:text-zinc-950'
-                : CONBLOCK_SECONDARY
-            )}
-          >
-            <Bookmark
-              className={cn(
-                'h-4 w-4',
-                album.is_favorited ? 'fill-current text-white dark:text-zinc-950' : 'text-zinc-600'
-              )}
-            />
-            <span className="hidden sm:inline">Save</span>
-          </button>
-
           {/* Download All (ZIP) button */}
           <button
             type="button"
@@ -257,18 +214,14 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
           {/* Delete button if author/admin */}
           {isOwnerOrAdmin && (
-            <button
-              type="button"
+            <DeleteButton
+              variant="button"
+              colorStyle="danger-solid"
               onClick={() => setIsDeleteOpen(true)}
               title="Delete Album"
-              className={cn(
-                CONBLOCK,
-                'border-ink inline-flex h-10 items-center gap-1.5 bg-rose-50 px-3 text-xs font-bold text-rose-700 shadow-[2px_2px_0_var(--ink)] hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300'
-              )}
-            >
-              <Trash2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Delete</span>
-            </button>
+              ariaLabel="Delete Album"
+              className="h-10 px-3.5"
+            />
           )}
         </div>
       </div>
@@ -280,7 +233,10 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             {meetup && (
               <Link
                 href={`/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`}
-                className="border-ink inline-flex items-center gap-1 border-2 bg-zinc-100 px-2 py-0.5 text-[11px] font-bold tracking-wider text-zinc-700 uppercase shadow-[2px_2px_0_var(--ink)] transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
+                className={cn(
+                  CONBLOCK,
+                  'hover:text-accent dark:hover:text-accent inline-flex items-center gap-1 bg-zinc-100 px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-zinc-800 uppercase dark:bg-zinc-800 dark:text-zinc-200'
+                )}
               >
                 {meetup.name}
               </Link>
@@ -327,6 +283,41 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             <p className="whitespace-pre-line">{album.description}</p>
           </div>
         )}
+
+        {/* Header Card Bottom Row: Likes & Save */}
+        <div className="flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <button
+            type="button"
+            onClick={handleToggleLikeAlbum}
+            title={album.is_liked ? 'Liked' : 'Like Album'}
+            aria-label={album.is_liked ? 'Liked' : 'Like Album'}
+            className={cn(
+              CONBLOCK,
+              'inline-flex h-9 items-center gap-1.5 px-3.5 text-xs font-bold uppercase transition-all sm:h-10 sm:px-4',
+              album.is_liked
+                ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
+            )}
+          >
+            <Heart
+              className={cn(
+                'h-4 w-4 shrink-0 transition-transform active:scale-125',
+                album.is_liked ? 'fill-current text-rose-600 dark:text-rose-400' : 'text-current'
+              )}
+            />
+            <span className="font-mono text-xs tabular-nums">{album.likes_count}</span>
+            <span>{album.is_liked ? 'Liked' : 'Like'}</span>
+          </button>
+
+          <BookmarkButton
+            variant="responsive"
+            isSaved={album.is_favorited}
+            onClick={handleToggleFavoriteAlbum}
+            savedLabel="Saved"
+            unsavedLabel="Save"
+            className="h-9 sm:h-10"
+          />
+        </div>
       </section>
 
       {/* Photos Grid Toolbar */}
@@ -344,10 +335,11 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                 setSelectedPhotoIds(new Set());
               }}
               className={cn(
+                CONBLOCK,
                 'inline-flex h-9 items-center gap-1.5 px-3 text-xs font-bold uppercase transition-all',
                 isSelectMode
-                  ? 'border-ink border-2 bg-zinc-900 text-white shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-100 dark:text-zinc-900'
-                  : CONBLOCK_SECONDARY
+                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                  : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
               )}
             >
               <CheckSquare className="h-3.5 w-3.5" />
@@ -379,7 +371,8 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                   }
                 }}
                 className={cn(
-                  'border-ink group relative aspect-square cursor-pointer overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] dark:bg-zinc-800',
+                  'border-ink group relative aspect-square overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] dark:bg-zinc-800',
+                  isSelectMode ? 'cursor-pointer' : 'cursor-zoom-in',
                   isSelected && 'ring-accent ring-4 ring-offset-2'
                 )}
               >
@@ -407,42 +400,33 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                     </div>
                   </div>
                 ) : (
-                  <>
-                    {/* Hover Overlay with Lightbox Indicator */}
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-zinc-950/20 opacity-0 transition-opacity group-hover:opacity-100">
-                      <div className="border-ink bg-white/95 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800/95 dark:text-zinc-100">
-                        <Maximize2 className="h-5 w-5" />
-                      </div>
-                    </div>
+                  /* Bottom overlay: Photo likes */
+                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!user) {
+                          window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
+                          return;
+                        }
+                        toggleLikePhoto.mutate({ photoId: photo.id, albumId: album.id });
+                      }}
+                      className={cn(
+                        'border-ink inline-flex items-center gap-1 rounded-sm border border-black/40 px-2 py-0.5 text-xs font-bold shadow-[1px_1px_0_rgba(0,0,0,0.5)] transition-transform hover:scale-105',
+                        photo.is_liked
+                          ? 'bg-accent text-white dark:text-zinc-950'
+                          : 'bg-white/90 text-zinc-800 dark:bg-zinc-800/90 dark:text-zinc-200'
+                      )}
+                    >
+                      <Heart className={cn('h-3 w-3', photo.is_liked && 'fill-current')} />
+                      <span>{photo.likes_count}</span>
+                    </button>
 
-                    {/* Bottom overlay: Photo likes */}
-                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!user) {
-                            window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
-                            return;
-                          }
-                          toggleLikePhoto.mutate({ photoId: photo.id, albumId: album.id });
-                        }}
-                        className={cn(
-                          'border-ink inline-flex items-center gap-1 rounded-sm border border-black/40 px-2 py-0.5 text-xs font-bold shadow-[1px_1px_0_rgba(0,0,0,0.5)] transition-transform hover:scale-105',
-                          photo.is_liked
-                            ? 'bg-accent text-white dark:text-zinc-950'
-                            : 'bg-white/90 text-zinc-800 dark:bg-zinc-800/90 dark:text-zinc-200'
-                        )}
-                      >
-                        <Heart className={cn('h-3 w-3', photo.is_liked && 'fill-current')} />
-                        <span>{photo.likes_count}</span>
-                      </button>
-
-                      <span className="rounded bg-black/50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white/90">
-                        #{idx + 1}
-                      </span>
-                    </div>
-                  </>
+                    <span className="rounded bg-black/50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white/90">
+                      #{idx + 1}
+                    </span>
+                  </div>
                 )}
               </div>
             );
@@ -456,7 +440,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="font-display text-xs font-bold tracking-wider uppercase sm:text-sm">
-                {selectedPhotoIds.size} / {photos.length} Selected
+                {selectedPhotoIds.size}/{photos.length} Selected
               </span>
               <button
                 type="button"

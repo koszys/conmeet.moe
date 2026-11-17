@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import { CONBLOCK_SECONDARY } from './Button';
+import { CONBLOCK, CONBLOCK_SECONDARY } from './Button';
 import { cn } from '@/shared/lib/utils';
 
 export interface LikeButtonProps {
@@ -28,8 +28,10 @@ export function LikeButton({
   const defaultTitle = isLiked ? 'Unlike' : 'Like';
   const defaultAria = isLiked ? 'Unlike' : 'Like';
 
-  const activeStyles =
-    'border-ink border-2 bg-rose-50 text-rose-600 shadow-[2px_2px_0_var(--ink)] hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60';
+  const activeStyles = cn(
+    CONBLOCK,
+    'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60'
+  );
 
   return (
     <button

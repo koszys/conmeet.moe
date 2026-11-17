@@ -123,7 +123,7 @@ export function PhotoLightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <span className="font-mono text-xs font-bold text-zinc-400">
-          {currentIndex + 1} / {photos.length}
+          {currentIndex + 1}/{photos.length}
         </span>
 
         <div className="flex items-center gap-2">
@@ -133,18 +133,19 @@ export function PhotoLightbox({
             onClick={handleLike}
             title={activePhoto.is_liked ? 'Liked' : 'Like Photo'}
             className={cn(
+              CONBLOCK,
               'inline-flex h-9 items-center gap-1.5 px-3 text-xs font-bold tracking-wider uppercase transition-all',
               activePhoto.is_liked
-                ? 'border-accent bg-accent text-white dark:text-zinc-950'
-                : CONBLOCK_SECONDARY
+                ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60'
+                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
             )}
           >
             <Heart
               className={cn(
-                'h-3.5 w-3.5',
+                'h-3.5 w-3.5 shrink-0 transition-transform active:scale-125',
                 activePhoto.is_liked
-                  ? 'fill-current text-white dark:text-zinc-950'
-                  : 'text-zinc-600'
+                  ? 'fill-current text-rose-600 dark:text-rose-400'
+                  : 'text-current'
               )}
             />
             <span>{activePhoto.likes_count}</span>

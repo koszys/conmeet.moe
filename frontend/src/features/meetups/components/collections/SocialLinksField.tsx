@@ -1,7 +1,8 @@
 'use client';
 
 import { Globe } from 'lucide-react';
-import { TextInput } from '@/shared/components/ui';
+import { CONBLOCK, TextInput } from '@/shared/components/ui';
+import { cn } from '@/shared/lib/utils';
 import type { SocialLinks } from '../../types';
 
 function InstagramIcon({ className }: { className?: string }) {
@@ -220,7 +221,10 @@ export function SocialBadges({ links }: { links?: SocialLinks }) {
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="border-ink hover:text-accent inline-flex items-center gap-1.5 border-2 bg-white px-2.5 py-1 text-xs font-bold text-zinc-800 shadow-[2px_2px_0_var(--ink)] transition-transform hover:-translate-y-0.5 dark:bg-zinc-800 dark:text-zinc-200"
+            className={cn(
+              CONBLOCK,
+              'hover:text-accent dark:hover:text-accent inline-flex items-center gap-1.5 bg-white px-2.5 py-1 text-xs font-bold text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200'
+            )}
           >
             <Icon className="h-3.5 w-3.5 shrink-0" />
             <span>{item.label}</span>

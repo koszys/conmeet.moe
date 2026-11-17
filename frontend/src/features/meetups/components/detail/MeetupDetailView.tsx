@@ -336,7 +336,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
               </h2>
             </div>
             <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-              Attendee photos, albums, and photographer credits for this meetup.
+              A collection of photos for this meetup.
             </p>
           </div>
 
@@ -404,7 +404,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             mascot
             mascotSpeech="Be the first to share photos!"
             title="No Photo Collections Yet"
-            description="Attended this meetup or took cosplay photos? Share your album, credit your socials, and let attendees download your shots!"
+            description="Attended this meetup or took cosplay photos? Share your photos!"
             className="mt-6 border-zinc-300 dark:border-zinc-700"
             action={
               <Link

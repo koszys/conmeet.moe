@@ -76,7 +76,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] w-full flex-col items-center justify-center py-16">
-        <MikuLoader message="Developing photo album..." size="lg" />
+        <MikuLoader message="Loading photo album..." size="lg" />
       </div>
     );
   }

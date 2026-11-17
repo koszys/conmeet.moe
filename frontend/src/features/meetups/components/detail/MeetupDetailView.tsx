@@ -352,7 +352,6 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             >
               <span className="hidden sm:inline">View Gallery</span>
               <span className="sm:hidden">View</span>
-              {albums && albums.length > 0 && <span>({albums.length})</span>}
               <ArrowRight className="h-3.5 w-3.5 shrink-0" />
             </Link>
           </div>
@@ -384,7 +383,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                   href={galleryHref}
                   className="font-display text-accent hover:text-accent-pop inline-flex items-center gap-1 text-xs font-bold tracking-wider uppercase transition-colors"
                 >
-                  <span>See all {albums.length} albums in the photo gallery</span>
+                  <span>See all albums in the photo gallery</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

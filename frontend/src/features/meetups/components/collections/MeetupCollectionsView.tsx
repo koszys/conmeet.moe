@@ -110,12 +110,6 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
             <CopyLinkButton variant="responsive" />
-            <RefreshButton
-              onRefresh={handleRefresh}
-              status={refreshStatus}
-              entityName="gallery"
-              size="md"
-            />
             <Link
               href={uploadHref}
               title="Add Photos"
@@ -192,12 +186,10 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
           <div className="w-6 shrink-0 sm:hidden" aria-hidden="true" />
         </div>
 
-        {/* Counter */}
-        {albums && albums.length > 0 && (
-          <span className="shrink-0 font-mono text-xs font-bold text-zinc-500 uppercase dark:text-zinc-400">
-            {albums.length} {albums.length === 1 ? 'Album' : 'Albums'}
-          </span>
-        )}
+        {/* Refresh Button */}
+        <div className="shrink-0">
+          <RefreshButton onRefresh={handleRefresh} status={refreshStatus} entityName="gallery" />
+        </div>
       </div>
 
       {/* Albums Grid */}

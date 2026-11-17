@@ -9,3 +9,4 @@ export * from './FilterTab';
 export * from './SocialButton';
 export * from './FormActions';
 export * from './RefreshButton';
+export * from './LikeButton';

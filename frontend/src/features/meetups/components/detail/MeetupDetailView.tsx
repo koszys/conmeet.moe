@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Camera, Clock, MapPin, User, Users } from 'lucide-react';
+import { ArrowRight, Camera, Clock, MapPin, Plus, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import {
   BackLink,
   Badge,
   BookmarkButton,
   CONBLOCK_PRIMARY,
+  CONBLOCK_SECONDARY,
   CopyLinkButton,
   DeleteButton,
   EditButton,
@@ -19,7 +20,8 @@ import {
 } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
-import { useMeetup, useToggleSaveMeetup } from '../../api';
+import { useMeetup, useMeetupAlbums, useToggleSaveMeetup } from '../../api';
+import { AlbumCard, AlbumCardSkeleton } from '../collections';
 import { GoingButton } from '../GoingButton';
 import { MeetupForm } from '../form';
 import { MeetupDetailSkeleton } from './MeetupDetailSkeleton';
@@ -34,6 +36,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   const router = useRouter();
   const { user } = useAuth();
   const { data: meetup, isLoading, isError } = useMeetup(meetupId);
+  const { data: albums, isLoading: isAlbumsLoading } = useMeetupAlbums(meetupId, 'popular');
   const toggleSave = useToggleSaveMeetup();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -324,7 +327,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
       {/* Photo Collections & Albums Section */}
       <section className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
               <Camera className="text-accent-pop h-5 w-5" />
@@ -336,16 +339,87 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
               Attendee photos, albums, and photographer credits for this meetup.
             </p>
           </div>
+
+          <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+            {albums && albums.length > 0 && (
+              <Link
+                href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
+                className={cn(
+                  CONBLOCK_SECONDARY,
+                  'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider uppercase'
+                )}
+              >
+                <span>View All ({albums.length})</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            )}
+
+            <Link
+              href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections/new`}
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold tracking-wider uppercase'
+              )}
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Photos</span>
+            </Link>
+          </div>
         </div>
 
-        {/* Empty / Intro state */}
-        <EmptyState
-          mascot
-          mascotSpeech="Photoshoots coming soon!"
-          title="No Albums Added Yet"
-          description="Attended this meetup? Soon you will be able to share your photoshoot folders, credit your socials, and download attendee photos right here!"
-          className="mt-6 border-zinc-300 dark:border-zinc-700"
-        />
+        {/* Live Albums Grid or Empty State */}
+        {isAlbumsLoading ? (
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <AlbumCardSkeleton />
+            <AlbumCardSkeleton />
+            <AlbumCardSkeleton />
+          </div>
+        ) : albums && albums.length > 0 ? (
+          <div className="mt-6 space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {albums.slice(0, 3).map((album) => (
+                <AlbumCard
+                  key={album.id}
+                  album={album}
+                  conventionSlug={conventionSlug}
+                  meetupId={meetupId}
+                />
+              ))}
+            </div>
+
+            {albums.length > 3 && (
+              <div className="pt-2 text-center sm:text-right">
+                <Link
+                  href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
+                  className="font-display text-accent hover:text-accent-pop inline-flex items-center gap-1 text-xs font-bold tracking-wider uppercase transition-colors"
+                >
+                  <span>See all {albums.length} collections for this meetup</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : (
+          <EmptyState
+            mascot
+            mascotSpeech="Be the first to share photos!"
+            title="No Photo Collections Yet"
+            description="Attended this meetup or took cosplay photos? Share your album, credit your socials, and let attendees download your shots!"
+            className="mt-6 border-zinc-300 dark:border-zinc-700"
+            action={
+              <Link
+                href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections/new`}
+                className={cn(
+                  CONBLOCK_PRIMARY,
+                  'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider uppercase'
+                )}
+              >
+                <Plus className="h-4 w-4" />
+                <span>Upload Photos</span>
+              </Link>
+            }
+          />
+        )}
       </section>
 
       {/* Delete Confirmation Modal Popup */}

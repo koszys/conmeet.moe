@@ -350,16 +350,16 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
             {/* Selected Photos */}
             {photos.length > 0 && (
               <div className="border-ink mt-5 border-t-2 pt-4">
-                <div className="flex items-center justify-between pb-3">
-                  <span className="font-display text-xs font-bold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
+                <div className="flex items-center justify-between gap-2 pb-3">
+                  <span className="font-display truncate text-xs font-bold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
                     Selected Photos ({photos.length})
                   </span>
                   <button
                     type="button"
                     onClick={clearAllPhotos}
-                    className="inline-flex cursor-pointer items-center gap-1 text-xs font-bold text-rose-600 hover:underline dark:text-rose-400"
+                    className="inline-flex shrink-0 cursor-pointer items-center gap-1 text-xs font-bold whitespace-nowrap text-rose-600 hover:underline dark:text-rose-400"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-3.5 w-3.5 shrink-0" />
                     <span>Clear All</span>
                   </button>
                 </div>

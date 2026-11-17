@@ -412,14 +412,22 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                         }
                         toggleLikePhoto.mutate({ photoId: photo.id, albumId: album.id });
                       }}
+                      title={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
+                      aria-label={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
                       className={cn(
-                        'border-ink inline-flex items-center gap-1 rounded-sm border border-black/40 px-2 py-0.5 text-xs font-bold shadow-[1px_1px_0_rgba(0,0,0,0.5)] transition-transform hover:scale-105',
+                        CONBLOCK,
+                        'inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold',
                         photo.is_liked
-                          ? 'bg-accent text-white dark:text-zinc-950'
-                          : 'bg-white/90 text-zinc-800 dark:bg-zinc-800/90 dark:text-zinc-200'
+                          ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
+                          : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white/95 text-zinc-800 hover:bg-white dark:bg-zinc-800/95 dark:text-zinc-200 dark:hover:bg-zinc-800'
                       )}
                     >
-                      <Heart className={cn('h-3 w-3', photo.is_liked && 'fill-current')} />
+                      <Heart
+                        className={cn(
+                          'h-3 w-3 shrink-0 transition-transform active:scale-125',
+                          photo.is_liked ? 'fill-current text-current' : 'text-current'
+                        )}
+                      />
                       <span>{photo.likes_count}</span>
                     </button>
 

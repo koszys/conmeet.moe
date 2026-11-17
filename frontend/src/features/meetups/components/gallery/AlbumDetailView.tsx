@@ -10,7 +10,6 @@ import {
   CheckSquare,
   Clock,
   Download,
-  Heart,
   Loader2,
   User as UserIcon,
 } from 'lucide-react';
@@ -18,12 +17,12 @@ import {
   BackLink,
   BookmarkButton,
   CONBLOCK,
-  CONBLOCK_ACCENT,
   CONBLOCK_PRIMARY,
   CONBLOCK_SECONDARY,
   CopyLinkButton,
   DeleteButton,
   EmptyState,
+  LikeButton,
 } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
@@ -175,13 +174,13 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-      {/* Top Navigation Row */}
+      {/* Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <BackLink href={galleryHref}>
           {meetup?.name ? `Back to ${meetup.name} Gallery` : 'Back to Photo Gallery'}
         </BackLink>
 
-        {/* Delete button if author/admin */}
+        {/* Delete */}
         {isOwnerOrAdmin && (
           <div className="flex items-center gap-2">
             <DeleteButton
@@ -195,7 +194,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         )}
       </div>
 
-      {/* Main Album Header Card */}
+      {/* Header Card */}
       <section className="border-ink space-y-4 border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -236,7 +235,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           </div>
         </div>
 
-        {/* Social media links if provided */}
+        {/* Social Credits */}
         {album.social_links && Object.keys(album.social_links).length > 0 && (
           <div className="border-t border-zinc-200 pt-2 dark:border-zinc-800">
             <span className="font-display mb-2 block text-[11px] tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
@@ -246,37 +245,24 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           </div>
         )}
 
-        {/* Description text */}
+        {/* Description */}
         {album.description && (
           <div className="border-t border-zinc-200 pt-2 text-sm leading-relaxed text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
             <p className="whitespace-pre-line">{album.description}</p>
           </div>
         )}
 
-        {/* Header Card Bottom Row: Likes & Save */}
+        {/* Actions */}
         <div className="flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-          <button
-            type="button"
+          <LikeButton
+            variant="responsive"
+            isLiked={album.is_liked}
+            count={album.likes_count}
             onClick={handleToggleLikeAlbum}
             title={album.is_liked ? 'Liked' : 'Like Album'}
-            aria-label={album.is_liked ? 'Liked' : 'Like Album'}
-            className={cn(
-              CONBLOCK,
-              'inline-flex h-9 items-center gap-1.5 px-3.5 text-xs font-bold uppercase transition-all sm:h-10 sm:px-4',
-              album.is_liked
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-            )}
-          >
-            <Heart
-              className={cn(
-                'h-4 w-4 shrink-0 transition-transform active:scale-125',
-                album.is_liked ? 'fill-current text-current' : 'text-current'
-              )}
-            />
-            <span className="font-mono text-xs tabular-nums">{album.likes_count}</span>
-            <span>{album.is_liked ? 'Liked' : 'Like'}</span>
-          </button>
+            ariaLabel={album.is_liked ? 'Liked' : 'Like Album'}
+            className="h-9 sm:h-10"
+          />
 
           <BookmarkButton
             variant="responsive"
@@ -291,7 +277,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         </div>
       </section>
 
-      {/* Photos Grid Toolbar */}
+      {/* Toolbar */}
       <div className="border-ink flex flex-wrap items-center justify-between gap-3 border-b-2 pb-4">
         <h2 className="font-display text-lg tracking-wide uppercase sm:text-xl">
           Photos ({photos.length})
@@ -349,14 +335,14 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         </div>
       </div>
 
-      {/* Live Photos Grid */}
+      {/* Photos Grid */}
       {photos.length === 0 ? (
         <EmptyState
           title="No Photos in Album"
           description="This album does not have any uploaded photos yet."
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 min-[500px]:grid-cols-2 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {photos.map((photo, idx) => {
             const isSelected = selectedPhotoIds.has(photo.id);
 
@@ -376,16 +362,16 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                   isSelected && 'ring-accent ring-4 ring-offset-2'
                 )}
               >
-                {/* Photo image */}
+                {/* Photo */}
                 <Image
                   src={photo.image_thumb || photo.image}
                   alt={photo.caption || `${album.title} - Photo ${idx + 1}`}
                   fill
-                  sizes="(max-width: 500px) 100vw, (max-width: 768px) 50vw, 33vw"
+                  sizes="(max-width: 380px) 100vw, (max-width: 768px) 50vw, 33vw"
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
 
-                {/* Selection Checkbox Badge */}
+                {/* Selection Checkbox */}
                 {isSelectMode ? (
                   <div className="absolute top-2.5 left-2.5 z-10">
                     <div
@@ -400,10 +386,12 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                     </div>
                   </div>
                 ) : (
-                  /* Bottom overlay: Photo likes */
+                  /* Overlay */
                   <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-2">
-                    <button
-                      type="button"
+                    <LikeButton
+                      variant="badge"
+                      isLiked={photo.is_liked}
+                      count={photo.likes_count}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!user) {
@@ -413,23 +401,9 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                         toggleLikePhoto.mutate({ photoId: photo.id, albumId: album.id });
                       }}
                       title={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
-                      aria-label={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
-                      className={cn(
-                        CONBLOCK,
-                        'inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold',
-                        photo.is_liked
-                          ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                          : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white/95 text-zinc-800 hover:bg-white dark:bg-zinc-800/95 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                      )}
-                    >
-                      <Heart
-                        className={cn(
-                          'h-3 w-3 shrink-0 transition-transform active:scale-125',
-                          photo.is_liked ? 'fill-current text-current' : 'text-current'
-                        )}
-                      />
-                      <span>{photo.likes_count}</span>
-                    </button>
+                      ariaLabel={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
+                      className="px-2 py-0.5 text-xs"
+                    />
 
                     <span className="rounded bg-black/50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white/90">
                       #{idx + 1}
@@ -442,7 +416,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         </div>
       )}
 
-      {/* Floating Bottom Bar in Selection Mode */}
+      {/* Selection Bar */}
       {isSelectMode && (
         <div className="border-ink fixed inset-x-4 bottom-6 z-40 mx-auto max-w-xl border-2 bg-white p-3.5 shadow-[6px_6px_0_var(--ink)] sm:px-6 sm:py-4 dark:bg-zinc-900">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -494,7 +468,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         </div>
       )}
 
-      {/* Lightbox Modal */}
+      {/* Lightbox */}
       {lightboxIndex !== null && (
         <PhotoLightbox
           photos={photos}
@@ -507,7 +481,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         />
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       <DeleteAlbumModal
         album={album}
         isOpen={isDeleteOpen}

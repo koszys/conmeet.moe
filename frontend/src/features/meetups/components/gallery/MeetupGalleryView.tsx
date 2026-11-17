@@ -21,12 +21,14 @@ import type { AlbumSortOption } from '../../types';
 import { AlbumCard } from './AlbumCard';
 import { AlbumCardSkeleton } from './AlbumCardSkeleton';
 
-export interface MeetupCollectionsViewProps {
+export interface MeetupGalleryViewProps {
   conventionSlug: string;
   meetupId: number | string;
 }
 
-export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollectionsViewProps) {
+export type MeetupCollectionsViewProps = MeetupGalleryViewProps;
+
+export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryViewProps) {
   const queryClient = useQueryClient();
   const [activeSort, setActiveSort] = useState<AlbumSortOption>('all');
   const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
@@ -87,7 +89,7 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-      {/* Standard Header Block matching MeetupHeader & BoardHeader */}
+      {/* Header */}
       <div className="border-ink @container border-b-2 pb-5">
         <BackLink href={meetupHref}>
           {meetup?.name ? `Back to ${meetup.name}` : 'Back to Meetup'}
@@ -127,7 +129,7 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
         </div>
       </div>
 
-      {/* Sorting Toolbar with horizontal scroll fade on mobile */}
+      {/* Filters */}
       <div className="border-ink flex flex-wrap items-center justify-between gap-3 border-b-2 pb-5">
         <div
           ref={tabsRef}
@@ -182,11 +184,11 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
               />
             }
           />
-          {/* Trailing spacer so the last tab ("Newest") is never cut off by the right fade mask */}
+          {/* Scroll spacer */}
           <div className="w-6 shrink-0 sm:hidden" aria-hidden="true" />
         </div>
 
-        {/* Refresh Button */}
+        {/* Refresh */}
         <div className="shrink-0">
           <RefreshButton onRefresh={handleRefresh} status={refreshStatus} entityName="gallery" />
         </div>
@@ -194,13 +196,13 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
 
       {/* Albums Grid */}
       {isAlbumsLoading ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <AlbumCardSkeleton key={i} />
           ))}
         </div>
       ) : albums && albums.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {albums.map((album) => (
             <AlbumCard
               key={album.id}

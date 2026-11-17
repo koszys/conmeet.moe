@@ -192,7 +192,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
 
   return (
     <div className="space-y-6">
-      {/* Top Navigation */}
+      {/* Navigation */}
       <BackLink href={galleryHref}>
         {meetup?.name ? `Back to ${meetup.name} Gallery` : 'Back to Photo Gallery'}
       </BackLink>
@@ -221,13 +221,13 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
         </div>
       )}
 
-      {/* Main Form Box matching MeetupForm */}
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         noValidate
         className="border-ink space-y-6 border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900"
       >
-        {/* Album Title */}
+        {/* Title */}
         <div>
           <div className="flex items-center justify-between">
             <label
@@ -261,7 +261,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
           )}
         </div>
 
-        {/* Photos Selection Field */}
+        {/* Photos */}
         <div>
           <div className="flex items-center justify-between">
             <label className="font-display block text-xs tracking-wider uppercase">
@@ -320,7 +320,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
               </button>
             </div>
 
-            {/* Selected Photos Preview Grid */}
+            {/* Selected Photos */}
             {photos.length > 0 && (
               <div className="border-ink mt-5 border-t-2 pt-4">
                 <div className="flex items-center justify-between pb-3">
@@ -376,7 +376,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
           )}
         </div>
 
-        {/* Description & Details */}
+        {/* Description */}
         <div>
           <div className="flex items-center justify-between">
             <label
@@ -398,10 +398,10 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
           />
         </div>
 
-        {/* Social Credits Section */}
+        {/* Social Credits */}
         <SocialLinksField value={socialLinks} onChange={setSocialLinks} />
 
-        {/* Form Actions matching MeetupForm */}
+        {/* Form Actions */}
         <FormActions
           submitLabel={
             <>

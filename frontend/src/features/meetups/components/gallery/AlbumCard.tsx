@@ -47,14 +47,14 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
 
   return (
     <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
-      {/* Clickable link area for navigation */}
+      {/* Navigation Link */}
       <Link
         href={albumHref}
         aria-label={`View album: ${album.title}`}
         className="absolute inset-x-0 top-0 bottom-14 z-0 cursor-pointer"
       />
 
-      {/* Visual Photo Preview Area (2x2 mosaic or cover) */}
+      {/* Preview */}
       <div className="border-ink pointer-events-none relative aspect-[16/10] w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800">
         {previewPhotos.length >= 4 ? (
           <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5 bg-zinc-900">
@@ -87,7 +87,7 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
           </div>
         )}
 
-        {/* Photos count badge */}
+        {/* Count Badge */}
         <div className="absolute top-2.5 right-2.5">
           <Badge
             variant="default"
@@ -99,22 +99,22 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
         </div>
       </div>
 
-      {/* Album Card Content */}
-      <div className="pointer-events-none flex flex-1 flex-col p-4">
+      {/* Content */}
+      <div className="pointer-events-none flex flex-1 flex-col p-3 sm:p-4">
         {/* Title */}
-        <h3 className="font-display group-hover:text-accent-pop line-clamp-1 text-base leading-snug tracking-wide uppercase transition-colors">
+        <h3 className="font-display group-hover:text-accent-pop line-clamp-1 text-sm leading-snug tracking-wide uppercase transition-colors sm:text-base">
           {album.title}
         </h3>
 
-        {/* Description snippet */}
+        {/* Description */}
         {album.description && (
           <p className="mt-1 line-clamp-2 text-xs text-zinc-600 dark:text-zinc-300">
             {album.description}
           </p>
         )}
 
-        {/* Photographer / Creator Credit */}
-        <div className="mt-2.5 mb-3 flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-300">
+        {/* Creator */}
+        <div className="mt-2 mb-2.5 flex items-center gap-1.5 text-[11px] text-zinc-500 sm:mt-2.5 sm:mb-3 dark:text-zinc-300">
           <User className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-400" />
           <span className="truncate">
             Photos by{' '}
@@ -124,10 +124,9 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
           </span>
         </div>
 
-        {/* Action Footer */}
-        <div className="pointer-events-auto relative z-10 mt-auto flex items-center justify-between border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        {/* Actions */}
+        <div className="pointer-events-auto relative z-10 mt-auto flex items-center justify-between border-t border-zinc-200 pt-2.5 sm:pt-3 dark:border-zinc-800">
           <div className="flex items-center gap-2">
-            {/* Like Button */}
             <LikeButton
               variant="badge"
               isLiked={album.is_liked}
@@ -135,7 +134,6 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
               onClick={handleToggleLike}
             />
 
-            {/* Favorite / Bookmark Button */}
             <BookmarkButton
               variant="icon"
               isSaved={album.is_favorited}

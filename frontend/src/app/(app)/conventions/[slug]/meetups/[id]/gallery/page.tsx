@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MeetupCollectionsView } from '@/features/meetups';
+import { MeetupGalleryView } from '@/features/meetups';
 
 export const metadata: Metadata = {
   title: 'Photo Gallery',
@@ -13,5 +13,5 @@ export default async function MeetupGalleryPage({
 }) {
   const { slug, id } = await params;
 
-  return <MeetupCollectionsView conventionSlug={slug} meetupId={id} />;
+  return <MeetupGalleryView conventionSlug={slug} meetupId={id} />;
 }

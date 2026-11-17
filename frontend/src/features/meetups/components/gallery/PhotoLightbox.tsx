@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, Download, Heart } from 'lucide-react';
-import { CloseButton, CONBLOCK, CONBLOCK_ACCENT, CONBLOCK_SECONDARY } from '@/shared/components/ui';
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { CloseButton, CONBLOCK, CONBLOCK_SECONDARY, LikeButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
 import { useToggleLikePhoto } from '../../api';
@@ -161,7 +161,7 @@ export function PhotoLightbox({
       className="fixed inset-0 z-50 flex flex-col bg-zinc-950/95 backdrop-blur-sm"
       onClick={onClose}
     >
-      {/* Top action bar */}
+      {/* Top Bar */}
       <div
         className="flex shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-6"
         onClick={(e) => e.stopPropagation()}
@@ -171,29 +171,18 @@ export function PhotoLightbox({
         </span>
 
         <div className="flex items-center gap-2">
-          {/* Like button */}
-          <button
-            type="button"
+          {/* Like */}
+          <LikeButton
+            variant="badge"
+            isLiked={activePhoto.is_liked}
+            count={activePhoto.likes_count}
             onClick={handleLike}
             title={activePhoto.is_liked ? 'Liked' : 'Like Photo'}
-            className={cn(
-              CONBLOCK,
-              'inline-flex h-9 items-center gap-1.5 px-3 text-xs font-bold tracking-wider uppercase transition-all',
-              activePhoto.is_liked
-                ? 'bg-accent hover:bg-accent-pop text-white dark:text-zinc-950 dark:hover:text-white'
-                : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-white text-zinc-800 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800'
-            )}
-          >
-            <Heart
-              className={cn(
-                'h-3.5 w-3.5 shrink-0 transition-transform active:scale-125',
-                activePhoto.is_liked ? 'fill-current text-current' : 'text-current'
-              )}
-            />
-            <span>{activePhoto.likes_count}</span>
-          </button>
+            ariaLabel={activePhoto.is_liked ? 'Liked' : 'Like Photo'}
+            className="h-9 px-3"
+          />
 
-          {/* Download photo button */}
+          {/* Download */}
           <button
             type="button"
             onClick={handleDownload}
@@ -208,12 +197,12 @@ export function PhotoLightbox({
             <span className="hidden sm:inline">Download</span>
           </button>
 
-          {/* Close button */}
+          {/* Close */}
           <CloseButton onClick={onClose} ariaLabel="Close photo viewer" size="md" />
         </div>
       </div>
 
-      {/* Main photo area */}
+      {/* Photo Area */}
       <div
         className="relative flex flex-1 items-center justify-between p-2 select-none sm:p-4 lg:px-6 lg:py-6"
         onClick={(e) => e.stopPropagation()}
@@ -221,7 +210,7 @@ export function PhotoLightbox({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Previous column & button (desktop only, hidden on mobile/tablet) */}
+        {/* Previous (desktop) */}
         <div
           className="z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
           onClick={handlePrev}
@@ -242,9 +231,9 @@ export function PhotoLightbox({
           )}
         </div>
 
-        {/* Center: The active image container */}
+        {/* Image Container */}
         <div className="relative flex h-full max-h-[82vh] min-w-0 flex-1 items-center justify-center">
-          {/* Side click zones in empty space to left/right of narrow images on desktop */}
+          {/* Side click zones */}
           {photos.length > 1 && (
             <>
               <button
@@ -264,7 +253,7 @@ export function PhotoLightbox({
             </>
           )}
 
-          {/* The active image itself */}
+          {/* Active Photo */}
           <div
             className="relative z-10 flex max-h-[82vh] max-w-full items-center justify-center"
             onClick={(e) => e.stopPropagation()}
@@ -281,7 +270,7 @@ export function PhotoLightbox({
           </div>
         </div>
 
-        {/* Next column & button (desktop only, hidden on mobile/tablet) */}
+        {/* Next (desktop) */}
         <div
           className="z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
           onClick={handleNext}
@@ -303,7 +292,7 @@ export function PhotoLightbox({
         </div>
       </div>
 
-      {/* Caption footer if provided */}
+      {/* Caption */}
       {activePhoto.caption && (
         <div
           className="border-t border-zinc-800 bg-zinc-900/90 px-4 py-2.5 text-center text-sm font-semibold text-zinc-200"

@@ -2,6 +2,7 @@ export type MeetupImageLayout = 'banner' | 'poster';
 
 export interface Meetup {
   id: number;
+  slug: string;
   convention: number;
   convention_slug: string;
   convention_name: string;
@@ -69,6 +70,7 @@ export interface MeetupPhoto {
 export interface MeetupAlbum {
   id: number;
   meetup: number;
+  meetup_slug?: string;
   title: string;
   description: string;
   social_links: SocialLinks;

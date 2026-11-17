@@ -16,7 +16,7 @@ export const meetupKeys = {
   lists: () => [...meetupKeys.all, 'list'] as const,
   list: (filters: MeetupFilters) => [...meetupKeys.lists(), filters] as const,
   details: () => [...meetupKeys.all, 'detail'] as const,
-  detail: (id: number) => [...meetupKeys.details(), id] as const,
+  detail: (id: number | string) => [...meetupKeys.details(), id] as const,
 };
 
 export function useMeetups(filters: MeetupFilters = {}) {
@@ -44,7 +44,7 @@ export function useMeetups(filters: MeetupFilters = {}) {
   });
 }
 
-export function useMeetup(id: number) {
+export function useMeetup(id: number | string) {
   return useQuery({
     queryKey: meetupKeys.detail(id),
     queryFn: async () => {
@@ -57,13 +57,13 @@ export function useMeetup(id: number) {
 export const albumKeys = {
   all: ['albums'] as const,
   lists: () => [...albumKeys.all, 'list'] as const,
-  list: (meetupId: number, sort: AlbumSortOption = 'newest') =>
+  list: (meetupId: number | string, sort: AlbumSortOption = 'newest') =>
     [...albumKeys.lists(), meetupId, sort] as const,
   details: () => [...albumKeys.all, 'detail'] as const,
   detail: (id: number) => [...albumKeys.details(), id] as const,
 };
 
-export function useMeetupAlbums(meetupId: number, sort: AlbumSortOption = 'all') {
+export function useMeetupAlbums(meetupId: number | string, sort: AlbumSortOption = 'all') {
   return useQuery({
     queryKey: albumKeys.list(meetupId, sort),
     queryFn: async () => {

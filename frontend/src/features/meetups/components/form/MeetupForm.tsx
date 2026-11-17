@@ -233,14 +233,14 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
         if (onSuccess) {
           onSuccess(updated);
         } else {
-          router.push(`/conventions/${conventionSlug}/meetups/${updated.id}`);
+          router.push(`/conventions/${conventionSlug}/meetups/${updated.slug || updated.id}`);
         }
       } else {
         const created = await createMutation.mutateAsync(formData);
         if (onSuccess) {
           onSuccess(created);
         } else {
-          router.push(`/conventions/${conventionSlug}/meetups/${created.id}`);
+          router.push(`/conventions/${conventionSlug}/meetups/${created.slug || created.id}`);
         }
       }
     } catch (err: unknown) {
@@ -269,7 +269,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
       <BackLink
         href={
           isEditing && initialData
-            ? `/conventions/${conventionSlug}/meetups/${initialData.id}`
+            ? `/conventions/${conventionSlug}/meetups/${initialData.slug || initialData.id}`
             : `/conventions/${conventionSlug}/meetups`
         }
         onClick={
@@ -752,7 +752,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             onCancel
               ? undefined
               : isEditing && initialData
-                ? `/conventions/${conventionSlug}/meetups/${initialData.id}`
+                ? `/conventions/${conventionSlug}/meetups/${initialData.slug || initialData.id}`
                 : `/conventions/${conventionSlug}/meetups`
           }
           onCancel={onCancel}

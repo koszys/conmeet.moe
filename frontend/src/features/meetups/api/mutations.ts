@@ -139,7 +139,7 @@ export function useDeleteMeetup() {
   });
 }
 
-export function useCreateAlbum(meetupId: number) {
+export function useCreateAlbum(meetupId: number | string) {
   const queryClient = useQueryClient();
 
   return useMutation({

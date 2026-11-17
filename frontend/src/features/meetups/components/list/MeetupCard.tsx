@@ -29,7 +29,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
     toggleSave.mutate(meetup.id);
   };
 
-  const meetupHref = `/conventions/${conventionSlug}/meetups/${meetup.id}`;
+  const meetupHref = `/conventions/${conventionSlug}/meetups/${meetup.slug || meetup.id}`;
   const imageUrl = meetup.image_thumb || meetup.image;
 
   return (

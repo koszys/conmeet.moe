@@ -80,7 +80,7 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
   if (isMeetupLoading || (isAlbumsLoading && !albums)) {
     return (
       <div className="flex min-h-[60vh] w-full flex-col items-center justify-center py-16">
-        <MikuLoader message="Developing photo gallery..." size="lg" />
+        <MikuLoader message="Loading photo gallery..." size="lg" />
       </div>
     );
   }

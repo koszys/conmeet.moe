@@ -19,7 +19,7 @@ import { AlbumCardSkeleton } from './AlbumCardSkeleton';
 
 export interface MeetupCollectionsViewProps {
   conventionSlug: string;
-  meetupId: number;
+  meetupId: number | string;
 }
 
 export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollectionsViewProps) {
@@ -28,8 +28,9 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
   const { data: meetup } = useMeetup(meetupId);
   const { data: albums, isLoading: isAlbumsLoading } = useMeetupAlbums(meetupId, activeSort);
 
-  const meetupHref = `/conventions/${conventionSlug}/meetups/${meetupId}`;
-  const uploadHref = `/conventions/${conventionSlug}/meetups/${meetupId}/collections/new`;
+  const meetupSlugOrId = meetup?.slug || meetupId;
+  const meetupHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
+  const uploadHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/new`;
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({
@@ -52,10 +53,10 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="font-display text-xl tracking-wide uppercase min-[380px]:text-2xl sm:text-3xl">
-                Photo Collections
+                Photo Gallery
               </h1>
               <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
-                A collection of photos for this meetup.
+                Attendee photo albums and memories from this meetup.
               </p>
             </div>
           </div>
@@ -89,9 +90,9 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
           <FilterTab
             isActive={activeSort === 'all'}
             onClick={() => setActiveSort('all')}
-            title="All Collections"
-            ariaLabel="All Collections"
-            label="All Collections"
+            title="All Albums"
+            ariaLabel="All Albums"
+            label="All Albums"
             shortLabel="All"
             icon={
               <Images
@@ -160,7 +161,7 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
               key={album.id}
               album={album}
               conventionSlug={conventionSlug}
-              meetupId={meetupId}
+              meetupId={meetupSlugOrId}
             />
           ))}
         </div>
@@ -168,7 +169,7 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
         <EmptyState
           mascot
           mascotSpeech="Be the first to share photos!"
-          title="No Photo Collections Yet"
+          title="No Photos in Gallery Yet"
           description="Attended this meetup or took cosplay photos? Share your photos!"
           className="mt-6 border-zinc-300 dark:border-zinc-700"
           action={

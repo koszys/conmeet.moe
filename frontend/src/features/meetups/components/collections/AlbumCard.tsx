@@ -11,7 +11,7 @@ import type { MeetupAlbum } from '../../types';
 export interface AlbumCardProps {
   album: MeetupAlbum;
   conventionSlug: string;
-  meetupId: number;
+  meetupId: number | string;
 }
 
 export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
@@ -19,11 +19,13 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
   const toggleLike = useToggleLikeAlbum();
   const toggleFavorite = useToggleFavoriteAlbum();
 
+  const meetupSlugOrId = album.meetup_slug || meetupId;
+
   const handleToggleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupId}`;
+      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
       return;
     }
     toggleLike.mutate(album.id);
@@ -33,13 +35,13 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupId}`;
+      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
       return;
     }
     toggleFavorite.mutate(album.id);
   };
 
-  const albumHref = `/conventions/${conventionSlug}/meetups/${meetupId}/collections/${album.id}`;
+  const albumHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
   const previewPhotos = album.preview_photos || [];
   const coverUrl = album.cover_thumb_url || album.cover_photo_url;
 

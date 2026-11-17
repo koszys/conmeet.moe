@@ -28,7 +28,7 @@ import { DeleteMeetupModal } from './DeleteMeetupModal';
 
 interface MeetupDetailViewProps {
   conventionSlug: string;
-  meetupId: number;
+  meetupId: number | string;
 }
 
 export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewProps) {
@@ -44,6 +44,9 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [isEditing]);
+
+  const meetupSlugOrId = meetup?.slug || meetupId;
+  const galleryHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`;
 
   const handleOpenEdit = () => {
     setIsEditing(true);
@@ -97,7 +100,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
   const handleToggleSave = () => {
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupId}`;
+      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
       return;
     }
     toggleSave.mutate(meetup.id);
@@ -324,33 +327,30 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
         </section>
       )}
 
-      {/* Photo Collections & Albums Section */}
+      {/* Photo Gallery & Albums Section */}
       <section className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Link
-              href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
-              className="group inline-flex items-center gap-2"
-            >
+            <Link href={galleryHref} className="group inline-flex items-center gap-2">
               <Camera className="text-accent-pop h-5 w-5 transition-transform group-hover:scale-105" />
               <h2 className="font-display group-hover:text-accent-pop text-base font-bold tracking-wider uppercase transition-colors sm:text-lg">
-                Photo Collections
+                Photo Gallery
               </h2>
             </Link>
             <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-              A collection of photos for this meetup.
+              Attendee photo albums and memories from this meetup.
             </p>
           </div>
 
           <div className="flex items-center gap-2 sm:shrink-0">
             <Link
-              href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
+              href={galleryHref}
               className={cn(
                 CONBLOCK_PRIMARY,
                 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase sm:px-3.5'
               )}
             >
-              <span className="hidden sm:inline">View Collections</span>
+              <span className="hidden sm:inline">View Gallery</span>
               <span className="sm:hidden">View</span>
               {albums && albums.length > 0 && <span>({albums.length})</span>}
               <ArrowRight className="h-3.5 w-3.5 shrink-0" />
@@ -373,7 +373,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                   key={album.id}
                   album={album}
                   conventionSlug={conventionSlug}
-                  meetupId={meetupId}
+                  meetupId={meetupSlugOrId}
                 />
               ))}
             </div>
@@ -381,10 +381,10 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             {albums.length > 3 && (
               <div className="pt-2 text-center sm:text-right">
                 <Link
-                  href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
+                  href={galleryHref}
                   className="font-display text-accent hover:text-accent-pop inline-flex items-center gap-1 text-xs font-bold tracking-wider uppercase transition-colors"
                 >
-                  <span>See all {albums.length} collections for this meetup</span>
+                  <span>See all {albums.length} albums in the photo gallery</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -394,18 +394,18 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           <EmptyState
             mascot
             mascotSpeech="Be the first to share photos!"
-            title="No Photo Collections Yet"
+            title="No Photos in Gallery Yet"
             description="Attended this meetup or took cosplay photos? Share your photos!"
             className="mt-6 border-zinc-300 dark:border-zinc-700"
             action={
               <Link
-                href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
+                href={galleryHref}
                 className={cn(
                   CONBLOCK_PRIMARY,
                   'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
                 )}
               >
-                <span className="hidden sm:inline">View Collections</span>
+                <span className="hidden sm:inline">View Gallery</span>
                 <span className="sm:hidden">View</span>
                 <ArrowRight className="h-3.5 w-3.5 shrink-0" />
               </Link>

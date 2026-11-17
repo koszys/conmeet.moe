@@ -19,7 +19,7 @@ import { SocialLinksField } from './SocialLinksField';
 
 export interface AlbumUploadFormProps {
   conventionSlug: string;
-  meetupId: number;
+  meetupId: number | string;
 }
 
 interface PhotoItem {
@@ -64,7 +64,8 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
     };
   }, [photos]);
 
-  const collectionsHref = `/conventions/${conventionSlug}/meetups/${meetupId}/collections`;
+  const meetupSlugOrId = meetup?.slug || meetupId;
+  const galleryHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`;
 
   const handleFilesAdded = (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
@@ -165,7 +166,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
       });
 
       await createMutation.mutateAsync(formData);
-      router.push(collectionsHref);
+      router.push(galleryHref);
     } catch (err: unknown) {
       console.error('Failed to create album:', err);
       let message = 'Failed to create album. Please verify your photo files and try again.';
@@ -192,8 +193,8 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
   return (
     <div className="space-y-6">
       {/* Top Navigation */}
-      <BackLink href={collectionsHref}>
-        {meetup?.name ? `Back to ${meetup.name} Collections` : 'Back to Collections'}
+      <BackLink href={galleryHref}>
+        {meetup?.name ? `Back to ${meetup.name} Gallery` : 'Back to Photo Gallery'}
       </BackLink>
 
       {/* Header */}
@@ -204,7 +205,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
           </div>
           <div className="min-w-0">
             <h1 className="font-display text-xl tracking-wide uppercase min-[380px]:text-2xl sm:text-3xl">
-              Create Photo Album
+              Upload Photo Album
             </h1>
             <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
               Share your meetup shots, cosplay photos, and photographer credits.
@@ -409,7 +410,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
             </>
           }
           submittingLabel="Uploading Photos..."
-          cancelHref={collectionsHref}
+          cancelHref={galleryHref}
           isSubmitting={createMutation.isPending}
           borderTop
         />

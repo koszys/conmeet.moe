@@ -1,18 +1,10 @@
-import type { Metadata } from 'next';
-import { MeetupCollectionsView } from '@/features/meetups';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Photo Collections',
-  description: 'Browse attendee photos and albums from this meetup.',
-};
-
-export default async function MeetupCollectionsPage({
+export default async function LegacyCollectionsRedirect({
   params,
 }: {
   params: Promise<{ slug: string; id: string }>;
 }) {
   const { slug, id } = await params;
-  const meetupId = parseInt(id, 10);
-
-  return <MeetupCollectionsView conventionSlug={slug} meetupId={meetupId} />;
+  redirect(`/conventions/${slug}/meetups/${id}/gallery`);
 }

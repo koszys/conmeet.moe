@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Camera, Images, Trash2, UploadCloud, X } from 'lucide-react';
+import { AlertCircle, Camera, Images, Trash2, UploadCloud } from 'lucide-react';
 import {
   BackLink,
   CharCounter,
+  CloseButton,
   CONBLOCK,
   FormActions,
   TextArea,
@@ -351,15 +352,12 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                           Cover
                         </span>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(item.id)}
-                        className="border-ink absolute top-1 right-1 flex h-6 w-6 cursor-pointer items-center justify-center border bg-white/90 text-zinc-800 shadow-[1px_1px_0_var(--ink)] transition-colors hover:bg-red-500 hover:text-white dark:bg-zinc-900/90 dark:text-zinc-100"
+                      <CloseButton
+                        onClose={() => removePhoto(item.id)}
                         title="Remove photo"
-                        aria-label="Remove photo"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
+                        ariaLabel="Remove photo"
+                        className="absolute top-1 right-1 h-6 w-6 bg-white/95 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900/95"
+                      />
                       <div className="absolute inset-x-0 bottom-0 bg-black/60 px-1 py-0.5 text-center text-[9px] font-medium text-white">
                         {formatBytes(item.file.size)}
                       </div>

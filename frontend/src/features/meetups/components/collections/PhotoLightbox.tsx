@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Download, Heart } from 'lucide-react';
 import { CloseButton, CONBLOCK, CONBLOCK_ACCENT, CONBLOCK_SECONDARY } from '@/shared/components/ui';
@@ -78,6 +78,50 @@ export function PhotoLightbox({
   const handleNext = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
+  };
+
+  // Touch Swipe for mobile (swipe left/right to navigate without indicators)
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    isHorizontalSwipeRef.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const diffX = e.touches[0].clientX - touchStartXRef.current;
+    const diffY = e.touches[0].clientY - touchStartYRef.current;
+
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
+        isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diffX = touchEndX - touchStartXRef.current;
+    const swipeThreshold = 40;
+
+    if (isHorizontalSwipeRef.current && Math.abs(diffX) >= swipeThreshold) {
+      if (diffX < 0) {
+        // Swiped left -> next
+        setCurrentIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
+      } else {
+        // Swiped right -> prev
+        setCurrentIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1));
+      }
+    }
+
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = null;
   };
 
   const handleLike = (e: React.MouseEvent) => {
@@ -171,51 +215,92 @@ export function PhotoLightbox({
 
       {/* Main photo area */}
       <div
-        className="relative flex flex-1 items-center justify-center p-2 sm:p-6"
+        className="relative flex flex-1 items-center justify-between p-2 select-none sm:p-4 lg:px-6 lg:py-6"
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        {/* Previous button */}
-        {photos.length > 1 && (
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous photo"
-            className={cn(
-              CONBLOCK,
-              'border-ink absolute top-1/2 left-3 z-10 -translate-y-1/2 bg-white/90 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] transition-transform hover:scale-105 active:scale-95 sm:left-6 dark:bg-zinc-800/90 dark:text-zinc-100'
-            )}
-          >
-            <ChevronLeft className="h-6 w-6 stroke-3" />
-          </button>
-        )}
-
-        {/* The active image */}
-        <div className="relative flex max-h-[82vh] max-w-full items-center justify-center">
-          <Image
-            src={activePhoto.image}
-            alt={activePhoto.caption || `${albumTitle} - Photo ${currentIndex + 1}`}
-            width={1920}
-            height={1080}
-            priority
-            unoptimized
-            className="border-ink max-h-[82vh] w-auto max-w-full border-2 object-contain shadow-[4px_4px_0_var(--ink)]"
-          />
+        {/* Previous column & button (desktop only, hidden on mobile/tablet) */}
+        <div
+          className="z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
+          onClick={handlePrev}
+        >
+          {photos.length > 1 && (
+            <button
+              type="button"
+              onClick={handlePrev}
+              aria-label="Previous photo"
+              title="Previous photo"
+              className={cn(
+                CONBLOCK,
+                'border-ink bg-white/90 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] transition-all hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              )}
+            >
+              <ChevronLeft className="h-6 w-6 stroke-3" />
+            </button>
+          )}
         </div>
 
-        {/* Next button */}
-        {photos.length > 1 && (
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next photo"
-            className={cn(
-              CONBLOCK,
-              'border-ink absolute top-1/2 right-3 z-10 -translate-y-1/2 bg-white/90 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] transition-transform hover:scale-105 active:scale-95 sm:right-6 dark:bg-zinc-800/90 dark:text-zinc-100'
-            )}
+        {/* Center: The active image container */}
+        <div className="relative flex h-full max-h-[82vh] min-w-0 flex-1 items-center justify-center">
+          {/* Side click zones in empty space to left/right of narrow images on desktop */}
+          {photos.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous photo"
+                tabIndex={-1}
+                className="absolute inset-y-0 left-0 z-0 hidden w-1/2 cursor-pointer focus:outline-none lg:block"
+              />
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next photo"
+                tabIndex={-1}
+                className="absolute inset-y-0 right-0 z-0 hidden w-1/2 cursor-pointer focus:outline-none lg:block"
+              />
+            </>
+          )}
+
+          {/* The active image itself */}
+          <div
+            className="relative z-10 flex max-h-[82vh] max-w-full items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
           >
-            <ChevronRight className="h-6 w-6 stroke-3" />
-          </button>
-        )}
+            <Image
+              src={activePhoto.image}
+              alt={activePhoto.caption || `${albumTitle} - Photo ${currentIndex + 1}`}
+              width={1920}
+              height={1080}
+              priority
+              unoptimized
+              className="border-ink max-h-[82vh] w-auto max-w-full border-2 object-contain shadow-[4px_4px_0_var(--ink)]"
+            />
+          </div>
+        </div>
+
+        {/* Next column & button (desktop only, hidden on mobile/tablet) */}
+        <div
+          className="z-20 hidden h-full w-14 shrink-0 cursor-pointer items-center justify-center lg:flex lg:w-16"
+          onClick={handleNext}
+        >
+          {photos.length > 1 && (
+            <button
+              type="button"
+              onClick={handleNext}
+              aria-label="Next photo"
+              title="Next photo"
+              className={cn(
+                CONBLOCK,
+                'border-ink bg-white/90 p-2 text-zinc-900 shadow-[2px_2px_0_var(--ink)] transition-all hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-100 dark:hover:bg-zinc-800'
+              )}
+            >
+              <ChevronRight className="h-6 w-6 stroke-3" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Caption footer if provided */}

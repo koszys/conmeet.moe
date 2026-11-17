@@ -4,14 +4,13 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Camera, Clock, MapPin, Plus, User, Users } from 'lucide-react';
+import { ArrowRight, Camera, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import {
   BackLink,
   Badge,
   BookmarkButton,
   CONBLOCK_PRIMARY,
-  CONBLOCK_SECONDARY,
   CopyLinkButton,
   DeleteButton,
   EditButton,
@@ -340,29 +339,18 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
-            {albums && albums.length > 0 && (
-              <Link
-                href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
-                className={cn(
-                  CONBLOCK_SECONDARY,
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider uppercase'
-                )}
-              >
-                <span>View All ({albums.length})</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            )}
-
+          <div className="flex items-center gap-2 sm:shrink-0">
             <Link
-              href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections/new`}
+              href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
               className={cn(
                 CONBLOCK_PRIMARY,
-                'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold tracking-wider uppercase'
+                'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase sm:px-3.5'
               )}
             >
-              <Plus className="h-4 w-4" />
-              <span>Add Photos</span>
+              <span className="hidden sm:inline">View Collections</span>
+              <span className="sm:hidden">View</span>
+              {albums && albums.length > 0 && <span>({albums.length})</span>}
+              <ArrowRight className="h-3.5 w-3.5 shrink-0" />
             </Link>
           </div>
         </div>
@@ -408,14 +396,15 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             className="mt-6 border-zinc-300 dark:border-zinc-700"
             action={
               <Link
-                href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections/new`}
+                href={`/conventions/${conventionSlug}/meetups/${meetupId}/collections`}
                 className={cn(
                   CONBLOCK_PRIMARY,
-                  'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider uppercase'
+                  'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
                 )}
               >
-                <Plus className="h-4 w-4" />
-                <span>Upload Photos</span>
+                <span className="hidden sm:inline">View Collections</span>
+                <span className="sm:hidden">View</span>
+                <ArrowRight className="h-3.5 w-3.5 shrink-0" />
               </Link>
             }
           />

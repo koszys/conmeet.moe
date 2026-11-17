@@ -176,11 +176,12 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
               href={uploadHref}
               className={cn(
                 CONBLOCK_PRIMARY,
-                'inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold tracking-wider uppercase'
+                'inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
               )}
             >
-              <Plus className="h-4 w-4" />
-              <span>Upload First Album</span>
+              <Plus className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">Upload First Album</span>
+              <span className="sm:hidden">Upload Album</span>
             </Link>
           }
         />

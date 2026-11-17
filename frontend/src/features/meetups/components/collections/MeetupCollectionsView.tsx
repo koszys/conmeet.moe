@@ -1,18 +1,22 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import { Camera, Clock, Images, Plus, Sparkles } from 'lucide-react';
+import { MikuLoader } from '@/shared/components/miku';
 import {
   BackLink,
   CONBLOCK_PRIMARY,
   CopyLinkButton,
   EmptyState,
   FilterTab,
+  RefreshButton,
+  type RefreshStatus,
 } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
-import { useMeetup, useMeetupAlbums } from '../../api';
+import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums } from '../../api';
 import type { AlbumSortOption } from '../../types';
 import { AlbumCard } from './AlbumCard';
 import { AlbumCardSkeleton } from './AlbumCardSkeleton';
@@ -23,10 +27,45 @@ export interface MeetupCollectionsViewProps {
 }
 
 export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollectionsViewProps) {
+  const queryClient = useQueryClient();
   const [activeSort, setActiveSort] = useState<AlbumSortOption>('all');
+  const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { data: meetup } = useMeetup(meetupId);
-  const { data: albums, isLoading: isAlbumsLoading } = useMeetupAlbums(meetupId, activeSort);
+  const { data: meetup, isLoading: isMeetupLoading } = useMeetup(meetupId);
+  const {
+    data: albums,
+    isLoading: isAlbumsLoading,
+    refetch: refetchAlbums,
+  } = useMeetupAlbums(meetupId, activeSort);
+
+  async function handleRefresh() {
+    if (refreshStatus !== 'idle') return;
+    setRefreshStatus('refreshing');
+    try {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 800));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: albumKeys.all }),
+        queryClient.invalidateQueries({ queryKey: meetupKeys.detail(meetupId) }),
+        refetchAlbums(),
+        minDelay,
+      ]);
+      setRefreshStatus('success');
+      refreshTimeoutRef.current = setTimeout(() => {
+        setRefreshStatus('idle');
+      }, 1200);
+    } catch {
+      setRefreshStatus('idle');
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const meetupSlugOrId = meetup?.slug || meetupId;
   const meetupHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
@@ -37,6 +76,14 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
     ref: tabsRef,
     fadeWidth: 24,
   });
+
+  if (isMeetupLoading || (isAlbumsLoading && !albums)) {
+    return (
+      <div className="flex min-h-[60vh] w-full flex-col items-center justify-center py-16">
+        <MikuLoader message="Developing photo gallery..." size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
@@ -63,6 +110,12 @@ export function MeetupCollectionsView({ conventionSlug, meetupId }: MeetupCollec
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
             <CopyLinkButton variant="responsive" />
+            <RefreshButton
+              onRefresh={handleRefresh}
+              status={refreshStatus}
+              entityName="gallery"
+              size="md"
+            />
             <Link
               href={uploadHref}
               title="Add Photos"

@@ -163,3 +163,70 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
     </div>
   );
 }
+
+export function SocialBadges({ links }: { links?: SocialLinks }) {
+  if (!links) return null;
+
+  const items = [
+    {
+      key: 'instagram',
+      label: links.instagram,
+      icon: InstagramIcon,
+      href: links.instagram?.startsWith('http')
+        ? links.instagram
+        : `https://instagram.com/${links.instagram?.replace(/^@/, '')}`,
+    },
+    {
+      key: 'twitter',
+      label: links.twitter,
+      icon: TwitterIcon,
+      href: links.twitter?.startsWith('http')
+        ? links.twitter
+        : `https://x.com/${links.twitter?.replace(/^@/, '')}`,
+    },
+    {
+      key: 'tiktok',
+      label: links.tiktok,
+      icon: TikTokIcon,
+      href: links.tiktok?.startsWith('http')
+        ? links.tiktok
+        : `https://tiktok.com/@${links.tiktok?.replace(/^@/, '')}`,
+    },
+    {
+      key: 'bluesky',
+      label: links.bluesky,
+      icon: BlueskyIcon,
+      href: links.bluesky?.startsWith('http')
+        ? links.bluesky
+        : `https://bsky.app/profile/${links.bluesky?.replace(/^@/, '')}`,
+    },
+    {
+      key: 'website',
+      label: links.website,
+      icon: Globe,
+      href: links.website?.startsWith('http') ? links.website : `https://${links.website}`,
+    },
+  ].filter((item) => Boolean(item.label?.trim()));
+
+  if (!items.length) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {items.map((item) => {
+        const Icon = item.icon;
+        return (
+          <a
+            key={item.key}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border-ink hover:text-accent inline-flex items-center gap-1.5 border-2 bg-white px-2.5 py-1 text-xs font-bold text-zinc-800 shadow-[2px_2px_0_var(--ink)] transition-transform hover:-translate-y-0.5 dark:bg-zinc-800 dark:text-zinc-200"
+          >
+            <Icon className="h-3.5 w-3.5 shrink-0" />
+            <span>{item.label}</span>
+          </a>
+        );
+      })}
+    </div>
+  );
+}

@@ -73,9 +73,9 @@ export function useMeetupAlbums(meetupId: number | string, sort: AlbumSortOption
   });
 }
 
-export function useAlbumDetail(id: number) {
+export function useAlbumDetail(id: number | string) {
   return useQuery({
-    queryKey: albumKeys.detail(id),
+    queryKey: albumKeys.detail(Number(id)),
     queryFn: async () => {
       return api.get(`api/v1/albums/${id}/`).json<MeetupAlbumDetail>();
     },

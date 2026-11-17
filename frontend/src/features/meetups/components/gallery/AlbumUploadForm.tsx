@@ -303,7 +303,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                 Select Photos to Upload
               </h3>
               <p className="mt-1 max-w-md text-xs text-zinc-600 dark:text-zinc-400">
-                Choose up to 30 images (JPEG, PNG, WebP). The first photo will serve as the cover.
+                Choose up to 30 images (JPEG, PNG, WebP).
               </p>
 
               <button
@@ -348,11 +348,6 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                         alt={item.file.name}
                         className="h-full w-full object-cover"
                       />
-                      {index === 0 && (
-                        <span className="border-ink bg-accent absolute top-1 left-1 border px-1.5 py-0.5 text-[9px] font-bold text-white uppercase dark:text-zinc-950">
-                          Cover
-                        </span>
-                      )}
                       <CloseButton
                         onClose={() => removePhoto(item.id)}
                         title="Remove photo"

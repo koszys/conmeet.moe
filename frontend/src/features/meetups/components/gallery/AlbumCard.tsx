@@ -43,7 +43,6 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
 
   const albumHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
   const previewPhotos = album.preview_photos || [];
-  const coverUrl = album.cover_thumb_url || album.cover_photo_url;
 
   return (
     <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
@@ -56,7 +55,59 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
 
       {/* Preview */}
       <div className="border-ink pointer-events-none relative aspect-[16/10] w-full overflow-hidden border-b-2 bg-zinc-100 dark:bg-zinc-800">
-        {previewPhotos.length >= 4 ? (
+        {previewPhotos.length === 0 ? (
+          <div className="flex h-full w-full flex-col items-center justify-center p-4 text-center text-zinc-400 dark:text-zinc-500">
+            <Camera className="h-10 w-10 opacity-30" />
+            <span className="font-display mt-2 text-[11px] tracking-wider uppercase opacity-60">
+              Photoshoot Album
+            </span>
+          </div>
+        ) : previewPhotos.length === 1 ? (
+          <Image
+            src={previewPhotos[0]}
+            alt={album.title}
+            fill
+            sizes="(max-width: 640px) 100vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : previewPhotos.length === 2 ? (
+          <div className="grid h-full w-full grid-cols-2 gap-0.5 bg-zinc-900">
+            {previewPhotos.map((src, i) => (
+              <div key={i} className="relative h-full w-full overflow-hidden bg-zinc-950">
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 50vw, 20vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+            ))}
+          </div>
+        ) : previewPhotos.length === 3 ? (
+          <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5 bg-zinc-900">
+            <div className="relative row-span-2 h-full w-full overflow-hidden bg-zinc-950">
+              <Image
+                src={previewPhotos[0]}
+                alt=""
+                fill
+                sizes="(max-width: 640px) 50vw, 20vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
+            {previewPhotos.slice(1, 3).map((src, i) => (
+              <div key={i} className="relative h-full w-full overflow-hidden bg-zinc-950">
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 50vw, 15vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
           <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-0.5 bg-zinc-900">
             {previewPhotos.slice(0, 4).map((src, i) => (
               <div key={i} className="relative h-full w-full overflow-hidden bg-zinc-950">
@@ -64,26 +115,11 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
                   src={src}
                   alt=""
                   fill
-                  sizes="(max-width: 640px) 50vw, 25vw"
+                  sizes="(max-width: 640px) 50vw, 15vw"
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
             ))}
-          </div>
-        ) : coverUrl ? (
-          <Image
-            src={coverUrl}
-            alt={album.title}
-            fill
-            sizes="(max-width: 640px) 100vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center p-4 text-center text-zinc-400 dark:text-zinc-500">
-            <Camera className="h-10 w-10 opacity-30" />
-            <span className="font-display mt-2 text-[11px] tracking-wider uppercase opacity-60">
-              Photoshoot Album
-            </span>
           </div>
         )}
 

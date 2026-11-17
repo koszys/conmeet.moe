@@ -47,7 +47,10 @@ export function LikeButton({
         variant === 'badge' && 'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs',
         variant === 'button' && 'inline-flex items-center gap-2 px-5 py-2.5 text-xs uppercase',
         variant === 'responsive' &&
-          'inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 text-xs sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:uppercase',
+          cn(
+            'inline-flex h-10 shrink-0 items-center justify-center text-xs sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:uppercase',
+            typeof count === 'number' ? 'w-auto gap-1.5 px-3' : 'w-10 p-0'
+          ),
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}

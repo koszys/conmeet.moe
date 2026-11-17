@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
-import { Camera, Clock, Images, Plus, Sparkles } from 'lucide-react';
+import { Bookmark, Camera, Clock, Images, Plus, Sparkles } from 'lucide-react';
 import { MikuLoader } from '@/shared/components/miku';
 import {
   BackLink,
@@ -16,6 +16,7 @@ import {
 } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
+import { useAuth } from '@/features/auth';
 import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums } from '../../api';
 import type { AlbumSortOption } from '../../types';
 import { AlbumCard } from './AlbumCard';
@@ -30,6 +31,7 @@ export type MeetupCollectionsViewProps = MeetupGalleryViewProps;
 
 export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryViewProps) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [activeSort, setActiveSort] = useState<AlbumSortOption>('all');
   const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -184,6 +186,22 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
               />
             }
           />
+          <FilterTab
+            isActive={activeSort === 'saved'}
+            onClick={() => setActiveSort('saved')}
+            title="Saved Albums"
+            ariaLabel="Saved Albums"
+            label="Saved"
+            shortLabel="Saved"
+            icon={
+              <Bookmark
+                className={cn(
+                  'h-4 w-4 shrink-0',
+                  activeSort === 'saved' ? 'fill-current stroke-[2.5]' : 'stroke-2'
+                )}
+              />
+            }
+          />
           {/* Scroll spacer */}
           <div className="w-6 shrink-0 sm:hidden" aria-hidden="true" />
         </div>
@@ -212,6 +230,46 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
             />
           ))}
         </div>
+      ) : activeSort === 'saved' && !user ? (
+        <EmptyState
+          mascot
+          mascotSpeech="Sign in to view saved albums!"
+          title="Sign In to View Saved Albums"
+          description="Log in to bookmark and view your favorite photo albums."
+          className="mt-6 border-zinc-300 dark:border-zinc-700"
+          action={
+            <Link
+              href={`/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`}
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
+              )}
+            >
+              Sign In
+            </Link>
+          }
+        />
+      ) : activeSort === 'saved' ? (
+        <EmptyState
+          mascot
+          mascotSpeech="No saved albums yet!"
+          title="No Saved Albums"
+          description="You haven't bookmarked any albums from this meetup yet. Click the bookmark icon on any album to save it."
+          className="mt-6 border-zinc-300 dark:border-zinc-700"
+          action={
+            <button
+              type="button"
+              onClick={() => setActiveSort('all')}
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex cursor-pointer items-center gap-1.5 px-4 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
+              )}
+            >
+              <Images className="h-4 w-4 shrink-0" />
+              <span>Browse All Albums</span>
+            </button>
+          }
+        />
       ) : (
         <EmptyState
           mascot

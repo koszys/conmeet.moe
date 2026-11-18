@@ -191,7 +191,12 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
   const selectedPhotos = photos.filter((p) => selectedPhotoIds.has(p.id));
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
+    <div
+      className={cn(
+        'mx-auto max-w-6xl space-y-6 px-4 py-8 transition-all sm:px-6',
+        isSelectMode && 'pb-24 sm:pb-28'
+      )}
+    >
       {/* Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <BackLink href={galleryHref}>

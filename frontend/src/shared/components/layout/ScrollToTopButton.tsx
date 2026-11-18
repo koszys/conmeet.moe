@@ -7,32 +7,54 @@ import { cn } from '@/shared/lib/utils';
 
 export function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
-  const [footerOffset, setFooterOffset] = useState(0);
+  const [bottomOffset, setBottomOffset] = useState(0);
   const isScrollingToTopRef = useRef(false);
 
   useEffect(() => {
     let ticking = false;
 
+    function updatePosition() {
+      if (window.scrollY <= 10) {
+        isScrollingToTopRef.current = false;
+      }
+
+      if (!isScrollingToTopRef.current) {
+        setIsVisible(window.scrollY > 300);
+      }
+
+      // Check footer overlap
+      const footer = document.querySelector('footer');
+      let fOffset = 0;
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        const overlap = window.innerHeight - footerRect.top;
+        if (overlap > 0) {
+          fOffset = overlap + 16;
+        }
+      }
+
+      // Check floating bar overlap (e.g. AlbumSelectionBar)
+      const floatingBar = document.querySelector('[data-floating-bar]');
+      let barOffset = 0;
+      if (floatingBar) {
+        const barRect = floatingBar.getBoundingClientRect();
+        // Check if bar is visible in viewport and overlaps horizontally with the button area (right-side ~80px)
+        const buttonLeft = window.innerWidth - 80;
+        if (barRect.right > buttonLeft && barRect.bottom > 0 && barRect.top < window.innerHeight) {
+          const overlap = window.innerHeight - barRect.top;
+          if (overlap > 0) {
+            barOffset = overlap + 12;
+          }
+        }
+      }
+
+      setBottomOffset(Math.max(fOffset, barOffset));
+    }
+
     function onScroll() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          if (window.scrollY <= 10) {
-            isScrollingToTopRef.current = false;
-          }
-
-          if (!isScrollingToTopRef.current) {
-            setIsVisible(window.scrollY > 300);
-          }
-
-          const footer = document.querySelector('footer');
-          if (footer) {
-            const footerRect = footer.getBoundingClientRect();
-            const overlap = window.innerHeight - footerRect.top;
-            setFooterOffset(overlap > 0 ? overlap + 16 : 0);
-          } else {
-            setFooterOffset(0);
-          }
-
+          updatePosition();
           ticking = false;
         });
         ticking = true;
@@ -48,11 +70,19 @@ export function ScrollToTopButton() {
     window.addEventListener('resize', onScroll, { passive: true });
     window.addEventListener('wheel', onUserInterrupt, { passive: true });
     window.addEventListener('touchmove', onUserInterrupt, { passive: true });
+
+    // Watch for DOM changes (e.g. floating bar appearing/disappearing)
+    const observer = new MutationObserver(() => {
+      onScroll();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
       window.removeEventListener('wheel', onUserInterrupt);
       window.removeEventListener('touchmove', onUserInterrupt);
+      observer.disconnect();
     };
   }, []);
 
@@ -67,10 +97,10 @@ export function ScrollToTopButton() {
       type="button"
       onClick={handleScrollToTop}
       aria-label="Scroll back to top"
-      style={footerOffset > 0 ? { bottom: `${footerOffset}px` } : undefined}
+      style={bottomOffset > 0 ? { bottom: `${bottomOffset}px` } : undefined}
       className={cn(
-        'group fixed right-5 z-40 sm:right-6',
-        footerOffset === 0 && 'bottom-5 sm:bottom-6',
+        'group fixed right-5 z-40 transition-[bottom,transform,opacity] duration-200 sm:right-6',
+        bottomOffset === 0 && 'bottom-5 sm:bottom-6',
         CONBLOCK_PRIMARY,
         'inline-flex items-center gap-1.5 px-3 py-2 select-none',
         'focus-visible:ring-accent focus-visible:ring-2 focus-visible:outline-none',

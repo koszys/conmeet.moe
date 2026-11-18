@@ -566,7 +566,10 @@ export function AlbumUploadForm({
         <FormActions
           submitLabel={
             isEditMode ? (
-              'Save Changes'
+              <>
+                <span className="hidden sm:inline">Save Changes</span>
+                <span className="sm:hidden">Save</span>
+              </>
             ) : (
               <>
                 <span className="hidden sm:inline">Publish Album</span>
@@ -574,7 +577,19 @@ export function AlbumUploadForm({
               </>
             )
           }
-          submittingLabel={isEditMode ? 'Saving Changes...' : 'Uploading Photos...'}
+          submittingLabel={
+            isEditMode ? (
+              <>
+                <span className="hidden sm:inline">Saving Changes...</span>
+                <span className="sm:hidden">Saving...</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">Uploading Photos...</span>
+                <span className="sm:hidden">Uploading...</span>
+              </>
+            )
+          }
           cancelHref={!onCancel ? galleryHref : undefined}
           onCancel={onCancel}
           isSubmitting={isEditMode ? updateMutation.isPending : createMutation.isPending}

@@ -11,7 +11,7 @@ export interface FormActionsProps {
   onCancel?: () => void;
   cancelLabel?: string;
   submitLabel?: ReactNode;
-  submittingLabel?: string;
+  submittingLabel?: ReactNode;
   isSubmitting?: boolean;
   submitDisabled?: boolean;
   submitIcon?: ReactNode;

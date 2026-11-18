@@ -24,7 +24,10 @@ export function AlbumSelectionBar({
   onDone,
 }: AlbumSelectionBarProps) {
   return (
-    <div className="border-ink animate-in fade-in slide-in-from-bottom-4 fixed inset-x-3 bottom-5 z-40 mx-auto max-w-xl border-2 bg-white/95 p-2.5 shadow-[6px_6px_0_var(--ink)] backdrop-blur-md transition-all sm:inset-x-4 sm:bottom-6 sm:p-3.5 dark:bg-zinc-900/95">
+    <div
+      data-floating-bar
+      className="border-ink animate-in fade-in slide-in-from-bottom-4 fixed inset-x-3 bottom-5 z-50 mx-auto max-w-xl border-2 bg-white/95 p-2 shadow-[6px_6px_0_var(--ink)] backdrop-blur-md transition-all sm:inset-x-4 sm:bottom-6 sm:p-3.5 dark:bg-zinc-900/95"
+    >
       <div className="flex items-center justify-between gap-2 sm:gap-3">
         {/* Left: Count Badge & Select All */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -43,7 +46,14 @@ export function AlbumSelectionBar({
               'px-2 py-1 text-[11px] font-bold tracking-wider whitespace-nowrap uppercase sm:px-2.5'
             )}
           >
-            {isAllSelected ? 'Deselect All' : 'Select All'}
+            {isAllSelected ? (
+              <>
+                <span className="hidden sm:inline">Deselect All</span>
+                <span className="sm:hidden">Deselect</span>
+              </>
+            ) : (
+              'Select All'
+            )}
           </button>
         </div>
 
@@ -53,23 +63,22 @@ export function AlbumSelectionBar({
             type="button"
             onClick={onDownload}
             disabled={selectedCount === 0 || isPackaging}
+            title={selectedCount > 0 ? `Download ${selectedCount} photos` : 'Download photos'}
+            aria-label={selectedCount > 0 ? `Download ${selectedCount} photos` : 'Download photos'}
             className={cn(
               CONBLOCK_PRIMARY,
-              'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold tracking-wider whitespace-nowrap uppercase disabled:cursor-not-allowed disabled:opacity-50 sm:px-3 sm:py-1.5'
+              'inline-flex h-7 w-7 shrink-0 items-center justify-center gap-1.5 p-0 text-xs font-bold tracking-wider whitespace-nowrap uppercase disabled:cursor-not-allowed disabled:opacity-50 sm:h-8 sm:w-auto sm:px-3 sm:py-1.5'
             )}
           >
             {isPackaging ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" />
-                <span>Packaging...</span>
+                <span className="hidden sm:inline">Packaging...</span>
               </>
             ) : (
               <>
                 <Download className="h-3.5 w-3.5 shrink-0" />
-                <span>
-                  <span className="hidden sm:inline">Download </span>
-                  {selectedCount > 0 ? `(${selectedCount})` : ''}
-                </span>
+                <span className="hidden sm:inline">Download</span>
               </>
             )}
           </button>

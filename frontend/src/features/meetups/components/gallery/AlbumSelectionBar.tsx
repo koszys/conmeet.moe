@@ -1,7 +1,7 @@
 'use client';
 
 import { CheckSquare, Download, Loader2 } from 'lucide-react';
-import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
+import { CloseButton, CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export interface AlbumSelectionBarProps {
@@ -47,7 +47,7 @@ export function AlbumSelectionBar({
           </button>
         </div>
 
-        {/* Right: Download & Done */}
+        {/* Right: Download & Close */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <button
             type="button"
@@ -67,23 +67,20 @@ export function AlbumSelectionBar({
               <>
                 <Download className="h-3.5 w-3.5 shrink-0" />
                 <span>
-                  <span className="hidden min-[400px]:inline">Download </span>
+                  <span className="hidden sm:inline">Download </span>
                   {selectedCount > 0 ? `(${selectedCount})` : ''}
                 </span>
               </>
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={onDone}
-            className={cn(
-              CONBLOCK_SECONDARY,
-              'px-2.5 py-1 text-xs font-bold tracking-wider uppercase sm:px-3.5 sm:py-1.5'
-            )}
-          >
-            Done
-          </button>
+          <CloseButton
+            onClose={onDone}
+            size="sm"
+            ariaLabel="Done"
+            title="Done"
+            className="h-7 w-7 sm:h-8 sm:w-8"
+          />
         </div>
       </div>
     </div>

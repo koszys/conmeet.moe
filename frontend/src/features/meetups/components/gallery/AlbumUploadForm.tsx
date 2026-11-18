@@ -11,6 +11,7 @@ import {
   FormActions,
   TextArea,
   TextInput,
+  UndoButton,
 } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useCreateAlbum, useMeetup, useUpdateAlbum } from '../../api';
@@ -467,29 +468,23 @@ export function AlbumUploadForm({
                       <div
                         key={`existing-${photo.id}`}
                         className={cn(
-                          'border-ink group relative aspect-square overflow-hidden border-2 shadow-[2px_2px_0_var(--ink)] transition-opacity',
+                          'border-ink group relative aspect-square overflow-hidden border-2 shadow-[2px_2px_0_var(--ink)]',
                           isMarkedDelete
-                            ? 'border-dashed border-red-400 bg-red-50/50 opacity-60 grayscale dark:border-red-600 dark:bg-red-950/20'
+                            ? 'border-dashed border-red-500 bg-zinc-100 dark:border-red-500 dark:bg-zinc-800'
                             : 'bg-zinc-100 dark:bg-zinc-800'
                         )}
                       >
                         <img
                           src={photo.image_thumb || photo.image}
                           alt={photo.caption || 'Album photo'}
-                          className="h-full w-full object-cover"
+                          className={cn(
+                            'h-full w-full object-cover',
+                            isMarkedDelete && 'opacity-70 grayscale'
+                          )}
                         />
                         {isMarkedDelete ? (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 p-1 text-center">
-                            <span className="font-display text-[10px] font-bold text-red-300 uppercase">
-                              Removed
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => restoreExistingPhoto(photo.id)}
-                              className="mt-1 bg-white px-2 py-0.5 text-[10px] font-bold text-zinc-950 shadow-[1px_1px_0_var(--ink)] hover:bg-zinc-200"
-                            >
-                              Undo
-                            </button>
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 p-1">
+                            <UndoButton onClick={() => restoreExistingPhoto(photo.id)} size="xs" />
                           </div>
                         ) : (
                           <CloseButton
@@ -514,9 +509,6 @@ export function AlbumUploadForm({
                         alt={item.file.name}
                         className="h-full w-full object-cover"
                       />
-                      <span className="border-ink absolute top-1 left-1 border bg-emerald-500 px-1 py-0.5 text-[9px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)]">
-                        New
-                      </span>
                       <CloseButton
                         onClose={() => removeNewPhoto(item.id)}
                         title="Remove photo"

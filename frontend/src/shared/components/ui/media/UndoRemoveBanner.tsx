@@ -1,7 +1,7 @@
 'use client';
 
-import { Undo2 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import { UndoButton } from '../actions/UndoButton';
 
 export interface UndoRemoveBannerProps {
   onUndo: () => void;
@@ -22,14 +22,7 @@ export function UndoRemoveBanner({
       )}
     >
       <span className="text-xs text-zinc-600 italic dark:text-zinc-300">{message}</span>
-      <button
-        type="button"
-        onClick={onUndo}
-        className="inline-flex cursor-pointer items-center gap-1 font-mono text-xs font-bold text-teal-600 hover:underline dark:text-teal-400"
-      >
-        <Undo2 className="h-3.5 w-3.5" />
-        Undo
-      </button>
+      <UndoButton onClick={onUndo} size="xs" />
     </div>
   );
 }

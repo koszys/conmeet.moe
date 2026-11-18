@@ -52,6 +52,16 @@ const nextConfig: NextConfig = {
         destination: '/conventions/featured',
         permanent: false,
       },
+      {
+        source: '/conventions/:slug/meetups/:id/collections',
+        destination: '/conventions/:slug/meetups/:id/gallery',
+        permanent: true,
+      },
+      {
+        source: '/conventions/:slug/meetups/:id/collections/:path*',
+        destination: '/conventions/:slug/meetups/:id/gallery/:path*',
+        permanent: true,
+      },
     ];
   },
 };

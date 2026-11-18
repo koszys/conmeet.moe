@@ -10,7 +10,7 @@ import {
   TikTokIcon,
   TwitterIcon,
 } from '@/shared/components/ui';
-import type { SocialLinks } from '../../types';
+import type { SocialLinks } from '../../../types';
 
 export { SocialBadge, SocialBadges };
 

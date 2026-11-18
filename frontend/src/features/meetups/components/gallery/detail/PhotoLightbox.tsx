@@ -8,8 +8,8 @@ import { CloseButton, CONBLOCK_SECONDARY, LikeButton } from '@/shared/components
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import { useAuth } from '@/features/auth';
-import { useToggleLikePhoto } from '../../api';
-import type { MeetupPhoto } from '../../types';
+import { useToggleLikePhoto } from '../../../api';
+import type { MeetupPhoto } from '../../../types';
 
 const emptySubscribe = () => () => {};
 

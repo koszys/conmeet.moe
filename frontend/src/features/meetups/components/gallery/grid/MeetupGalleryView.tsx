@@ -17,8 +17,8 @@ import {
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
-import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums } from '../../api';
-import type { AlbumSortOption } from '../../types';
+import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums } from '../../../api';
+import type { AlbumSortOption } from '../../../types';
 import { AlbumCard } from './AlbumCard';
 import { AlbumCardSkeleton } from './AlbumCardSkeleton';
 

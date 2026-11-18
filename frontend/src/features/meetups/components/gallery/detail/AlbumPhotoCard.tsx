@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { LikeButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import type { MeetupPhoto } from '../../types';
+import type { MeetupPhoto } from '../../../types';
 
 export interface AlbumPhotoCardProps {
   photo: MeetupPhoto;

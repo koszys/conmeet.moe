@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { Camera, User } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { Badge, BookmarkButton, LikeButton } from '@/shared/components/ui';
-import { useToggleFavoriteAlbum, useToggleLikeAlbum } from '../../api';
-import type { MeetupAlbum } from '../../types';
+import { useToggleFavoriteAlbum, useToggleLikeAlbum } from '../../../api';
+import type { MeetupAlbum } from '../../../types';
 
 export interface AlbumCardProps {
   album: MeetupAlbum;

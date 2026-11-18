@@ -1,6 +1,6 @@
 'use client';
 
-import { useDeleteAlbum } from '../../api';
+import { useDeleteAlbum } from '../../../api';
 import { ConfirmDeleteModal } from '@/shared/components/ui';
 
 interface DeleteAlbumModalProps {

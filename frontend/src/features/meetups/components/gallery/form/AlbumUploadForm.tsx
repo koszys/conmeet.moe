@@ -14,8 +14,8 @@ import {
   UndoButton,
 } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useCreateAlbum, useMeetup, useUpdateAlbum } from '../../api';
-import type { MeetupAlbumDetail, MeetupPhoto, SocialLinks } from '../../types';
+import { useCreateAlbum, useMeetup, useUpdateAlbum } from '../../../api';
+import type { MeetupAlbumDetail, MeetupPhoto, SocialLinks } from '../../../types';
 import { SocialLinksField } from './SocialLinksField';
 
 export interface AlbumUploadFormProps {

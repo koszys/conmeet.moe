@@ -26,11 +26,11 @@ import {
   useToggleFavoriteAlbum,
   useToggleLikeAlbum,
   useToggleLikePhoto,
-} from '../../api';
-import { type DownloadProgress, downloadPhotosAsZip } from '../../utils/downloadZip';
+} from '../../../api';
+import { type DownloadProgress, downloadPhotosAsZip } from '../../../utils/downloadZip';
 import { PhotoLightbox } from './PhotoLightbox';
 import { DeleteAlbumModal } from './DeleteAlbumModal';
-import { AlbumUploadForm } from './AlbumUploadForm';
+import { AlbumUploadForm } from '../form/AlbumUploadForm';
 import { AlbumPhotoCard } from './AlbumPhotoCard';
 import { AlbumSelectionBar } from './AlbumSelectionBar';
 

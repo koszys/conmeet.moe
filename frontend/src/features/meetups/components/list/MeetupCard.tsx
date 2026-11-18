@@ -34,7 +34,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
 
   return (
     <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
-      {/* Clickable area for meetup navigation (excludes bottom action footer) */}
+      {/* Card Link Overlay */}
       <Link
         href={meetupHref}
         aria-label={`View ${meetup.name}`}

@@ -461,7 +461,7 @@ export function FeaturedConventionSlider({
       aria-roledescription="carousel"
       aria-label="Featured Conventions"
     >
-      {/* Mobile Swipe Hint Badge: Briefly displays during micro-wiggle on initial view */}
+      {/* Mobile Swipe Hint Badge */}
       {isWiggling && (
         <div className="border-ink bg-accent-pop pointer-events-none absolute top-4 right-4 z-30 flex items-center gap-1.5 border-2 px-2.5 py-1 text-xs font-bold tracking-wider text-white uppercase shadow-[2px_2px_0_var(--ink)] md:hidden">
           <ChevronLeft className="h-3.5 w-3.5 animate-pulse" />
@@ -544,9 +544,9 @@ export function FeaturedConventionSlider({
           </div>
         </div>
 
-        {/* Right Selector Column: Hidden on mobile (< md) to avoid clutter, visible on desktop (md+) */}
+        {/* Right Selector Column */}
         <div className="hidden shrink-0 flex-col justify-center md:flex md:w-56 md:self-center lg:w-60">
-          {/* Compact Strip Selection Items (5-Slot Virtual Wheel with zero duplicate copies) */}
+          {/* Virtual Wheel Selector */}
           <div
             ref={listRef}
             style={maskStyle}
@@ -690,7 +690,7 @@ export function FeaturedConventionSlider({
         </div>
       </div>
 
-      {/* Mobile-Only Bottom Countdown Progress Bar (replaces the progress bar on the hidden desktop strip) */}
+      {/* Mobile Progress Bar */}
       {total > 1 && (
         <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-zinc-200 md:hidden dark:bg-black">
           <div

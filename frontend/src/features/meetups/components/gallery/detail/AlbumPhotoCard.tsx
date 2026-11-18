@@ -73,7 +73,7 @@ export function AlbumPhotoCard({
           </div>
         </div>
       ) : (
-        /* Default Bottom Overlay: Like & Index */
+        // Default Bottom Overlay: Like & Index
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-2">
           <LikeButton
             variant="badge"

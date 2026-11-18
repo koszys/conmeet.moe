@@ -74,14 +74,14 @@ export function NavigationProgressBar() {
     }, remainingWait);
   };
 
-  // When pathname or searchParams change, navigation has landed!
+  // Complete progress on route change
   useEffect(() => {
     if (isLoading) {
       completeProgress();
     }
   }, [pathname, searchParams]);
 
-  // Global click interception on internal links
+  // Intercept clicks on internal links
   useEffect(() => {
     function handleAnchorClick(e: MouseEvent) {
       if (e.defaultPrevented) return;
@@ -120,7 +120,7 @@ export function NavigationProgressBar() {
           return;
         }
 
-        // Internal navigation detected!
+        // Trigger progress bar on internal navigation
         startProgress();
       } catch {
         // Fallback: ignore malformed URLs

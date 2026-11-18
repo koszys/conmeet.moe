@@ -127,7 +127,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       {/* Main Hero Card */}
       <article className="border-ink border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
         {meetup.image_layout === 'poster' && meetup.image ? (
-          /* Split Poster Layout (Option A) */
+          // Split Poster Layout
           <div className="p-4 sm:p-6 md:p-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
               {/* Poster Column */}
@@ -227,7 +227,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
             </div>
           </div>
         ) : (
-          /* Classic Banner Layout */
+          // Classic Banner Layout
           <>
             {meetup.image ? (
               <ExpandableImage

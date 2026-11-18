@@ -127,7 +127,7 @@ export function VendorPicker({
         <p className="mt-1 text-xs font-bold text-rose-600 dark:text-rose-400">{error}</p>
       ) : null}
 
-      {/* Quick select existing vendors with incremental +X more and show less controls */}
+      {/* Existing Convention Vendors */}
       {conventionVendors && conventionVendors.length > 0 ? (
         <div className="mt-2.5 space-y-1.5">
           <div className="flex items-center justify-between">

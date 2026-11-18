@@ -48,7 +48,7 @@ export function EditFreebieModal({ freebie, isOpen, onClose }: EditFreebieModalP
 function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClose: () => void }) {
   const updateMutation = useUpdateFreebie();
 
-  // Form field state initialized directly from props
+  // Form state
   const [vendorName, setVendorName] = useState(freebie.vendor.name);
   const [name, setName] = useState(freebie.name);
   const [location, setLocation] = useState(freebie.location || '');

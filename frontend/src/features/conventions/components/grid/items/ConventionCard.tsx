@@ -73,7 +73,7 @@ export function ConventionCard({ convention, className }: ConventionCardProps) {
 
       {/* Card Content & Action Footer */}
       <div className="relative z-10 flex w-full min-w-0 flex-1 flex-col justify-between">
-        {/* Top Area: Clickable link spanning title, badge, dates, and background banner image */}
+        {/* Main Card Link */}
         <Link
           href={`/conventions/${convention.slug}`}
           className="group/top block min-w-0 flex-1 p-4 sm:p-6 md:p-8"

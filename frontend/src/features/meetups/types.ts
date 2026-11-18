@@ -53,6 +53,7 @@ export interface SocialLinks {
   tiktok?: string;
   bluesky?: string;
   website?: string;
+  [key: string]: string | undefined;
 }
 
 export interface MeetupPhoto {

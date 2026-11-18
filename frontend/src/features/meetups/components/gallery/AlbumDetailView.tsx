@@ -24,6 +24,7 @@ import {
   EditButton,
   EmptyState,
   LikeButton,
+  SocialBadges,
 } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
@@ -36,7 +37,6 @@ import {
   useToggleLikePhoto,
 } from '../../api';
 import { type DownloadProgress, downloadPhotosAsZip } from '../../utils/downloadZip';
-import { SocialBadges } from './SocialLinksField';
 import { PhotoLightbox } from './PhotoLightbox';
 import { DeleteAlbumModal } from './DeleteAlbumModal';
 import { AlbumUploadForm } from './AlbumUploadForm';

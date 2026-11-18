@@ -11,3 +11,4 @@ export * from './FormActions';
 export * from './RefreshButton';
 export * from './LikeButton';
 export * from './UndoButton';
+export * from './SocialBadge';

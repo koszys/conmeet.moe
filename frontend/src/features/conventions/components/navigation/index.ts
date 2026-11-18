@@ -1,8 +1,9 @@
 export { ConventionSidebar } from './ConventionSidebar';
 export { ConventionNavList } from './ConventionNavList';
+export { ConventionNavProvider, isConventionDetailPath } from './ConventionNavProvider';
 export {
-  ConventionNavProvider,
+  ConventionNavContext,
   useConventionNav,
-  isConventionDetailPath,
-} from './ConventionNavProvider';
+  type ConventionNavValue,
+} from './ConventionNavContext';
 export { ConventionSwitcher } from './ConventionSwitcher';

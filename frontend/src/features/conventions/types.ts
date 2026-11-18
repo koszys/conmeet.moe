@@ -38,6 +38,12 @@ export interface SectionActivityItem {
   href?: string;
 }
 
+export interface ConventionFilters {
+  query: string;
+  location: string;
+  year: string;
+}
+
 export interface ConventionSectionConfig {
   id: string;
   title: string;

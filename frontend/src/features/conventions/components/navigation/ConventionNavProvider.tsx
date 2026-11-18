@@ -1,18 +1,17 @@
 'use client';
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { ConventionSidebar } from './ConventionSidebar';
+import {
+  ConventionNavContext,
+  useConventionNav,
+  type ConventionNavValue,
+} from './ConventionNavContext';
 import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
+
+export { useConventionNav, type ConventionNavValue };
 
 const CONVENTION_PATH = /^\/conventions\/(?!(?:featured|request)(?:\/|$))([^/]+)(?:\/.*)?$/;
 
@@ -44,21 +43,6 @@ function subscribeSidebar(onStoreChange: () => void) {
   };
 }
 
-interface ConventionNavValue {
-  open: boolean;
-  toggle: () => void;
-  close: () => void;
-  sidebarCollapsed: boolean;
-  setSidebarCollapsed: (collapsed: boolean) => void;
-  isMounted: boolean;
-}
-
-const ConventionNavContext = createContext<ConventionNavValue | null>(null);
-
-export function useConventionNav() {
-  return useContext(ConventionNavContext);
-}
-
 export function ConventionNavProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -88,12 +72,10 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
     return match ? match[1] : null;
   }, [pathname]);
 
-  const [lastPathname, setLastPathname] = useState<string | null>(pathname);
-
-  if (pathname !== lastPathname) {
-    setLastPathname(pathname);
+  // Close drawer on route change
+  useEffect(() => {
     setOpen(false);
-  }
+  }, [pathname]);
 
   const value = useMemo(
     () => ({

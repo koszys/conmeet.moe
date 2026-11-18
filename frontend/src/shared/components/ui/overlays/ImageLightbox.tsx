@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { CloseButton } from '../actions/CloseButton';
@@ -27,6 +27,7 @@ export function ImageLightbox({
   subtitle,
   actions,
 }: ImageLightboxProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const isMounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -52,10 +53,32 @@ export function ImageLightbox({
     };
   }, [isOpen, onClose]);
 
+  // Prevent wheel and touch gesture scrolling while lightbox is active
+  useEffect(() => {
+    if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const preventDefault = (e: Event) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    container.addEventListener('wheel', preventDefault, { passive: false });
+    container.addEventListener('touchmove', preventDefault, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', preventDefault);
+      container.removeEventListener('touchmove', preventDefault);
+    };
+  }, [isOpen]);
+
   if (!isMounted || !isOpen || !src) return null;
 
   return createPortal(
     <div
+      ref={containerRef}
       role="dialog"
       aria-modal="true"
       aria-label={title || alt || 'Full size image viewer'}
@@ -63,7 +86,7 @@ export function ImageLightbox({
         e.stopPropagation();
         onClose();
       }}
-      className="fixed inset-0 z-[60] flex items-center justify-center overscroll-contain bg-black/85 p-4 backdrop-blur-xs sm:p-6"
+      className="fixed inset-0 z-[60] flex touch-none items-center justify-center overscroll-contain bg-black/85 p-4 backdrop-blur-xs select-none sm:p-6"
     >
       <div
         onClick={(e) => e.stopPropagation()}

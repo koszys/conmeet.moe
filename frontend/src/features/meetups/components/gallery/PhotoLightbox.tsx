@@ -1,13 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
-import { CloseButton, CONBLOCK, CONBLOCK_SECONDARY, LikeButton } from '@/shared/components/ui';
+import { CloseButton, CONBLOCK_SECONDARY, LikeButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
+import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import { useAuth } from '@/features/auth';
 import { useToggleLikePhoto } from '../../api';
 import type { MeetupPhoto } from '../../types';
+
+const emptySubscribe = () => () => {};
 
 export interface PhotoLightboxProps {
   photos: MeetupPhoto[];
@@ -28,9 +32,16 @@ export function PhotoLightbox({
   conventionSlug,
   meetupSlugOrId,
 }: PhotoLightboxProps) {
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const { user } = useAuth();
   const toggleLikePhoto = useToggleLikePhoto();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
@@ -38,37 +49,54 @@ export function PhotoLightbox({
 
   const activePhoto = photos[currentIndex];
 
-  // Keyboard navigation
+  // Keyboard navigation & body scroll locking
   useEffect(() => {
     if (!isOpen) return;
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
+        e.stopPropagation();
         onClose();
       } else if (e.key === 'ArrowLeft') {
+        e.stopPropagation();
         setCurrentIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1));
       } else if (e.key === 'ArrowRight') {
+        e.stopPropagation();
         setCurrentIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
       }
     }
 
+    const unlock = lockBodyScroll();
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    return () => {
+      unlock();
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen, photos.length, onClose]);
 
-  // Lock body scroll when lightbox is open
+  // Prevent wheel and touch gesture scrolling while lightbox is active
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const preventDefault = (e: Event) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    container.addEventListener('wheel', preventDefault, { passive: false });
+    container.addEventListener('touchmove', preventDefault, { passive: false });
+
     return () => {
-      document.body.style.overflow = '';
+      container.removeEventListener('wheel', preventDefault);
+      container.removeEventListener('touchmove', preventDefault);
     };
   }, [isOpen]);
 
-  if (!isOpen || !activePhoto) return null;
+  if (!isMounted || !isOpen || !activePhoto) return null;
 
   const handlePrev = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -153,12 +181,13 @@ export function PhotoLightbox({
     }
   };
 
-  return (
+  return createPortal(
     <div
+      ref={containerRef}
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
-      className="fixed inset-0 z-50 flex flex-col bg-zinc-950/95 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex touch-none flex-col overscroll-contain bg-zinc-950/95 backdrop-blur-sm select-none"
       onClick={onClose}
     >
       {/* Top Bar */}
@@ -301,6 +330,7 @@ export function PhotoLightbox({
           {activePhoto.caption}
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

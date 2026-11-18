@@ -441,15 +441,20 @@ export function AlbumUploadForm({
             {/* Photos List (Existing & New) */}
             {(existingPhotos.length > 0 || newPhotos.length > 0) && (
               <div className="border-ink mt-5 border-t-2 pt-4">
-                <div className="flex items-center justify-between gap-2 pb-3">
-                  <span className="font-display truncate text-xs font-bold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
-                    Photos ({totalPhotosCount})
+                <div className="flex items-start justify-between gap-2 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-1.5">
+                    <span className="font-display text-xs font-bold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
+                      Photos ({totalPhotosCount})
+                    </span>
                     {deletePhotoIds.size > 0 && (
-                      <span className="ml-1.5 text-xs font-normal text-rose-500">
-                        ({deletePhotoIds.size} marked for removal)
+                      <span className="font-display text-xs font-normal text-rose-500">
+                        <span className="hidden sm:inline">
+                          ({deletePhotoIds.size} marked for removal)
+                        </span>
+                        <span className="sm:hidden">({deletePhotoIds.size} removed)</span>
                       </span>
                     )}
-                  </span>
+                  </div>
                   <button
                     type="button"
                     onClick={clearAllPhotos}

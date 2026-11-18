@@ -3,16 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import {
-  Archive,
-  Check,
-  CheckSquare,
-  Clock,
-  Download,
-  Loader2,
-  User as UserIcon,
-} from 'lucide-react';
+import { Archive, CheckSquare, Clock, Download, Loader2, User as UserIcon } from 'lucide-react';
 import {
   BackLink,
   BookmarkButton,
@@ -40,6 +31,8 @@ import { type DownloadProgress, downloadPhotosAsZip } from '../../utils/download
 import { PhotoLightbox } from './PhotoLightbox';
 import { DeleteAlbumModal } from './DeleteAlbumModal';
 import { AlbumUploadForm } from './AlbumUploadForm';
+import { AlbumPhotoCard } from './AlbumPhotoCard';
+import { AlbumSelectionBar } from './AlbumSelectionBar';
 
 export interface AlbumDetailViewProps {
   conventionSlug: string;
@@ -374,132 +367,42 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         />
       ) : (
         <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 sm:gap-4 md:grid-cols-3">
-          {photos.map((photo, idx) => {
-            const isSelected = selectedPhotoIds.has(photo.id);
-
-            return (
-              <div
-                key={photo.id}
-                onClick={() => {
-                  if (isSelectMode) {
-                    handleTogglePhotoSelect(photo.id);
-                  } else {
-                    setLightboxIndex(idx);
-                  }
-                }}
-                className={cn(
-                  'border-ink group relative aspect-square overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] dark:bg-zinc-800',
-                  isSelectMode ? 'cursor-pointer' : 'cursor-zoom-in',
-                  isSelectMode && isSelected && 'ring-accent ring-4 ring-offset-2'
-                )}
-              >
-                {/* Photo */}
-                <Image
-                  src={photo.image_thumb || photo.image}
-                  alt={photo.caption || `${album.title} - Photo ${idx + 1}`}
-                  fill
-                  sizes="(max-width: 380px) 100vw, (max-width: 768px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-
-                {/* Selection Checkbox */}
-                {isSelectMode ? (
-                  <div className="absolute top-2.5 left-2.5 z-10">
-                    <div
-                      className={cn(
-                        'border-ink flex h-6 w-6 items-center justify-center border-2 transition-colors',
-                        isSelected
-                          ? 'border-accent bg-accent text-white dark:text-zinc-950'
-                          : 'border-white bg-white/90 text-transparent shadow-[2px_2px_0_rgba(0,0,0,0.5)]'
-                      )}
-                    >
-                      <Check className="h-4 w-4 stroke-3" />
-                    </div>
-                  </div>
-                ) : (
-                  /* Overlay */
-                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-2">
-                    <LikeButton
-                      variant="badge"
-                      isLiked={photo.is_liked}
-                      count={photo.likes_count}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!user) {
-                          window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
-                          return;
-                        }
-                        toggleLikePhoto.mutate({ photoId: photo.id, albumId: album.id });
-                      }}
-                      title={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
-                      ariaLabel={photo.is_liked ? 'Unlike Photo' : 'Like Photo'}
-                      className="px-2 py-0.5 text-xs"
-                    />
-
-                    <span className="rounded bg-black/50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white/90">
-                      #{idx + 1}
-                    </span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {photos.map((photo, idx) => (
+            <AlbumPhotoCard
+              key={photo.id}
+              photo={photo}
+              index={idx}
+              albumTitle={album.title}
+              isSelectMode={isSelectMode}
+              isSelected={selectedPhotoIds.has(photo.id)}
+              onSelect={handleTogglePhotoSelect}
+              onOpenLightbox={(index) => setLightboxIndex(index)}
+              onToggleLike={(photoId) => {
+                if (!user) {
+                  window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
+                  return;
+                }
+                toggleLikePhoto.mutate({ photoId, albumId: album.id });
+              }}
+            />
+          ))}
         </div>
       )}
 
       {/* Selection Bar */}
       {isSelectMode && (
-        <div className="border-ink fixed inset-x-4 bottom-6 z-40 mx-auto max-w-xl border-2 bg-white p-3.5 shadow-[6px_6px_0_var(--ink)] sm:px-6 sm:py-4 dark:bg-zinc-900">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="font-display text-xs font-bold tracking-wider uppercase sm:text-sm">
-                {selectedPhotoIds.size}/{photos.length} Selected
-              </span>
-              <button
-                type="button"
-                onClick={handleSelectAll}
-                className="text-accent ml-1 cursor-pointer text-xs font-bold uppercase hover:underline"
-              >
-                {selectedPhotoIds.size === photos.length ? 'Deselect All' : 'Select All'}
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleDownloadZip(selectedPhotos)}
-                disabled={selectedPhotoIds.size === 0 || Boolean(downloadProgress)}
-                className={cn(
-                  CONBLOCK_PRIMARY,
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider uppercase disabled:opacity-50'
-                )}
-              >
-                {downloadProgress ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Packaging...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-3.5 w-3.5" />
-                    <span>Download ({selectedPhotoIds.size})</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsSelectMode(false);
-                  setSelectedPhotoIds(new Set());
-                }}
-                className={cn(CONBLOCK_SECONDARY, 'px-3 py-1.5 text-xs font-bold uppercase')}
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
+        <AlbumSelectionBar
+          selectedCount={selectedPhotoIds.size}
+          totalCount={photos.length}
+          isAllSelected={selectedPhotoIds.size === photos.length}
+          onToggleSelectAll={handleSelectAll}
+          onDownload={() => handleDownloadZip(selectedPhotos)}
+          isPackaging={Boolean(downloadProgress)}
+          onDone={() => {
+            setIsSelectMode(false);
+            setSelectedPhotoIds(new Set());
+          }}
+        />
       )}
 
       {/* Lightbox */}

@@ -3,7 +3,7 @@ import { MeetupDetailView } from '@/features/meetups';
 
 export const metadata: Metadata = {
   title: 'Meetup Details',
-  description: 'View meetup schedule, location, and attendee photo collections.',
+  description: 'View meetup schedule, location, and attendee photo gallery.',
 };
 
 export default async function MeetupPage({
@@ -12,7 +12,6 @@ export default async function MeetupPage({
   params: Promise<{ slug: string; id: string }>;
 }) {
   const { slug, id } = await params;
-  const meetupId = parseInt(id, 10);
 
-  return <MeetupDetailView conventionSlug={slug} meetupId={meetupId} />;
+  return <MeetupDetailView conventionSlug={slug} meetupId={id} />;
 }

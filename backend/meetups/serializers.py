@@ -3,7 +3,16 @@ import json
 from conventions.models import Convention
 from rest_framework import serializers
 
-from .models import Going, Meetup, SavedMeetup
+from .models import (
+    AlbumFavorite,
+    AlbumLike,
+    Going,
+    Meetup,
+    MeetupAlbum,
+    MeetupPhoto,
+    PhotoLike,
+    SavedMeetup,
+)
 
 
 class MeetupListSerializer(serializers.ModelSerializer):
@@ -21,6 +30,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
         model = Meetup
         fields = [
             "id",
+            "slug",
             "convention",
             "convention_slug",
             "convention_name",
@@ -150,6 +160,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
         model = Meetup
         fields = [
             "id",
+            "slug",
             "convention",
             "name",
             "location",
@@ -162,7 +173,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
             "is_official",
             "created_at",
         ]
-        read_only_fields = ["id", "image_thumb", "created_at"]
+        read_only_fields = ["id", "slug", "image_thumb", "created_at"]
 
     def get_image_thumb(self, obj: Meetup) -> str | None:
         if obj.image:
@@ -198,6 +209,7 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
         model = Meetup
         fields = [
             "id",
+            "slug",
             "name",
             "location",
             "starts_at",
@@ -209,7 +221,7 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
             "is_official",
             "updated_at",
         ]
-        read_only_fields = ["id", "updated_at"]
+        read_only_fields = ["id", "slug", "updated_at"]
 
     def validate(self, attrs):
         instance = self.instance
@@ -230,3 +242,200 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
                 instance.image.delete(save=False)
             instance.image = None
         return super().update(instance, validated_data)
+
+
+class MeetupPhotoSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    image_thumb = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MeetupPhoto
+        fields = [
+            "id",
+            "album",
+            "image",
+            "image_thumb",
+            "caption",
+            "order",
+            "likes_count",
+            "is_liked",
+            "created_at",
+        ]
+        read_only_fields = fields
+
+    def get_image(self, obj: MeetupPhoto) -> str:
+        return obj.image.url if obj.image else ""
+
+    def get_image_thumb(self, obj: MeetupPhoto) -> str:
+        if obj.image:
+            try:
+                return obj.image_thumb.url
+            except Exception:
+                return obj.image.url
+        return ""
+
+    def get_is_liked(self, obj: MeetupPhoto) -> bool:
+        request = self.context.get("request")
+        user = request.user if request else None
+        if not user or not user.is_authenticated:
+            return False
+        liked_photos_set = self.context.get("liked_photos_set")
+        if liked_photos_set is not None:
+            return obj.id in liked_photos_set
+        return PhotoLike.objects.filter(user=user, photo=obj).exists()
+
+
+class MeetupAlbumListSerializer(serializers.ModelSerializer):
+    meetup_slug = serializers.CharField(source="meetup.slug", read_only=True)
+    cover_photo_url = serializers.SerializerMethodField()
+    cover_thumb_url = serializers.SerializerMethodField()
+    preview_photos = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_owner = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MeetupAlbum
+        fields = [
+            "id",
+            "meetup",
+            "meetup_slug",
+            "title",
+            "description",
+            "social_links",
+            "cover_photo",
+            "cover_photo_url",
+            "cover_thumb_url",
+            "preview_photos",
+            "photos_count",
+            "likes_count",
+            "favorites_count",
+            "is_liked",
+            "is_favorited",
+            "is_owner",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = fields
+
+    def get_cover_photo_url(self, obj: MeetupAlbum) -> str | None:
+        if obj.cover_photo and obj.cover_photo.image:
+            return obj.cover_photo.image.url
+        first_photo = getattr(obj, "_first_photo", None)
+        if first_photo and first_photo.image:
+            return first_photo.image.url
+        first = obj.photos.first()
+        return first.image.url if first and first.image else None
+
+    def get_cover_thumb_url(self, obj: MeetupAlbum) -> str | None:
+        target = obj.cover_photo or getattr(obj, "_first_photo", None)
+        if not target:
+            target = obj.photos.first()
+        if target and target.image:
+            try:
+                return target.image_thumb.url
+            except Exception:
+                return target.image.url
+        return None
+
+    def get_preview_photos(self, obj: MeetupAlbum) -> list[str]:
+        previews = []
+        photos = getattr(obj, "_prefetched_photos", None)
+        if photos is None:
+            photos = obj.photos.all()[:4]
+        for p in photos[:4]:
+            if p.image:
+                try:
+                    previews.append(p.image_thumb.url)
+                except Exception:
+                    previews.append(p.image.url)
+        return previews
+
+    def get_created_by_name(self, obj: MeetupAlbum) -> str | None:
+        if not obj.created_by:
+            return None
+        return getattr(obj.created_by, "display_name", None) or obj.created_by.username
+
+    def get_is_liked(self, obj: MeetupAlbum) -> bool:
+        request = self.context.get("request")
+        user = request.user if request else None
+        if not user or not user.is_authenticated:
+            return False
+        liked_set = self.context.get("liked_albums_set")
+        if liked_set is not None:
+            return obj.id in liked_set
+        return AlbumLike.objects.filter(user=user, album=obj).exists()
+
+    def get_is_favorited(self, obj: MeetupAlbum) -> bool:
+        request = self.context.get("request")
+        user = request.user if request else None
+        if not user or not user.is_authenticated:
+            return False
+        fav_set = self.context.get("favorite_albums_set")
+        if fav_set is not None:
+            return obj.id in fav_set
+        return AlbumFavorite.objects.filter(user=user, album=obj).exists()
+
+    def get_is_owner(self, obj: MeetupAlbum) -> bool:
+        request = self.context.get("request")
+        user = request.user if request else None
+        if not user or not user.is_authenticated:
+            return False
+        return bool(obj.created_by_id == user.id)
+
+
+class MeetupAlbumDetailSerializer(MeetupAlbumListSerializer):
+    photos = serializers.SerializerMethodField()
+
+    class Meta(MeetupAlbumListSerializer.Meta):
+        fields = MeetupAlbumListSerializer.Meta.fields + ["photos"]
+
+    def get_photos(self, obj: MeetupAlbum):
+        photos_qs = obj.photos.all().order_by("order", "created_at")
+        context = self.context.copy()
+        user = context.get("request").user if context.get("request") else None
+        if user and user.is_authenticated and "liked_photos_set" not in context:
+            context["liked_photos_set"] = set(
+                PhotoLike.objects.filter(user=user, photo__album=obj).values_list(
+                    "photo_id", flat=True
+                )
+            )
+        return MeetupPhotoSerializer(photos_qs, many=True, context=context).data
+
+
+class MeetupAlbumCreateUpdateSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(max_length=120, required=True, allow_blank=False)
+    description = serializers.CharField(required=False, allow_blank=True, default="")
+    social_links = serializers.JSONField(required=False, default=dict)
+
+    class Meta:
+        model = MeetupAlbum
+        fields = [
+            "id",
+            "title",
+            "description",
+            "social_links",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+    def validate_social_links(self, value):
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except Exception:
+                raise serializers.ValidationError("Invalid JSON for social_links.") from None
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("social_links must be an object.")
+        allowed_keys = {"instagram", "twitter", "tiktok", "bluesky", "website"}
+        cleaned = {}
+        for k, v in value.items():
+            if k in allowed_keys and isinstance(v, str):
+                cleaned[k] = v.strip()
+        return cleaned
+

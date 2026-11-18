@@ -2,14 +2,21 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { api } from '@/shared/lib/api';
-import type { Meetup, MeetupDetail, MeetupFilters } from '../types';
+import type {
+  AlbumSortOption,
+  Meetup,
+  MeetupAlbum,
+  MeetupAlbumDetail,
+  MeetupDetail,
+  MeetupFilters,
+} from '../types';
 
 export const meetupKeys = {
   all: ['meetups'] as const,
   lists: () => [...meetupKeys.all, 'list'] as const,
   list: (filters: MeetupFilters) => [...meetupKeys.lists(), filters] as const,
   details: () => [...meetupKeys.all, 'detail'] as const,
-  detail: (id: number) => [...meetupKeys.details(), id] as const,
+  detail: (id: number | string) => [...meetupKeys.details(), id] as const,
 };
 
 export function useMeetups(filters: MeetupFilters = {}) {
@@ -37,11 +44,40 @@ export function useMeetups(filters: MeetupFilters = {}) {
   });
 }
 
-export function useMeetup(id: number) {
+export function useMeetup(id: number | string) {
   return useQuery({
     queryKey: meetupKeys.detail(id),
     queryFn: async () => {
       return api.get(`api/v1/meetups/${id}/`).json<MeetupDetail>();
+    },
+    enabled: Boolean(id),
+  });
+}
+
+export const albumKeys = {
+  all: ['albums'] as const,
+  lists: () => [...albumKeys.all, 'list'] as const,
+  list: (meetupId: number | string, sort: AlbumSortOption = 'newest') =>
+    [...albumKeys.lists(), meetupId, sort] as const,
+  details: () => [...albumKeys.all, 'detail'] as const,
+  detail: (id: number | string) => [...albumKeys.details(), id] as const,
+};
+
+export function useMeetupAlbums(meetupId: number | string, sort: AlbumSortOption = 'all') {
+  return useQuery({
+    queryKey: albumKeys.list(meetupId, sort),
+    queryFn: async () => {
+      return api.get(`api/v1/meetups/${meetupId}/albums/?sort=${sort}`).json<MeetupAlbum[]>();
+    },
+    enabled: Boolean(meetupId),
+  });
+}
+
+export function useAlbumDetail(id: number | string) {
+  return useQuery({
+    queryKey: albumKeys.detail(id),
+    queryFn: async () => {
+      return api.get(`api/v1/albums/${id}/`).json<MeetupAlbumDetail>();
     },
     enabled: Boolean(id),
   });

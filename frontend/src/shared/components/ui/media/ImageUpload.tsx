@@ -2,9 +2,10 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { ImagePlus, Undo2, X } from 'lucide-react';
+import { ImagePlus, X } from 'lucide-react';
 import { CONBLOCK } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
+import { UndoRemoveBanner } from './UndoRemoveBanner';
 
 export interface ImageUploadProps {
   id?: string;
@@ -29,7 +30,7 @@ export function ImageUpload({
   onRemove,
   canUndoRemove = false,
   onUndoRemove,
-  undoMessage = 'Photo will be removed upon saving',
+  undoMessage = 'Image will be removed upon saving',
   aspectRatioClass = 'aspect-video',
   className,
 }: ImageUploadProps) {
@@ -79,9 +80,16 @@ export function ImageUpload({
       </div>
 
       {previewUrl ? (
-        <div className="border-ink relative mt-1.5 w-full max-w-lg overflow-hidden border-2 bg-zinc-950 shadow-[4px_4px_0_var(--ink)]">
+        <div
+          className={cn(
+            'border-ink relative mx-auto mt-1.5 w-full overflow-hidden border-2 bg-zinc-950 shadow-[4px_4px_0_var(--ink)]',
+            aspectRatioClass?.includes('max-w-xs') ? 'max-w-xs' : 'max-w-lg'
+          )}
+        >
           {/* Image Canvas */}
-          <div className={cn('relative w-full overflow-hidden bg-zinc-950', aspectRatioClass)}>
+          <div
+            className={cn('relative mx-auto w-full overflow-hidden bg-zinc-950', aspectRatioClass)}
+          >
             <Image
               src={previewUrl}
               alt="Preview"
@@ -135,17 +143,7 @@ export function ImageUpload({
       ) : (
         <>
           {canUndoRemove && onUndoRemove ? (
-            <div className="border-ink mt-2 mb-2 flex items-center justify-between border-2 border-dashed bg-amber-50/60 p-2.5 shadow-[2px_2px_0_var(--ink)] dark:border-zinc-700 dark:bg-amber-950/20">
-              <span className="text-xs text-zinc-600 italic dark:text-zinc-300">{undoMessage}</span>
-              <button
-                type="button"
-                onClick={onUndoRemove}
-                className="inline-flex cursor-pointer items-center gap-1 font-mono text-xs font-bold text-teal-600 hover:underline dark:text-teal-400"
-              >
-                <Undo2 className="h-3.5 w-3.5" />
-                Undo
-              </button>
-            </div>
+            <UndoRemoveBanner onUndo={onUndoRemove} message={undoMessage} />
           ) : null}
 
           <label

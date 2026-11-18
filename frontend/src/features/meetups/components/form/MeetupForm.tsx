@@ -166,9 +166,15 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
     }
     setImageFile(null);
     setImagePreview(null);
-    if (isEditing) {
+    if (isEditing && (initialData?.image || initialData?.image_thumb)) {
       setClearImage(true);
     }
+  };
+
+  const handleUndoImageRemove = () => {
+    setClearImage(false);
+    setImagePreview(initialData?.image || initialData?.image_thumb || null);
+    setImageLayout(initialData?.image_layout || 'banner');
   };
 
   const handleBlur = (field: 'name' | 'location') => {
@@ -233,14 +239,14 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
         if (onSuccess) {
           onSuccess(updated);
         } else {
-          router.push(`/conventions/${conventionSlug}/meetups/${updated.id}`);
+          router.push(`/conventions/${conventionSlug}/meetups/${updated.slug || updated.id}`);
         }
       } else {
         const created = await createMutation.mutateAsync(formData);
         if (onSuccess) {
           onSuccess(created);
         } else {
-          router.push(`/conventions/${conventionSlug}/meetups/${created.id}`);
+          router.push(`/conventions/${conventionSlug}/meetups/${created.slug || created.id}`);
         }
       }
     } catch (err: unknown) {
@@ -269,7 +275,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
       <BackLink
         href={
           isEditing && initialData
-            ? `/conventions/${conventionSlug}/meetups/${initialData.id}`
+            ? `/conventions/${conventionSlug}/meetups/${initialData.slug || initialData.id}`
             : `/conventions/${conventionSlug}/meetups`
         }
         onClick={
@@ -579,6 +585,11 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             previewUrl={imagePreview}
             onFileSelect={handleImageSelect}
             onRemove={handleImageRemove}
+            canUndoRemove={Boolean(
+              isEditing && clearImage && (initialData?.image || initialData?.image_thumb)
+            )}
+            onUndoRemove={handleUndoImageRemove}
+            undoMessage="Image will be removed upon saving"
             aspectRatioClass={imageLayout === 'poster' ? 'aspect-[3/4] max-w-xs' : 'aspect-[16/9]'}
           />
 
@@ -752,7 +763,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
             onCancel
               ? undefined
               : isEditing && initialData
-                ? `/conventions/${conventionSlug}/meetups/${initialData.id}`
+                ? `/conventions/${conventionSlug}/meetups/${initialData.slug || initialData.id}`
                 : `/conventions/${conventionSlug}/meetups`
           }
           onCancel={onCancel}

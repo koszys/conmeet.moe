@@ -51,7 +51,7 @@ export function ConventionSections({
             subtitle: m.location || 'Convention Center',
             meta: formatMeetupTimeRange(m.starts_at, m.ends_at),
             badge: m.is_official ? { text: 'Official', variant: 'accent' as const } : undefined,
-            href: `/conventions/${convention.slug}/meetups/${m.id}`,
+            href: `/conventions/${convention.slug}/meetups/${m.slug || m.id}`,
           })),
         };
       }

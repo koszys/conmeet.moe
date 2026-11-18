@@ -2,11 +2,16 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/shared/lib/api';
-import { meetupKeys } from './queries';
+import { albumKeys, meetupKeys } from './queries';
 import type {
+  AlbumFavoriteToggleResponse,
+  AlbumLikeToggleResponse,
   GoingMeetupToggleResponse,
   Meetup,
+  MeetupAlbum,
+  MeetupAlbumDetail,
   MeetupDetail,
+  PhotoLikeToggleResponse,
   SaveMeetupToggleResponse,
 } from '../types';
 
@@ -130,6 +135,171 @@ export function useDeleteMeetup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: meetupKeys.all });
+    },
+  });
+}
+
+export function useCreateAlbum(meetupId: number | string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      return api.post(`api/v1/meetups/${meetupId}/albums/`, { body: formData }).json<MeetupAlbum>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: albumKeys.all });
+    },
+  });
+}
+
+export function useUpdateAlbum(albumId: number | string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      return api.patch(`api/v1/albums/${albumId}/`, { body: formData }).json<MeetupAlbumDetail>();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: albumKeys.all });
+      queryClient.invalidateQueries({ queryKey: albumKeys.detail(albumId) });
+    },
+  });
+}
+
+export function useDeleteAlbum(meetupId?: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (albumId: number) => {
+      return api.delete(`api/v1/albums/${albumId}/`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: albumKeys.all });
+      if (meetupId) {
+        queryClient.invalidateQueries({ queryKey: albumKeys.list(meetupId) });
+      }
+    },
+  });
+}
+
+export function useToggleLikeAlbum() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (albumId: number) => {
+      return api.post(`api/v1/albums/${albumId}/like/`).json<AlbumLikeToggleResponse>();
+    },
+    onMutate: async (albumId: number) => {
+      await queryClient.cancelQueries({ queryKey: albumKeys.all });
+
+      queryClient.setQueriesData<MeetupAlbum[]>({ queryKey: albumKeys.lists() }, (old) => {
+        if (!old) return old;
+        return old.map((item) => {
+          if (item.id === albumId) {
+            const nextIsLiked = !item.is_liked;
+            return {
+              ...item,
+              is_liked: nextIsLiked,
+              likes_count: nextIsLiked ? item.likes_count + 1 : Math.max(0, item.likes_count - 1),
+            };
+          }
+          return item;
+        });
+      });
+
+      queryClient.setQueryData<MeetupAlbumDetail>(albumKeys.detail(albumId), (old) => {
+        if (!old) return old;
+        const nextIsLiked = !old.is_liked;
+        return {
+          ...old,
+          is_liked: nextIsLiked,
+          likes_count: nextIsLiked ? old.likes_count + 1 : Math.max(0, old.likes_count - 1),
+        };
+      });
+    },
+    onSettled: (_, __, albumId) => {
+      queryClient.invalidateQueries({ queryKey: albumKeys.all });
+      queryClient.invalidateQueries({ queryKey: albumKeys.detail(albumId) });
+    },
+  });
+}
+
+export function useToggleFavoriteAlbum() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (albumId: number) => {
+      return api.post(`api/v1/albums/${albumId}/favorite/`).json<AlbumFavoriteToggleResponse>();
+    },
+    onMutate: async (albumId: number) => {
+      await queryClient.cancelQueries({ queryKey: albumKeys.all });
+
+      queryClient.setQueriesData<MeetupAlbum[]>({ queryKey: albumKeys.lists() }, (old) => {
+        if (!old) return old;
+        return old.map((item) => {
+          if (item.id === albumId) {
+            const nextIsFavorited = !item.is_favorited;
+            return {
+              ...item,
+              is_favorited: nextIsFavorited,
+              favorites_count: nextIsFavorited
+                ? item.favorites_count + 1
+                : Math.max(0, item.favorites_count - 1),
+            };
+          }
+          return item;
+        });
+      });
+
+      queryClient.setQueryData<MeetupAlbumDetail>(albumKeys.detail(albumId), (old) => {
+        if (!old) return old;
+        const nextIsFavorited = !old.is_favorited;
+        return {
+          ...old,
+          is_favorited: nextIsFavorited,
+          favorites_count: nextIsFavorited
+            ? old.favorites_count + 1
+            : Math.max(0, old.favorites_count - 1),
+        };
+      });
+    },
+    onSettled: (_, __, albumId) => {
+      queryClient.invalidateQueries({ queryKey: albumKeys.all });
+      queryClient.invalidateQueries({ queryKey: albumKeys.detail(albumId) });
+    },
+  });
+}
+
+export function useToggleLikePhoto() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ photoId }: { photoId: number; albumId: number }) => {
+      return api.post(`api/v1/photos/${photoId}/like/`).json<PhotoLikeToggleResponse>();
+    },
+    onMutate: async ({ photoId, albumId }) => {
+      await queryClient.cancelQueries({ queryKey: albumKeys.detail(albumId) });
+
+      queryClient.setQueryData<MeetupAlbumDetail>(albumKeys.detail(albumId), (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          photos: old.photos.map((p) => {
+            if (p.id === photoId) {
+              const nextIsLiked = !p.is_liked;
+              return {
+                ...p,
+                is_liked: nextIsLiked,
+                likes_count: nextIsLiked ? p.likes_count + 1 : Math.max(0, p.likes_count - 1),
+              };
+            }
+            return p;
+          }),
+        };
+      });
+    },
+    onSettled: (_, __, { albumId }) => {
+      queryClient.invalidateQueries({ queryKey: albumKeys.detail(albumId) });
     },
   });
 }

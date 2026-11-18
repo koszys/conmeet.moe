@@ -4,13 +4,10 @@ import { useRef, useState } from 'react';
 import { RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
 import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
+import type { ConventionFilters } from '../../../types';
 import { ConventionFilterPopover } from './ConventionFilterPopover';
 
-export interface ConventionFilters {
-  query: string;
-  location: string;
-  year: string;
-}
+export type { ConventionFilters };
 
 export interface ConventionFilterBarProps {
   filters: ConventionFilters;

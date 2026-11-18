@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Calendar, Check, Globe, RotateCcw, SlidersHorizontal, X } from 'lucide-react';
 import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY, tabButtonClasses } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import type { ConventionFilters } from './ConventionFilterBar';
+import type { ConventionFilters } from '../../../types';
 
 export interface ConventionFilterPopoverProps {
   isOpen: boolean;

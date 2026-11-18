@@ -9,7 +9,7 @@ import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { IconButton } from '@/shared/components/ui';
 
 import { useConvention } from '../../data/api';
-import { useConventionNav } from './ConventionNavProvider';
+import { useConventionNav } from './ConventionNavContext';
 import { ConventionNavList } from './ConventionNavList';
 import { HeaderSearch } from '../search/HeaderSearch';
 import { ConventionExternalLinks } from '../links/ConventionExternalLinks';

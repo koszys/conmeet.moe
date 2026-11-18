@@ -36,7 +36,7 @@ export function useHorizontalScrollAffordance({
     if (externalRef && typeof externalRef !== 'function' && externalRef.current !== node) {
       setNode(externalRef.current);
     }
-  });
+  }, [externalRef, node]);
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -74,11 +74,8 @@ export function useHorizontalScrollAffordance({
     if (typeof MutationObserver !== 'undefined') {
       mutationObserver = new MutationObserver(() => {
         checkScroll();
-        if (observer) {
-          Array.from(el.children).forEach((child) => observer?.observe(child));
-        }
       });
-      mutationObserver.observe(el, { childList: true, subtree: true });
+      mutationObserver.observe(el, { childList: true });
     }
 
     return () => {

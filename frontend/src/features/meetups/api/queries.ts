@@ -79,6 +79,6 @@ export function useAlbumDetail(id: number | string) {
     queryFn: async () => {
       return api.get(`api/v1/albums/${id}/`).json<MeetupAlbumDetail>();
     },
-    enabled: Boolean(id),
+    enabled: Boolean(id) && id !== 'new' && !Number.isNaN(Number(id)),
   });
 }

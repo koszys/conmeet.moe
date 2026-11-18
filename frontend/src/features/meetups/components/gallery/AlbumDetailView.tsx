@@ -390,7 +390,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                 className={cn(
                   'border-ink group relative aspect-square overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] dark:bg-zinc-800',
                   isSelectMode ? 'cursor-pointer' : 'cursor-zoom-in',
-                  isSelected && 'ring-accent ring-4 ring-offset-2'
+                  isSelectMode && isSelected && 'ring-accent ring-4 ring-offset-2'
                 )}
               >
                 {/* Photo */}
@@ -489,7 +489,10 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
               <button
                 type="button"
-                onClick={() => setIsSelectMode(false)}
+                onClick={() => {
+                  setIsSelectMode(false);
+                  setSelectedPhotoIds(new Set());
+                }}
                 className={cn(CONBLOCK_SECONDARY, 'px-3 py-1.5 text-xs font-bold uppercase')}
               >
                 Done

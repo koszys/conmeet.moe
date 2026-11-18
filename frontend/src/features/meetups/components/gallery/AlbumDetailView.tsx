@@ -21,6 +21,7 @@ import {
   CONBLOCK_SECONDARY,
   CopyLinkButton,
   DeleteButton,
+  EditButton,
   EmptyState,
   LikeButton,
 } from '@/shared/components/ui';
@@ -38,6 +39,7 @@ import { type DownloadProgress, downloadPhotosAsZip } from '../../utils/download
 import { SocialBadges } from './SocialLinksField';
 import { PhotoLightbox } from './PhotoLightbox';
 import { DeleteAlbumModal } from './DeleteAlbumModal';
+import { AlbumUploadForm } from './AlbumUploadForm';
 
 export interface AlbumDetailViewProps {
   conventionSlug: string;
@@ -59,6 +61,9 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
   // Selection mode state
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedPhotoIds, setSelectedPhotoIds] = useState<Set<number>>(new Set());
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false);
 
   // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -97,6 +102,26 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
               Back to Photo Gallery
             </Link>
           }
+        />
+      </div>
+    );
+  }
+
+  if (isEditing) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <AlbumUploadForm
+          conventionSlug={conventionSlug}
+          meetupId={meetupId}
+          initialData={album}
+          onSuccess={() => {
+            setIsEditing(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onCancel={() => {
+            setIsEditing(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         />
       </div>
     );
@@ -180,9 +205,15 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           {meetup?.name ? `Back to ${meetup.name} Gallery` : 'Back to Photo Gallery'}
         </BackLink>
 
-        {/* Delete */}
+        {/* Actions */}
         {isOwnerOrAdmin && (
           <div className="flex items-center gap-2">
+            <EditButton
+              variant="button"
+              onClick={() => setIsEditing(true)}
+              title="Edit Album"
+              ariaLabel="Edit Album"
+            />
             <DeleteButton
               variant="button"
               colorStyle="danger-solid"

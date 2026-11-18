@@ -152,7 +152,7 @@ export function useCreateAlbum(meetupId: number | string) {
   });
 }
 
-export function useUpdateAlbum(albumId: number) {
+export function useUpdateAlbum(albumId: number | string) {
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -1,4 +1,5 @@
 from conventions.models import Convention
+from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -275,6 +276,7 @@ class AlbumDetailView(generics.RetrieveUpdateDestroyAPIView):
             return MeetupAlbumCreateUpdateSerializer
         return MeetupAlbumDetailSerializer
 
+    @transaction.atomic
     def perform_update(self, serializer):
         album = serializer.save()
 
@@ -310,6 +312,9 @@ class AlbumDetailView(generics.RetrieveUpdateDestroyAPIView):
                 MeetupPhoto.objects.create(album=album, image=file, order=current_count + idx)
 
         album.photos_count = album.photos.count()
+        if album.photos_count == 0:
+            raise ValidationError({"photos": "An album must have at least 1 photo."})
+
         if (
             album.cover_photo_id
             and not MeetupPhoto.objects.filter(id=album.cover_photo_id).exists()

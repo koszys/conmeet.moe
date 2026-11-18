@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Camera, Images, Trash2, UploadCloud } from 'lucide-react';
+import { AlertCircle, Camera, Edit3, Images, Trash2, UploadCloud } from 'lucide-react';
 import {
   BackLink,
   CharCounter,
@@ -13,13 +13,16 @@ import {
   TextInput,
 } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useCreateAlbum, useMeetup } from '../../api';
-import type { SocialLinks } from '../../types';
+import { useCreateAlbum, useMeetup, useUpdateAlbum } from '../../api';
+import type { MeetupAlbumDetail, MeetupPhoto, SocialLinks } from '../../types';
 import { SocialLinksField } from './SocialLinksField';
 
 export interface AlbumUploadFormProps {
   conventionSlug: string;
   meetupId: number | string;
+  initialData?: MeetupAlbumDetail;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 interface PhotoItem {
@@ -36,16 +39,27 @@ function formatBytes(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
-export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormProps) {
+export function AlbumUploadForm({
+  conventionSlug,
+  meetupId,
+  initialData,
+  onSuccess,
+  onCancel,
+}: AlbumUploadFormProps) {
   const router = useRouter();
   const { data: meetup } = useMeetup(meetupId);
+  const isEditMode = Boolean(initialData);
+
   const createMutation = useCreateAlbum(meetupId);
+  const updateMutation = useUpdateAlbum(initialData?.id ?? 0);
 
   // Form State
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [socialLinks, setSocialLinks] = useState<SocialLinks>({});
-  const [photos, setPhotos] = useState<PhotoItem[]>([]);
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [description, setDescription] = useState(initialData?.description || '');
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>(initialData?.social_links || {});
+  const [existingPhotos] = useState<MeetupPhoto[]>(initialData?.photos || []);
+  const [deletePhotoIds, setDeletePhotoIds] = useState<Set<number>>(new Set());
+  const [newPhotos, setNewPhotos] = useState<PhotoItem[]>([]);
 
   // Validation & Error State
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -57,16 +71,19 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
   // Clean up object URLs on unmount
   useEffect(() => {
     return () => {
-      photos.forEach((p) => {
+      newPhotos.forEach((p) => {
         if (p.previewUrl.startsWith('blob:')) {
           URL.revokeObjectURL(p.previewUrl);
         }
       });
     };
-  }, [photos]);
+  }, [newPhotos]);
 
   const meetupSlugOrId = meetup?.slug || meetupId;
   const galleryHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`;
+
+  const activeExistingCount = existingPhotos.filter((p) => !deletePhotoIds.has(p.id)).length;
+  const totalPhotosCount = activeExistingCount + newPhotos.length;
 
   const handleFilesAdded = (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
@@ -77,18 +94,18 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
 
     const isImageFile = (file: File) =>
       file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|gif)$/i.test(file.name);
-    const newFiles = Array.from(fileList).filter(isImageFile);
-    const totalCount = photos.length + newFiles.length;
+    const validFiles = Array.from(fileList).filter(isImageFile);
+    const potentialTotal = totalPhotosCount + validFiles.length;
 
-    if (totalCount > 30) {
+    if (potentialTotal > 30) {
       setErrors((prev) => ({
         ...prev,
-        photos: 'You can upload a maximum of 30 photos per album.',
+        photos: 'You can have a maximum of 30 photos per album.',
       }));
     }
 
-    const availableSlots = Math.max(0, 30 - photos.length);
-    const filesToAdd = newFiles.slice(0, availableSlots);
+    const availableSlots = Math.max(0, 30 - totalPhotosCount);
+    const filesToAdd = validFiles.slice(0, availableSlots);
 
     const newItems: PhotoItem[] = filesToAdd.map((file) => ({
       id: `${file.name}-${file.lastModified}-${Math.random()}`,
@@ -96,7 +113,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
       previewUrl: URL.createObjectURL(file),
     }));
 
-    setPhotos((prev) => [...prev, ...newItems]);
+    setNewPhotos((prev) => [...prev, ...newItems]);
 
     // Reset file input value so re-selecting the same file triggers onChange
     if (fileInputRef.current) {
@@ -123,8 +140,8 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
     handleFilesAdded(e.dataTransfer.files);
   };
 
-  const removePhoto = (id: string) => {
-    setPhotos((prev) => {
+  const removeNewPhoto = (id: string) => {
+    setNewPhotos((prev) => {
       const target = prev.find((p) => p.id === id);
       if (target && target.previewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(target.previewUrl);
@@ -137,13 +154,48 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
     }
   };
 
+  const markDeleteExistingPhoto = (photoId: number) => {
+    setDeletePhotoIds((prev) => {
+      const next = new Set(prev);
+      next.add(photoId);
+      return next;
+    });
+
+    if (errors.photos) {
+      setErrors((prev) => ({ ...prev, photos: '' }));
+    }
+  };
+
+  const restoreExistingPhoto = (photoId: number) => {
+    if (totalPhotosCount >= 30) {
+      setErrors((prev) => ({
+        ...prev,
+        photos: 'Cannot restore photo: maximum limit of 30 photos reached.',
+      }));
+      return;
+    }
+
+    setDeletePhotoIds((prev) => {
+      const next = new Set(prev);
+      next.delete(photoId);
+      return next;
+    });
+
+    if (errors.photos) {
+      setErrors((prev) => ({ ...prev, photos: '' }));
+    }
+  };
+
   const clearAllPhotos = () => {
-    photos.forEach((p) => {
+    newPhotos.forEach((p) => {
       if (p.previewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(p.previewUrl);
       }
     });
-    setPhotos([]);
+    setNewPhotos([]);
+    if (existingPhotos.length > 0) {
+      setDeletePhotoIds(new Set(existingPhotos.map((p) => p.id)));
+    }
   };
 
   const validate = (): boolean => {
@@ -153,10 +205,10 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
       newErrors.title = 'Album title is required';
     }
 
-    if (photos.length === 0) {
-      newErrors.photos = 'Please select at least 1 photo for this album.';
-    } else if (photos.length > 30) {
-      newErrors.photos = 'You can upload a maximum of 30 photos per album.';
+    if (totalPhotosCount === 0) {
+      newErrors.photos = 'Please ensure this album contains at least 1 photo.';
+    } else if (totalPhotosCount > 30) {
+      newErrors.photos = 'You can have a maximum of 30 photos per album.';
     }
 
     setErrors(newErrors);
@@ -183,15 +235,33 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
       });
       formData.append('social_links', JSON.stringify(cleanedSocials));
 
-      photos.forEach((item) => {
-        formData.append('photos', item.file);
-      });
+      if (isEditMode) {
+        if (deletePhotoIds.size > 0) {
+          formData.append('delete_photo_ids', Array.from(deletePhotoIds).join(','));
+        }
+        newPhotos.forEach((item) => {
+          formData.append('photos', item.file);
+        });
 
-      await createMutation.mutateAsync(formData);
-      router.push(galleryHref);
+        await updateMutation.mutateAsync(formData);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push(galleryHref);
+        }
+      } else {
+        newPhotos.forEach((item) => {
+          formData.append('photos', item.file);
+        });
+
+        await createMutation.mutateAsync(formData);
+        router.push(galleryHref);
+      }
     } catch (err: unknown) {
-      console.error('Failed to create album:', err);
-      let message = 'Failed to create album. Please verify your photo files and try again.';
+      console.error('Failed to save album:', err);
+      let message = isEditMode
+        ? 'Failed to update album. Please try again.'
+        : 'Failed to create album. Please verify your photo files and try again.';
       if (err && typeof err === 'object' && 'response' in err) {
         try {
           const res = err as { response: Response };
@@ -215,22 +285,42 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
   return (
     <div className="space-y-6">
       {/* Navigation */}
-      <BackLink href={galleryHref}>
-        {meetup?.name ? `Back to ${meetup.name} Gallery` : 'Back to Photo Gallery'}
+      <BackLink
+        href={galleryHref}
+        onClick={
+          onCancel
+            ? (e) => {
+                e.preventDefault();
+                onCancel();
+              }
+            : undefined
+        }
+      >
+        {isEditMode
+          ? 'Back to Album'
+          : meetup?.name
+            ? `Back to ${meetup.name} Gallery`
+            : 'Back to Photo Gallery'}
       </BackLink>
 
       {/* Header */}
       <div className="border-ink border-b-2 pb-5">
         <div className="flex items-start gap-3">
           <div className="border-ink bg-accent-soft/25 mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800">
-            <Camera className="text-ink h-5 w-5 dark:text-zinc-100" />
+            {isEditMode ? (
+              <Edit3 className="text-ink h-5 w-5 dark:text-zinc-100" />
+            ) : (
+              <Camera className="text-ink h-5 w-5 dark:text-zinc-100" />
+            )}
           </div>
           <div className="min-w-0">
             <h1 className="font-display text-xl tracking-wide uppercase min-[380px]:text-2xl sm:text-3xl">
-              Upload Photo Album
+              {isEditMode ? 'Edit Photo Album' : 'Upload Photo Album'}
             </h1>
             <p className="mt-0.5 text-xs text-zinc-600 sm:text-sm dark:text-zinc-300">
-              Share your meetup shots, cosplay photos, and photographer credits.
+              {isEditMode
+                ? 'Update your album title, notes, credits, and photos.'
+                : 'Share your meetup shots, cosplay photos, and photographer credits.'}
             </p>
           </div>
         </div>
@@ -292,12 +382,12 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
             <span
               className={cn(
                 'font-mono text-xs font-bold',
-                photos.length >= 30
+                totalPhotosCount >= 30
                   ? 'text-amber-600 dark:text-amber-400'
                   : 'text-zinc-500 dark:text-zinc-400'
               )}
             >
-              {photos.length} / 30 Photos
+              {totalPhotosCount} / 30 Photos
             </span>
           </div>
 
@@ -326,7 +416,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                 <UploadCloud className="text-accent dark:text-accent-soft h-6 w-6" />
               </div>
               <h3 className="font-display text-sm font-bold tracking-wider uppercase">
-                Select Photos to Upload
+                {isEditMode ? 'Add More Photos' : 'Select Photos to Upload'}
               </h3>
               <p className="mt-1 max-w-md text-xs text-zinc-600 dark:text-zinc-400">
                 Choose up to 30 images (JPEG, PNG, WebP, Live Photos/HEIC). Drag & drop or browse
@@ -336,7 +426,7 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={photos.length >= 30}
+                disabled={totalPhotosCount >= 30}
                 className={cn(
                   CONBLOCK,
                   'bg-accent hover:bg-accent-pop mt-4 inline-flex cursor-pointer items-center gap-2 px-5 py-2.5 text-xs font-bold tracking-wider text-white uppercase disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-950 dark:hover:text-white'
@@ -347,12 +437,17 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
               </button>
             </div>
 
-            {/* Selected Photos */}
-            {photos.length > 0 && (
+            {/* Photos List (Existing & New) */}
+            {(existingPhotos.length > 0 || newPhotos.length > 0) && (
               <div className="border-ink mt-5 border-t-2 pt-4">
                 <div className="flex items-center justify-between gap-2 pb-3">
                   <span className="font-display truncate text-xs font-bold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
-                    Selected Photos ({photos.length})
+                    Photos ({totalPhotosCount})
+                    {deletePhotoIds.size > 0 && (
+                      <span className="ml-1.5 text-xs font-normal text-rose-500">
+                        ({deletePhotoIds.size} marked for removal)
+                      </span>
+                    )}
                   </span>
                   <button
                     type="button"
@@ -365,9 +460,53 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6">
-                  {photos.map((item, index) => (
+                  {/* Existing Photos */}
+                  {existingPhotos.map((photo) => {
+                    const isMarkedDelete = deletePhotoIds.has(photo.id);
+                    return (
+                      <div
+                        key={`existing-${photo.id}`}
+                        className={cn(
+                          'border-ink group relative aspect-square overflow-hidden border-2 shadow-[2px_2px_0_var(--ink)] transition-opacity',
+                          isMarkedDelete
+                            ? 'border-dashed border-red-400 bg-red-50/50 opacity-60 grayscale dark:border-red-600 dark:bg-red-950/20'
+                            : 'bg-zinc-100 dark:bg-zinc-800'
+                        )}
+                      >
+                        <img
+                          src={photo.image_thumb || photo.image}
+                          alt={photo.caption || 'Album photo'}
+                          className="h-full w-full object-cover"
+                        />
+                        {isMarkedDelete ? (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 p-1 text-center">
+                            <span className="font-display text-[10px] font-bold text-red-300 uppercase">
+                              Removed
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => restoreExistingPhoto(photo.id)}
+                              className="mt-1 bg-white px-2 py-0.5 text-[10px] font-bold text-zinc-950 shadow-[1px_1px_0_var(--ink)] hover:bg-zinc-200"
+                            >
+                              Undo
+                            </button>
+                          </div>
+                        ) : (
+                          <CloseButton
+                            onClose={() => markDeleteExistingPhoto(photo.id)}
+                            title="Remove photo"
+                            ariaLabel="Remove photo"
+                            className="absolute top-1 right-1 h-6 w-6 bg-white/95 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900/95"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* New Photos */}
+                  {newPhotos.map((item) => (
                     <div
-                      key={item.id}
+                      key={`new-${item.id}`}
                       className="border-ink group relative aspect-square overflow-hidden border-2 bg-zinc-100 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800"
                     >
                       <img
@@ -375,8 +514,11 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
                         alt={item.file.name}
                         className="h-full w-full object-cover"
                       />
+                      <span className="border-ink absolute top-1 left-1 border bg-emerald-500 px-1 py-0.5 text-[9px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)]">
+                        New
+                      </span>
                       <CloseButton
-                        onClose={() => removePhoto(item.id)}
+                        onClose={() => removeNewPhoto(item.id)}
                         title="Remove photo"
                         ariaLabel="Remove photo"
                         className="absolute top-1 right-1 h-6 w-6 bg-white/95 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900/95"
@@ -426,14 +568,19 @@ export function AlbumUploadForm({ conventionSlug, meetupId }: AlbumUploadFormPro
         {/* Form Actions */}
         <FormActions
           submitLabel={
-            <>
-              <span className="hidden sm:inline">Publish Album</span>
-              <span className="sm:hidden">Publish</span>
-            </>
+            isEditMode ? (
+              'Save Changes'
+            ) : (
+              <>
+                <span className="hidden sm:inline">Publish Album</span>
+                <span className="sm:hidden">Publish</span>
+              </>
+            )
           }
-          submittingLabel="Uploading Photos..."
-          cancelHref={galleryHref}
-          isSubmitting={createMutation.isPending}
+          submittingLabel={isEditMode ? 'Saving Changes...' : 'Uploading Photos...'}
+          cancelHref={!onCancel ? galleryHref : undefined}
+          onCancel={onCancel}
+          isSubmitting={isEditMode ? updateMutation.isPending : createMutation.isPending}
           borderTop
         />
       </form>

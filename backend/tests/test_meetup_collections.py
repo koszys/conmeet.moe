@@ -220,6 +220,29 @@ def test_album_update_by_author(auth_client: APIClient, meetup: Meetup, regular_
     assert album.photos.first() is not None
 
 
+def test_album_update_delete_all_photos_fails(
+    auth_client: APIClient, meetup: Meetup, regular_user: User
+):
+    album = MeetupAlbum.objects.create(meetup=meetup, created_by=regular_user, title="Original")
+    p1 = MeetupPhoto.objects.create(album=album, image=_create_test_image_file("p1.webp"), order=0)
+    album.photos_count = 1
+    album.cover_photo = p1
+    album.save()
+
+    url = f"/api/v1/albums/{album.id}/"
+    update_data = {
+        "delete_photo_ids": str(p1.id),
+    }
+    res = auth_client.patch(url, update_data, format="multipart")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+    assert "photos" in res.data
+
+    # Verify rollback
+    album.refresh_from_db()
+    assert MeetupPhoto.objects.filter(id=p1.id).exists()
+    assert album.photos_count == 1
+
+
 def test_album_update_by_non_author_forbidden(
     other_client: APIClient, meetup: Meetup, regular_user: User
 ):

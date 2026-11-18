@@ -60,7 +60,7 @@ export const albumKeys = {
   list: (meetupId: number | string, sort: AlbumSortOption = 'newest') =>
     [...albumKeys.lists(), meetupId, sort] as const,
   details: () => [...albumKeys.all, 'detail'] as const,
-  detail: (id: number) => [...albumKeys.details(), id] as const,
+  detail: (id: number | string) => [...albumKeys.details(), id] as const,
 };
 
 export function useMeetupAlbums(meetupId: number | string, sort: AlbumSortOption = 'all') {
@@ -75,7 +75,7 @@ export function useMeetupAlbums(meetupId: number | string, sort: AlbumSortOption
 
 export function useAlbumDetail(id: number | string) {
   return useQuery({
-    queryKey: albumKeys.detail(Number(id)),
+    queryKey: albumKeys.detail(id),
     queryFn: async () => {
       return api.get(`api/v1/albums/${id}/`).json<MeetupAlbumDetail>();
     },

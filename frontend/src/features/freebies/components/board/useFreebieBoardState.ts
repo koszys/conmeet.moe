@@ -32,15 +32,13 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     initialFreebieId && !Number.isNaN(initialFreebieId) ? initialFreebieId : null
   );
 
-  // Sync selectedFreebieId if query param changes dynamically
-  useEffect(() => {
-    if (freebieQuery) {
-      const parsedId = Number(freebieQuery);
-      if (!Number.isNaN(parsedId)) {
-        setSelectedFreebieId(parsedId);
-      }
-    }
-  }, [freebieQuery]);
+  // Sync selectedFreebieId during render if query param changes dynamically
+  const [prevFreebieQuery, setPrevFreebieQuery] = useState(freebieQuery);
+  if (prevFreebieQuery !== freebieQuery) {
+    setPrevFreebieQuery(freebieQuery);
+    const parsedId = freebieQuery ? Number(freebieQuery) : null;
+    setSelectedFreebieId(parsedId && !Number.isNaN(parsedId) ? parsedId : null);
+  }
 
   function handleCloseDetail() {
     setSelectedFreebieId(null);

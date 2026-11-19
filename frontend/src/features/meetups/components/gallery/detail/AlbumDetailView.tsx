@@ -413,6 +413,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <PhotoLightbox
+          key={lightboxIndex}
           photos={photos}
           initialIndex={lightboxIndex}
           isOpen={lightboxIndex !== null}

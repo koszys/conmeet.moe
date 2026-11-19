@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Star } from 'lucide-react';
 import { ConventionRequest } from '../sections/ConventionRequest';
 import { ConventionFilterBar, type ConventionFilters, ConventionsViewSwitcher } from '../filters';
@@ -33,14 +33,15 @@ export function ConventionsHub({
   className,
 }: ConventionsHubProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const paramView = searchParams?.get('view');
   const paramTab = searchParams?.get('tab');
 
-  const resolvedInitialView: 'featured' | 'list' =
+  const view: 'featured' | 'list' =
     paramView === 'list' ? 'list' : paramView === 'featured' ? 'featured' : initialView;
-  const resolvedInitialTab: 'upcoming' | 'past' | 'recently-ended' =
+  const tab: 'upcoming' | 'past' | 'recently-ended' =
     paramTab === 'recently-ended'
       ? 'recently-ended'
       : paramTab === 'past'
@@ -49,8 +50,6 @@ export function ConventionsHub({
           ? 'upcoming'
           : initialTab;
 
-  const [view, setView] = useState<'featured' | 'list'>(resolvedInitialView);
-  const [tab, setTab] = useState<'upcoming' | 'past' | 'recently-ended'>(resolvedInitialTab);
   const [filters, setFilters] = useState<ConventionFilters>({
     query: '',
     location: '',
@@ -65,39 +64,10 @@ export function ConventionsHub({
 
   function handleResetFilters() {
     setFilters({ query: '', location: '', year: '' });
-    setTab('upcoming');
     updateUrl(view, 'upcoming');
   }
 
   const { data = [], isLoading, isError, refetch } = useConventions();
-
-  // Handle browser Back / Forward buttons
-  useEffect(() => {
-    function handlePopState() {
-      const params = new URLSearchParams(window.location.search);
-      const v = params.get('view');
-      const t = params.get('tab');
-      setView(v === 'list' ? 'list' : 'featured');
-      setTab(t === 'recently-ended' ? 'recently-ended' : t === 'past' ? 'past' : 'upcoming');
-    }
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Sync state if Next.js searchParams change externally (e.g. clicking header links)
-  const prevParamsRef = useRef({ paramView, paramTab });
-  useEffect(() => {
-    if (prevParamsRef.current.paramView !== paramView) {
-      prevParamsRef.current.paramView = paramView;
-      setView(paramView === 'list' ? 'list' : 'featured');
-    }
-    if (prevParamsRef.current.paramTab !== paramTab) {
-      prevParamsRef.current.paramTab = paramTab;
-      setTab(
-        paramTab === 'recently-ended' ? 'recently-ended' : paramTab === 'past' ? 'past' : 'upcoming'
-      );
-    }
-  }, [paramView, paramTab]);
 
   function updateUrl(newView: 'featured' | 'list', newTab: 'upcoming' | 'past' | 'recently-ended') {
     const params = new URLSearchParams();
@@ -114,16 +84,14 @@ export function ConventionsHub({
 
     const query = params.toString();
     const targetUrl = query ? `${pathname}?${query}` : pathname;
-    window.history.replaceState(null, '', targetUrl);
+    router.replace(targetUrl, { scroll: false });
   }
 
   function handleViewChange(newView: 'featured' | 'list') {
-    setView(newView);
     updateUrl(newView, tab);
   }
 
   function handleTabChange(newTab: 'upcoming' | 'past' | 'recently-ended') {
-    setTab(newTab);
     updateUrl(view, newTab);
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Calendar, Clock, HeartHandshake, MapPin, Sparkles, AlertCircle } from 'lucide-react';
@@ -91,11 +91,9 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
   }, [convention?.starts_at, convention?.ends_at]);
 
   // Pre-fill selectedDate with Day 1 when convention loads if creating new meetup
-  useEffect(() => {
-    if (!isEditing && !selectedDate && conventionDays.length > 0) {
-      setSelectedDate(conventionDays[0].dateStr);
-    }
-  }, [isEditing, selectedDate, conventionDays]);
+  if (!isEditing && !selectedDate && conventionDays.length > 0) {
+    setSelectedDate(conventionDays[0].dateStr);
+  }
 
   const handleStartTimeChange = (newStartTime: string) => {
     setStartTime(newStartTime);

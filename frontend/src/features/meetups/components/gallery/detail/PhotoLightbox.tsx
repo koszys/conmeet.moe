@@ -43,10 +43,6 @@ export function PhotoLightbox({
   const toggleLikePhoto = useToggleLikePhoto();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setCurrentIndex(initialIndex);
-  }, [initialIndex]);
-
   const activePhoto = photos[currentIndex];
 
   // Keyboard navigation & body scroll locking

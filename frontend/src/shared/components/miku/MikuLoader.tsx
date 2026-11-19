@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { MikuGif, type MikuGifSize } from './MikuGif';
 
@@ -33,14 +33,9 @@ export function MikuLoader({
   variant = 'card',
   className,
 }: MikuLoaderProps) {
-  const [randomMessage, setRandomMessage] = useState<string>(DEFAULT_CON_MESSAGES[0]);
-
-  useEffect(() => {
-    if (!message) {
-      const idx = Math.floor(Math.random() * DEFAULT_CON_MESSAGES.length);
-      setRandomMessage(DEFAULT_CON_MESSAGES[idx]);
-    }
-  }, [message]);
+  const [randomMessage] = useState(
+    () => DEFAULT_CON_MESSAGES[Math.floor(Math.random() * DEFAULT_CON_MESSAGES.length)]
+  );
 
   const speechText = message ?? randomMessage;
 

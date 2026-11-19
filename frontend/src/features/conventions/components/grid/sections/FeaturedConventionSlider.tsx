@@ -99,28 +99,40 @@ export function FeaturedConventionSlider({
     });
   }, [conventions, currentIndex, isInfinite, total]);
 
+  const resetTimer = useCallback(() => {
+    elapsedRef.current = 0;
+    setProgress(0);
+    lastTimeRef.current = null;
+  }, []);
+
   const nextSlide = useCallback(() => {
     if (total <= 1) return;
     setSlideDirection('next');
+    resetTimer();
     setCurrentIndex((prev) => (prev + 1) % total);
-  }, [total]);
+  }, [total, resetTimer]);
 
   const prevSlide = useCallback(() => {
     if (total <= 1) return;
     setSlideDirection('prev');
+    resetTimer();
     setCurrentIndex((prev) => (prev - 1 + total) % total);
-  }, [total]);
+  }, [total, resetTimer]);
 
   // Click on any visible slot: smoothly rotates that slot to center
-  const handleSlotClick = useCallback((slot: { originalIndex: number; slotOffset: number }) => {
-    if (slot.slotOffset === 0) return;
-    if (slot.slotOffset > 0) {
-      setSlideDirection('next');
-    } else {
-      setSlideDirection('prev');
-    }
-    setCurrentIndex(slot.originalIndex);
-  }, []);
+  const handleSlotClick = useCallback(
+    (slot: { originalIndex: number; slotOffset: number }) => {
+      if (slot.slotOffset === 0) return;
+      if (slot.slotOffset > 0) {
+        setSlideDirection('next');
+      } else {
+        setSlideDirection('prev');
+      }
+      resetTimer();
+      setCurrentIndex(slot.originalIndex);
+    },
+    [resetTimer]
+  );
 
   // Mouse wheel / trackpad scroll over the selector
   const wheelAccumulatorRef = useRef(0);
@@ -196,13 +208,6 @@ export function FeaturedConventionSlider({
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-
-  // Reset elapsed time & progress when active convention changes
-  useEffect(() => {
-    elapsedRef.current = 0;
-    setProgress(0);
-    lastTimeRef.current = null;
-  }, [currentIndex]);
 
   const isTimerActive = isInView && !isPaused && !isManuallyPaused && total > 1;
 

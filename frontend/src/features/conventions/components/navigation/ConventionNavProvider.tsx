@@ -72,10 +72,12 @@ export function ConventionNavProvider({ children }: { children: ReactNode }) {
     return match ? match[1] : null;
   }, [pathname]);
 
-  // Close drawer on route change
-  useEffect(() => {
+  // Close drawer immediately on route change during render
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   const value = useMemo(
     () => ({

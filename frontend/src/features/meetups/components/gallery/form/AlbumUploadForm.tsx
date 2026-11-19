@@ -68,17 +68,19 @@ export function AlbumUploadForm({
   const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const newPhotosRef = useRef(newPhotos);
+  newPhotosRef.current = newPhotos;
 
   // Clean up object URLs on unmount
   useEffect(() => {
     return () => {
-      newPhotos.forEach((p) => {
+      newPhotosRef.current.forEach((p) => {
         if (p.previewUrl.startsWith('blob:')) {
           URL.revokeObjectURL(p.previewUrl);
         }
       });
     };
-  }, [newPhotos]);
+  }, []);
 
   const meetupSlugOrId = meetup?.slug || meetupId;
   const galleryHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`;

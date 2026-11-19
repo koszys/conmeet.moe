@@ -164,7 +164,7 @@ export function FreebieDetailModal({ freebie, isOpen, onClose }: FreebieDetailMo
             )}
           </div>
 
-          {/* Action Buttons on Right (Check off & Bookmark same compact size) */}
+          {/* Action Buttons */}
           <div className="flex shrink-0 items-center gap-2">
             {/* Check off / Claim button */}
             <ClaimButton freebie={freebie} variant="icon" />

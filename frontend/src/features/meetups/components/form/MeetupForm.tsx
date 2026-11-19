@@ -411,7 +411,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
 
             {conventionDays.length > 0 ? (
               <div className="mt-2.5 space-y-2.5 sm:space-y-3">
-                {/* Convention Day Quick Chips: Equal-width row on mobile, flex on desktop */}
+                {/* Convention Day Quick Chips */}
                 <div className="grid auto-cols-fr grid-flow-col gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
                   {conventionDays.map((d) => {
                     const isSelected = selectedDate === d.dateStr;
@@ -445,7 +445,7 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
                   })}
                 </div>
 
-                {/* Custom/Specific date fallback: Stacks on mobile, inline on desktop */}
+                {/* Custom Date Fallback */}
                 <div className="flex flex-col gap-1.5 pt-1 text-xs sm:flex-row sm:items-center sm:gap-2">
                   <span className="font-semibold text-zinc-500 dark:text-zinc-300">
                     Or select another date:

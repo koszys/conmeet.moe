@@ -110,14 +110,14 @@ export function FreebieCard({
         className
       )}
     >
-      {/* Clickable Card Body (Click anywhere to open full details modal) */}
+      {/* Card Body */}
       <div
         onClick={handleCardBodyClick}
         className="flex flex-1 cursor-pointer flex-col justify-between"
         title="Click to view full details"
       >
         <div className={cn('flex flex-1 flex-col p-4 sm:p-5', isCondensed && 'p-3 sm:p-3.5')}>
-          {/* Header Row: Vendor Name, Booth Location, and Collapse Toggle */}
+          {/* Header Row */}
           <div className="flex h-7 items-center justify-between gap-2">
             <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
               <span className="truncate text-[11px] font-black tracking-wider text-zinc-600 uppercase dark:text-zinc-200">
@@ -131,7 +131,7 @@ export function FreebieCard({
               ) : null}
             </div>
 
-            {/* Upgraded Expand / Condense Button with CONBLOCK */}
+            {/* Expand / Condense Button */}
             <div className="flex shrink-0 items-center">
               <button
                 type="button"
@@ -280,7 +280,7 @@ export function FreebieCard({
               title={freebie.is_saved ? 'Saved' : 'Save'}
             />
 
-            {/* Owner Edit & Delete Buttons (Only in My Uploads) */}
+            {/* Owner Actions */}
             {canManage && isOwner ? (
               <>
                 <EditButton

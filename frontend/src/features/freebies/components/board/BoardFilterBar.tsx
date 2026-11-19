@@ -128,9 +128,9 @@ export function BoardFilterBar({ state }: BoardFilterBarProps) {
         />
       </div>
 
-      {/* Row 2: Search & Controls - sized to match tabs above it, wraps to own row when needed, shrinks on mobile */}
+      {/* Row 2: Search & Controls */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
-        {/* Search Box - matches tabs width, wraps to own row when needed, shrinks on mobile */}
+        {/* Search Box */}
         <div
           style={tabsWidth ? { width: `${tabsWidth}px` } : undefined}
           className="relative w-full max-w-full shrink-0"

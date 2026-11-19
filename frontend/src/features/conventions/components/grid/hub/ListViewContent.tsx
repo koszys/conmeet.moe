@@ -108,7 +108,6 @@ export function ListViewContent({
     );
   }
 
-  // tab === 'recently-ended'
   return (
     <div className={cn('mt-6', className)}>
       {hasActiveFilters && recentlyEndedConventions.length === 0 ? (

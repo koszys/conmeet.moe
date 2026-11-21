@@ -143,7 +143,7 @@ export function VendorPicker({
               className={cn(
                 'border-ink bg-accent inline-flex items-center gap-1 border px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all dark:text-zinc-950',
                 refreshStatus === 'idle'
-                  ? 'cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none'
+                  ? 'hover:bg-accent-pop cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:hover:text-white'
                   : refreshStatus === 'success'
                     ? 'cursor-default'
                     : 'cursor-not-allowed opacity-75'
@@ -184,8 +184,8 @@ export function VendorPicker({
                   className={cn(
                     'border-ink animate-pill-pop cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all duration-150 hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none',
                     isSelected
-                      ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
-                      : 'bg-zinc-100 hover:bg-zinc-200 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                      ? 'bg-accent hover:bg-accent-pop text-white shadow-[1px_1px_0_var(--ink)] hover:shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
+                      : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-zinc-100 text-zinc-800 hover:bg-zinc-200 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
                   )}
                 >
                   {v.name}
@@ -201,7 +201,7 @@ export function VendorPicker({
                   setVisibleLimit((prev) => Math.min(prev + INCREMENT_STEP, totalVendors))
                 }
                 title={`Show next ${nextIncrement} vendors`}
-                className="border-ink bg-accent inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[10px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950"
+                className="border-ink bg-accent hover:bg-accent-pop inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[10px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950 dark:hover:text-white"
               >
                 <Plus className="h-2.5 w-2.5 stroke-3" />
                 <span>+{nextIncrement} more</span>
@@ -214,7 +214,7 @@ export function VendorPicker({
                 type="button"
                 onClick={() => setVisibleLimit(INITIAL_LIMIT)}
                 title="Collapse vendor list back to top vendors"
-                className="border-ink bg-accent inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[10px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950"
+                className="border-ink bg-accent hover:bg-accent-pop inline-flex cursor-pointer items-center gap-1 border px-1.5 py-0.5 text-[10px] font-bold text-white uppercase shadow-[1px_1px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-zinc-950 dark:hover:text-white"
               >
                 <ChevronUp className="h-2.5 w-2.5 stroke-3" />
                 <span>Show less</span>

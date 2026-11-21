@@ -88,7 +88,7 @@ export function AlbumPhotoCard({
             className="px-2 py-0.5 text-xs"
           />
 
-          <span className="rounded bg-black/50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white/90">
+          <span className="border-ink border bg-black/85 px-1.5 py-0.5 font-mono text-[10px] font-black text-white shadow-[1px_1px_0_var(--ink)]">
             #{index + 1}
           </span>
         </div>

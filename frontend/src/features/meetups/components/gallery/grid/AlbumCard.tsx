@@ -128,7 +128,7 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
           <Badge
             variant="default"
             size="sm"
-            className="border-ink border bg-white/95 font-mono text-[11px] font-bold shadow-[1px_1px_0_var(--ink)] backdrop-blur-xs dark:bg-zinc-900/95"
+            className="border-ink border bg-white/95 font-mono text-[11px] font-black text-zinc-950 shadow-[1px_1px_0_var(--ink)] backdrop-blur-xs dark:bg-zinc-900/95 dark:text-zinc-50"
           >
             {album.photos_count} {album.photos_count === 1 ? 'photo' : 'photos'}
           </Badge>

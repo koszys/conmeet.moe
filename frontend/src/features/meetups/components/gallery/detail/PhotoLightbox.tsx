@@ -191,9 +191,11 @@ export function PhotoLightbox({
         className="flex shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <span className="font-mono text-xs font-bold text-zinc-400">
-          {currentIndex + 1}/{photos.length}
-        </span>
+        <div className="border-ink inline-flex h-9 items-center gap-1.5 border-2 bg-white px-3 font-mono text-xs font-black text-zinc-950 shadow-[2px_2px_0_var(--ink)] sm:text-sm dark:bg-zinc-900 dark:text-zinc-50">
+          <span>{currentIndex + 1}</span>
+          <span className="text-zinc-400 dark:text-zinc-500">/</span>
+          <span>{photos.length}</span>
+        </div>
 
         <div className="flex items-center gap-2">
           {/* Like */}

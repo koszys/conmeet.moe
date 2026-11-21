@@ -238,8 +238,8 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
                 {meetup.name}
               </Link>
             )}
-            <span className="border-ink bg-accent/15 text-accent dark:bg-accent/25 inline-flex items-center gap-1 border-2 px-2 py-0.5 text-[11px] font-bold tracking-wider uppercase shadow-[2px_2px_0_var(--ink)]">
-              <Archive className="h-3 w-3" />
+            <span className="border-ink bg-accent/15 dark:bg-accent/25 inline-flex items-center gap-1 border-2 px-2 py-0.5 text-[11px] font-black tracking-wider text-zinc-950 uppercase shadow-[2px_2px_0_var(--ink)] dark:text-zinc-50">
+              <Archive className="text-accent h-3 w-3" />
               <span>
                 {photos.length} {photos.length === 1 ? 'Photo' : 'Photos'}
               </span>

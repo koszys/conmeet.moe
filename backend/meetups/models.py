@@ -20,6 +20,9 @@ def meetup_banner_upload_path(instance: "Meetup", filename: str) -> str:
     return f"meetups/{slug}/banner_{uuid.uuid4().hex[:8]}.{ext}"
 
 
+meetup_banner_upload_path.base_folder = "meetups"  # type: ignore[attr-defined]
+
+
 class Meetup(models.Model):
     convention = models.ForeignKey(Convention, on_delete=models.CASCADE, related_name="meetups")
     name = models.CharField(max_length=120)
@@ -188,6 +191,9 @@ def meetup_photo_upload_path(instance: "MeetupPhoto", filename: str) -> str:
 
     album_folder = f"{album_id}_{album_title_slug}" if album_title_slug else f"{album_id}"
     return f"meetups/{meetup_slug}/albums/{album_folder}/{order_prefix}_{unique_id}.{ext}"
+
+
+meetup_photo_upload_path.base_folder = "meetups"  # type: ignore[attr-defined]
 
 
 class MeetupPhoto(models.Model):

@@ -32,14 +32,6 @@ interface PhotoItem {
   previewUrl: string;
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
-
 export function AlbumUploadForm({
   conventionSlug,
   meetupId,
@@ -522,9 +514,6 @@ export function AlbumUploadForm({
                         ariaLabel="Remove photo"
                         className="absolute top-1 right-1 h-6 w-6 bg-white/95 shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-900/95"
                       />
-                      <div className="absolute inset-x-0 bottom-0 bg-black/60 px-1 py-0.5 text-center text-[9px] font-medium text-white">
-                        {formatBytes(item.file.size)}
-                      </div>
                     </div>
                   ))}
                 </div>

@@ -115,14 +115,18 @@ def _list_local_images(folder: str, search: str) -> tuple[list[dict[str, Any]], 
             continue
 
         for filename in files:
-            if filename.startswith("_") or not filename.lower().endswith(ALLOWED_IMAGE_EXTENSIONS):
+            key = f"{rel_dir}/{filename}" if rel_dir else filename
+            if (
+                filename.startswith(".")
+                or key.startswith("_")
+                or not filename.lower().endswith(ALLOWED_IMAGE_EXTENSIONS)
+            ):
                 continue
 
             if search and search.lower() not in filename.lower():
                 continue
 
             file_path = Path(root) / filename
-            key = f"{rel_dir}/{filename}" if rel_dir else filename
             stat = file_path.stat()
             url = default_storage.url(key)
 

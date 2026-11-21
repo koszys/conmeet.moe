@@ -121,14 +121,8 @@ class FreebieUpdateSerializer(serializers.ModelSerializer):
         ]
 
     def update(self, instance: Freebie, validated_data: dict) -> Freebie:
-        clear_image = validated_data.pop("clear_image", False)
-        if clear_image:
-            if instance.image:
-                instance.image.delete(save=False)
+        if validated_data.pop("clear_image", False):
             instance.image = None
-
-        if "image" in validated_data and validated_data["image"] and instance.image:
-            instance.image.delete(save=False)
 
         if "vendor_name" in validated_data:
             vendor_name = validated_data.pop("vendor_name").strip()

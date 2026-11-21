@@ -232,10 +232,7 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
         saved_param = self.request.query_params.get("saved")
 
         if sort_param == "saved" or (saved_param and saved_param.lower() in ("true", "1")):
-            if user.is_authenticated:
-                qs = qs.filter(favorites__user=user)
-            else:
-                qs = qs.none()
+            qs = qs.filter(favorites__user=user) if user.is_authenticated else qs.none()
 
         if sort_param == "popular":
             qs = qs.order_by("-likes_count", "-created_at")

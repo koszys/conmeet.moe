@@ -1,10 +1,32 @@
 """Cloudflare R2 storage backend implementation."""
 
+import contextlib
 from typing import Any
 from urllib.parse import urlparse
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from storages.backends.s3 import S3Storage  # type: ignore[import-untyped]
+
+
+def delete_image_and_cache(image_field: Any) -> None:
+    """Delete a FieldFile/ProcessedImageField and any ImageKit cache derivatives from storage."""
+    if not image_field or not getattr(image_field, "name", None):
+        return
+
+    image_name = image_field.name
+    # 1. Delete original file from storage
+    with contextlib.suppress(Exception):
+        storage = getattr(image_field, "storage", default_storage)
+        storage.delete(image_name)
+
+    # 2. Delete any ImageKit cached thumbnails under CACHE/images/{name_without_ext}/
+    bucket = getattr(default_storage, "bucket", None)
+    if bucket:
+        path_without_ext = image_name.rsplit(".", 1)[0]
+        cache_prefix = f"CACHE/images/{path_without_ext}"
+        with contextlib.suppress(Exception):
+            bucket.objects.filter(Prefix=cache_prefix).delete()
 
 
 class R2Storage(S3Storage):

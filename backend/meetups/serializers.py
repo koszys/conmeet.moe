@@ -238,8 +238,6 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance: Meetup, validated_data):
         if validated_data.pop("clear_image", False):
-            if instance.image:
-                instance.image.delete(save=False)
             instance.image = None
         return super().update(instance, validated_data)
 

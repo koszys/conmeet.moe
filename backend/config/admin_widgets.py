@@ -97,7 +97,7 @@ class R2AdminMediaMixin:
         if isinstance(db_field, (models.ImageField, ProcessedImageField)):
             upload_to = getattr(db_field, "upload_to", "")
             if callable(upload_to):
-                upload_to = ""
+                upload_to = getattr(upload_to, "base_folder", "")
 
             kwargs["form_class"] = R2ImageFormField
             kwargs["widget"] = R2PickerWidget(upload_to=str(upload_to))

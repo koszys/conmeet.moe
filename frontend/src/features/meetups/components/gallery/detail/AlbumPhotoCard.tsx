@@ -40,8 +40,8 @@ export function AlbumPhotoCard({
         'group relative aspect-square overflow-hidden border-2 transition-all',
         isSelectMode ? 'cursor-pointer' : 'cursor-zoom-in',
         isSelectMode && isSelected
-          ? 'border-accent ring-accent -translate-y-1 shadow-[4px_4px_0_var(--accent)] ring-2'
-          : 'border-ink bg-zinc-100 shadow-[3px_3px_0_var(--ink)] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--ink)] dark:bg-zinc-800'
+          ? 'border-accent ring-accent shadow-[4px_4px_0_var(--accent)] ring-2 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--accent)]'
+          : 'border-ink bg-zinc-100 shadow-[4px_4px_0_var(--ink)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800'
       )}
     >
       {/* Photo Image */}
@@ -88,7 +88,7 @@ export function AlbumPhotoCard({
             className="px-2 py-0.5 text-xs"
           />
 
-          <span className="rounded bg-black/50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white/90">
+          <span className="border-ink border bg-black/85 px-1.5 py-0.5 font-mono text-[10px] font-black text-white shadow-[1px_1px_0_var(--ink)]">
             #{index + 1}
           </span>
         </div>

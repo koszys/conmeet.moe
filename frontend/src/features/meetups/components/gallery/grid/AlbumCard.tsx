@@ -45,7 +45,7 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
   const previewPhotos = album.preview_photos || [];
 
   return (
-    <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
+    <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900">
       {/* Navigation Link */}
       <Link
         href={albumHref}
@@ -128,7 +128,7 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
           <Badge
             variant="default"
             size="sm"
-            className="border-ink border bg-white/95 font-mono text-[11px] font-bold shadow-[1px_1px_0_var(--ink)] backdrop-blur-xs dark:bg-zinc-900/95"
+            className="border-ink border bg-white/95 font-mono text-[11px] font-black text-zinc-950 shadow-[1px_1px_0_var(--ink)] backdrop-blur-xs dark:bg-zinc-900/95 dark:text-zinc-50"
           >
             {album.photos_count} {album.photos_count === 1 ? 'photo' : 'photos'}
           </Badge>

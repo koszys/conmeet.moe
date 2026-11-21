@@ -33,7 +33,7 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
   const imageUrl = meetup.image_thumb || meetup.image;
 
   return (
-    <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
+    <article className="border-ink group relative flex flex-col border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900">
       {/* Card Link Overlay */}
       <Link
         href={meetupHref}

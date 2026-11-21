@@ -105,7 +105,7 @@ export function FreebieCard({
   return (
     <article
       className={cn(
-        'border-ink group flex w-full flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-transform hover:-translate-y-0.5 dark:bg-zinc-900',
+        'border-ink group flex w-full flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900',
         freebie.is_claimed && 'bg-zinc-50/60 opacity-95 dark:bg-zinc-900/60',
         className
       )}
@@ -162,7 +162,7 @@ export function FreebieCard({
             <div className="min-w-0 flex-1">
               <h3
                 className={cn(
-                  'font-display line-clamp-2 tracking-wide uppercase',
+                  'font-display group-hover:text-accent-pop dark:group-hover:text-accent-pop line-clamp-2 tracking-wide uppercase transition-colors',
                   isCondensed
                     ? 'min-h-[2.5rem] text-sm leading-snug sm:min-h-[2.75rem] sm:text-base'
                     : 'min-h-[2.75rem] text-base leading-snug sm:min-h-[3rem] sm:text-lg',

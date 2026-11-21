@@ -86,21 +86,25 @@ export function ImageLightbox({
         e.stopPropagation();
         onClose();
       }}
-      className="fixed inset-0 z-[60] flex touch-none items-center justify-center overscroll-contain bg-black/85 p-4 backdrop-blur-xs select-none sm:p-6"
+      className="fixed inset-0 z-[60] flex touch-none items-center justify-center overscroll-contain bg-black/85 p-2.5 backdrop-blur-xs select-none sm:p-6"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative flex max-h-[92vh] max-w-4xl flex-col items-center"
+        className="relative flex max-h-[92vh] max-w-[calc(100vw-24px)] min-w-0 flex-col items-center sm:max-w-4xl"
       >
         {/* Header Bar */}
-        <div className="mb-2.5 flex w-full items-center justify-between gap-3 text-white">
+        <div className="mb-2 flex w-full max-w-[calc(100vw-24px)] items-center justify-between gap-2.5 text-white sm:mb-2.5 sm:max-w-full sm:gap-3">
           <div className="min-w-0 flex-1">
             {title && (
               <span className="font-display block truncate text-xs font-bold tracking-wider uppercase sm:text-sm">
                 {title}
               </span>
             )}
-            {subtitle && <div className="mt-0.5 text-[11px] text-zinc-300">{subtitle}</div>}
+            {subtitle && (
+              <div className="mt-0.5 truncate text-[10px] text-zinc-300 sm:text-[11px]">
+                {subtitle}
+              </div>
+            )}
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
@@ -110,14 +114,14 @@ export function ImageLightbox({
         </div>
 
         {/* Image Box */}
-        <div className="border-ink relative max-h-[82vh] overflow-hidden border-2 bg-zinc-950 shadow-[6px_6px_0_var(--ink)]">
+        <div className="border-ink relative flex max-h-[78vh] max-w-[calc(100vw-28px)] items-center justify-center overflow-hidden border-2 bg-zinc-950 shadow-[3px_3px_0_var(--ink)] sm:max-h-[82vh] sm:max-w-full sm:shadow-[6px_6px_0_var(--ink)]">
           <Image
             src={src}
             alt={alt}
             width={1600}
             height={1600}
             unoptimized
-            className="max-h-[82vh] w-auto max-w-full object-contain"
+            className="max-h-[78vh] w-auto max-w-full object-contain sm:max-h-[82vh]"
           />
         </div>
       </div>

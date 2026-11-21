@@ -72,10 +72,10 @@ export function BoothLocationField({
                   onClick={() => onChange(isSelected ? '' : booth)}
                   title={isSelected ? 'Click to unselect this booth' : 'Click to select this booth'}
                   className={cn(
-                    'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold transition-all',
+                    'border-ink cursor-pointer border px-2 py-0.5 text-[11px] font-bold uppercase transition-all duration-150 hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none',
                     isSelected
-                      ? 'bg-accent text-white shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950'
-                      : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+                      ? 'bg-accent hover:bg-accent-pop text-white shadow-[1px_1px_0_var(--ink)] hover:shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950 dark:hover:text-white'
+                      : 'hover:border-accent-pop hover:text-accent-pop dark:hover:border-accent-pop dark:hover:text-accent-pop bg-zinc-100 text-zinc-800 hover:bg-zinc-200 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
                   )}
                 >
                   {booth}

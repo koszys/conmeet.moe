@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { MikuGif } from '@/shared/components/miku';
-import { CONBLOCK, CONBLOCK_PRIMARY } from '@/shared/components/ui';
+import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
 export default function NotFound() {
@@ -33,8 +33,8 @@ export default function NotFound() {
           <Link
             href="/conventions"
             className={cn(
-              CONBLOCK,
-              'bg-zinc-100 px-5 py-2.5 text-xs font-bold tracking-wider uppercase hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'
+              CONBLOCK_SECONDARY,
+              'px-5 py-2.5 text-xs font-bold tracking-wider uppercase'
             )}
           >
             All Conventions

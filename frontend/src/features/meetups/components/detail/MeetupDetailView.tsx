@@ -121,13 +121,13 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       </div>
 
       {/* Main Hero Card */}
-      <article className="border-ink border-2 bg-white shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
+      <article className="border-ink border-2 bg-white shadow-[4px_4px_0_var(--ink)] sm:shadow-[6px_6px_0_var(--ink)] dark:bg-zinc-900">
         {meetup.image_layout === 'poster' && meetup.image ? (
           // Split Poster Layout
           <div className="p-4 sm:p-6 md:p-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
               {/* Poster Column */}
-              <div className="mx-auto w-full max-w-[280px] shrink-0 sm:max-w-[320px] md:mx-0">
+              <div className="mx-auto w-full max-w-[280px] sm:max-w-[320px] md:mx-0">
                 <ExpandableImage
                   src={meetup.image}
                   alt={meetup.name}
@@ -206,7 +206,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
                 {/* Action Row */}
                 <div className="mt-6 flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-6 sm:gap-3 dark:border-zinc-800">
-                  <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="md" />
+                  <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="responsive" />
 
                   <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                     <BookmarkButton
@@ -292,7 +292,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
               {/* Action Row */}
               <div className="mt-6 flex flex-wrap items-center gap-2.5 border-t border-zinc-200 pt-6 sm:gap-3 dark:border-zinc-800">
-                <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="md" />
+                <GoingButton meetup={meetup} conventionSlug={conventionSlug} size="responsive" />
 
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   <BookmarkButton

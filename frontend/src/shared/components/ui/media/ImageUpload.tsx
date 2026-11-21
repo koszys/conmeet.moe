@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { ImagePlus, X } from 'lucide-react';
-import { CONBLOCK } from '../actions/Button';
+import { CONBLOCK, CONBLOCK_SECONDARY } from '../actions/Button';
 import { cn } from '@/shared/lib/utils';
 import { UndoRemoveBanner } from './UndoRemoveBanner';
 
@@ -111,8 +111,8 @@ export function ImageUpload({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  CONBLOCK,
-                  'flex h-7 items-center bg-white px-2.5 text-[10px] font-bold uppercase hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+                  CONBLOCK_SECONDARY,
+                  'flex h-7 items-center px-2.5 text-[10px] font-bold uppercase'
                 )}
                 title="Replace image"
               >
@@ -123,7 +123,7 @@ export function ImageUpload({
                 onClick={onRemove}
                 className={cn(
                   CONBLOCK,
-                  'flex h-7 w-7 items-center justify-center bg-white text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+                  'flex h-7 w-7 items-center justify-center bg-white text-zinc-900 hover:border-rose-500 hover:bg-rose-50 hover:text-rose-500 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:border-rose-500 dark:hover:bg-rose-950/40 dark:hover:text-rose-500'
                 )}
                 title="Remove image"
                 aria-label="Remove image"
@@ -171,8 +171,9 @@ export function ImageUpload({
             </div>
             <span
               className={cn(
-                CONBLOCK,
-                'mt-3 shrink-0 bg-white px-3 py-1.5 text-[10px] font-bold uppercase sm:mt-0 dark:bg-zinc-800 dark:text-zinc-100'
+                CONBLOCK_SECONDARY,
+                'mt-3 shrink-0 px-3 py-1.5 text-[10px] font-bold uppercase sm:mt-0',
+                'group-hover:border-accent-pop group-hover:text-accent-pop dark:group-hover:border-accent-pop dark:group-hover:text-accent-pop group-hover:bg-zinc-100 dark:group-hover:bg-zinc-800'
               )}
             >
               Choose File

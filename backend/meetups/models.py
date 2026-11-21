@@ -1,10 +1,12 @@
+import contextlib
 import uuid
 
+from config.storage import delete_image_and_cache
 from conventions.models import Convention
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.db import models
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from django_quill.fields import QuillField
@@ -12,7 +14,7 @@ from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill, ResizeToFit
 
 
-def meetup_banner_upload_path(instance: "Meetup", filename: str) -> str:
+def meetup_banner_upload_path(instance: Meetup, filename: str) -> str:
     ext = filename.split(".")[-1].lower() if "." in filename else "webp"
     slug = instance.slug or (
         slugify(instance.name) if instance.name else f"meetup-{instance.id or uuid.uuid4().hex[:8]}"
@@ -158,7 +160,7 @@ class MeetupAlbum(models.Model):
         return f"{self.title} ({self.meetup.name})"
 
 
-def meetup_photo_upload_path(instance: "MeetupPhoto", filename: str) -> str:
+def meetup_photo_upload_path(instance: MeetupPhoto, filename: str) -> str:
     """
     Generate Cloudflare R2 storage key organized by meetup and album:
     meetups/{meetup_slug}/albums/{album_id}_{album_slug}/{order:02d}_{uuid[:8]}.webp
@@ -280,14 +282,49 @@ class PhotoLike(models.Model):
         return f"{self.user} liked photo {self.photo.id}"
 
 
+@receiver(pre_save, sender=Meetup)
+def cleanup_meetup_replaced_image(sender, instance: Meetup, **kwargs):
+    """When a Meetup banner is replaced or cleared, delete the old file and cache from R2."""
+    if not instance.pk:
+        return
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        return
+
+    old_image = old_instance.image
+    new_image = instance.image
+    old_name = old_image.name if old_image else None
+    new_name = new_image.name if new_image else None
+
+    if old_name and old_name != new_name:
+        delete_image_and_cache(old_image)
+
+
+@receiver(pre_save, sender=MeetupPhoto)
+def cleanup_photo_replaced_image(sender, instance: MeetupPhoto, **kwargs):
+    """When a MeetupPhoto's image is replaced, delete the old file and cache from R2."""
+    if not instance.pk:
+        return
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        return
+
+    old_image = old_instance.image
+    new_image = instance.image
+    old_name = old_image.name if old_image else None
+    new_name = new_image.name if new_image else None
+
+    if old_name and old_name != new_name:
+        delete_image_and_cache(old_image)
+
+
 @receiver(post_delete, sender=Meetup)
-def cleanup_meetup_r2_storage(sender, instance: "Meetup", **kwargs):
-    """Purge R2 banner and all album objects under meetups/{meetup_slug}/ or meetups/{meetup_id}/."""
+def cleanup_meetup_r2_storage(sender, instance: Meetup, **kwargs):
+    """Purge R2 banner and all album objects under meetups/{meetup_slug}/."""
     if instance.image:
-        try:
-            instance.image.delete(save=False)
-        except Exception:
-            pass
+        delete_image_and_cache(instance.image)
     bucket = getattr(default_storage, "bucket", None)
     if not bucket:
         return
@@ -298,29 +335,26 @@ def cleanup_meetup_r2_storage(sender, instance: "Meetup", **kwargs):
         prefixes.append(f"meetups/meetup-{instance.id}/")
         prefixes.append(f"meetups/{instance.id}/")
     for prefix in prefixes:
-        try:
+        with contextlib.suppress(Exception):
             bucket.objects.filter(Prefix=prefix).delete()
-        except Exception:
-            pass
 
 
 @receiver(post_delete, sender=MeetupPhoto)
-def cleanup_photo_r2_storage(sender, instance: "MeetupPhoto", **kwargs):
-    """Delete individual photo file from R2 when photo model is deleted."""
+def cleanup_photo_r2_storage(sender, instance: MeetupPhoto, **kwargs):
+    """Delete individual photo file and its cache from R2 when photo model is deleted."""
     if instance.image:
-        try:
-            instance.image.delete(save=False)
-        except Exception:
-            pass
+        delete_image_and_cache(instance.image)
 
 
 @receiver(post_delete, sender=MeetupAlbum)
-def cleanup_album_r2_storage(sender, instance: "MeetupAlbum", **kwargs):
+def cleanup_album_r2_storage(sender, instance: MeetupAlbum, **kwargs):
     """Purge all R2 storage objects under the album's prefix when album is deleted."""
     bucket = getattr(default_storage, "bucket", None)
     if not bucket or not instance.id:
         return
-    meetup_slug = getattr(instance.meetup, "slug", None) if getattr(instance, "meetup", None) else None
+    meetup_slug = (
+        getattr(instance.meetup, "slug", None) if getattr(instance, "meetup", None) else None
+    )
     prefixes = []
     if meetup_slug:
         prefixes.append(f"meetups/{meetup_slug}/albums/{instance.id}")
@@ -328,7 +362,5 @@ def cleanup_album_r2_storage(sender, instance: "MeetupAlbum", **kwargs):
         prefixes.append(f"meetups/meetup-{instance.meetup_id}/albums/{instance.id}")
         prefixes.append(f"meetups/{instance.meetup_id}/albums/{instance.id}")
     for prefix in prefixes:
-        try:
+        with contextlib.suppress(Exception):
             bucket.objects.filter(Prefix=prefix).delete()
-        except Exception:
-            pass

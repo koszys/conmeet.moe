@@ -297,7 +297,7 @@ def test_album_saved_filtering(meetup: Meetup, regular_user: User):
     a1 = MeetupAlbum.objects.create(
         meetup=meetup, created_by=regular_user, title="Saved Album"
     )
-    a2 = MeetupAlbum.objects.create(
+    MeetupAlbum.objects.create(
         meetup=meetup, created_by=regular_user, title="Unsaved Album"
     )
 
@@ -323,11 +323,17 @@ def test_album_saved_filtering(meetup: Meetup, regular_user: User):
 
 
 def test_meetup_photo_upload_path_and_cleanup(auth_client: APIClient, meetup: Meetup):
-    """Verify that photo upload path follows meetups/{meetup_slug}/albums/{album_id}_{album_slug}/{order}_{uuid}.webp."""
+    """
+    Verify photo upload path follows:
+    meetups/{meetup_slug}/albums/{album_id}_{album_slug}/{order}_{uuid}.webp.
+    """
     url = f"/api/v1/meetups/{meetup.id}/albums/"
     data = {
         "title": "Path Test Album",
-        "photos": [_create_test_image_file("sample1.webp"), _create_test_image_file("sample2.webp")],
+        "photos": [
+            _create_test_image_file("sample1.webp"),
+            _create_test_image_file("sample2.webp"),
+        ],
     }
     res = auth_client.post(url, data, format="multipart")
     assert res.status_code == status.HTTP_201_CREATED

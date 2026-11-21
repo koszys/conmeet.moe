@@ -132,7 +132,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                   src={meetup.image}
                   alt={meetup.name}
                   title="Click to expand full flyer"
-                  className="border-ink group/poster relative aspect-[3/4] w-full overflow-hidden border-2 bg-zinc-950 shadow-[4px_4px_0_var(--ink)]"
+                  className="border-ink group/poster relative aspect-[3/4] w-full overflow-hidden border-2 bg-zinc-950 shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)]"
                   lightboxTitle={meetup.name}
                   lightboxSubtitle="Click anywhere outside or press Esc to close"
                 >

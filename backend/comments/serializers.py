@@ -68,8 +68,18 @@ class CommentCreateSerializer(serializers.ModelSerializer):
             return None
         if parent.deleted_at is not None:
             raise serializers.ValidationError("Cannot reply to a deleted comment.")
-        if parent.parent is not None:
-            raise serializers.ValidationError("Replies can only be 1 level deep.")
+
+        # Calculate parent depth: maximum allowed reply depth is 5 tiers (depth < 5)
+        depth = 0
+        curr: Comment | None = parent
+        while curr is not None:
+            depth += 1
+            if depth >= 5:
+                raise serializers.ValidationError(
+                    "Maximum reply depth (5 levels) reached. "
+                    "Please reply to an earlier comment or start a new thread."
+                )
+            curr = curr.parent
         return parent
 
     def validate(self, attrs):
@@ -91,6 +101,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     body = serializers.SerializerMethodField()
+    reply_to_username = serializers.SerializerMethodField()
     is_deleted = serializers.BooleanField(read_only=True)
     is_author = serializers.SerializerMethodField()
     can_delete = serializers.SerializerMethodField()
@@ -103,6 +114,7 @@ class CommentSerializer(serializers.ModelSerializer):
             "author",
             "body",
             "parent",
+            "reply_to_username",
             "is_deleted",
             "is_author",
             "can_delete",
@@ -120,6 +132,11 @@ class CommentSerializer(serializers.ModelSerializer):
         if obj.is_deleted:
             return "[deleted]"
         return obj.body
+
+    def get_reply_to_username(self, obj: Comment) -> str | None:
+        if obj.parent_id is not None and obj.parent and obj.parent.author:
+            return obj.parent.author.username
+        return None
 
     def get_is_author(self, obj: Comment) -> bool:
         request = self.context.get("request")
@@ -140,17 +157,13 @@ class CommentSerializer(serializers.ModelSerializer):
         )
 
     def get_replies(self, obj: Comment):
-        # Only top-level comments resolve replies to prevent recursion
-        if obj.parent_id is not None:
-            return []
-
         replies_dict = self.context.get("replies_by_parent")
         if replies_dict is not None:
             child_replies = replies_dict.get(obj.id, [])
         else:
             child_replies = (
                 obj.replies.filter(deleted_at__isnull=True)
-                .select_related("author")
+                .select_related("author", "parent__author")
                 .order_by("created_at", "id")
             )
 

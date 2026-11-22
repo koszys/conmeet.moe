@@ -14,6 +14,45 @@ from .serializers import (
 )
 
 
+def _has_active_descendants(
+    comment_id: int, replies_by_parent: dict[int, list[Comment]]
+) -> bool:
+    for child in replies_by_parent.get(comment_id, []):
+        if not child.is_deleted or _has_active_descendants(child.id, replies_by_parent):
+            return True
+    return False
+
+
+def _build_comment_tree(
+    comments_qs,
+) -> tuple[list[Comment], dict[int, list[Comment]]]:
+    raw_replies: dict[int, list[Comment]] = {}
+    top_level: list[Comment] = []
+    for c in comments_qs:
+        if c.parent_id is not None:
+            raw_replies.setdefault(c.parent_id, []).append(c)
+        else:
+            top_level.append(c)
+
+    filtered_replies: dict[int, list[Comment]] = {}
+    for parent_id, children in raw_replies.items():
+        kept = [
+            c
+            for c in children
+            if not c.is_deleted or _has_active_descendants(c.id, raw_replies)
+        ]
+        if kept:
+            filtered_replies[parent_id] = kept
+
+    visible_top_level = [
+        c
+        for c in top_level
+        if not c.is_deleted or _has_active_descendants(c.id, raw_replies)
+    ]
+
+    return visible_top_level, filtered_replies
+
+
 class CommentSettingsView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -41,24 +80,11 @@ class MeetupCommentListCreateView(APIView):
 
         comments_qs = (
             Comment.objects.filter(meetup=meetup)
-            .select_related("author")
+            .select_related("author", "parent__author")
             .order_by("created_at", "id")
         )
 
-        replies_by_parent: dict[int, list[Comment]] = {}
-        top_level: list[Comment] = []
-        for c in comments_qs:
-            if c.parent_id is not None:
-                if not c.is_deleted:
-                    replies_by_parent.setdefault(c.parent_id, []).append(c)
-            else:
-                top_level.append(c)
-
-        visible_top_level = [
-            c
-            for c in top_level
-            if not c.is_deleted or len(replies_by_parent.get(c.id, [])) > 0
-        ]
+        visible_top_level, replies_by_parent = _build_comment_tree(comments_qs)
 
         context = {
             "request": request,
@@ -113,24 +139,11 @@ class AlbumCommentListCreateView(APIView):
 
         comments_qs = (
             Comment.objects.filter(album=album)
-            .select_related("author")
+            .select_related("author", "parent__author")
             .order_by("created_at", "id")
         )
 
-        replies_by_parent: dict[int, list[Comment]] = {}
-        top_level: list[Comment] = []
-        for c in comments_qs:
-            if c.parent_id is not None:
-                if not c.is_deleted:
-                    replies_by_parent.setdefault(c.parent_id, []).append(c)
-            else:
-                top_level.append(c)
-
-        visible_top_level = [
-            c
-            for c in top_level
-            if not c.is_deleted or len(replies_by_parent.get(c.id, [])) > 0
-        ]
+        visible_top_level, replies_by_parent = _build_comment_tree(comments_qs)
 
         context = {
             "request": request,

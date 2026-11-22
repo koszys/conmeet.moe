@@ -10,6 +10,7 @@ export interface CommentItemData {
   author: CommentAuthor | null;
   body: string;
   parent: number | null;
+  reply_to_username?: string | null;
   is_deleted: boolean;
   is_author: boolean;
   can_delete: boolean;

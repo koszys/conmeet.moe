@@ -5,8 +5,16 @@ import { useAlbumComments, useCommentSettings, useMeetupComments } from '../api/
 import { useCreateComment, useDeleteComment } from '../api/mutations';
 import { CommentForm } from './CommentForm';
 import { CommentList } from './CommentList';
-import type { CommentTargetType } from '../types';
+import type { CommentItemData, CommentTargetType } from '../types';
 import { cn } from '@/shared/lib/utils';
+
+function countActiveComments(items: CommentItemData[] = []): number {
+  return items.reduce((acc, c) => {
+    const selfCount = c.is_deleted ? 0 : 1;
+    const childrenCount = countActiveComments(c.replies ?? []);
+    return acc + selfCount + childrenCount;
+  }, 0);
+}
 
 export interface CommentSectionProps {
   targetType: CommentTargetType;
@@ -53,12 +61,8 @@ function ActiveCommentSection({ targetType, targetId, className }: ActiveComment
   const createComment = useCreateComment(targetType, targetId);
   const deleteComment = useDeleteComment(targetType, targetId);
 
-  // Compute total comment count including child replies
-  const totalCount = (comments ?? []).reduce((acc, c) => {
-    const replyCount = c.replies?.length ?? 0;
-    // Don't count placeholder top-level deleted comments in total count
-    return acc + (c.is_deleted ? 0 : 1) + replyCount;
-  }, 0);
+  // Compute total active comment count recursively including all nested descendants
+  const totalCount = countActiveComments(comments);
 
   const handleCreateComment = async (body: string) => {
     await createComment.mutateAsync({ body });

@@ -33,10 +33,18 @@ class MeetupAlbumInline(TabularInline):
 
 @admin.register(Meetup)
 class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
-    list_display = ("name", "slug", "convention", "starts_at", "is_official", "going_count")
-    list_filter = ("is_official", "convention")
+    list_display = (
+        "name",
+        "slug",
+        "convention",
+        "starts_at",
+        "is_official",
+        "unmount_comments",
+        "going_count",
+    )
+    list_filter = ("is_official", "unmount_comments", "convention")
     search_fields = ("name", "slug", "location", "convention__name")
-    list_editable = ("is_official",)
+    list_editable = ("is_official", "unmount_comments")
     prepopulated_fields = {"slug": ("name",)}
     inlines = (GoingInline, MeetupAlbumInline)
     fieldsets = (
@@ -51,6 +59,7 @@ class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
                     "starts_at",
                     "ends_at",
                     "is_official",
+                    "unmount_comments",
                 )
             },
         ),
@@ -113,12 +122,14 @@ class MeetupAlbumAdmin(ModelAdmin):
         "title",
         "meetup",
         "created_by",
+        "unmount_comments",
         "photos_count",
         "likes_count",
         "favorites_count",
         "created_at",
     )
-    list_filter = ("meetup__convention", "meetup")
+    list_editable = ("unmount_comments",)
+    list_filter = ("unmount_comments", "meetup__convention", "meetup")
     search_fields = ("title", "description", "created_by__username", "meetup__name")
     readonly_fields = ("photos_count", "likes_count", "favorites_count", "created_at", "updated_at")
     inlines = (MeetupPhotoInline,)

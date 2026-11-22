@@ -49,6 +49,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
             "is_saved",
             "is_going",
             "is_owner",
+            "unmount_comments",
             "created_at",
             "updated_at",
         ]
@@ -155,6 +156,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
     image_thumb = serializers.SerializerMethodField()
     is_official = serializers.BooleanField(required=False, default=False)
+    unmount_comments = serializers.BooleanField(required=False, default=False)
 
     class Meta:
         model = Meetup
@@ -171,6 +173,7 @@ class MeetupCreateSerializer(serializers.ModelSerializer):
             "image_thumb",
             "image_layout",
             "is_official",
+            "unmount_comments",
             "created_at",
         ]
         read_only_fields = ["id", "slug", "image_thumb", "created_at"]
@@ -219,6 +222,7 @@ class MeetupUpdateSerializer(serializers.ModelSerializer):
             "image_layout",
             "clear_image",
             "is_official",
+            "unmount_comments",
             "updated_at",
         ]
         read_only_fields = ["id", "slug", "updated_at"]
@@ -313,6 +317,7 @@ class MeetupAlbumListSerializer(serializers.ModelSerializer):
             "is_liked",
             "is_favorited",
             "is_owner",
+            "unmount_comments",
             "created_by",
             "created_by_name",
             "created_at",
@@ -417,6 +422,7 @@ class MeetupAlbumCreateUpdateSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "social_links",
+            "unmount_comments",
             "created_at",
             "updated_at",
         ]

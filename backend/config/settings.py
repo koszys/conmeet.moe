@@ -321,6 +321,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:comments_comment_changelist"),
                     },
                     {
+                        "title": "Comment Settings",
+                        "icon": "tune",
+                        "link": reverse_lazy("admin:comments_commentsetting_changelist"),
+                    },
+                    {
                         "title": "Notifications",
                         "icon": "notifications",
                         "link": reverse_lazy("admin:notifications_notification_changelist"),

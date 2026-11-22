@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 from unfold.decorators import action, display
 
-from .models import Comment
+from .models import Comment, CommentSetting
 
 
 class StatusListFilter(admin.SimpleListFilter):
@@ -23,12 +23,35 @@ class StatusListFilter(admin.SimpleListFilter):
         return queryset
 
 
+@admin.register(CommentSetting)
+class CommentSettingAdmin(ModelAdmin):
+    list_display = (
+        "__str__",
+        "unmount_all_comment_sections",
+        "unmount_all_meetup_comments",
+        "unmount_all_album_comments",
+        "updated_at",
+    )
+    list_editable = (
+        "unmount_all_comment_sections",
+        "unmount_all_meetup_comments",
+        "unmount_all_album_comments",
+    )
+    readonly_fields = ("updated_at",)
+
+    def has_add_permission(self, request):
+        return not CommentSetting.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Comment)
 class CommentAdmin(ModelAdmin):
-    list_display = ("id", "author", "meetup", "parent", "status", "created_at")
-    list_filter = (StatusListFilter, "meetup", "author")
-    search_fields = ("body", "author__username", "meetup__name")
-    list_select_related = ("author", "meetup", "parent")
+    list_display = ("id", "author", "meetup", "album", "parent", "status", "created_at")
+    list_filter = (StatusListFilter, "meetup", "album", "author")
+    search_fields = ("body", "author__username", "meetup__name", "album__title")
+    list_select_related = ("author", "meetup", "album", "parent")
     readonly_fields = ("deleted_at",)
 
     @display(

@@ -101,7 +101,7 @@ export function CommentForm({
   const isSubmitDisabled = !body.trim() || isOverLimit || isSubmitting;
 
   return (
-    <form onSubmit={handleSubmit} className={cn('space-y-2', className)}>
+    <form onSubmit={handleSubmit} className={cn('max-w-full min-w-0 space-y-2', className)}>
       <div className="relative">
         <TextArea
           value={body}
@@ -121,10 +121,10 @@ export function CommentForm({
 
       {error && <p className="text-xs font-bold text-rose-500 dark:text-rose-400">{error}</p>}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 pt-1 sm:gap-2">
         <CharCounter current={body.length} max={MAX_COMMENT_LENGTH} />
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {onCancel && (
             <button
               type="button"
@@ -132,7 +132,7 @@ export function CommentForm({
               disabled={isSubmitting}
               className={cn(
                 CONBLOCK_SECONDARY,
-                'px-3 py-1.5 text-xs font-bold tracking-wider uppercase'
+                'shrink-0 px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase sm:px-3 sm:py-1.5 sm:text-xs'
               )}
             >
               Cancel
@@ -144,10 +144,10 @@ export function CommentForm({
             disabled={isSubmitDisabled}
             className={cn(
               CONBLOCK_PRIMARY,
-              'inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold tracking-wider uppercase disabled:opacity-50'
+              'inline-flex shrink-0 items-center gap-1 px-3 py-1 text-[11px] font-bold tracking-wider uppercase disabled:opacity-50 sm:gap-1.5 sm:px-4 sm:py-1.5 sm:text-xs'
             )}
           >
-            {isSubmitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {isSubmitting && <Loader2 className="h-3 w-3 animate-spin sm:h-3.5 sm:w-3.5" />}
             <span>{submitLabel}</span>
           </button>
         </div>

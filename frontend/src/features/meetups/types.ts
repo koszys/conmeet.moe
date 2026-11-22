@@ -21,6 +21,7 @@ export interface Meetup {
   is_saved: boolean;
   is_going: boolean;
   is_owner: boolean;
+  unmount_comments?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -85,6 +86,7 @@ export interface MeetupAlbum {
   is_liked: boolean;
   is_favorited: boolean;
   is_owner: boolean;
+  unmount_comments?: boolean;
   created_by: number | null;
   created_by_name: string | null;
   created_at: string;

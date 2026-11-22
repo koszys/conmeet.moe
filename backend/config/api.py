@@ -1,6 +1,12 @@
 """API v1 URL patterns (aggregated so config/urls.py stays tiny)."""
 
 from accounts.views import LogoutView, MeView, health
+from comments.views import (
+    AlbumCommentListCreateView,
+    CommentDeleteView,
+    CommentSettingsView,
+    MeetupCommentListCreateView,
+)
 from conventions.views import (
     ConventionDetailView,
     ConventionListView,
@@ -61,4 +67,17 @@ urlpatterns = [
     path("freebies/<int:pk>/save/", FreebieSaveToggleView.as_view(), name="freebie-save"),
     path("freebies/<int:pk>/claim/", FreebieClaimToggleView.as_view(), name="freebie-claim"),
     path("vendors/", VendorListView.as_view(), name="vendor-list"),
+    # Comments
+    path("comments/settings/", CommentSettingsView.as_view(), name="comment-settings"),
+    path(
+        "meetups/<str:meetup_id>/comments/",
+        MeetupCommentListCreateView.as_view(),
+        name="meetup-comment-list-create",
+    ),
+    path(
+        "albums/<int:album_id>/comments/",
+        AlbumCommentListCreateView.as_view(),
+        name="album-comment-list-create",
+    ),
+    path("comments/<int:pk>/", CommentDeleteView.as_view(), name="comment-delete"),
 ]

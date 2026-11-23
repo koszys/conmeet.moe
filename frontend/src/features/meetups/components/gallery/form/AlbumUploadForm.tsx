@@ -379,7 +379,7 @@ export function AlbumUploadForm({
                 'font-mono text-xs font-bold',
                 totalPhotosCount >= 30
                   ? 'text-amber-600 dark:text-amber-400'
-                  : 'text-zinc-500 dark:text-zinc-400'
+                  : 'text-zinc-500 dark:text-zinc-200'
               )}
             >
               {totalPhotosCount} / 30 Photos
@@ -413,7 +413,7 @@ export function AlbumUploadForm({
               <h3 className="font-display text-sm font-bold tracking-wider uppercase">
                 {isEditMode ? 'Add More Photos' : 'Select Photos to Upload'}
               </h3>
-              <p className="mt-1 max-w-md text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 max-w-md text-xs text-zinc-600 dark:text-zinc-200">
                 Choose up to 30 images (JPEG, PNG, WebP, Live Photos/HEIC). Drag & drop or browse
                 files.
               </p>

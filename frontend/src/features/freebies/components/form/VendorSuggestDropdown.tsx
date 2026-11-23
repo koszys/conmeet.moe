@@ -52,7 +52,7 @@ export function VendorSuggestDropdown({
     >
       {filteredSuggestions.length > 0 ? (
         <div className="py-1">
-          <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-1.5 text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:border-zinc-800 dark:text-zinc-400">
+          <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-1.5 text-[10px] font-bold tracking-wider text-zinc-500 uppercase dark:border-zinc-800 dark:text-zinc-200">
             <span>{trimmedName ? 'Matching Vendors' : 'Suggested Vendors'}</span>
             <span>{filteredSuggestions.length} found</span>
           </div>
@@ -90,12 +90,12 @@ export function VendorSuggestDropdown({
                       At this con
                     </span>
                   ) : (
-                    <span className="border border-zinc-300 px-1.5 py-0.5 font-mono text-[9px] font-bold text-zinc-500 uppercase dark:border-zinc-700 dark:text-zinc-400">
+                    <span className="border border-zinc-300 px-1.5 py-0.5 font-mono text-[9px] font-bold text-zinc-500 uppercase dark:border-zinc-700 dark:text-zinc-200">
                       Known vendor
                     </span>
                   )}
                   {v.knownLocations && v.knownLocations.length > 0 && (
-                    <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
+                    <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-200">
                       {v.knownLocations.length === 1
                         ? v.knownLocations[0]
                         : `${v.knownLocations.length} booths`}

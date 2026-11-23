@@ -72,7 +72,7 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
               <p className="mt-2 text-xs font-bold text-zinc-700 uppercase dark:text-zinc-200">
                 All Available Drops Claimed
               </p>
-              <p className="mx-auto mt-1 max-w-sm text-[11px] text-zinc-500 dark:text-zinc-400">
+              <p className="mx-auto mt-1 max-w-sm text-[11px] text-zinc-500 dark:text-zinc-200">
                 You&apos;ve added every available drop on the board to your saved checklist!
               </p>
             </div>

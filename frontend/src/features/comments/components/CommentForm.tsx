@@ -101,7 +101,7 @@ export function CommentForm({
   const isSubmitDisabled = !body.trim() || isOverLimit || isSubmitting;
 
   return (
-    <form onSubmit={handleSubmit} className={cn('max-w-full min-w-0 space-y-2', className)}>
+    <form onSubmit={handleSubmit} className={cn('max-w-full min-w-0', className)}>
       <div className="relative">
         <TextArea
           value={body}
@@ -119,10 +119,10 @@ export function CommentForm({
         />
       </div>
 
-      {error && <p className="text-xs font-bold text-rose-500 dark:text-rose-400">{error}</p>}
+      {error && <p className="mt-1 text-xs font-bold text-rose-500 dark:text-rose-400">{error}</p>}
 
-      <div className="flex flex-wrap items-center justify-between gap-1.5 pt-1 sm:gap-2">
-        <CharCounter current={body.length} max={MAX_COMMENT_LENGTH} />
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+        <CharCounter current={body.length} max={MAX_COMMENT_LENGTH} className="self-start pt-1" />
 
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {onCancel && (

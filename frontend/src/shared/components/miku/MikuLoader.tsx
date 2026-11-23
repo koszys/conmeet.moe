@@ -43,7 +43,7 @@ export function MikuLoader({
     <>
       <MikuGif size={size} variant="frameless" speech={speechText} speechPosition="top" priority />
       {subtext && (
-        <p className="mt-3 font-mono text-xs tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+        <p className="mt-3 font-mono text-xs tracking-wider text-zinc-500 uppercase dark:text-zinc-200">
           {subtext}
         </p>
       )}

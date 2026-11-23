@@ -274,13 +274,13 @@ export function useToggleLikePhoto() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ photoId }: { photoId: number; albumId: number }) => {
+    mutationFn: async ({ photoId }: { photoId: number; albumId: number | string }) => {
       return api.post(`api/v1/photos/${photoId}/like/`).json<PhotoLikeToggleResponse>();
     },
     onMutate: async ({ photoId, albumId }) => {
       await queryClient.cancelQueries({ queryKey: albumKeys.detail(albumId) });
 
-      queryClient.setQueryData<MeetupAlbumDetail>(albumKeys.detail(albumId), (old) => {
+      const updatePhotos = (old: MeetupAlbumDetail | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -296,6 +296,36 @@ export function useToggleLikePhoto() {
             return p;
           }),
         };
+      };
+
+      queryClient.setQueryData<MeetupAlbumDetail>(albumKeys.detail(albumId), updatePhotos);
+      queryClient.setQueriesData<MeetupAlbumDetail>({ queryKey: albumKeys.details() }, (old) => {
+        if (!old || (old.id !== Number(albumId) && String(old.id) !== String(albumId))) return old;
+        return updatePhotos(old);
+      });
+    },
+    onSuccess: (data, { photoId, albumId }) => {
+      const applyServerData = (old: MeetupAlbumDetail | undefined) => {
+        if (!old) return old;
+        return {
+          ...old,
+          photos: old.photos.map((p) => {
+            if (p.id === photoId) {
+              return {
+                ...p,
+                is_liked: data.is_liked,
+                likes_count: data.likes_count,
+              };
+            }
+            return p;
+          }),
+        };
+      };
+
+      queryClient.setQueryData<MeetupAlbumDetail>(albumKeys.detail(albumId), applyServerData);
+      queryClient.setQueriesData<MeetupAlbumDetail>({ queryKey: albumKeys.details() }, (old) => {
+        if (!old || (old.id !== Number(albumId) && String(old.id) !== String(albumId))) return old;
+        return applyServerData(old);
       });
     },
     onSettled: (_, __, { albumId }) => {

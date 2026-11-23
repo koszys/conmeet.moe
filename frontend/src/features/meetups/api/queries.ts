@@ -16,7 +16,7 @@ export const meetupKeys = {
   lists: () => [...meetupKeys.all, 'list'] as const,
   list: (filters: MeetupFilters) => [...meetupKeys.lists(), filters] as const,
   details: () => [...meetupKeys.all, 'detail'] as const,
-  detail: (id: number | string) => [...meetupKeys.details(), id] as const,
+  detail: (id: number | string) => [...meetupKeys.details(), String(id)] as const,
 };
 
 export function useMeetups(filters: MeetupFilters = {}) {
@@ -58,9 +58,9 @@ export const albumKeys = {
   all: ['albums'] as const,
   lists: () => [...albumKeys.all, 'list'] as const,
   list: (meetupId: number | string, sort: AlbumSortOption = 'newest') =>
-    [...albumKeys.lists(), meetupId, sort] as const,
+    [...albumKeys.lists(), String(meetupId), sort] as const,
   details: () => [...albumKeys.all, 'detail'] as const,
-  detail: (id: number | string) => [...albumKeys.details(), id] as const,
+  detail: (id: number | string) => [...albumKeys.details(), String(id)] as const,
 };
 
 export function useMeetupAlbums(meetupId: number | string, sort: AlbumSortOption = 'all') {

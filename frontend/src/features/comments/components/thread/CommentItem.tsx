@@ -241,16 +241,16 @@ export function CommentItem({
 
       {/* Mobile "Continue (count)" Drill-Down Button for Deep Nesting */}
       {!isInModal && depth >= 2 && hasReplies && (
-        <div className="mt-2.5 sm:hidden">
+        <div className="mt-2 sm:hidden">
           <button
             type="button"
             onClick={() => setIsThreadModalOpen(true)}
             className={cn(
               CONBLOCK_SECONDARY,
-              'text-accent-pop hover:text-accent-pop/80 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold tracking-wider uppercase'
+              'text-accent-pop hover:text-accent-pop/80 inline-flex h-6 items-center gap-1 px-2 text-[10px] font-bold tracking-wider uppercase'
             )}
           >
-            <CornerDownRight className="h-3.5 w-3.5" />
+            <CornerDownRight className="h-3 w-3" />
             <span>Continue ({totalDescendants})</span>
           </button>
         </div>

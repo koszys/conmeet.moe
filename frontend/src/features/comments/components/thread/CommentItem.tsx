@@ -210,7 +210,7 @@ export function CommentItem({
           </div>
 
           {/* Inline Actions (Reply) */}
-          {canReply ? (
+          {canReply && (
             <div className="mt-2 flex items-center gap-2">
               <button
                 type="button"
@@ -224,14 +224,6 @@ export function CommentItem({
                 <span>Reply</span>
               </button>
             </div>
-          ) : (
-            depth >= 4 &&
-            !comment.is_deleted &&
-            Boolean(onReply) && (
-              <div className="mt-2 flex items-center gap-1.5 text-[10px] text-zinc-400 italic dark:text-zinc-500">
-                <span>Maximum reply depth reached</span>
-              </div>
-            )
           )}
 
           {/* Inline Reply Form */}

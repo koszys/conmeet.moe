@@ -103,8 +103,6 @@ export function CommentItem({
       <CollapsedCommentCard
         depth={depth}
         displayName={displayName}
-        avatarLetter={avatarLetter}
-        avatarUrl={comment.author?.avatar_url}
         isDeleted={comment.is_deleted}
         formattedTime={formattedTime}
         className={className}

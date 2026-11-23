@@ -48,7 +48,20 @@ export function ScrollToTopButton() {
         }
       }
 
-      setBottomOffset(Math.max(fOffset, barOffset));
+      // Check pagination overlap (e.g. Comments pagination on mobile)
+      const pagination = document.querySelector('[data-pagination]');
+      let pagOffset = 0;
+      if (pagination) {
+        const pagRect = pagination.getBoundingClientRect();
+        if (pagRect.top < window.innerHeight && pagRect.bottom > 0) {
+          const overlap = window.innerHeight - pagRect.top;
+          if (overlap > 0) {
+            pagOffset = overlap + 16;
+          }
+        }
+      }
+
+      setBottomOffset(Math.max(fOffset, barOffset, pagOffset));
     }
 
     function onScroll() {

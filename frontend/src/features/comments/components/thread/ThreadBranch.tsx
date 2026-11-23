@@ -23,7 +23,7 @@ export function ThreadBranch({
   onHoverChange,
 }: ThreadBranchProps) {
   const topOffset = index === 0 ? '-top-2.5' : '-top-2';
-  const lCurveHeight = index === 0 ? 'h-[calc(21px+0.625rem)]' : 'h-[calc(21px+0.5rem)]';
+  const lCurveHeight = index === 0 ? 'h-[calc(23px+0.625rem)]' : 'h-[calc(23px+0.5rem)]';
 
   if (isLast) {
     if (isInteractive && onCollapse) {
@@ -36,7 +36,7 @@ export function ThreadBranch({
           className={cn(
             'group/line absolute z-10 cursor-pointer transition-colors select-none focus:outline-none',
             'rounded-bl-md border-b-2 border-l-2',
-            '-left-[1px] w-[20px]',
+            '-left-[1px] w-[22px]',
             topOffset,
             lCurveHeight,
             isHovered
@@ -54,7 +54,7 @@ export function ThreadBranch({
         className={cn(
           'pointer-events-none absolute z-10 select-none',
           'rounded-bl-md border-b-2 border-l-2 border-zinc-300 dark:border-zinc-700',
-          '-left-[1px] w-[20px]',
+          '-left-[1px] w-[22px]',
           topOffset,
           lCurveHeight
         )}
@@ -102,7 +102,7 @@ export function ThreadBranch({
       )}
       <span
         className={cn(
-          'pointer-events-none absolute top-[20px] -left-[1px] z-10 h-[2px] w-[21px] -translate-y-1/2 transition-colors',
+          'pointer-events-none absolute top-[22px] -left-[1px] z-10 h-[2px] w-[22px] -translate-y-1/2 transition-colors',
           isInteractive && isHovered ? 'bg-accent-pop' : 'bg-zinc-300 dark:bg-zinc-700'
         )}
         aria-hidden="true"

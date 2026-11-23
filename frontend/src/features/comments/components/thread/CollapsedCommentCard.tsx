@@ -6,7 +6,6 @@ import { CommentAvatar } from './CommentAvatar';
 export interface CollapsedCommentCardProps {
   depth: number;
   displayName: string;
-  username?: string;
   avatarLetter: string;
   avatarUrl?: string | null;
   isDeleted: boolean;
@@ -22,7 +21,6 @@ export interface CollapsedCommentCardProps {
 export function CollapsedCommentCard({
   depth,
   displayName,
-  username,
   avatarLetter,
   avatarUrl,
   isDeleted,
@@ -59,18 +57,17 @@ export function CollapsedCommentCard({
           isDeleted={isDeleted}
         />
 
-        <span className="font-display truncate text-xs font-bold tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
+        <span
+          className={cn(
+            'font-display truncate text-xs font-bold tracking-wider uppercase',
+            isDeleted ? 'text-zinc-500 dark:text-zinc-300' : 'text-zinc-900 dark:text-zinc-100'
+          )}
+        >
           {isDeleted ? '[deleted]' : displayName}
         </span>
 
-        {!isDeleted && username && (
-          <span className="hidden text-[11px] font-medium text-zinc-500 sm:inline dark:text-zinc-400">
-            @{username}
-          </span>
-        )}
-
         {formattedTime && (
-          <span className="shrink-0 text-[10px] text-zinc-500 dark:text-zinc-400">
+          <span className="shrink-0 text-[10px] text-zinc-500 dark:text-zinc-300">
             · {formattedTime}
           </span>
         )}

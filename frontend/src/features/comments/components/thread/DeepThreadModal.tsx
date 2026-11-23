@@ -13,7 +13,6 @@ export interface DeepThreadModalProps {
   onClose: () => void;
   comment: CommentItemData;
   displayName: string;
-  username?: string;
   avatarLetter: string;
   formattedTime: string;
   canReply: boolean;
@@ -31,7 +30,6 @@ export function DeepThreadModal({
   onClose,
   comment,
   displayName,
-  username,
   avatarLetter,
   formattedTime,
   canReply,
@@ -66,7 +64,7 @@ export function DeepThreadModal({
     >
       <ModalHeader
         title="Thread Discussion"
-        subtitle={username ? `Replying to @${username}` : undefined}
+        subtitle={displayName ? `Replying to ${displayName}` : undefined}
         onClose={() => {
           onClose();
           setIsReplyingInModal(false);
@@ -76,7 +74,7 @@ export function DeepThreadModal({
         <div className="border-ink rounded-sm border-2 bg-zinc-50/80 p-2.5 dark:bg-zinc-900/50">
           <div className="flex gap-2">
             {/* Left Rail */}
-            <div className="flex w-6 shrink-0 flex-col items-center">
+            <div className="flex w-7 shrink-0 flex-col items-center">
               <CommentAvatar
                 avatarUrl={comment.author?.avatar_url}
                 displayName={displayName}
@@ -88,18 +86,20 @@ export function DeepThreadModal({
 
             {/* Right Content */}
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex min-h-7 items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-display text-xs font-bold tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
+                  <span
+                    className={cn(
+                      'font-display text-xs font-bold tracking-wider uppercase',
+                      comment.is_deleted
+                        ? 'text-zinc-500 dark:text-zinc-300'
+                        : 'text-zinc-900 dark:text-zinc-100'
+                    )}
+                  >
                     {comment.is_deleted ? '[deleted]' : displayName}
                   </span>
-                  {!comment.is_deleted && username && (
-                    <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
-                      @{username}
-                    </span>
-                  )}
                   {formattedTime && (
-                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-300">
                       · {formattedTime}
                     </span>
                   )}
@@ -108,12 +108,14 @@ export function DeepThreadModal({
 
               {comment.reply_to_username && !comment.is_deleted && (
                 <div className="text-accent-pop mt-0.5 text-[11px] font-semibold">
-                  Replying to @{comment.reply_to_username}
+                  Replying to {comment.reply_to_username}
                 </div>
               )}
               <div className="mt-1.5 text-sm text-zinc-800 dark:text-zinc-200">
                 {comment.is_deleted ? (
-                  <p className="text-xs text-zinc-500 italic">[This comment has been deleted]</p>
+                  <p className="text-xs text-zinc-500 italic dark:text-zinc-300">
+                    [This comment has been deleted]
+                  </p>
                 ) : (
                   <p className="leading-relaxed break-words whitespace-pre-wrap">{comment.body}</p>
                 )}
@@ -141,7 +143,7 @@ export function DeepThreadModal({
                     onSubmit={handleModalReplySubmit}
                     onCancel={() => setIsReplyingInModal(false)}
                     isSubmitting={isSubmittingReply}
-                    placeholder={`Reply to @${displayName}...`}
+                    placeholder={`Reply to ${displayName}...`}
                     submitLabel="Reply"
                     autoFocus
                   />
@@ -152,7 +154,7 @@ export function DeepThreadModal({
 
           {/* Child Replies inside Modal (Static Non-Condensable Threadlines) */}
           {hasReplies && (
-            <div className="mt-2.5 ml-[12px] space-y-2">
+            <div className="mt-2.5 ml-[14px] space-y-2">
               {comment.replies!.map((reply, index) => {
                 const isLast = index === comment.replies!.length - 1;
                 return (

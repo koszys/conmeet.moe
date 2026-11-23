@@ -58,7 +58,6 @@ export function CommentItem({
   })();
 
   const displayName = comment.author?.display_name || comment.author?.username || 'User';
-  const username = comment.author?.username;
   const avatarLetter = (displayName[0] || '?').toUpperCase();
   const totalDescendants = countDescendants(comment);
 
@@ -102,7 +101,6 @@ export function CommentItem({
       <CollapsedCommentCard
         depth={depth}
         displayName={displayName}
-        username={username}
         avatarLetter={avatarLetter}
         avatarUrl={comment.author?.avatar_url}
         isDeleted={comment.is_deleted}
@@ -133,7 +131,7 @@ export function CommentItem({
       {/* Thread Rail Layout: Left Rail (Avatar + Line) & Right Content */}
       <div className="flex gap-2">
         {/* Left Rail */}
-        <div className="flex w-6 shrink-0 flex-col items-center">
+        <div className="flex w-7 shrink-0 flex-col items-center">
           <CommentAvatar
             avatarUrl={comment.author?.avatar_url}
             displayName={displayName}
@@ -153,23 +151,23 @@ export function CommentItem({
         {/* Right Content Column */}
         <div className="min-w-0 flex-1">
           {/* Author Header */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-                <span className="font-display truncate text-xs font-bold tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
-                  {comment.is_deleted ? '[deleted]' : displayName}
+          <div className="flex min-h-7 items-center justify-between gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+              <span
+                className={cn(
+                  'font-display truncate text-xs font-bold tracking-wider uppercase',
+                  comment.is_deleted
+                    ? 'text-zinc-500 dark:text-zinc-300'
+                    : 'text-zinc-900 dark:text-zinc-100'
+                )}
+              >
+                {comment.is_deleted ? '[deleted]' : displayName}
+              </span>
+              {formattedTime && (
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-300">
+                  · {formattedTime}
                 </span>
-                {!comment.is_deleted && username && (
-                  <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
-                    @{username}
-                  </span>
-                )}
-                {formattedTime && (
-                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                    · {formattedTime}
-                  </span>
-                )}
-              </div>
+              )}
             </div>
 
             {/* Delete Action Button */}
@@ -192,14 +190,14 @@ export function CommentItem({
           {/* Replying-to Context Tag */}
           {depth > 0 && comment.reply_to_username && !comment.is_deleted && (
             <div className="text-accent-pop mt-1 flex items-center gap-1 text-[11px] font-semibold">
-              <span>Replying to @{comment.reply_to_username}</span>
+              <span>Replying to {comment.reply_to_username}</span>
             </div>
           )}
 
           {/* Comment Body */}
           <div className="mt-1.5 text-sm">
             {comment.is_deleted ? (
-              <p className="text-xs text-zinc-500 italic dark:text-zinc-400">
+              <p className="text-xs text-zinc-500 italic dark:text-zinc-300">
                 [This comment has been deleted]
               </p>
             ) : (
@@ -233,7 +231,7 @@ export function CommentItem({
                 onSubmit={handleReplySubmit}
                 onCancel={() => setIsReplying(false)}
                 isSubmitting={isSubmittingReply}
-                placeholder={`Reply to @${displayName}...`}
+                placeholder={`Reply to ${displayName}...`}
                 submitLabel="Reply"
                 autoFocus
               />
@@ -263,7 +261,7 @@ export function CommentItem({
       {hasReplies && (
         <div
           className={cn(
-            'mt-2.5 ml-[12px] space-y-2',
+            'mt-2.5 ml-[14px] space-y-2',
             !isInModal && depth >= 2 && 'hidden sm:block'
           )}
         >
@@ -316,7 +314,6 @@ export function CommentItem({
           onClose={() => setIsThreadModalOpen(false)}
           comment={comment}
           displayName={displayName}
-          username={username}
           avatarLetter={avatarLetter}
           formattedTime={formattedTime}
           canReply={canReply}

@@ -20,10 +20,10 @@ export function CommentAvatar({
         <img
           src={avatarUrl}
           alt={displayName}
-          className="border-ink relative z-20 h-6 w-6 shrink-0 rounded-full border-2 object-cover"
+          className="border-ink relative z-20 h-7 w-7 shrink-0 rounded-full border-2 object-cover"
         />
       ) : (
-        <div className="border-ink relative z-20 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 bg-white text-[10px] font-bold text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+        <div className="border-ink relative z-20 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 bg-white text-[11px] font-bold text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
           <span className="bg-accent/20 dark:bg-accent/30 flex h-full w-full items-center justify-center rounded-full">
             {isDeleted ? '?' : avatarLetter}
           </span>

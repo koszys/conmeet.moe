@@ -107,7 +107,7 @@ export function DeepThreadModal({
               </div>
 
               {comment.reply_to_username && !comment.is_deleted && (
-                <div className="text-accent-pop mt-0.5 text-[11px] font-semibold">
+                <div className="text-accent-pop mt-0.5 truncate text-[11px] font-semibold">
                   Replying to {comment.reply_to_username}
                 </div>
               )}

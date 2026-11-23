@@ -44,10 +44,18 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         avatar_url = _discord_avatar_url(data) if provider_id == "discord" else data.get("picture")
         if avatar_url:
             user.avatar_url = avatar_url
+        if user.username and len(user.username) > 20:
+            user.username = user.username[:20]
         return user
 
 
 class CustomAccountAdapter(DefaultAccountAdapter):
+    def generate_unique_username(
+        self, txts: list[str | None], regex: str | None = None
+    ) -> str:
+        shortened_txts = [t[:20] if t else t for t in txts]
+        return super().generate_unique_username(shortened_txts, regex)
+
     def post_login(
         self,
         request: HttpRequest,

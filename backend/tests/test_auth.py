@@ -73,3 +73,21 @@ def test_logout_requires_auth_and_returns_204() -> None:
 
     authed = _authed_client(user).post("/api/v1/auth/logout/")
     assert authed.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_username_max_length_20_enforced() -> None:
+    from django.core.exceptions import ValidationError
+
+    User = get_user_model()
+
+    # 20 characters is valid
+    valid_user = User.objects.create_user(username="a" * 20, email="valid20@example.com")
+    valid_user.full_clean()
+    assert valid_user.username == "a" * 20
+
+    # 21 characters fails validation
+    invalid_user = User(username="a" * 21, email="invalid21@example.com")
+    invalid_user.set_unusable_password()
+    with pytest.raises(ValidationError) as exc_info:
+        invalid_user.full_clean()
+    assert "username" in exc_info.value.message_dict

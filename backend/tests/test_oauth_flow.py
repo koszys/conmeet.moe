@@ -64,6 +64,31 @@ def test_google_user_population() -> None:
     assert user.avatar_url == "https://lh3.googleusercontent.com/pic.png"
 
 
+def test_social_account_truncates_long_username_to_20_chars() -> None:
+    long_username_data = {
+        "id": "777888",
+        "username": "super_long_discord_username_exceeding_twenty",
+        "global_name": "Long Name",
+        "email": "long@example.com",
+    }
+    user = _populate(long_username_data)
+    assert len(user.username) <= 20
+    assert user.username == "super_long_discord_u"
+
+
+def test_generate_unique_username_respects_20_char_limit() -> None:
+    adapter = CustomAccountAdapter()
+    generated = adapter.generate_unique_username(["very_long_seed_name_over_twenty_characters"])
+    assert len(generated) <= 20
+
+    # Ensure collision suffix also respects the 20 character limit
+    User = get_user_model()
+    User.objects.create_user(username=generated, email="existing@example.com")
+    collision_res = adapter.generate_unique_username(["very_long_seed_name_over_twenty_characters"])
+    assert len(collision_res) <= 20
+    assert collision_res != generated
+
+
 def _user_id(token: str) -> int:
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
     return int(payload["user_id"])

@@ -189,7 +189,9 @@ export function CommentItem({
           {/* Replying-to Context Tag */}
           {depth > 0 && comment.reply_to_username && !comment.is_deleted && (
             <div className="text-accent-pop mt-1 flex items-center gap-1 text-[11px] font-semibold">
-              <span>Replying to {comment.reply_to_username}</span>
+              <span className="max-w-[200px] truncate sm:max-w-[280px]">
+                Replying to {comment.reply_to_username}
+              </span>
             </div>
           )}
 

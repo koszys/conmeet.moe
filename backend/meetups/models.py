@@ -58,6 +58,10 @@ class Meetup(models.Model):
     )
     description = QuillField(blank=True)
     is_official = models.BooleanField(default=False)
+    unmount_comments = models.BooleanField(
+        default=False,
+        help_text="Completely unmount and hide the comment section for this specific meetup.",
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -150,6 +154,10 @@ class MeetupAlbum(models.Model):
     likes_count = models.PositiveIntegerField(default=0)
     favorites_count = models.PositiveIntegerField(default=0)
     photos_count = models.PositiveIntegerField(default=0)
+    unmount_comments = models.BooleanField(
+        default=False,
+        help_text="Completely unmount and hide the comment section for this specific album.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Camera, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
+import { CommentSection } from '@/features/comments';
 import {
   BackLink,
   Badge,
@@ -408,6 +409,14 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
           />
         )}
       </section>
+
+      {/* Comments Section */}
+      <CommentSection
+        targetType="meetup"
+        targetId={meetup.id}
+        isUnmounted={meetup.unmount_comments}
+        className="mt-8 border-t-2 border-zinc-200 pt-8 dark:border-zinc-800"
+      />
 
       {/* Delete Confirmation Modal Popup */}
       <DeleteMeetupModal

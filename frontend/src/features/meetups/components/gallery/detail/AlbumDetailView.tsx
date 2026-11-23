@@ -20,6 +20,7 @@ import {
 import { MikuLoader } from '@/shared/components/miku';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
+import { CommentSection } from '@/features/comments';
 import {
   useAlbumDetail,
   useMeetup,
@@ -393,6 +394,14 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
           ))}
         </div>
       )}
+
+      {/* Comments Section */}
+      <CommentSection
+        targetType="album"
+        targetId={album.id}
+        isUnmounted={album.unmount_comments}
+        className="mt-8 border-t-2 border-zinc-200 pt-8 dark:border-zinc-800"
+      />
 
       {/* Selection Bar */}
       {isSelectMode && (

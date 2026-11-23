@@ -1,4 +1,4 @@
-import { MessageSquare, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { CommentAvatar } from './CommentAvatar';
@@ -10,7 +10,6 @@ export interface CollapsedCommentCardProps {
   avatarUrl?: string | null;
   isDeleted: boolean;
   formattedTime: string;
-  totalDescendants: number;
   className?: string;
   onExpand: () => void;
 }
@@ -25,7 +24,6 @@ export function CollapsedCommentCard({
   avatarUrl,
   isDeleted,
   formattedTime,
-  totalDescendants,
   className,
   onExpand,
 }: CollapsedCommentCardProps) {
@@ -69,15 +67,6 @@ export function CollapsedCommentCard({
         {formattedTime && (
           <span className="shrink-0 text-[10px] text-zinc-500 dark:text-zinc-300">
             · {formattedTime}
-          </span>
-        )}
-
-        {totalDescendants > 0 && (
-          <span className="border-ink bg-accent/15 dark:bg-accent/25 inline-flex shrink-0 items-center gap-1.5 border-2 px-2 py-0.5 text-[10px] font-bold tracking-wider text-zinc-900 uppercase shadow-[1.5px_1.5px_0px_#000] select-none sm:text-[11px] dark:text-zinc-100 dark:shadow-[1.5px_1.5px_0px_#fff]">
-            <MessageSquare className="text-accent-pop h-3 w-3 shrink-0" />
-            <span>
-              +{totalDescendants} {totalDescendants === 1 ? 'reply' : 'replies'}
-            </span>
           </span>
         )}
       </div>

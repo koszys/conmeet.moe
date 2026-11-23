@@ -105,7 +105,6 @@ export function CommentItem({
         avatarUrl={comment.author?.avatar_url}
         isDeleted={comment.is_deleted}
         formattedTime={formattedTime}
-        totalDescendants={totalDescendants}
         className={className}
         onExpand={handleExpand}
       />

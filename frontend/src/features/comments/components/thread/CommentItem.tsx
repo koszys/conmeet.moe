@@ -51,7 +51,9 @@ export function CommentItem({
   const formattedTime = (() => {
     try {
       const date = parseDate(comment.created_at);
-      return formatDistanceToNow(date, { addSuffix: true });
+      return formatDistanceToNow(date, { addSuffix: true })
+        .replace(/(?:about\s+)?(\d+)\s+hours?\s+ago/i, '$1 hr. ago')
+        .replace(/^about\s+/i, '');
     } catch {
       return '';
     }

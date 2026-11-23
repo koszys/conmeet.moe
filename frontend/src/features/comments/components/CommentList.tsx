@@ -1,7 +1,7 @@
 'use client';
 
 import { EmptyState } from '@/shared/components/ui';
-import { CommentItem } from './CommentItem';
+import { CommentItem } from './thread';
 import type { CommentItemData } from '../types';
 
 export interface CommentListProps {

@@ -15,17 +15,16 @@ export interface BoardEmptyStateProps {
   icon?: LucideIcon;
   speech?: string;
   title: string;
-  description: string;
+  description?: string;
   action?: BoardEmptyStateAction;
 }
 
-export function BoardEmptyState({ speech, title, description, action }: BoardEmptyStateProps) {
+export function BoardEmptyState({ speech, title, action }: BoardEmptyStateProps) {
   return (
     <EmptyState
       mascot
       mascotSpeech={speech}
       title={title}
-      description={description}
       shadow
       action={
         action ? (

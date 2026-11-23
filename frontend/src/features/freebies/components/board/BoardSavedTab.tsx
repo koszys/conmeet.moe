@@ -69,9 +69,6 @@ export function BoardSavedTab({ state }: BoardSavedTabProps) {
               <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
                 No unclaimed freebies match your search or vendor filter.
               </p>
-              <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-300">
-                Check the Claimed section below for matching drops.
-              </p>
             </div>
           ) : (
             <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">

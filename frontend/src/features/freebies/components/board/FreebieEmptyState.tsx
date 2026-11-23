@@ -1,6 +1,6 @@
 'use client';
 
-import { Gift, Plus } from 'lucide-react';
+import { Bookmark, Gift, Plus } from 'lucide-react';
 import { Button, ClearFiltersButton, EmptyState, LinkButton } from '@/shared/components/ui';
 
 export type FreebieBoardTab = 'all' | 'saved' | 'uploaded';
@@ -10,7 +10,9 @@ export interface FreebieEmptyStateProps {
   isFiltered: boolean;
   onClearFilters: () => void;
   onBrowseAll?: () => void;
+  onViewSaved?: () => void;
   conventionSlug?: string;
+  hasSaved?: boolean;
 }
 
 export function FreebieEmptyState({
@@ -18,7 +20,9 @@ export function FreebieEmptyState({
   isFiltered,
   onClearFilters,
   onBrowseAll,
+  onViewSaved,
   conventionSlug,
+  hasSaved = false,
 }: FreebieEmptyStateProps) {
   const emptySpeech = isFiltered
     ? 'Try another search!'
@@ -26,7 +30,9 @@ export function FreebieEmptyState({
       ? 'Track your freebies!'
       : tab === 'uploaded'
         ? 'Share some freebies!'
-        : 'Be the first to upload!';
+        : hasSaved
+          ? 'All freebies saved!'
+          : 'Be the first to upload!';
 
   const emptyTitle = isFiltered
     ? tab === 'saved'
@@ -38,22 +44,15 @@ export function FreebieEmptyState({
       ? 'No Saved Freebies Yet'
       : tab === 'uploaded'
         ? 'No Uploaded Freebies Yet'
-        : 'No Active Freebies Found';
-
-  const emptyDescription = isFiltered
-    ? 'No freebies matched your search or vendor filter. Try clearing filters.'
-    : tab === 'saved'
-      ? 'Bookmark some freebies!'
-      : tab === 'uploaded'
-        ? 'Share freebies with others!'
-        : 'No active freebies found for this convention yet. Be the first to share one!';
+        : hasSaved
+          ? 'All Freebies Saved/Claimed!'
+          : 'No Active Freebies Found';
 
   return (
     <EmptyState
       mascot
       mascotSpeech={emptySpeech}
       title={emptyTitle}
-      description={emptyDescription}
       shadow
       action={
         isFiltered ? (
@@ -76,6 +75,19 @@ export function FreebieEmptyState({
             <Gift className="h-4 w-4" />
             <span>Browse All Freebies</span>
           </Button>
+        ) : hasSaved && onViewSaved ? (
+          <>
+            <Button variant="primary" onClick={onViewSaved}>
+              <Bookmark className="h-4 w-4" />
+              <span>View Saved Freebies</span>
+            </Button>
+            {conventionSlug ? (
+              <LinkButton variant="secondary" href={`/conventions/${conventionSlug}/freebies/new`}>
+                <Plus className="h-4 w-4" />
+                <span>Post a Freebie</span>
+              </LinkButton>
+            ) : null}
+          </>
         ) : conventionSlug ? (
           <LinkButton variant="primary" href={`/conventions/${conventionSlug}/freebies/new`}>
             <Plus className="h-4 w-4" />

@@ -84,7 +84,6 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
       <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
         <EmptyState
           title="Album Not Found"
-          description="The photo album you are looking for does not exist or has been removed."
           action={
             <Link
               href={galleryHref}
@@ -367,10 +366,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
       {/* Photos Grid */}
       {photos.length === 0 ? (
-        <EmptyState
-          title="No Photos in Album"
-          description="This album does not have any uploaded photos yet."
-        />
+        <EmptyState title="No Photos in Album" />
       ) : (
         <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {photos.map((photo, idx) => (

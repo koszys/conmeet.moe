@@ -28,7 +28,6 @@ function FilterEmptyState({ onReset }: { onReset: () => void }) {
       mascot
       mascotSpeech="No cons matched!"
       title="No conventions match your filters"
-      description="Try searching for a different keyword or resetting your filters."
       className="mt-8"
       shadow
       action={<ClearFiltersButton onClear={onReset} />}

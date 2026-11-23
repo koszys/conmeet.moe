@@ -43,20 +43,11 @@ export function MeetupEmptyState({
         ? 'No Official Meetups Listed'
         : 'No Meetups Scheduled Yet';
 
-  const emptyDescription = isFiltered
-    ? 'No meetups matched your search or date filter. Try clearing filters.'
-    : activeTab === 'saved'
-      ? 'Bookmark some meetups!'
-      : activeTab === 'official'
-        ? 'Official con meetups will appear here.'
-        : 'No meetups have been scheduled for this convention yet. Be the first to host one!';
-
   return (
     <EmptyState
       mascot
       mascotSpeech={emptySpeech}
       title={emptyTitle}
-      description={emptyDescription}
       shadow
       action={
         isFiltered ? (

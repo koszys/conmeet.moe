@@ -75,11 +75,17 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
   const meetupHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
   const uploadHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/new`;
 
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({
+  const {
     ref: tabsRef,
-    fadeWidth: 24,
+    maskStyle: tabsMaskStyle,
+    checkScroll: checkTabsScroll,
+  } = useHorizontalScrollAffordance({
+    fadeWidth: 28,
   });
+
+  useEffect(() => {
+    checkTabsScroll();
+  }, [albums, activeSort, checkTabsScroll]);
 
   if (isMeetupLoading || (isAlbumsLoading && !albums)) {
     return (

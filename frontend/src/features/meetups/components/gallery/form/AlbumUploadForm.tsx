@@ -440,14 +440,6 @@ export function AlbumUploadForm({
                     <span className="font-display text-xs font-bold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
                       Photos ({totalPhotosCount})
                     </span>
-                    {deletePhotoIds.size > 0 && (
-                      <span className="font-display text-xs font-normal text-rose-500">
-                        <span className="hidden sm:inline">
-                          ({deletePhotoIds.size} marked for removal)
-                        </span>
-                        <span className="sm:hidden">({deletePhotoIds.size} removed)</span>
-                      </span>
-                    )}
                   </div>
                   <button
                     type="button"
@@ -467,10 +459,10 @@ export function AlbumUploadForm({
                       <div
                         key={`existing-${photo.id}`}
                         className={cn(
-                          'border-ink group relative aspect-square overflow-hidden border-2 shadow-[2px_2px_0_var(--ink)]',
+                          'group relative aspect-square overflow-hidden',
                           isMarkedDelete
-                            ? 'border-dashed border-red-500 bg-zinc-100 dark:border-red-500 dark:bg-zinc-800'
-                            : 'bg-zinc-100 dark:bg-zinc-800'
+                            ? 'border-2 border-transparent bg-zinc-100 dark:bg-zinc-800'
+                            : 'border-ink border-2 bg-zinc-100 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800'
                         )}
                       >
                         <img

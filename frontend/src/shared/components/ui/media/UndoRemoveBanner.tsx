@@ -17,7 +17,7 @@ export function UndoRemoveBanner({
   return (
     <div
       className={cn(
-        'border-ink my-2 flex items-center justify-between border-2 border-dashed bg-amber-50/60 p-2.5 shadow-[2px_2px_0_var(--ink)] dark:border-zinc-700 dark:bg-amber-950/20',
+        'my-2 flex items-center justify-between bg-amber-50/60 p-2.5 dark:bg-amber-950/20',
         className
       )}
     >

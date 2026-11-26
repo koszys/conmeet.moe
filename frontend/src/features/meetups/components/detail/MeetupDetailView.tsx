@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Camera, Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CommentSection } from '@/features/comments';
+import { isMeetupMutationLocked } from '@/features/conventions/utils/dates';
 import {
   BackLink,
   Badge,
@@ -107,6 +108,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
   const isOwnerOrAdmin = Boolean(user && (meetup.is_owner || user.role === 'admin'));
   const isSaved = user ? meetup.is_saved : isGuestSaved('meetups', meetup.id);
+  const isLocked = isMeetupMutationLocked({ ends_at: meetup.convention_ends_at });
 
   const handleToggleSave = () => {
     if (!user) {
@@ -124,10 +126,25 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
         {isOwnerOrAdmin && (
           <div className="flex items-center gap-2">
-            <EditButton variant="button" onClick={handleOpenEdit} />
+            <EditButton
+              variant="button"
+              disabled={isLocked}
+              title={
+                isLocked
+                  ? 'Meetups cannot be edited more than one week after the convention has ended'
+                  : 'Edit'
+              }
+              onClick={handleOpenEdit}
+            />
             <DeleteButton
               variant="button"
               colorStyle="danger-solid"
+              disabled={isLocked}
+              title={
+                isLocked
+                  ? 'Meetups cannot be deleted more than one week after the convention has ended'
+                  : 'Delete'
+              }
               onClick={() => setIsDeleteOpen(true)}
             />
           </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Calendar, Clock, HeartHandshake, MapPin, Sparkles, AlertCircle } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
+import { isMeetupMutationLocked } from '@/features/conventions/utils/dates';
 import {
   BackLink,
   FormActions,
@@ -267,6 +268,25 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
   };
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const isLocked = !isEditing && isMeetupMutationLocked(convention);
+
+  if (isLocked) {
+    return (
+      <div className="border-ink border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
+        <div className="mb-4">
+          <BackLink href={`/conventions/${conventionSlug}/meetups`}>Back to Meetups</BackLink>
+        </div>
+        <div className="py-8 text-center">
+          <h2 className="font-display text-lg font-bold uppercase sm:text-xl">
+            Submissions Closed
+          </h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            Meetups cannot be added more than one week after the convention has ended.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

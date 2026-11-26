@@ -19,6 +19,7 @@ from .models import (
 class MeetupListSerializer(serializers.ModelSerializer):
     convention_slug = serializers.CharField(source="convention.slug", read_only=True)
     convention_name = serializers.CharField(source="convention.name", read_only=True)
+    convention_ends_at = serializers.DateField(source="convention.ends_at", read_only=True, default=None)
     image_thumb = serializers.SerializerMethodField()
     created_by_name = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
@@ -35,6 +36,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
             "convention",
             "convention_slug",
             "convention_name",
+            "convention_ends_at",
             "name",
             "location",
             "starts_at",

@@ -1,6 +1,8 @@
 'use client';
 
 import { Plus, Users } from 'lucide-react';
+import { useConvention } from '@/features/conventions/data/api';
+import { isMeetupMutationLocked } from '@/features/conventions/utils/dates';
 import { Button, ClearFiltersButton, EmptyState, LinkButton } from '@/shared/components/ui';
 import type { TabType } from './MeetupFilterBar';
 
@@ -21,6 +23,11 @@ export function MeetupEmptyState({
   conventionSlug,
   hasSearchQuery = true,
 }: MeetupEmptyStateProps) {
+  const { data: convention } = useConvention(conventionSlug);
+  const isLocked = isMeetupMutationLocked(convention);
+  const lockedTitle = isLocked
+    ? 'Meetups cannot be added more than one week after the convention has ended'
+    : undefined;
   const emptySpeech = isFiltered
     ? hasSearchQuery
       ? 'Try another search!'
@@ -53,14 +60,24 @@ export function MeetupEmptyState({
         isFiltered ? (
           <>
             <ClearFiltersButton onClear={onClearFilters} />
-            <LinkButton variant="secondary" href={`/conventions/${conventionSlug}/meetups/new`}>
+            <LinkButton
+              variant="secondary"
+              href={`/conventions/${conventionSlug}/meetups/new`}
+              disabled={isLocked}
+              title={lockedTitle}
+            >
               <Plus className="h-4 w-4" />
               <span>Post a Meetup</span>
             </LinkButton>
           </>
         ) : (
           <>
-            <LinkButton variant="primary" href={`/conventions/${conventionSlug}/meetups/new`}>
+            <LinkButton
+              variant="primary"
+              href={`/conventions/${conventionSlug}/meetups/new`}
+              disabled={isLocked}
+              title={lockedTitle}
+            >
               <Plus className="h-4 w-4" />
               <span>Post a Meetup</span>
             </LinkButton>

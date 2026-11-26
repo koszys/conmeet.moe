@@ -120,6 +120,16 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      if (activeTab === 'saved' || activeTab === 'uploaded') {
+        setActiveTab('all');
+      }
+      setEditingFreebie(null);
+      setDeletingFreebie(null);
+    }
+  }, [user, activeTab]);
+
   const isFiltered = Boolean(debouncedSearch.trim() || selectedVendor !== undefined);
 
   function handleClearFilters() {
@@ -129,7 +139,7 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
 
   function handleTabClick(tab: FilterTab) {
     if ((tab === 'saved' || tab === 'uploaded') && !user) {
-      router.push(`/login?next=${encodeURIComponent(pathname)}`);
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
     setActiveTab(tab);
@@ -139,9 +149,9 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
     if (!allFreebies) return { all: 0, saved: 0, unclaimed: 0, claimed: 0, uploaded: 0 };
     return {
       all: allFreebies.filter((f) => !f.is_claimed).length,
-      saved: allFreebies.filter((f) => f.is_saved).length,
-      unclaimed: allFreebies.filter((f) => f.is_saved && !f.is_claimed).length,
-      claimed: allFreebies.filter((f) => f.is_saved && f.is_claimed).length,
+      saved: user ? allFreebies.filter((f) => f.is_saved).length : 0,
+      unclaimed: user ? allFreebies.filter((f) => f.is_saved && !f.is_claimed).length : 0,
+      claimed: user ? allFreebies.filter((f) => f.is_saved && f.is_claimed).length : 0,
       uploaded: user
         ? allFreebies.filter(
             (f) => f.is_owner || (f.created_by !== null && f.created_by === user.id)
@@ -157,13 +167,13 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
 
   const unsavedDrops = useMemo(() => {
     if (!allFreebies) return [];
-    return allFreebies.filter((f) => !f.is_claimed && !f.is_saved);
-  }, [allFreebies]);
+    return allFreebies.filter((f) => !f.is_claimed && (!user || !f.is_saved));
+  }, [allFreebies, user]);
 
   const savedDrops = useMemo(() => {
-    if (!allFreebies) return [];
+    if (!allFreebies || !user) return [];
     return allFreebies.filter((f) => !f.is_claimed && f.is_saved);
-  }, [allFreebies]);
+  }, [allFreebies, user]);
 
   const uploadedDrops = useMemo(() => {
     if (!allFreebies || !user) return [];
@@ -173,14 +183,14 @@ export function useFreebieBoardState(conventionSlug: string): FreebieBoardState 
   }, [allFreebies, user]);
 
   const unclaimedSaved = useMemo(() => {
-    if (!allFreebies) return [];
+    if (!allFreebies || !user) return [];
     return allFreebies.filter((f) => f.is_saved && !f.is_claimed);
-  }, [allFreebies]);
+  }, [allFreebies, user]);
 
   const claimedSaved = useMemo(() => {
-    if (!allFreebies) return [];
+    if (!allFreebies || !user) return [];
     return allFreebies.filter((f) => f.is_saved && f.is_claimed);
-  }, [allFreebies]);
+  }, [allFreebies, user]);
 
   const selectedFreebie = useMemo(() => {
     if (!allFreebies || selectedFreebieId === null) return null;

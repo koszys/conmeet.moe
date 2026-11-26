@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -41,6 +41,13 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setIsEditing(false);
+      setIsDeleteOpen(false);
+    }
+  }, [user]);
 
   const meetupSlugOrId = meetup?.slug || meetupId;
   const galleryHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`;

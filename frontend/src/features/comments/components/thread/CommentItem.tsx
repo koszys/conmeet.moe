@@ -184,7 +184,7 @@ export function CommentItem({
             </div>
 
             {/* Delete Action Button */}
-            {!comment.is_deleted && comment.can_delete && onDelete && (
+            {Boolean(user) && !comment.is_deleted && comment.can_delete && onDelete && (
               <button
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
@@ -307,7 +307,7 @@ export function CommentItem({
       )}
 
       {/* Delete Confirmation Modal */}
-      {!comment.is_deleted && comment.can_delete && onDelete && (
+      {Boolean(user) && !comment.is_deleted && comment.can_delete && onDelete && (
         <ConfirmDeleteModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}

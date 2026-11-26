@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Archive, CheckSquare, Clock, Download, Loader2, User as UserIcon } from 'lucide-react';
@@ -64,6 +64,14 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
   // Delete modal state
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setIsEditing(false);
+      setIsDeleteOpen(false);
+      setIsSelectMode(false);
+    }
+  }, [user]);
 
   // ZIP Download progress state
   const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);

@@ -40,6 +40,9 @@ export function CommentForm({
   const [error, setError] = useState<string | null>(null);
 
   if (!user) {
+    if (onCancel) {
+      return null;
+    }
     return (
       <div
         className={cn(

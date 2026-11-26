@@ -37,8 +37,6 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
       activities: [],
       emptyState: {
         message: 'No meetups scheduled yet. Organize a fan meetup or community meetup!',
-        actionLabel: 'Post a Meetup',
-        actionHref: `/conventions/${convention.slug}/meetups/new`,
       },
       primaryAction: {
         label: 'Browse Meetups',
@@ -71,8 +69,6 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
       activities: [],
       emptyState: {
         message: 'No freebies or booth drops shared yet for this convention.',
-        actionLabel: 'Submit First Freebie',
-        actionHref: `/conventions/${convention.slug}/freebies/new`,
       },
       primaryAction: {
         label: 'View Freebies',
@@ -106,8 +102,6 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
       activities: [],
       emptyState: {
         message: 'Official timetable has not been published yet.',
-        actionLabel: 'Open Timeline',
-        actionHref: `/conventions/${convention.slug}/schedule`,
       },
       primaryAction: {
         label: 'Full Schedule',

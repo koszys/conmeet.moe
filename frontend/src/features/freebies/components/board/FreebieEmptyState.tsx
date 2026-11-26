@@ -1,6 +1,8 @@
 'use client';
 
 import { Bookmark, Gift, Plus } from 'lucide-react';
+import { useConvention } from '@/features/conventions/data/api';
+import { isFreebieMutationLocked } from '@/features/conventions/utils/dates';
 import { Button, ClearFiltersButton, EmptyState, LinkButton } from '@/shared/components/ui';
 
 export type FreebieBoardTab = 'all' | 'saved' | 'uploaded';
@@ -24,6 +26,11 @@ export function FreebieEmptyState({
   conventionSlug,
   hasSaved = false,
 }: FreebieEmptyStateProps) {
+  const { data: convention } = useConvention(conventionSlug || '');
+  const isLocked = isFreebieMutationLocked(convention);
+  const lockedTitle = isLocked
+    ? 'Freebies cannot be added after the convention has ended'
+    : undefined;
   const emptySpeech = isFiltered
     ? 'Try another search!'
     : tab === 'saved'
@@ -64,7 +71,12 @@ export function FreebieEmptyState({
                 <span>Browse All Freebies</span>
               </Button>
             ) : conventionSlug ? (
-              <LinkButton variant="secondary" href={`/conventions/${conventionSlug}/freebies/new`}>
+              <LinkButton
+                variant="secondary"
+                href={`/conventions/${conventionSlug}/freebies/new`}
+                disabled={isLocked}
+                title={lockedTitle}
+              >
                 <Plus className="h-4 w-4" />
                 <span>Post a Freebie</span>
               </LinkButton>
@@ -82,14 +94,24 @@ export function FreebieEmptyState({
               <span>View Saved Freebies</span>
             </Button>
             {conventionSlug ? (
-              <LinkButton variant="secondary" href={`/conventions/${conventionSlug}/freebies/new`}>
+              <LinkButton
+                variant="secondary"
+                href={`/conventions/${conventionSlug}/freebies/new`}
+                disabled={isLocked}
+                title={lockedTitle}
+              >
                 <Plus className="h-4 w-4" />
                 <span>Post a Freebie</span>
               </LinkButton>
             ) : null}
           </>
         ) : conventionSlug ? (
-          <LinkButton variant="primary" href={`/conventions/${conventionSlug}/freebies/new`}>
+          <LinkButton
+            variant="primary"
+            href={`/conventions/${conventionSlug}/freebies/new`}
+            disabled={isLocked}
+            title={lockedTitle}
+          >
             <Plus className="h-4 w-4" />
             <span>Post a Freebie</span>
           </LinkButton>

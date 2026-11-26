@@ -18,6 +18,7 @@ export interface Freebie {
   convention: number | null;
   convention_slug: string | null;
   convention_name: string | null;
+  convention_ends_at?: string | null;
   created_by: number | null;
   created_by_name: string | null;
   is_saved: boolean;

@@ -14,6 +14,7 @@ class FreebieSerializer(serializers.ModelSerializer):
     vendor = VendorSerializer(read_only=True)
     convention_slug = serializers.CharField(source="convention.slug", read_only=True, default=None)
     convention_name = serializers.CharField(source="convention.name", read_only=True, default=None)
+    convention_ends_at = serializers.DateField(source="convention.ends_at", read_only=True, default=None)
     image_thumb = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
     is_claimed = serializers.SerializerMethodField()
@@ -36,6 +37,7 @@ class FreebieSerializer(serializers.ModelSerializer):
             "convention",
             "convention_slug",
             "convention_name",
+            "convention_ends_at",
             "created_by",
             "created_by_name",
             "is_saved",

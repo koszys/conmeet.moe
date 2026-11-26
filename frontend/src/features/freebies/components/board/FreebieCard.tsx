@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Camera, ChevronDown, ChevronUp, Clock, MapPin } from 'lucide-react';
 import { useAuth } from '@/features/auth';
+import { isFreebieMutationLocked } from '@/features/conventions/utils/dates';
 import {
   BookmarkButton,
   CONBLOCK,
@@ -53,6 +54,7 @@ export function FreebieCard({
   const isOwner = Boolean(
     user && (freebie.is_owner || (freebie.created_by !== null && freebie.created_by === user.id))
   );
+  const isLocked = isFreebieMutationLocked({ ends_at: freebie.convention_ends_at });
 
   const toggleSave = useToggleSaveFreebie();
   const { isGuestSaved, isGuestClaimed, toggleGuestSave } = useGuestSaves();
@@ -274,11 +276,17 @@ export function FreebieCard({
               <>
                 <EditButton
                   variant="icon"
-                  title="Edit freebie"
+                  disabled={isLocked}
+                  title={
+                    isLocked
+                      ? 'Freebies cannot be edited after the convention has ended'
+                      : 'Edit freebie'
+                  }
                   ariaLabel={`Edit ${freebie.name}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (isLocked) return;
                     if (onEdit) {
                       onEdit(freebie);
                     } else {
@@ -290,11 +298,17 @@ export function FreebieCard({
                 <DeleteButton
                   variant="icon"
                   colorStyle="danger-subtle"
-                  title="Delete freebie"
+                  disabled={isLocked}
+                  title={
+                    isLocked
+                      ? 'Freebies cannot be deleted after the convention has ended'
+                      : 'Delete freebie'
+                  }
                   ariaLabel={`Delete ${freebie.name}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (isLocked) return;
                     if (onDelete) {
                       onDelete(freebie);
                     } else {

@@ -136,8 +136,12 @@ class FreebieListCreateView(generics.ListCreateAPIView):
             con = Convention.objects.filter(
                 Q(id=int(conv_str)) if conv_str.isdigit() else Q(slug=conv_str)
             ).first()
-            if con and con.unmount_freebies:
-                raise PermissionDenied("Freebie submissions are currently disabled for this convention.")
+            if con:
+                if con.unmount_freebies:
+                    raise PermissionDenied("Freebie submissions are currently disabled for this convention.")
+                if con.ends_at < timezone.now().date():
+                    if not (request.user.is_staff or getattr(request.user, "role", None) == "admin"):
+                        raise PermissionDenied("Freebies cannot be added after the convention has ended.")
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -168,15 +172,25 @@ class FreebieDetailView(generics.RetrieveUpdateDestroyAPIView):
             return FreebieUpdateSerializer
         return FreebieSerializer
 
+    def _check_convention_lock(self, instance: Freebie, action: str) -> None:
+        if instance.convention and instance.convention.ends_at < timezone.now().date():
+            if not (self.request.user.is_staff or getattr(self.request.user, "role", None) == "admin"):
+                raise PermissionDenied(f"Freebies cannot be {action} after the convention has ended.")
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
+        self._check_convention_lock(instance, "edited")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         freebie = serializer.save()
 
         out_serializer = FreebieSerializer(freebie, context=self.get_serializer_context())
         return Response(out_serializer.data, status=status.HTTP_200_OK)
+
+    def perform_destroy(self, instance):
+        self._check_convention_lock(instance, "deleted")
+        instance.delete()
 
 
 class FreebieSaveToggleView(APIView):

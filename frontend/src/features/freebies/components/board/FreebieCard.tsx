@@ -257,12 +257,7 @@ export function FreebieCard({
       >
         <div className="flex items-center justify-between gap-2">
           {/* Check off / Claim button */}
-          <ClaimButton
-            freebie={freebie}
-            isClaimed={isClaimed}
-            conventionSlug={freebie.convention_slug || undefined}
-            variant="button"
-          />
+          <ClaimButton freebie={freebie} isClaimed={isClaimed} variant="button" />
 
           <div className="flex shrink-0 items-center gap-1.5">
             {/* Save / Bookmark button */}

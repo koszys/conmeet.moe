@@ -46,6 +46,8 @@ export function ClaimButton({
   freebie,
   freebieId,
   isClaimed,
+  conventionSlug,
+  redirectUrl,
   onClick,
   variant = 'button',
   claimedLabel = 'CLAIMED',
@@ -57,6 +59,8 @@ export function ClaimButton({
   type = 'button',
   ...props
 }: ClaimButtonProps) {
+  void conventionSlug;
+  void redirectUrl;
   const { user } = useAuth();
   const toggleClaim = useToggleClaimFreebie();
   const { isGuestClaimed, toggleGuestClaim } = useGuestSaves();

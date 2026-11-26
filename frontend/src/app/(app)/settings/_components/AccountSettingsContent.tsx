@@ -102,8 +102,9 @@ export function AccountSettingsContent() {
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      setFileError('Please select a valid image file (PNG, JPG, WEBP, GIF).');
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setFileError('Please select a valid image file (PNG, JPG, or WEBP).');
       return;
     }
 
@@ -242,52 +243,59 @@ export function AccountSettingsContent() {
           </div>
         )}
 
-        {/* Avatar Customization */}
+        {/* Avatar & Profile Identity */}
         <div className="border-ink mt-6 border-b-2 border-dashed pb-6">
           <label className="font-display block text-xs tracking-wider uppercase">
             Profile Picture
           </label>
 
           <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
-            {/* Avatar Frame */}
-            <div className="border-ink relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] dark:bg-zinc-800">
+            {/* Clickable Avatar Button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Upload profile picture"
+              className="group border-ink relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800"
+            >
               {currentAvatarUrl ? (
                 <img
                   src={currentAvatarUrl}
                   alt="Profile Avatar"
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition-opacity group-hover:opacity-60"
                 />
               ) : (
-                <UserRound className="h-10 w-10 text-zinc-400" />
+                <UserRound className="h-10 w-10 text-zinc-400 transition-opacity group-hover:opacity-60" />
               )}
-            </div>
 
-            {/* Avatar Controls */}
-            <div className="flex-1 space-y-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-1.5"
-                >
-                  <Camera className="h-3.5 w-3.5" />
-                  <span>Change Avatar</span>
-                </Button>
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                <Camera className="h-5 w-5 drop-shadow-sm" />
+                <span className="font-display text-[9px] font-bold tracking-wider uppercase drop-shadow-sm">
+                  Change
+                </span>
               </div>
+            </button>
 
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                PNG, JPG, WEBP, or GIF (max 5MB). Processed into a 256×256 square. Previous avatars
-                are automatically removed from storage.
+            {/* Hidden File Input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
+            {/* Display Name and Username Info */}
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="truncate text-base font-bold text-zinc-900 sm:text-lg dark:text-white">
+                {displayName || user?.display_name || user?.username}
+              </p>
+              <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                @{username || user?.username}
+              </p>
+
+              <p className="pt-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                Click the avatar to upload a new picture (PNG, JPG, or WEBP, max 5MB).
               </p>
 
               {fileError && (

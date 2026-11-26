@@ -101,6 +101,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             max_size = 5 * 1024 * 1024
             if value.size > max_size:
                 raise serializers.ValidationError("Image file size must not exceed 5MB.")
+            content_type = getattr(value, "content_type", "")
+            if content_type == "image/gif":
+                raise serializers.ValidationError("GIF format is not supported for avatars.")
+            allowed_types = {"image/jpeg", "image/png", "image/webp"}
+            if content_type and content_type not in allowed_types:
+                raise serializers.ValidationError("Unsupported image format. Allowed: PNG, JPG, WEBP.")
         return value
 
     def update(self, instance: User, validated_data: dict) -> User:

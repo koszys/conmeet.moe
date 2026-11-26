@@ -19,11 +19,16 @@ def _authed_client(user: Any) -> APIClient:
     return client
 
 
-def _create_test_image(name: str = "avatar.png", color: str = "red") -> SimpleUploadedFile:
+def _create_test_image(
+    name: str = "avatar.png",
+    color: str = "red",
+    format: str = "PNG",
+    content_type: str = "image/png",
+) -> SimpleUploadedFile:
     img = Image.new("RGB", (64, 64), color=color)
     buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    return SimpleUploadedFile(name, buf.getvalue(), content_type="image/png")
+    img.save(buf, format=format)
+    return SimpleUploadedFile(name, buf.getvalue(), content_type=content_type)
 
 
 def test_me_authenticated() -> None:
@@ -221,3 +226,14 @@ def test_patch_me_avatar_upload_precedence_and_cdn_cleanup() -> None:
     user.refresh_from_db()
     assert not user.avatar
     assert not default_storage.exists(second_avatar_name), "Removed avatar should be deleted from storage/CDN"
+
+
+def test_patch_me_rejects_gif_avatar() -> None:
+    user = get_user_model().objects.create_user(username="no_gif_user", email="nogif@example.com")
+    client = _authed_client(user)
+
+    gif_file = _create_test_image("avatar.gif", color="purple", format="GIF", content_type="image/gif")
+    resp = client.patch("/api/v1/auth/me/", {"avatar": gif_file}, format="multipart")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert "avatar" in resp.json()
+    assert "GIF" in resp.json()["avatar"][0]

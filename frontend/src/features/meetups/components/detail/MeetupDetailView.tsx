@@ -21,7 +21,7 @@ import {
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
-import { useMeetup, useMeetupAlbums, useToggleSaveMeetup } from '../../api';
+import { useMeetup, useMeetupAlbums, useMeetupSettings, useToggleSaveMeetup } from '../../api';
 import { AlbumCard, AlbumCardSkeleton } from '../gallery';
 import { GoingButton } from '../GoingButton';
 import { MeetupForm } from '../form';
@@ -37,6 +37,9 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   const router = useRouter();
   const { user } = useAuth();
   const { data: meetup, isLoading, isError } = useMeetup(meetupId);
+  const { data: meetupSettings } = useMeetupSettings();
+  const isGalleryUnmounted =
+    Boolean(meetup?.unmount_albums) || Boolean(meetupSettings?.unmount_all_albums);
   const { data: albums, isLoading: isAlbumsLoading } = useMeetupAlbums(meetupId, 'popular');
   const toggleSave = useToggleSaveMeetup();
   const { isGuestSaved, toggleGuestSave } = useGuestSaves();
@@ -335,89 +338,91 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
       )}
 
       {/* Photo Gallery & Albums Section */}
-      <section className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Link href={galleryHref} className="group inline-flex items-center gap-2">
-              <Camera className="text-accent-pop h-5 w-5 transition-transform group-hover:scale-105" />
-              <h2 className="font-display group-hover:text-accent-pop text-base font-bold tracking-wider uppercase transition-colors sm:text-lg">
-                Photo Gallery
-              </h2>
-            </Link>
-            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-              Attendee photo albums and memories from this meetup.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 sm:shrink-0">
-            <Link
-              href={galleryHref}
-              className={cn(
-                CONBLOCK_PRIMARY,
-                'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase sm:px-3.5'
-              )}
-            >
-              <span className="hidden sm:inline">View Gallery</span>
-              <span className="sm:hidden">View</span>
-              <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Photo Albums */}
-        {isAlbumsLoading ? (
-          <div className="mt-6 grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-            <AlbumCardSkeleton />
-            <AlbumCardSkeleton />
-            <AlbumCardSkeleton />
-          </div>
-        ) : albums && albums.length > 0 ? (
-          <div className="mt-6 space-y-4">
-            <div className="grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-              {albums.slice(0, 3).map((album) => (
-                <AlbumCard
-                  key={album.id}
-                  album={album}
-                  conventionSlug={conventionSlug}
-                  meetupId={meetupSlugOrId}
-                />
-              ))}
+      {!isGalleryUnmounted && (
+        <section className="border-ink border-2 bg-white p-6 shadow-[4px_4px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <Link href={galleryHref} className="group inline-flex items-center gap-2">
+                <Camera className="text-accent-pop h-5 w-5 transition-transform group-hover:scale-105" />
+                <h2 className="font-display group-hover:text-accent-pop text-base font-bold tracking-wider uppercase transition-colors sm:text-lg">
+                  Photo Gallery
+                </h2>
+              </Link>
+              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
+                Attendee photo albums and memories from this meetup.
+              </p>
             </div>
 
-            {albums.length > 3 && (
-              <div className="pt-2 text-center sm:text-right">
-                <Link
-                  href={galleryHref}
-                  className="font-display text-accent hover:text-accent-pop inline-flex items-center gap-1 text-xs font-bold tracking-wider uppercase transition-colors"
-                >
-                  <span>See all albums in the photo gallery</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            )}
-          </div>
-        ) : (
-          <EmptyState
-            mascot
-            mascotSpeech="Be the first to share photos!"
-            title="No Photos in Gallery Yet"
-            className="mt-6 border-zinc-300 dark:border-zinc-700"
-            action={
+            <div className="flex items-center gap-2 sm:shrink-0">
               <Link
                 href={galleryHref}
                 className={cn(
                   CONBLOCK_PRIMARY,
-                  'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
+                  'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase sm:px-3.5'
                 )}
               >
                 <span className="hidden sm:inline">View Gallery</span>
                 <span className="sm:hidden">View</span>
                 <ArrowRight className="h-3.5 w-3.5 shrink-0" />
               </Link>
-            }
-          />
-        )}
-      </section>
+            </div>
+          </div>
+
+          {/* Photo Albums */}
+          {isAlbumsLoading ? (
+            <div className="mt-6 grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+              <AlbumCardSkeleton />
+              <AlbumCardSkeleton />
+              <AlbumCardSkeleton />
+            </div>
+          ) : albums && albums.length > 0 ? (
+            <div className="mt-6 space-y-4">
+              <div className="grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                {albums.slice(0, 3).map((album) => (
+                  <AlbumCard
+                    key={album.id}
+                    album={album}
+                    conventionSlug={conventionSlug}
+                    meetupId={meetupSlugOrId}
+                  />
+                ))}
+              </div>
+
+              {albums.length > 3 && (
+                <div className="pt-2 text-center sm:text-right">
+                  <Link
+                    href={galleryHref}
+                    className="font-display text-accent hover:text-accent-pop inline-flex items-center gap-1 text-xs font-bold tracking-wider uppercase transition-colors"
+                  >
+                    <span>See all albums in the photo gallery</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <EmptyState
+              mascot
+              mascotSpeech="Be the first to share photos!"
+              title="No Photos in Gallery Yet"
+              className="mt-6 border-zinc-300 dark:border-zinc-700"
+              action={
+                <Link
+                  href={galleryHref}
+                  className={cn(
+                    CONBLOCK_PRIMARY,
+                    'inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
+                  )}
+                >
+                  <span className="hidden sm:inline">View Gallery</span>
+                  <span className="sm:hidden">View</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                </Link>
+              }
+            />
+          )}
+        </section>
+      )}
 
       {/* Comments Section */}
       <CommentSection

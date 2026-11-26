@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from meetups.models import MeetupAlbum
@@ -128,7 +129,10 @@ class AlbumCommentListCreateView(APIView):
         return [permissions.AllowAny()]
 
     def get(self, request, album_id):
-        album = get_object_or_404(MeetupAlbum, pk=album_id)
+        album = get_object_or_404(MeetupAlbum.objects.select_related("meetup"), pk=album_id)
+        if not request.user.is_staff and (album.unmount_album or album.meetup.unmount_albums):
+            raise Http404
+
         settings = CommentSetting.get_settings()
         if (
             settings.unmount_all_comment_sections
@@ -154,7 +158,10 @@ class AlbumCommentListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request, album_id):
-        album = get_object_or_404(MeetupAlbum, pk=album_id)
+        album = get_object_or_404(MeetupAlbum.objects.select_related("meetup"), pk=album_id)
+        if not request.user.is_staff and (album.unmount_album or album.meetup.unmount_albums):
+            raise Http404
+
         settings = CommentSetting.get_settings()
         if settings.unmount_all_comment_sections:
             return Response(

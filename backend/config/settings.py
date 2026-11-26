@@ -288,6 +288,11 @@ UNFOLD = {
                         "icon": "photo",
                         "link": reverse_lazy("admin:meetups_meetupphoto_changelist"),
                     },
+                    {
+                        "title": "Meetup Settings",
+                        "icon": "tune",
+                        "link": reverse_lazy("admin:meetups_meetupsetting_changelist"),
+                    },
                 ],
             },
             {

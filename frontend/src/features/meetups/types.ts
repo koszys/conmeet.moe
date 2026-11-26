@@ -22,6 +22,7 @@ export interface Meetup {
   is_going: boolean;
   is_owner: boolean;
   unmount_comments?: boolean;
+  unmount_albums?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -87,6 +88,7 @@ export interface MeetupAlbum {
   is_favorited: boolean;
   is_owner: boolean;
   unmount_comments?: boolean;
+  unmount_album?: boolean;
   created_by: number | null;
   created_by_name: string | null;
   created_at: string;
@@ -112,4 +114,8 @@ export interface AlbumFavoriteToggleResponse {
 export interface PhotoLikeToggleResponse {
   is_liked: boolean;
   likes_count: number;
+}
+
+export interface MeetupSettings {
+  unmount_all_albums: boolean;
 }

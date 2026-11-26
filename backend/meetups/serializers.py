@@ -10,6 +10,7 @@ from .models import (
     Meetup,
     MeetupAlbum,
     MeetupPhoto,
+    MeetupSetting,
     PhotoLike,
     SavedMeetup,
 )
@@ -50,6 +51,7 @@ class MeetupListSerializer(serializers.ModelSerializer):
             "is_going",
             "is_owner",
             "unmount_comments",
+            "unmount_albums",
             "created_at",
             "updated_at",
         ]
@@ -318,6 +320,7 @@ class MeetupAlbumListSerializer(serializers.ModelSerializer):
             "is_favorited",
             "is_owner",
             "unmount_comments",
+            "unmount_album",
             "created_by",
             "created_by_name",
             "created_at",
@@ -442,4 +445,11 @@ class MeetupAlbumCreateUpdateSerializer(serializers.ModelSerializer):
             if k in allowed_keys and isinstance(v, str):
                 cleaned[k] = v.strip()
         return cleaned
+
+
+class MeetupSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeetupSetting
+        fields = ["unmount_all_albums", "updated_at"]
+
 

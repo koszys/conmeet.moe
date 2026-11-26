@@ -30,6 +30,7 @@ from meetups.views import (
     MeetupDetailView,
     MeetupGoingToggleView,
     MeetupSaveToggleView,
+    MeetupSettingsView,
     PhotoLikeToggleView,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -52,6 +53,7 @@ urlpatterns = [
         ConventionMeetupListCreateView.as_view(),
         name="convention-meetup-list",
     ),
+    path("meetups/settings/", MeetupSettingsView.as_view(), name="meetup-settings"),
     path("meetups/<str:pk>/", MeetupDetailView.as_view(), name="meetup-detail"),
     path("meetups/<str:pk>/save/", MeetupSaveToggleView.as_view(), name="meetup-save"),
     path("meetups/<str:pk>/going/", MeetupGoingToggleView.as_view(), name="meetup-going"),

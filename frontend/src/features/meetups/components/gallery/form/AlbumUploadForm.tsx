@@ -14,7 +14,7 @@ import {
   UndoButton,
 } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useCreateAlbum, useMeetup, useUpdateAlbum } from '../../../api';
+import { useCreateAlbum, useMeetup, useMeetupSettings, useUpdateAlbum } from '../../../api';
 import type { MeetupAlbumDetail, MeetupPhoto, SocialLinks } from '../../../types';
 import { SocialLinksField } from './SocialLinksField';
 
@@ -41,7 +41,10 @@ export function AlbumUploadForm({
 }: AlbumUploadFormProps) {
   const router = useRouter();
   const { data: meetup } = useMeetup(meetupId);
+  const { data: meetupSettings } = useMeetupSettings();
   const isEditMode = Boolean(initialData);
+  const isGalleryUnmounted =
+    !isEditMode && (Boolean(meetup?.unmount_albums) || Boolean(meetupSettings?.unmount_all_albums));
 
   const createMutation = useCreateAlbum(meetupId);
   const updateMutation = useUpdateAlbum(initialData?.id ?? 0);
@@ -276,6 +279,24 @@ export function AlbumUploadForm({
       setServerError(message);
     }
   };
+
+  if (isGalleryUnmounted) {
+    return (
+      <div className="border-ink border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
+        <div className="mb-4">
+          <BackLink href={galleryHref}>Back to Gallery</BackLink>
+        </div>
+        <div className="py-8 text-center">
+          <h2 className="font-display text-lg font-bold uppercase sm:text-xl">
+            Uploads Unavailable
+          </h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            Photo album uploads are currently disabled for this meetup.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

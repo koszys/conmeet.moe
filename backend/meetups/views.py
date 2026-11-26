@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -15,6 +15,7 @@ from .models import (
     Meetup,
     MeetupAlbum,
     MeetupPhoto,
+    MeetupSetting,
     PhotoLike,
     SavedMeetup,
 )
@@ -26,6 +27,7 @@ from .serializers import (
     MeetupCreateSerializer,
     MeetupDetailSerializer,
     MeetupListSerializer,
+    MeetupSettingSerializer,
     MeetupUpdateSerializer,
 )
 
@@ -185,11 +187,27 @@ class MeetupGoingToggleView(APIView):
         )
 
 
+class MeetupSettingsView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        settings = MeetupSetting.get_settings()
+        serializer = MeetupSettingSerializer(settings)
+        return Response(serializer.data)
+
+
 class MeetupAlbumListCreateView(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == "POST":
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
+
+    def get(self, request, *args, **kwargs):
+        meetup = self.get_meetup()
+        settings = MeetupSetting.get_settings()
+        if settings.unmount_all_albums or meetup.unmount_albums:
+            return Response([])
+        return super().get(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -228,6 +246,9 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
         )
 
         user = self.request.user
+        if not user or not user.is_staff:
+            qs = qs.filter(unmount_album=False)
+
         sort_param = self.request.query_params.get("sort", "all")
         saved_param = self.request.query_params.get("saved")
 
@@ -245,6 +266,12 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         meetup = self.get_meetup()
+        settings = MeetupSetting.get_settings()
+        if settings.unmount_all_albums:
+            raise PermissionDenied("Photo albums are disabled sitewide.")
+        if meetup.unmount_albums:
+            raise PermissionDenied("Photo albums are disabled for this meetup.")
+
         photos = self.request.FILES.getlist("photos")
 
         if len(photos) > 30:
@@ -266,7 +293,16 @@ class MeetupAlbumListCreateView(generics.ListCreateAPIView):
 
 class AlbumDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthorOrReadOnly]
-    queryset = MeetupAlbum.objects.select_related("meetup", "created_by", "cover_photo")
+
+    def get_queryset(self):
+        qs = MeetupAlbum.objects.select_related("meetup", "created_by", "cover_photo")
+        user = self.request.user
+        if not user or not user.is_staff:
+            settings = MeetupSetting.get_settings()
+            if settings.unmount_all_albums:
+                return qs.none()
+            qs = qs.filter(unmount_album=False, meetup__unmount_albums=False)
+        return qs
 
     def get_serializer_class(self):
         if self.request.method in ("PUT", "PATCH"):
@@ -326,6 +362,10 @@ class AlbumLikeToggleView(APIView):
 
     def post(self, request, pk: int):
         album = get_object_or_404(MeetupAlbum, pk=pk)
+        if not request.user.is_staff:
+            if album.unmount_album or album.meetup.unmount_albums or MeetupSetting.get_settings().unmount_all_albums:
+                raise Http404
+
         like_obj = AlbumLike.objects.filter(user=request.user, album=album).first()
 
         if like_obj:
@@ -350,6 +390,10 @@ class AlbumFavoriteToggleView(APIView):
 
     def post(self, request, pk: int):
         album = get_object_or_404(MeetupAlbum, pk=pk)
+        if not request.user.is_staff:
+            if album.unmount_album or album.meetup.unmount_albums or MeetupSetting.get_settings().unmount_all_albums:
+                raise Http404
+
         fav_obj = AlbumFavorite.objects.filter(user=request.user, album=album).first()
 
         if fav_obj:
@@ -373,7 +417,12 @@ class PhotoLikeToggleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk: int):
-        photo = get_object_or_404(MeetupPhoto, pk=pk)
+        photo = get_object_or_404(MeetupPhoto.objects.select_related("album__meetup"), pk=pk)
+        if not request.user.is_staff:
+            album = photo.album
+            if album.unmount_album or album.meetup.unmount_albums or MeetupSetting.get_settings().unmount_all_albums:
+                raise Http404
+
         like_obj = PhotoLike.objects.filter(user=request.user, photo=photo).first()
 
         if like_obj:

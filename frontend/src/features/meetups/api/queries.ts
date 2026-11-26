@@ -9,15 +9,27 @@ import type {
   MeetupAlbumDetail,
   MeetupDetail,
   MeetupFilters,
+  MeetupSettings,
 } from '../types';
 
 export const meetupKeys = {
   all: ['meetups'] as const,
+  settings: () => [...meetupKeys.all, 'settings'] as const,
   lists: () => [...meetupKeys.all, 'list'] as const,
   list: (filters: MeetupFilters) => [...meetupKeys.lists(), filters] as const,
   details: () => [...meetupKeys.all, 'detail'] as const,
   detail: (id: number | string) => [...meetupKeys.details(), String(id)] as const,
 };
+
+export function useMeetupSettings() {
+  return useQuery({
+    queryKey: meetupKeys.settings(),
+    queryFn: async () => {
+      return api.get('api/v1/meetups/settings/').json<MeetupSettings>();
+    },
+    staleTime: 60 * 1000,
+  });
+}
 
 export function useMeetups(filters: MeetupFilters = {}) {
   return useQuery({

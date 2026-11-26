@@ -57,7 +57,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         required=False,
     )
     display_name = serializers.CharField(
-        max_length=64,
+        max_length=20,
         required=False,
         allow_blank=True,
     )

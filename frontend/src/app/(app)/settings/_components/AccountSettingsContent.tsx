@@ -127,9 +127,15 @@ export function AccountSettingsContent() {
       return;
     }
 
+    const trimmedDisplayName = displayName.trim();
+    if (trimmedDisplayName.length > 20) {
+      setFormErrors({ display_name: 'Display name must be 20 characters or fewer.' });
+      return;
+    }
+
     const formData = new FormData();
     formData.append('username', trimmedUsername);
-    formData.append('display_name', displayName.trim());
+    formData.append('display_name', trimmedDisplayName);
 
     if (selectedFile) {
       formData.append('avatar', selectedFile);
@@ -239,7 +245,7 @@ export function AccountSettingsContent() {
         {/* Avatar Customization */}
         <div className="border-ink mt-6 border-b-2 border-dashed pb-6">
           <label className="font-display block text-xs tracking-wider uppercase">
-            Profile Picture (PFP)
+            Profile Picture
           </label>
 
           <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -361,10 +367,10 @@ export function AccountSettingsContent() {
               <span
                 className={cn(
                   'font-mono text-[11px] font-bold',
-                  displayName.length > 64 ? 'text-red-600' : 'text-zinc-400'
+                  displayName.length > 20 ? 'text-red-600' : 'text-zinc-400'
                 )}
               >
-                {displayName.length}/64
+                {displayName.length}/20
               </span>
             </div>
 
@@ -382,7 +388,7 @@ export function AccountSettingsContent() {
                 }
               }}
               placeholder="Friendly Name"
-              maxLength={64}
+              maxLength={20}
               error={Boolean(formErrors.display_name)}
               className="mt-1.5"
             />
@@ -393,7 +399,8 @@ export function AccountSettingsContent() {
               </p>
             ) : (
               <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-                How your name is displayed on meetups, comments, and galleries.
+                20 characters or fewer. How your name is displayed on meetups, comments, and
+                galleries.
               </p>
             )}
           </div>

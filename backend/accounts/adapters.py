@@ -60,9 +60,13 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         user = super().populate_user(request, sociallogin, data)
         assert isinstance(user, User)
         provider_id = sociallogin.account.provider
-        user.display_name = (
+        raw_display_name = (
             data.get("global_name") or data.get("name") or data.get("username") or user.username
         )
+        if raw_display_name and len(raw_display_name) > 20:
+            user.display_name = raw_display_name[:20]
+        elif raw_display_name:
+            user.display_name = raw_display_name
         avatar_url = _discord_avatar_url(data) if provider_id == "discord" else data.get("picture")
         if avatar_url:
             user.avatar_url = avatar_url

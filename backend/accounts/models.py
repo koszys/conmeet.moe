@@ -35,7 +35,7 @@ class User(AbstractUser):
             "unique": "A user with that username already exists.",
         },
     )
-    display_name = models.CharField(max_length=64, blank=True)
+    display_name = models.CharField(max_length=20, blank=True)
     avatar = ProcessedImageField(
         upload_to=user_avatar_upload_path,
         blank=True,

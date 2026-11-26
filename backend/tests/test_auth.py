@@ -130,6 +130,15 @@ def test_patch_me_updates_display_name_and_username() -> None:
     assert user.username == "miku_39"
     assert user.display_name == "Hatsune Miku"
 
+    # Display name > 20 chars rejected
+    resp_long = client.patch(
+        "/api/v1/auth/me/",
+        {"display_name": "a" * 21},
+        format="json",
+    )
+    assert resp_long.status_code == status.HTTP_400_BAD_REQUEST
+    assert "display_name" in resp_long.json()
+
 
 def test_patch_me_username_validation_and_uniqueness() -> None:
     User = get_user_model()

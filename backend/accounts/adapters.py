@@ -16,6 +16,7 @@ def build_token_redirect_url(
     user: AbstractBaseUser,
     base_url: str | None = None,
     next_url: str | None = None,
+    username_collision: bool = False,
 ) -> str:
     """Return a frontend URL carrying a fresh SimpleJWT pair in the fragment and optional next query param."""
     refresh = RefreshToken.for_user(user)
@@ -31,9 +32,15 @@ def build_token_redirect_url(
             next_url = base_url
         base = f"{settings.FRONTEND_URL}/auth/callback"
 
+    query_params: dict[str, str] = {}
     if next_url and next_url != "/" and next_url.startswith("/") and not next_url.startswith("//"):
+        query_params["next"] = next_url
+    if username_collision:
+        query_params["username_collision"] = "1"
+
+    if query_params:
         separator = "&" if "?" in base else "?"
-        base = f"{base}{separator}{urlencode({'next': next_url})}"
+        base = f"{base}{separator}{urlencode(query_params)}"
 
     return f"{base}#{urlencode(payload)}"
 
@@ -59,6 +66,13 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         avatar_url = _discord_avatar_url(data) if provider_id == "discord" else data.get("picture")
         if avatar_url:
             user.avatar_url = avatar_url
+
+        raw_username = data.get("username") or (
+            data.get("email", "").split("@")[0] if data.get("email") else None
+        )
+        if raw_username:
+            sociallogin.state["preferred_username"] = raw_username[:20]
+
         if user.username and len(user.username) > 20:
             user.username = user.username[:20]
         return user
@@ -82,8 +96,21 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         signup: bool,
         redirect_url: str | None,
     ) -> HttpResponse:
+        is_collision = False
+        if signup and signal_kwargs and "sociallogin" in signal_kwargs:
+            sociallogin = signal_kwargs["sociallogin"]
+            preferred = sociallogin.state.get("preferred_username")
+            if preferred and getattr(user, "username", None) != preferred:
+                is_collision = True
+
         if signal_kwargs and "sociallogin" in signal_kwargs:
-            return HttpResponseRedirect(build_token_redirect_url(user, base_url=redirect_url))
+            return HttpResponseRedirect(
+                build_token_redirect_url(
+                    user,
+                    base_url=redirect_url,
+                    username_collision=is_collision,
+                )
+            )
         response = super().post_login(
             request,
             user,

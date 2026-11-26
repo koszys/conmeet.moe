@@ -1,7 +1,11 @@
+import io
 from typing import Any
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -13,6 +17,13 @@ def _authed_client(user: Any) -> APIClient:
     client = APIClient()
     client.force_authenticate(user=user)
     return client
+
+
+def _create_test_image(name: str = "avatar.png", color: str = "red") -> SimpleUploadedFile:
+    img = Image.new("RGB", (64, 64), color=color)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return SimpleUploadedFile(name, buf.getvalue(), content_type="image/png")
 
 
 def test_me_authenticated() -> None:
@@ -91,3 +102,113 @@ def test_username_max_length_20_enforced() -> None:
     with pytest.raises(ValidationError) as exc_info:
         invalid_user.full_clean()
     assert "username" in exc_info.value.message_dict
+
+
+def test_patch_me_unauthenticated_returns_401() -> None:
+    resp = APIClient().patch("/api/v1/auth/me/", {"display_name": "New Name"})
+    assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_patch_me_updates_display_name_and_username() -> None:
+    user = get_user_model().objects.create_user(username="miku", email="miku@example.com")
+    user.display_name = "Hatsune"
+    user.save()
+
+    client = _authed_client(user)
+    resp = client.patch(
+        "/api/v1/auth/me/",
+        {"display_name": "Hatsune Miku", "username": "miku_39"},
+        format="json",
+    )
+
+    assert resp.status_code == status.HTTP_200_OK
+    data = resp.json()
+    assert data["username"] == "miku_39"
+    assert data["display_name"] == "Hatsune Miku"
+
+    user.refresh_from_db()
+    assert user.username == "miku_39"
+    assert user.display_name == "Hatsune Miku"
+
+
+def test_patch_me_username_validation_and_uniqueness() -> None:
+    User = get_user_model()
+    User.objects.create_user(username="taken_user", email="taken@example.com")
+    user = User.objects.create_user(username="my_user", email="me@example.com")
+
+    client = _authed_client(user)
+
+    # 1. Duplicate username
+    resp = client.patch("/api/v1/auth/me/", {"username": "taken_user"}, format="json")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert "username" in resp.json()
+
+    # 2. Case-insensitive duplicate username
+    resp = client.patch("/api/v1/auth/me/", {"username": "TAKEN_USER"}, format="json")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert "username" in resp.json()
+
+    # 3. Reserved username
+    resp = client.patch("/api/v1/auth/me/", {"username": "admin"}, format="json")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert "reserved" in resp.json()["username"][0]
+
+    # 4. Same username for self is allowed
+    resp = client.patch("/api/v1/auth/me/", {"username": "my_user"}, format="json")
+    assert resp.status_code == status.HTTP_200_OK
+
+    # 5. Over 20 chars rejected
+    resp = client.patch("/api/v1/auth/me/", {"username": "a" * 21}, format="json")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    # 6. Blank username rejected
+    resp = client.patch("/api/v1/auth/me/", {"username": "   "}, format="json")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_patch_me_avatar_upload_precedence_and_cdn_cleanup() -> None:
+    user = get_user_model().objects.create_user(username="cosmo_pfp", email="cosmo_pfp@example.com")
+    user.avatar_url = "https://cdn.discordapp.com/avatars/1/social_pfp.png"
+    user.save()
+
+    client = _authed_client(user)
+
+    # Initial check: no custom avatar, falls back to social avatar_url
+    initial_resp = client.get("/api/v1/auth/me/")
+    assert initial_resp.json()["avatar_url"] == "https://cdn.discordapp.com/avatars/1/social_pfp.png"
+    assert initial_resp.json()["has_custom_avatar"] is False
+
+    # 1. Upload custom avatar
+    image_file = _create_test_image("custom_pfp.png", color="blue")
+    upload_resp = client.patch("/api/v1/auth/me/", {"avatar": image_file}, format="multipart")
+    assert upload_resp.status_code == status.HTTP_200_OK
+    upload_data = upload_resp.json()
+    assert upload_data["has_custom_avatar"] is True
+    assert "avatar_" in upload_data["avatar_url"]
+    assert "social_pfp.png" not in upload_data["avatar_url"]
+
+    user.refresh_from_db()
+    first_avatar_name = user.avatar.name
+    assert default_storage.exists(first_avatar_name)
+
+    # 2. Replace with a new avatar -> old one must be deleted from storage/CDN
+    replacement_file = _create_test_image("new_pfp.png", color="green")
+    replace_resp = client.patch("/api/v1/auth/me/", {"avatar": replacement_file}, format="multipart")
+    assert replace_resp.status_code == status.HTTP_200_OK
+
+    user.refresh_from_db()
+    second_avatar_name = user.avatar.name
+    assert second_avatar_name != first_avatar_name
+    assert not default_storage.exists(first_avatar_name), "Previous avatar should be deleted from storage/CDN"
+    assert default_storage.exists(second_avatar_name), "New avatar should exist in storage"
+
+    # 3. Remove custom avatar -> deletes file from storage, reverts to social avatar_url
+    remove_resp = client.patch("/api/v1/auth/me/", {"remove_avatar": True}, format="json")
+    assert remove_resp.status_code == status.HTTP_200_OK
+    remove_data = remove_resp.json()
+    assert remove_data["has_custom_avatar"] is False
+    assert remove_data["avatar_url"] == "https://cdn.discordapp.com/avatars/1/social_pfp.png"
+
+    user.refresh_from_db()
+    assert not user.avatar
+    assert not default_storage.exists(second_avatar_name), "Removed avatar should be deleted from storage/CDN"

@@ -238,3 +238,26 @@ def test_email_authentication_ignores_unverified_provider_email() -> None:
 
     assert not sociallogin.is_existing
     assert sociallogin._did_authenticate_by_email is None
+
+
+def test_post_login_detects_username_collision_on_signup() -> None:
+    # A user whose preferred username was 'cosmo' ended up with 'cosmo1' due to collision
+    user = get_user_model().objects.create_user(username="cosmo1", email="newuser@example.com")
+    sociallogin = SocialLogin(user=user)
+    sociallogin.state["preferred_username"] = "cosmo"
+
+    request = RequestFactory().get("/accounts/discord/login/callback/")
+    resp = CustomAccountAdapter().post_login(
+        request,
+        user,
+        email_verification="none",
+        signal_kwargs={"sociallogin": sociallogin, "email_verification": "none"},
+        email="newuser@example.com",
+        signup=True,
+        redirect_url="/settings",
+    )
+
+    assert resp.status_code == 302
+    parsed = urlparse(resp["Location"])
+    query_params = parse_qs(parsed.query)
+    assert query_params.get("username_collision") == ["1"]

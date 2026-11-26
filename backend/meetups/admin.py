@@ -12,6 +12,7 @@ from .models import (
     Meetup,
     MeetupAlbum,
     MeetupPhoto,
+    MeetupSetting,
     PhotoLike,
     SavedMeetup,
 )
@@ -31,6 +32,19 @@ class MeetupAlbumInline(TabularInline):
     show_change_link = True
 
 
+@admin.register(MeetupSetting)
+class MeetupSettingAdmin(ModelAdmin):
+    list_display = ("__str__", "unmount_all_albums", "updated_at")
+    list_editable = ("unmount_all_albums",)
+    readonly_fields = ("updated_at",)
+
+    def has_add_permission(self, request):
+        return not MeetupSetting.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Meetup)
 class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
     list_display = (
@@ -40,11 +54,12 @@ class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
         "starts_at",
         "is_official",
         "unmount_comments",
+        "unmount_albums",
         "going_count",
     )
-    list_filter = ("is_official", "unmount_comments", "convention")
+    list_filter = ("is_official", "unmount_comments", "unmount_albums", "convention")
     search_fields = ("name", "slug", "location", "convention__name")
-    list_editable = ("is_official", "unmount_comments")
+    list_editable = ("is_official", "unmount_comments", "unmount_albums")
     prepopulated_fields = {"slug": ("name",)}
     inlines = (GoingInline, MeetupAlbumInline)
     fieldsets = (
@@ -60,6 +75,7 @@ class MeetupAdmin(R2AdminMediaMixin, ModelAdmin):
                     "ends_at",
                     "is_official",
                     "unmount_comments",
+                    "unmount_albums",
                 )
             },
         ),
@@ -123,13 +139,14 @@ class MeetupAlbumAdmin(ModelAdmin):
         "meetup",
         "created_by",
         "unmount_comments",
+        "unmount_album",
         "photos_count",
         "likes_count",
         "favorites_count",
         "created_at",
     )
-    list_editable = ("unmount_comments",)
-    list_filter = ("unmount_comments", "meetup__convention", "meetup")
+    list_editable = ("unmount_comments", "unmount_album")
+    list_filter = ("unmount_album", "unmount_comments", "meetup__convention", "meetup")
     search_fields = ("title", "description", "created_by__username", "meetup__name")
     readonly_fields = ("photos_count", "likes_count", "favorites_count", "created_at", "updated_at")
     inlines = (MeetupPhotoInline,)

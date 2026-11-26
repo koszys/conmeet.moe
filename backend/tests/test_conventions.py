@@ -23,6 +23,7 @@ LIST_FIELDS = {
     "banner_thumb",
     "is_featured",
     "featured_priority",
+    "unmount_freebies",
 }
 DETAIL_FIELDS = LIST_FIELDS | {"description"}
 

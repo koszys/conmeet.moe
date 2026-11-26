@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
 import { CONBLOCK_PRIMARY, CONBLOCK_SECONDARY } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { useFreebies } from '@/features/freebies';
+import { useFreebies, useFreebieSettings } from '@/features/freebies';
 import { useMeetups } from '@/features/meetups';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import type {
@@ -21,10 +21,15 @@ export function ConventionSections({
   className,
 }: ConventionSectionsProps) {
   const { data: freebies } = useFreebies({ convention: convention.slug });
+  const { data: freebieSettings } = useFreebieSettings();
   const { data: meetups } = useMeetups({ conventionSlug: convention.slug });
+
+  const isFreebiesUnmounted =
+    Boolean(convention.unmount_freebies) || Boolean(freebieSettings?.unmount_all_freebies);
 
   const baseSections = explicitSections ?? getDefaultConventionSections(convention);
   const allSections = baseSections
+    .filter((sec) => !(isFreebiesUnmounted && sec.id === 'freebies'))
     .map((sec) => {
       if (sec.id === 'freebies' && freebies && freebies.length > 0) {
         const activeFreebies = freebies.filter((f) => !f.is_claimed);

@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
+import { useFreebieSettings } from '../../api';
 import { useCreateFreebie } from '../../api/mutations';
 import { multiFreebieSchema, type MultiFreebieFormValues } from './schema';
 import { useVendorSuggestions } from './useVendorSuggestions';
@@ -21,6 +22,9 @@ export interface FreebieFormProps {
 
 export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps) {
   const { data: convention } = useConvention(conventionSlug);
+  const { data: freebieSettings } = useFreebieSettings();
+  const isFreebiesUnmounted =
+    Boolean(convention?.unmount_freebies) || Boolean(freebieSettings?.unmount_all_freebies);
   const resolvedConventionName = conventionName || convention?.name;
   const router = useRouter();
   const createMutation = useCreateFreebie();
@@ -134,6 +138,24 @@ export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps
         setServerError('A network error occurred. Please check your connection.');
       }
     }
+  }
+
+  if (isFreebiesUnmounted) {
+    return (
+      <div className="border-ink border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
+        <div className="mb-4">
+          <BackLink href={`/conventions/${conventionSlug}/freebies`}>Back to Freebies</BackLink>
+        </div>
+        <div className="py-8 text-center">
+          <h2 className="font-display text-lg font-bold uppercase sm:text-xl">
+            Submissions Unavailable
+          </h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            Freebie submissions are currently disabled for this convention.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -93,7 +93,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
     );
   }
 
-  if (isError || !album) {
+  if (isError || !album || album.unmount_album) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
         <EmptyState

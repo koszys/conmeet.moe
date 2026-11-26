@@ -288,6 +288,11 @@ UNFOLD = {
                         "icon": "photo",
                         "link": reverse_lazy("admin:meetups_meetupphoto_changelist"),
                     },
+                    {
+                        "title": "Meetup Settings",
+                        "icon": "tune",
+                        "link": reverse_lazy("admin:meetups_meetupsetting_changelist"),
+                    },
                 ],
             },
             {
@@ -308,6 +313,11 @@ UNFOLD = {
                         "title": "Claimed Freebies",
                         "icon": "assignment_turned_in",
                         "link": reverse_lazy("admin:freebies_userfreebie_changelist"),
+                    },
+                    {
+                        "title": "Freebie Settings",
+                        "icon": "tune",
+                        "link": reverse_lazy("admin:freebies_freebiesetting_changelist"),
                     },
                 ],
             },

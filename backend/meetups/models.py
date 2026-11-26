@@ -62,6 +62,10 @@ class Meetup(models.Model):
         default=False,
         help_text="Completely unmount and hide the comment section for this specific meetup.",
     )
+    unmount_albums = models.BooleanField(
+        default=False,
+        help_text="Completely unmount and hide the photo gallery and all albums for this specific meetup.",
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -157,6 +161,10 @@ class MeetupAlbum(models.Model):
     unmount_comments = models.BooleanField(
         default=False,
         help_text="Completely unmount and hide the comment section for this specific album.",
+    )
+    unmount_album = models.BooleanField(
+        default=False,
+        help_text="Completely unmount and hide this specific album.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -372,3 +380,25 @@ def cleanup_album_r2_storage(sender, instance: MeetupAlbum, **kwargs):
     for prefix in prefixes:
         with contextlib.suppress(Exception):
             bucket.objects.filter(Prefix=prefix).delete()
+
+
+class MeetupSetting(models.Model):
+    unmount_all_albums = models.BooleanField(
+        default=False,
+        help_text="Unmount ALL photo albums and galleries sitewide.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Meetup Setting"
+        verbose_name_plural = "Meetup Settings"
+
+    def __str__(self) -> str:
+        state = "UNMOUNTED (Hidden)" if self.unmount_all_albums else "Mounted (Active)"
+        return f"Global Meetup Settings: {state}"
+
+    @classmethod
+    def get_settings(cls) -> "MeetupSetting":
+        obj, _ = cls.objects.get_or_create(id=1)
+        return obj
+

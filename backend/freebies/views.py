@@ -1,18 +1,31 @@
+from conventions.models import Convention
 from django.db.models import Count, Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Freebie, UserFreebie, Vendor
+from .models import Freebie, FreebieSetting, UserFreebie, Vendor
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     FreebieCreateSerializer,
     FreebieSerializer,
+    FreebieSettingSerializer,
     FreebieUpdateSerializer,
     VendorSerializer,
 )
+
+
+class FreebieSettingsView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        settings = FreebieSetting.get_settings()
+        serializer = FreebieSettingSerializer(settings)
+        return Response(serializer.data)
 
 
 class FreebieListCreateView(generics.ListCreateAPIView):
@@ -26,12 +39,32 @@ class FreebieListCreateView(generics.ListCreateAPIView):
             return FreebieCreateSerializer
         return FreebieSerializer
 
+    def get(self, request, *args, **kwargs):
+        settings = FreebieSetting.get_settings()
+        if settings.unmount_all_freebies:
+            return Response([])
+
+        convention_param = request.query_params.get("convention")
+        if convention_param:
+            con_qs = Convention.objects.filter(
+                Q(id=int(convention_param)) if convention_param.isdigit() else Q(slug=convention_param)
+            )
+            con = con_qs.first()
+            if con and con.unmount_freebies:
+                return Response([])
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         qs = (
             Freebie.objects.select_related("vendor", "convention", "created_by")
             .annotate(_save_count=Count("saved_by"))
             .order_by("-created_at")
         )
+
+        user = self.request.user
+        if not user or not user.is_staff:
+            qs = qs.filter(unmount_freebie=False)
+            qs = qs.filter(Q(convention__isnull=True) | Q(convention__unmount_freebies=False))
 
         convention_param = self.request.query_params.get("convention")
         if convention_param:
@@ -93,6 +126,19 @@ class FreebieListCreateView(generics.ListCreateAPIView):
         return context
 
     def create(self, request, *args, **kwargs):
+        settings = FreebieSetting.get_settings()
+        if settings.unmount_all_freebies:
+            raise PermissionDenied("Freebie submissions are currently disabled sitewide.")
+
+        convention_val = request.data.get("convention") or request.data.get("convention_slug")
+        if convention_val:
+            conv_str = str(convention_val).strip()
+            con = Convention.objects.filter(
+                Q(id=int(conv_str)) if conv_str.isdigit() else Q(slug=conv_str)
+            ).first()
+            if con and con.unmount_freebies:
+                raise PermissionDenied("Freebie submissions are currently disabled for this convention.")
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         freebie = serializer.save()
@@ -103,9 +149,19 @@ class FreebieListCreateView(generics.ListCreateAPIView):
 
 class FreebieDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthorOrReadOnly]
-    queryset = Freebie.objects.select_related("vendor", "convention", "created_by").annotate(
-        _save_count=Count("saved_by")
-    )
+
+    def get_queryset(self):
+        qs = Freebie.objects.select_related("vendor", "convention", "created_by").annotate(
+            _save_count=Count("saved_by")
+        )
+        user = self.request.user
+        if not user or not user.is_staff:
+            settings = FreebieSetting.get_settings()
+            if settings.unmount_all_freebies:
+                return qs.none()
+            qs = qs.filter(unmount_freebie=False)
+            qs = qs.filter(Q(convention__isnull=True) | Q(convention__unmount_freebies=False))
+        return qs
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:
@@ -127,7 +183,16 @@ class FreebieSaveToggleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk: int):
-        freebie = get_object_or_404(Freebie, pk=pk)
+        freebie = get_object_or_404(Freebie.objects.select_related("convention"), pk=pk)
+        if not request.user.is_staff:
+            settings = FreebieSetting.get_settings()
+            if (
+                settings.unmount_all_freebies
+                or freebie.unmount_freebie
+                or (freebie.convention and freebie.convention.unmount_freebies)
+            ):
+                raise Http404
+
         user_freebie = UserFreebie.objects.filter(user=request.user, freebie=freebie).first()
 
         if user_freebie:
@@ -145,7 +210,16 @@ class FreebieClaimToggleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk: int):
-        freebie = get_object_or_404(Freebie, pk=pk)
+        freebie = get_object_or_404(Freebie.objects.select_related("convention"), pk=pk)
+        if not request.user.is_staff:
+            settings = FreebieSetting.get_settings()
+            if (
+                settings.unmount_all_freebies
+                or freebie.unmount_freebie
+                or (freebie.convention and freebie.convention.unmount_freebies)
+            ):
+                raise Http404
+
         user_freebie, _ = UserFreebie.objects.get_or_create(
             user=request.user, freebie=freebie, defaults={"claimed": False}
         )

@@ -18,7 +18,7 @@ import { useHorizontalScrollAffordance } from '@/shared/hooks';
 import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
-import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums } from '../../../api';
+import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums, useMeetupSettings } from '../../../api';
 import type { AlbumSortOption } from '../../../types';
 import { AlbumCard } from './AlbumCard';
 import { AlbumCardSkeleton } from './AlbumCardSkeleton';
@@ -38,6 +38,9 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: meetup, isLoading: isMeetupLoading } = useMeetup(meetupId);
+  const { data: meetupSettings } = useMeetupSettings();
+  const isGalleryUnmounted =
+    Boolean(meetup?.unmount_albums) || Boolean(meetupSettings?.unmount_all_albums);
   const {
     data: albums,
     isLoading: isAlbumsLoading,
@@ -101,6 +104,30 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
     return (
       <div className="flex min-h-[60vh] w-full flex-col items-center justify-center py-16">
         <MikuLoader message="Loading photo gallery..." size="lg" />
+      </div>
+    );
+  }
+
+  if (isGalleryUnmounted) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
+        <div className="border-ink border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
+          <div className="mb-4">
+            <BackLink href={meetupHref}>Back to {meetup?.name || 'Meetup'}</BackLink>
+          </div>
+          <EmptyState
+            title="Photo Gallery Unavailable"
+            description="The photo gallery is currently disabled for this meetup."
+            action={
+              <Link
+                href={meetupHref}
+                className={cn(CONBLOCK_PRIMARY, 'inline-flex items-center px-4 py-2')}
+              >
+                Back to Meetup
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }

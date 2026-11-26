@@ -3,7 +3,9 @@
 import { RotateCw } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { MikuLoader } from '@/shared/components/miku';
+import { BackLink, EmptyState } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
+import { useFreebieSettings } from '../../api';
 import { useFreebieBoardState } from './useFreebieBoardState';
 import { BoardHeader } from './BoardHeader';
 import { BoardFilterBar } from './BoardFilterBar';
@@ -19,6 +21,9 @@ export interface FreebieBoardProps {
 
 export function FreebieBoard({ conventionSlug, conventionName }: FreebieBoardProps) {
   const { data: convention } = useConvention(conventionSlug);
+  const { data: freebieSettings } = useFreebieSettings();
+  const isFreebiesUnmounted =
+    Boolean(convention?.unmount_freebies) || Boolean(freebieSettings?.unmount_all_freebies);
   const resolvedName = conventionName || convention?.name;
   const state = useFreebieBoardState(conventionSlug);
 
@@ -26,6 +31,26 @@ export function FreebieBoard({ conventionSlug, conventionName }: FreebieBoardPro
     return (
       <div className="flex min-h-[50vh] w-full flex-col items-center justify-center py-12">
         <MikuLoader message="Scanning for freebies..." size="lg" />
+      </div>
+    );
+  }
+
+  if (isFreebiesUnmounted) {
+    return (
+      <div className="@container space-y-6">
+        <div className="border-ink border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
+          <div className="mb-4">
+            <BackLink href={`/conventions/${conventionSlug}`}>
+              Back to {resolvedName || 'Convention'}
+            </BackLink>
+          </div>
+          <EmptyState
+            mascot
+            title="Freebies Board Unavailable"
+            description="The freebies board is currently disabled for this convention."
+            action={<BackLink href={`/conventions/${conventionSlug}`}>Back to Convention</BackLink>}
+          />
+        </div>
       </div>
     );
   }

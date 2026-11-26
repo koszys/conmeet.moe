@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { AlertTriangle, AtSign, Camera, Check, RotateCw, Trash2, UserRound } from 'lucide-react';
+import { AlertTriangle, AtSign, Camera, Check, RotateCw, UserRound } from 'lucide-react';
 import { useAuth, useUpdateProfile } from '@/features/auth';
 import { SpinBackdrop } from '@/shared/components/miku';
 import { Button, TextInput } from '@/shared/components/ui';
@@ -61,7 +61,6 @@ export function AccountSettingsContent() {
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [removeAvatarPending, setRemoveAvatarPending] = useState(false);
 
   const [isCollisionNotice, setIsCollisionNotice] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -85,6 +84,15 @@ export function AccountSettingsContent() {
     }
   }, [usernameCollisionNotice]);
 
+  // Auto-dismiss success message after 5 seconds
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => {
+      setSuccessMessage(null);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -102,16 +110,6 @@ export function AccountSettingsContent() {
     setFileError(null);
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
-    setRemoveAvatarPending(false);
-  }
-
-  function handleRevertToSocial() {
-    setSelectedFile(null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-    setRemoveAvatarPending(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -133,9 +131,7 @@ export function AccountSettingsContent() {
     formData.append('username', trimmedUsername);
     formData.append('display_name', displayName.trim());
 
-    if (removeAvatarPending) {
-      formData.append('remove_avatar', 'true');
-    } else if (selectedFile) {
+    if (selectedFile) {
       formData.append('avatar', selectedFile);
     }
 
@@ -147,7 +143,6 @@ export function AccountSettingsContent() {
         URL.revokeObjectURL(previewUrl);
         setPreviewUrl(null);
       }
-      setRemoveAvatarPending(false);
       setIsCollisionNotice(false);
       dismissUsernameCollisionNotice();
 
@@ -177,7 +172,7 @@ export function AccountSettingsContent() {
   }
 
   const providers = user?.providers ?? [];
-  const currentAvatarUrl = previewUrl || (!removeAvatarPending ? user?.avatar_url : null);
+  const currentAvatarUrl = previewUrl || user?.avatar_url;
 
   return (
     <main className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center overflow-hidden px-4 py-12 md:px-6">
@@ -259,12 +254,6 @@ export function AccountSettingsContent() {
               ) : (
                 <UserRound className="h-10 w-10 text-zinc-400" />
               )}
-
-              {removeAvatarPending && (
-                <span className="font-display absolute right-1 bottom-1 bg-amber-500 px-1 py-0.5 text-[8px] font-bold text-white uppercase">
-                  Reset
-                </span>
-              )}
             </div>
 
             {/* Avatar Controls */}
@@ -288,20 +277,6 @@ export function AccountSettingsContent() {
                   <Camera className="h-3.5 w-3.5" />
                   <span>Change Avatar</span>
                 </Button>
-
-                {/* Show Revert button if custom avatar is active and not already pending removal */}
-                {user?.has_custom_avatar && !removeAvatarPending && !selectedFile && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRevertToSocial}
-                    className="flex items-center gap-1.5 text-zinc-600 hover:text-red-600 dark:text-zinc-300 dark:hover:text-red-400"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Revert to Social Avatar</span>
-                  </Button>
-                )}
               </div>
 
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">

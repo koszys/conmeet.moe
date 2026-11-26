@@ -46,11 +46,11 @@ export function CommentForm({
     return (
       <div
         className={cn(
-          'border-ink bg-surface shadow-neo flex flex-col items-start justify-between gap-4 border-2 p-4 sm:flex-row sm:items-center sm:p-5',
+          'border-ink bg-surface shadow-neo flex flex-col items-center justify-between gap-4 border-2 p-4 text-center sm:flex-row sm:items-center sm:p-5 sm:text-left',
           className
         )}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
           <div className="border-ink bg-accent/20 dark:bg-accent/30 flex h-10 w-10 shrink-0 items-center justify-center border-2">
             <MessageSquarePlus className="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
           </div>
@@ -68,7 +68,7 @@ export function CommentForm({
           href={`/login?redirect=${encodeURIComponent(pathname || '/')}`}
           className={cn(
             CONBLOCK_PRIMARY,
-            'inline-flex items-center px-4 py-2 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
+            'inline-flex items-center justify-center px-4 py-2 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
           )}
         >
           Sign In to Comment

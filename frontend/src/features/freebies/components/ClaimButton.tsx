@@ -3,6 +3,7 @@
 import { Check, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { CONBLOCK, CONBLOCK_SECONDARY } from '@/shared/components/ui';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import { useToggleClaimFreebie } from '../api/mutations';
 import type { Freebie } from '../types';
@@ -58,11 +59,21 @@ export function ClaimButton({
   type = 'button',
   ...props
 }: ClaimButtonProps) {
+  void conventionSlug;
+  void redirectUrl;
   const { user } = useAuth();
   const toggleClaim = useToggleClaimFreebie();
+  const { isGuestClaimed, toggleGuestClaim } = useGuestSaves();
 
-  const activeIsClaimed = isClaimed ?? freebie?.is_claimed ?? false;
   const activeFreebieId = freebieId ?? freebie?.id;
+  const activeIsClaimed =
+    isClaimed !== undefined
+      ? isClaimed
+      : user
+        ? (freebie?.is_claimed ?? false)
+        : activeFreebieId
+          ? isGuestClaimed(activeFreebieId)
+          : false;
 
   const defaultTitle = activeIsClaimed ? 'Claimed (click to unclaim)' : 'Check off freebie';
   const defaultAria = activeIsClaimed ? 'Claimed' : 'Check off freebie';
@@ -79,18 +90,14 @@ export function ClaimButton({
     if (!activeFreebieId) return;
 
     if (!user) {
-      const fallbackRedirect = conventionSlug
-        ? `/conventions/${conventionSlug}/freebies`
-        : '/login';
-      const destination = redirectUrl || fallbackRedirect;
-      window.location.href = `/login?redirect=${encodeURIComponent(destination)}`;
+      toggleGuestClaim(activeFreebieId);
       return;
     }
 
     toggleClaim.mutate(activeFreebieId);
   };
 
-  const isPending = disabled || toggleClaim.isPending;
+  const isPending = disabled || (user ? toggleClaim.isPending : false);
 
   return (
     <button

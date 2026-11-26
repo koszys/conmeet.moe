@@ -18,6 +18,7 @@ import {
   SocialBadges,
 } from '@/shared/components/ui';
 import { MikuLoader } from '@/shared/components/miku';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
 import { CommentSection } from '@/features/comments';
@@ -51,6 +52,11 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
   const toggleLikeAlbum = useToggleLikeAlbum();
   const toggleFavoriteAlbum = useToggleFavoriteAlbum();
   const toggleLikePhoto = useToggleLikePhoto();
+  const { isGuestSaved, toggleGuestSave } = useGuestSaves();
+
+  const isFavorited = Boolean(
+    user ? album?.is_favorited : album ? isGuestSaved('albums', album.id) : false
+  );
 
   // Selection mode state
   const [isSelectMode, setIsSelectMode] = useState(false);
@@ -143,8 +149,9 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
   };
 
   const handleToggleFavoriteAlbum = () => {
+    if (!album) return;
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/${album.id}`;
+      toggleGuestSave('albums', album.id);
       return;
     }
     toggleFavoriteAlbum.mutate(album.id);
@@ -303,7 +310,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
           <BookmarkButton
             variant="responsive"
-            isSaved={album.is_favorited}
+            isSaved={isFavorited}
             onClick={handleToggleFavoriteAlbum}
             savedLabel="Saved"
             unsavedLabel="Save"

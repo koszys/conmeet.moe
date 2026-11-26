@@ -19,7 +19,17 @@ export default function AuthCallbackPage() {
 
     setTokens(accessToken, refreshToken);
 
-    const nextFromQuery = new URLSearchParams(window.location.search).get('next');
+    const searchParams = new URLSearchParams(window.location.search);
+    const nextFromQuery = searchParams.get('next');
+    const isCollision = searchParams.get('username_collision') === '1';
+
+    if (isCollision) {
+      try {
+        sessionStorage.setItem('username_collision_notice', 'true');
+      } catch {
+        // Ignore storage errors
+      }
+    }
 
     let storedRedirect: string | null = null;
     try {
@@ -40,10 +50,14 @@ export default function AuthCallbackPage() {
     }
 
     const nextCandidate = nextFromQuery || storedRedirect;
-    const safeTarget =
+    let safeTarget =
       nextCandidate && nextCandidate.startsWith('/') && !nextCandidate.startsWith('//')
         ? nextCandidate
         : '/settings';
+
+    if (safeTarget === '/settings' && isCollision) {
+      safeTarget = '/settings?username_collision=1';
+    }
 
     router.replace(safeTarget);
   }, [router]);

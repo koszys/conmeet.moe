@@ -20,6 +20,10 @@ interface AuthContextValue {
   loading: boolean;
   login: (provider: OAuthProvider, next?: string | null) => void;
   logout: () => void;
+  updateUser: (user: MeUser) => void;
+  refreshUser: () => Promise<void>;
+  usernameCollisionNotice: boolean;
+  dismissUsernameCollisionNotice: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -28,7 +32,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<MeUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [usernameCollisionNotice, setUsernameCollisionNotice] = useState(false);
   const prevUserRef = useRef<MeUser | null>(null);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('username_collision_notice') === 'true') {
+        setUsernameCollisionNotice(true);
+      }
+    } catch {
+      // Ignore
+    }
+  }, []);
+
+  const dismissUsernameCollisionNotice = useCallback(() => {
+    try {
+      sessionStorage.removeItem('username_collision_notice');
+    } catch {
+      // Ignore
+    }
+    setUsernameCollisionNotice(false);
+  }, []);
+
+  const updateUser = useCallback((updated: MeUser) => {
+    prevUserRef.current = updated;
+    setUser(updated);
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    if (!getAccessToken()) return;
+    try {
+      const me = await api.get('api/v1/auth/me/').json<MeUser>();
+      prevUserRef.current = me;
+      setUser(me);
+    } catch {
+      // Ignore
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -110,13 +150,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void api.post('api/v1/auth/logout/').catch(() => undefined);
     clearTokens();
     clearGuestSaves();
+    try {
+      sessionStorage.removeItem('username_collision_notice');
+    } catch {
+      // Ignore
+    }
+    setUsernameCollisionNotice(false);
     prevUserRef.current = null;
     setUser(null);
     queryClient.clear();
   }, [queryClient]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        updateUser,
+        refreshUser,
+        usernameCollisionNotice,
+        dismissUsernameCollisionNotice,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 }
 

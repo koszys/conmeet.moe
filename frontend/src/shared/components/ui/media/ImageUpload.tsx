@@ -101,7 +101,7 @@ export function ImageUpload({
 
           {/* Action Toolbar */}
           <div className="border-ink flex items-center justify-between border-t-2 bg-zinc-50 px-3 py-2 dark:bg-zinc-900">
-            <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-300">
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-200">
               <ImagePlus className="text-accent h-3.5 w-3.5 shrink-0" />
               <span className="font-bold tracking-wider uppercase">Image attached</span>
             </div>
@@ -164,7 +164,7 @@ export function ImageUpload({
                 <span className="font-display block text-xs font-bold tracking-wider text-zinc-900 uppercase dark:text-zinc-100">
                   Click or drag image to upload
                 </span>
-                <span className="mt-0.5 block text-[11px] text-zinc-500 dark:text-zinc-300">
+                <span className="mt-0.5 block text-[11px] text-zinc-500 dark:text-zinc-200">
                   {description}
                 </span>
               </div>

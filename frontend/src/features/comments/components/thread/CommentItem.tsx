@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { CornerDownRight, Trash2 } from 'lucide-react';
+import { useAuth } from '@/features/auth';
 import { CONBLOCK_SECONDARY, ConfirmDeleteModal } from '@/shared/components/ui';
 import { parseDate } from '@/shared/lib/dates';
 import { cn } from '@/shared/lib/utils';
@@ -40,6 +42,10 @@ export function CommentItem({
   className,
   isInModal = false,
 }: CommentItemProps) {
+  const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -47,6 +53,14 @@ export function CommentItem({
   const [isThreadModalOpen, setIsThreadModalOpen] = useState(false);
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const [isLineHovered, setIsLineHovered] = useState(false);
+
+  const handleReplyClick = () => {
+    if (!user) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname || '/')}`);
+      return;
+    }
+    setIsReplying((prev) => !prev);
+  };
 
   const formattedTime = (() => {
     try {
@@ -170,7 +184,7 @@ export function CommentItem({
             </div>
 
             {/* Delete Action Button */}
-            {!comment.is_deleted && comment.can_delete && onDelete && (
+            {Boolean(user) && !comment.is_deleted && comment.can_delete && onDelete && (
               <button
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
@@ -189,7 +203,9 @@ export function CommentItem({
           {/* Replying-to Context Tag */}
           {depth > 0 && comment.reply_to_username && !comment.is_deleted && (
             <div className="text-accent-pop mt-1 flex items-center gap-1 text-[11px] font-semibold">
-              <span>Replying to {comment.reply_to_username}</span>
+              <span className="max-w-[200px] truncate sm:max-w-[280px]">
+                Replying to {comment.reply_to_username}
+              </span>
             </div>
           )}
 
@@ -211,7 +227,7 @@ export function CommentItem({
             <div className="mt-2 flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setIsReplying((prev) => !prev)}
+                onClick={handleReplyClick}
                 className={cn(
                   CONBLOCK_SECONDARY,
                   'inline-flex h-6 items-center gap-1 px-2 text-[10px] font-bold tracking-wider uppercase'
@@ -291,7 +307,7 @@ export function CommentItem({
       )}
 
       {/* Delete Confirmation Modal */}
-      {!comment.is_deleted && comment.can_delete && onDelete && (
+      {Boolean(user) && !comment.is_deleted && comment.can_delete && onDelete && (
         <ConfirmDeleteModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}

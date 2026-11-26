@@ -36,7 +36,7 @@ export function useHorizontalScrollAffordance({
     if (externalRef && typeof externalRef !== 'function' && externalRef.current !== node) {
       setNode(externalRef.current);
     }
-  }, [externalRef, node]);
+  });
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);

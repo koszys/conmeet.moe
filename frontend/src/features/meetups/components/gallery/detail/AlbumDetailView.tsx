@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Archive, CheckSquare, Clock, Download, Loader2, User as UserIcon } from 'lucide-react';
@@ -65,6 +65,14 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
   // Delete modal state
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
+  useEffect(() => {
+    if (!user) {
+      setIsEditing(false);
+      setIsDeleteOpen(false);
+      setIsSelectMode(false);
+    }
+  }, [user]);
+
   // ZIP Download progress state
   const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
 
@@ -84,7 +92,6 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
       <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
         <EmptyState
           title="Album Not Found"
-          description="The photo album you are looking for does not exist or has been removed."
           action={
             <Link
               href={galleryHref}
@@ -251,13 +258,13 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             {album.title}
           </h1>
 
-          <div className="mt-2 flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+          <div className="mt-2 flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-600 dark:text-zinc-200">
             <span className="inline-flex items-center gap-1.5">
-              <UserIcon className="h-3.5 w-3.5" />
+              <UserIcon className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               <span>{album.created_by_name || 'Anonymous Attendee'}</span>
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" />
+              <Clock className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-300" />
               <span>
                 {new Date(album.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
               </span>
@@ -268,7 +275,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
         {/* Social Credits */}
         {album.social_links && Object.keys(album.social_links).length > 0 && (
           <div className="border-t border-zinc-200 pt-2 dark:border-zinc-800">
-            <span className="font-display mb-2 block text-[11px] tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+            <span className="font-display mb-2 block text-[11px] tracking-wider text-zinc-500 uppercase dark:text-zinc-300">
               Social Credits
             </span>
             <SocialBadges links={album.social_links} />
@@ -289,8 +296,8 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
             isLiked={album.is_liked}
             count={album.likes_count}
             onClick={handleToggleLikeAlbum}
-            title={album.is_liked ? 'Liked' : 'Like Album'}
-            ariaLabel={album.is_liked ? 'Liked' : 'Like Album'}
+            title={album.is_liked ? 'Unlike Album' : 'Like Album'}
+            ariaLabel={album.is_liked ? 'Unlike Album' : 'Like Album'}
             className="h-9 sm:h-10"
           />
 
@@ -367,10 +374,7 @@ export function AlbumDetailView({ conventionSlug, meetupId, albumId }: AlbumDeta
 
       {/* Photos Grid */}
       {photos.length === 0 ? (
-        <EmptyState
-          title="No Photos in Album"
-          description="This album does not have any uploaded photos yet."
-        />
+        <EmptyState title="No Photos in Album" />
       ) : (
         <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {photos.map((photo, idx) => (

@@ -12,14 +12,29 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 
 
-def build_token_redirect_url(user: AbstractBaseUser, base_url: str | None = None) -> str:
-    """Return a frontend URL carrying a fresh SimpleJWT pair in the fragment."""
+def build_token_redirect_url(
+    user: AbstractBaseUser,
+    base_url: str | None = None,
+    next_url: str | None = None,
+) -> str:
+    """Return a frontend URL carrying a fresh SimpleJWT pair in the fragment and optional next query param."""
     refresh = RefreshToken.for_user(user)
     payload = {
         "access_token": str(refresh.access_token),
         "refresh_token": str(refresh),
     }
-    base = base_url or f"{settings.FRONTEND_URL}/auth/callback"
+
+    if base_url and (base_url.startswith("http://") or base_url.startswith("https://")):
+        base = base_url
+    else:
+        if base_url and base_url.startswith("/") and not next_url:
+            next_url = base_url
+        base = f"{settings.FRONTEND_URL}/auth/callback"
+
+    if next_url and next_url != "/" and next_url.startswith("/") and not next_url.startswith("//"):
+        separator = "&" if "?" in base else "?"
+        base = f"{base}{separator}{urlencode({'next': next_url})}"
+
     return f"{base}#{urlencode(payload)}"
 
 
@@ -44,10 +59,18 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         avatar_url = _discord_avatar_url(data) if provider_id == "discord" else data.get("picture")
         if avatar_url:
             user.avatar_url = avatar_url
+        if user.username and len(user.username) > 20:
+            user.username = user.username[:20]
         return user
 
 
 class CustomAccountAdapter(DefaultAccountAdapter):
+    def generate_unique_username(
+        self, txts: list[str | None], regex: str | None = None
+    ) -> str:
+        shortened_txts = [t[:20] if t else t for t in txts]
+        return super().generate_unique_username(shortened_txts, regex)
+
     def post_login(
         self,
         request: HttpRequest,

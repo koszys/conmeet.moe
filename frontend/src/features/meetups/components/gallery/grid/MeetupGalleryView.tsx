@@ -75,11 +75,17 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
   const meetupHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
   const uploadHref = `/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery/new`;
 
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const { maskStyle: tabsMaskStyle } = useHorizontalScrollAffordance({
+  const {
     ref: tabsRef,
-    fadeWidth: 24,
+    maskStyle: tabsMaskStyle,
+    checkScroll: checkTabsScroll,
+  } = useHorizontalScrollAffordance({
+    fadeWidth: 28,
   });
+
+  useEffect(() => {
+    checkTabsScroll();
+  }, [albums, activeSort, checkTabsScroll]);
 
   if (isMeetupLoading || (isAlbumsLoading && !albums)) {
     return (
@@ -235,7 +241,6 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
           mascot
           mascotSpeech="Sign in to view saved albums!"
           title="Sign In to View Saved Albums"
-          description="Log in to bookmark and view your favorite photo albums."
           className="mt-6 border-zinc-300 dark:border-zinc-700"
           action={
             <Link
@@ -254,7 +259,6 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
           mascot
           mascotSpeech="No saved albums yet!"
           title="No Saved Albums"
-          description="You haven't bookmarked any albums from this meetup yet. Click the bookmark icon on any album to save it."
           className="mt-6 border-zinc-300 dark:border-zinc-700"
           action={
             <button
@@ -275,7 +279,6 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
           mascot
           mascotSpeech="Be the first to share photos!"
           title="No Photos in Gallery Yet"
-          description="Attended this meetup or took cosplay photos? Share your photos!"
           className="mt-6 border-zinc-300 dark:border-zinc-700"
           action={
             <Link

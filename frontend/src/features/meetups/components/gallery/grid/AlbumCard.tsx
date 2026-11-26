@@ -151,7 +151,7 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
 
         {/* Creator */}
         <div className="mt-2 mb-2.5 flex items-center gap-1.5 text-[11px] text-zinc-500 sm:mt-2.5 sm:mb-3 dark:text-zinc-300">
-          <User className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-400" />
+          <User className="h-3 w-3 shrink-0 text-zinc-500 dark:text-zinc-300" />
           <span className="truncate">
             Photos by{' '}
             <strong className="font-semibold text-zinc-800 dark:text-zinc-200">

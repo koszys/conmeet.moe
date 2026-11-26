@@ -11,6 +11,7 @@ export interface LikeButtonProps {
   disabled?: boolean;
   title?: string;
   ariaLabel?: string;
+  label?: string;
   variant?: 'icon' | 'badge' | 'button' | 'responsive';
   className?: string;
 }
@@ -22,9 +23,13 @@ export function LikeButton({
   disabled = false,
   title,
   ariaLabel,
+  label,
   variant = 'badge',
   className,
 }: LikeButtonProps) {
+  const defaultLabel =
+    label ??
+    (typeof count === 'number' ? (count === 1 ? 'Like' : 'Likes') : isLiked ? 'Liked' : 'Like');
   const defaultTitle = isLiked ? 'Unlike' : 'Like';
   const defaultAria = isLiked ? 'Unlike' : 'Like';
 
@@ -62,10 +67,8 @@ export function LikeButton({
         )}
       />
       {typeof count === 'number' && <span className="font-mono text-xs tabular-nums">{count}</span>}
-      {variant === 'button' && <span>{isLiked ? 'Liked' : 'Like'}</span>}
-      {variant === 'responsive' && (
-        <span className="hidden sm:inline">{isLiked ? 'Liked' : 'Like'}</span>
-      )}
+      {variant === 'button' && <span>{defaultLabel}</span>}
+      {variant === 'responsive' && <span className="hidden sm:inline">{defaultLabel}</span>}
     </button>
   );
 }

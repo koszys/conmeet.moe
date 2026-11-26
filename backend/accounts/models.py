@@ -10,6 +10,16 @@ class UserRole(models.TextChoices):
 
 
 class User(AbstractUser):
+    username = models.CharField(
+        "username",
+        max_length=20,
+        unique=True,
+        help_text="Required. 20 characters or fewer. Letters, digits and @/./+/-/_ only.",
+        validators=[AbstractUser.username_validator],
+        error_messages={
+            "unique": "A user with that username already exists.",
+        },
+    )
     display_name = models.CharField(max_length=64, blank=True)
     avatar = ProcessedImageField(
         upload_to="avatars/",

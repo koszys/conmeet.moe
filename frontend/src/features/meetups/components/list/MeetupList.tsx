@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { RotateCw } from 'lucide-react';
+import { useAuth } from '@/features/auth';
 import { useConvention } from '@/features/conventions/data/api';
 import { MikuLoader } from '@/shared/components/miku';
 import { type RefreshStatus } from '@/shared/components/ui';
@@ -18,6 +20,9 @@ interface MeetupListProps {
 }
 
 export function MeetupList({ conventionSlug }: MeetupListProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: convention } = useConvention(conventionSlug);
 
@@ -26,6 +31,20 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
   const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!user && activeTab === 'saved') {
+      setActiveTab('all');
+    }
+  }, [user, activeTab]);
+
+  function handleTabChange(tab: TabType) {
+    if (tab === 'saved' && !user) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+    setActiveTab(tab);
+  }
 
   // Compute filters for the API query
   const queryFilters = useMemo(() => {
@@ -83,7 +102,7 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
       {/* Filter and Date Bar */}
       <MeetupFilterBar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         selectedDate={selectedDate}

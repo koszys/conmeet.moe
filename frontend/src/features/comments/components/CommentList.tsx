@@ -48,7 +48,6 @@ export function CommentList({
         mascot
         mascotSpeech="Be the first to say something!"
         title="No Comments Yet"
-        description=""
         className="border-zinc-300 dark:border-zinc-700"
       />
     );

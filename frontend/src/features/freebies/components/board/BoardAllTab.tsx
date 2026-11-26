@@ -33,6 +33,8 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
         isFiltered={isFiltered}
         onClearFilters={handleClearFilters}
         conventionSlug={conventionSlug}
+        hasSaved={savedDrops.length > 0 || state.counts.saved > 0}
+        onViewSaved={() => state.setActiveTab('saved')}
       />
     );
   }
@@ -66,14 +68,11 @@ export function BoardAllTab({ state, conventionSlug }: BoardAllTabProps) {
             </div>
           ) : (
             <div className="border-ink border-2 border-dashed bg-zinc-50/70 p-6 text-center dark:bg-zinc-900/50">
-              <div className="border-ink mx-auto flex h-9 w-9 items-center justify-center border-2 bg-zinc-100 text-zinc-400 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-500">
+              <div className="border-ink mx-auto flex h-9 w-9 items-center justify-center border-2 bg-zinc-100 text-zinc-800 shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-200">
                 <Bookmark className="h-4 w-4" />
               </div>
               <p className="mt-2 text-xs font-bold text-zinc-700 uppercase dark:text-zinc-200">
-                All Available Drops Claimed
-              </p>
-              <p className="mx-auto mt-1 max-w-sm text-[11px] text-zinc-500 dark:text-zinc-400">
-                You&apos;ve added every available drop on the board to your saved checklist!
+                All freebies saved/claimed!
               </p>
             </div>
           ))}

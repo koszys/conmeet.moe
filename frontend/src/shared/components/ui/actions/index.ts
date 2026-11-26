@@ -12,3 +12,4 @@ export * from './RefreshButton';
 export * from './LikeButton';
 export * from './UndoButton';
 export * from './SocialBadge';
+export * from './Pagination';

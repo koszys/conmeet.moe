@@ -36,7 +36,7 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
         <div>
           <label
             htmlFor="social-instagram"
-            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-200"
           >
             Instagram
           </label>
@@ -55,7 +55,7 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
         <div>
           <label
             htmlFor="social-twitter"
-            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-200"
           >
             X / Twitter
           </label>
@@ -74,7 +74,7 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
         <div>
           <label
             htmlFor="social-tiktok"
-            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-200"
           >
             TikTok
           </label>
@@ -93,7 +93,7 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
         <div>
           <label
             htmlFor="social-bluesky"
-            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-200"
           >
             Bluesky
           </label>
@@ -112,7 +112,7 @@ export function SocialLinksField({ value, onChange }: SocialLinksFieldProps) {
         <div className="sm:col-span-2">
           <label
             htmlFor="social-website"
-            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+            className="font-display block text-[11px] tracking-wider text-zinc-600 uppercase dark:text-zinc-200"
           >
             Website / Portfolio
           </label>

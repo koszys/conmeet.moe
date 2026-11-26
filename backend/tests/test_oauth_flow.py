@@ -64,6 +64,31 @@ def test_google_user_population() -> None:
     assert user.avatar_url == "https://lh3.googleusercontent.com/pic.png"
 
 
+def test_social_account_truncates_long_username_to_20_chars() -> None:
+    long_username_data = {
+        "id": "777888",
+        "username": "super_long_discord_username_exceeding_twenty",
+        "global_name": "Long Name",
+        "email": "long@example.com",
+    }
+    user = _populate(long_username_data)
+    assert len(user.username) <= 20
+    assert user.username == "super_long_discord_u"
+
+
+def test_generate_unique_username_respects_20_char_limit() -> None:
+    adapter = CustomAccountAdapter()
+    generated = adapter.generate_unique_username(["very_long_seed_name_over_twenty_characters"])
+    assert len(generated) <= 20
+
+    # Ensure collision suffix also respects the 20 character limit
+    User = get_user_model()
+    User.objects.create_user(username=generated, email="existing@example.com")
+    collision_res = adapter.generate_unique_username(["very_long_seed_name_over_twenty_characters"])
+    assert len(collision_res) <= 20
+    assert collision_res != generated
+
+
 def _user_id(token: str) -> int:
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
     return int(payload["user_id"])
@@ -101,6 +126,31 @@ def test_post_login_issues_jwt_and_redirects() -> None:
     params = parse_qs(urlparse(resp["Location"]).fragment)
     assert "access_token" in params and "refresh_token" in params
     assert _user_id(params["access_token"][0]) == user.pk
+
+
+def test_post_login_preserves_next_url_in_callback() -> None:
+    user = get_user_model().objects.create_user(username="cosmo", email="cosmo@example.com")
+    sociallogin = SocialLogin(user=user)
+    request = RequestFactory().get("/accounts/discord/login/callback/")
+
+    resp = CustomAccountAdapter().post_login(
+        request,
+        user,
+        email_verification="none",
+        signal_kwargs={"sociallogin": sociallogin, "email_verification": "none"},
+        email="cosmo@example.com",
+        signup=False,
+        redirect_url="/conventions/anime-expo/meetups/42",
+    )
+
+    assert resp.status_code == 302
+    parsed = urlparse(resp["Location"])
+    assert parsed.scheme == "http"
+    assert parsed.netloc == "localhost:3000"
+    assert parsed.path == "/auth/callback"
+    assert parse_qs(parsed.query)["next"][0] == "/conventions/anime-expo/meetups/42"
+    fragment_params = parse_qs(parsed.fragment)
+    assert "access_token" in fragment_params and "refresh_token" in fragment_params
 
 
 def test_post_login_non_social_delegates_to_base() -> None:

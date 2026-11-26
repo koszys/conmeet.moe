@@ -20,7 +20,6 @@ export function EmptyState({
   mascotSize = 'md',
   mascotSpeech,
   title,
-  description,
   action,
   shadow = false,
   className,
@@ -61,14 +60,8 @@ export function EmptyState({
         {title}
       </h3>
 
-      {description && (
-        <div className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-zinc-600 sm:text-sm dark:text-zinc-300">
-          {description}
-        </div>
-      )}
-
       {action && (
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">{action}</div>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">{action}</div>
       )}
     </div>
   );

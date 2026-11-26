@@ -17,6 +17,7 @@ export interface Convention {
   banner_thumb: string | null;
   is_featured: boolean;
   featured_priority?: number | null;
+  unmount_freebies?: boolean;
   /** detail-only fields (GET /api/v1/conventions/{slug}/) */
   description?: string;
 }

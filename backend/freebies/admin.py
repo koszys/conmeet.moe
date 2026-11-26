@@ -4,7 +4,20 @@ from django.db.models import Count
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import display
 
-from .models import Freebie, UserFreebie, Vendor
+from .models import Freebie, FreebieSetting, UserFreebie, Vendor
+
+
+@admin.register(FreebieSetting)
+class FreebieSettingAdmin(ModelAdmin):
+    list_display = ("__str__", "unmount_all_freebies", "updated_at")
+    list_editable = ("unmount_all_freebies",)
+    readonly_fields = ("updated_at",)
+
+    def has_add_permission(self, request):
+        return not FreebieSetting.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class FreebieInline(TabularInline):
@@ -31,9 +44,18 @@ class VendorAdmin(R2AdminMediaMixin, ModelAdmin):
 
 @admin.register(Freebie)
 class FreebieAdmin(R2AdminMediaMixin, ModelAdmin):
-    list_display = ("name", "vendor", "convention", "location", "created_by", "created_at")
+    list_display = (
+        "name",
+        "vendor",
+        "convention",
+        "location",
+        "unmount_freebie",
+        "created_by",
+        "created_at",
+    )
+    list_editable = ("unmount_freebie",)
     list_select_related = ("vendor", "convention", "created_by")
-    list_filter = ("convention", "vendor", "created_at")
+    list_filter = ("unmount_freebie", "convention", "vendor", "created_at")
     search_fields = ("name", "description", "requirements", "location", "vendor__name")
     raw_id_fields = ("created_by",)
 

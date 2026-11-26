@@ -1,7 +1,7 @@
 from conventions.models import Convention
 from rest_framework import serializers
 
-from .models import Freebie, UserFreebie, Vendor
+from .models import Freebie, FreebieSetting, UserFreebie, Vendor
 
 
 class VendorSerializer(serializers.ModelSerializer):
@@ -41,6 +41,7 @@ class FreebieSerializer(serializers.ModelSerializer):
             "is_saved",
             "is_claimed",
             "is_owner",
+            "unmount_freebie",
             "claimed_at",
             "save_count",
             "created_at",
@@ -185,3 +186,10 @@ class FreebieCreateSerializer(serializers.ModelSerializer):
         validated_data["created_by"] = self.context["request"].user
 
         return super().create(validated_data)
+
+
+class FreebieSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FreebieSetting
+        fields = ["unmount_all_freebies", "updated_at"]
+

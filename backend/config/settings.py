@@ -314,6 +314,11 @@ UNFOLD = {
                         "icon": "assignment_turned_in",
                         "link": reverse_lazy("admin:freebies_userfreebie_changelist"),
                     },
+                    {
+                        "title": "Freebie Settings",
+                        "icon": "tune",
+                        "link": reverse_lazy("admin:freebies_freebiesetting_changelist"),
+                    },
                 ],
             },
             {

@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/shared/lib/utils';
+import { useFreebieSettings } from '@/features/freebies/api/queries';
+import { useConvention } from '../../data/api';
 import { CONVENTION_PAGES } from '../../data/conventionPages';
 
 export interface ConventionNavListProps {
@@ -13,10 +15,19 @@ export interface ConventionNavListProps {
 
 export function ConventionNavList({ variant, slug, onClose }: ConventionNavListProps) {
   const pathname = usePathname();
+  const { data: convention } = useConvention(slug);
+  const { data: freebieSettings } = useFreebieSettings();
+
+  const isFreebiesUnmounted =
+    Boolean(convention?.unmount_freebies) || Boolean(freebieSettings?.unmount_all_freebies);
+
+  const visiblePages = CONVENTION_PAGES.filter(
+    (page) => !(page.id === 'freebies' && isFreebiesUnmounted)
+  );
 
   return (
     <>
-      {CONVENTION_PAGES.map((page) => {
+      {visiblePages.map((page) => {
         const Icon = page.icon;
         const active = page.isActive(pathname, slug);
         const href = page.getHref(slug);

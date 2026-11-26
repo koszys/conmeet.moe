@@ -19,6 +19,7 @@ from freebies.views import (
     FreebieDetailView,
     FreebieListCreateView,
     FreebieSaveToggleView,
+    FreebieSettingsView,
     VendorListView,
 )
 from meetups.views import (
@@ -66,6 +67,7 @@ urlpatterns = [
     path("albums/<int:pk>/like/", AlbumLikeToggleView.as_view(), name="album-like"),
     path("albums/<int:pk>/favorite/", AlbumFavoriteToggleView.as_view(), name="album-favorite"),
     path("photos/<int:pk>/like/", PhotoLikeToggleView.as_view(), name="photo-like"),
+    path("freebies/settings/", FreebieSettingsView.as_view(), name="freebie-settings"),
     path("freebies/", FreebieListCreateView.as_view(), name="freebie-list"),
     path("freebies/<int:pk>/", FreebieDetailView.as_view(), name="freebie-detail"),
     path("freebies/<int:pk>/save/", FreebieSaveToggleView.as_view(), name="freebie-save"),

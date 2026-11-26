@@ -118,6 +118,10 @@ class Freebie(models.Model):
         blank=True,
         related_name="submitted_freebies",
     )
+    unmount_freebie = models.BooleanField(
+        default=False,
+        help_text="Completely unmount and hide this specific freebie.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -173,3 +177,25 @@ def cleanup_freebie_r2_storage(sender, instance: Freebie, **kwargs):
     """Purge R2 image and ImageKit thumbnails when a Freebie is deleted."""
     if instance.image:
         delete_image_and_cache(instance.image)
+
+
+class FreebieSetting(models.Model):
+    unmount_all_freebies = models.BooleanField(
+        default=False,
+        help_text="Unmount ALL freebie boards across the entire website.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Freebie Setting"
+        verbose_name_plural = "Freebie Settings"
+
+    def __str__(self) -> str:
+        state = "UNMOUNTED (Hidden)" if self.unmount_all_freebies else "Mounted (Active)"
+        return f"Global Freebie Settings: {state}"
+
+    @classmethod
+    def get_settings(cls) -> "FreebieSetting":
+        obj, _ = cls.objects.get_or_create(id=1)
+        return obj
+

@@ -23,6 +23,7 @@ export interface Freebie {
   is_saved: boolean;
   is_claimed: boolean;
   is_owner?: boolean;
+  unmount_freebie?: boolean;
   claimed_at: string | null;
   save_count: number;
   created_at: string;
@@ -46,4 +47,8 @@ export interface SaveToggleResponse {
 export interface ClaimToggleResponse {
   is_claimed: boolean;
   claimed_at: string | null;
+}
+
+export interface FreebieSettings {
+  unmount_all_freebies: boolean;
 }

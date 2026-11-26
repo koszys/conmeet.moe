@@ -32,6 +32,10 @@ class Convention(models.Model):
     map_url = models.URLField(max_length=512, blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    unmount_freebies = models.BooleanField(
+        default=False,
+        help_text="Completely unmount and hide the freebies board for this specific convention.",
+    )
     featured_priority = models.PositiveIntegerField(
         blank=True,
         null=True,

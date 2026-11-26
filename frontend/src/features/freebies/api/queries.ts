@@ -2,10 +2,11 @@
 
 import { keepPreviousData, useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/shared/lib/api';
-import type { Freebie, FreebieFilters, Vendor } from '../types';
+import type { Freebie, FreebieFilters, FreebieSettings, Vendor } from '../types';
 
 export const freebieKeys = {
   all: ['freebies'] as const,
+  settings: () => [...freebieKeys.all, 'settings'] as const,
   lists: () => [...freebieKeys.all, 'list'] as const,
   list: (filters: FreebieFilters) => [...freebieKeys.lists(), filters] as const,
   details: () => [...freebieKeys.all, 'detail'] as const,
@@ -50,5 +51,15 @@ export function useVendors(
       return api.get(endpoint).json<Vendor[]>();
     },
     ...options,
+  });
+}
+
+export function useFreebieSettings() {
+  return useQuery({
+    queryKey: freebieKeys.settings(),
+    queryFn: async () => {
+      return api.get('api/v1/freebies/settings/').json<FreebieSettings>();
+    },
+    staleTime: 60 * 1000,
   });
 }

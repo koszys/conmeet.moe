@@ -4,9 +4,20 @@ import type { Convention, ConventionPhase } from '../types';
 
 export const SOON_DAYS = 20;
 export const RECENTLY_ENDED_DAYS = 30;
+export const MEETUP_MUTATION_GRACE_DAYS = 7;
 
 export function isPast(convention: Convention): boolean {
   return daysUntil(convention.ends_at) < 0;
+}
+
+export function isFreebieMutationLocked(convention?: { ends_at?: string | null } | null): boolean {
+  if (!convention?.ends_at) return false;
+  return daysUntil(convention.ends_at) < 0;
+}
+
+export function isMeetupMutationLocked(convention?: { ends_at?: string | null } | null): boolean {
+  if (!convention?.ends_at) return false;
+  return daysUntil(convention.ends_at) < -MEETUP_MUTATION_GRACE_DAYS;
 }
 
 export function isRecentlyEnded(

@@ -157,29 +157,57 @@ function ActivityCard({ section }: { section: ConventionSectionConfig }) {
 
       {/* Card Action Footer */}
       <div className="border-ink mt-5 flex flex-wrap items-center justify-end gap-2 border-t-2 border-dashed pt-4">
-        {section.secondaryAction && (
-          <Link
-            href={section.secondaryAction.href ?? section.primaryAction.href}
-            title={section.secondaryAction.label}
-            aria-label={section.secondaryAction.label}
-            className={cn(
-              CONBLOCK_SECONDARY,
-              'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase @min-[440px]:px-3.5'
-            )}
-          >
-            {section.secondaryAction.icon && (
-              <section.secondaryAction.icon className="h-3.5 w-3.5 shrink-0" />
-            )}
-            {section.secondaryAction.shortLabel ? (
-              <>
-                <span className="hidden @min-[440px]:inline">{section.secondaryAction.label}</span>
-                <span className="@min-[440px]:hidden">{section.secondaryAction.shortLabel}</span>
-              </>
-            ) : (
-              <span>{section.secondaryAction.label}</span>
-            )}
-          </Link>
-        )}
+        {section.secondaryAction &&
+          (section.secondaryAction.disabled ? (
+            <button
+              type="button"
+              disabled
+              title={section.secondaryAction.disabledReason || section.secondaryAction.label}
+              aria-label={section.secondaryAction.disabledReason || section.secondaryAction.label}
+              className={cn(
+                CONBLOCK_SECONDARY,
+                'inline-flex cursor-not-allowed items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase opacity-50 hover:translate-x-0 hover:translate-y-0 hover:shadow-[2px_2px_0_var(--ink)] @min-[440px]:px-3.5'
+              )}
+            >
+              {section.secondaryAction.icon && (
+                <section.secondaryAction.icon className="h-3.5 w-3.5 shrink-0" />
+              )}
+              {section.secondaryAction.shortLabel ? (
+                <>
+                  <span className="hidden @min-[440px]:inline">
+                    {section.secondaryAction.label}
+                  </span>
+                  <span className="@min-[440px]:hidden">{section.secondaryAction.shortLabel}</span>
+                </>
+              ) : (
+                <span>{section.secondaryAction.label}</span>
+              )}
+            </button>
+          ) : (
+            <Link
+              href={section.secondaryAction.href ?? section.primaryAction.href}
+              title={section.secondaryAction.label}
+              aria-label={section.secondaryAction.label}
+              className={cn(
+                CONBLOCK_SECONDARY,
+                'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase @min-[440px]:px-3.5'
+              )}
+            >
+              {section.secondaryAction.icon && (
+                <section.secondaryAction.icon className="h-3.5 w-3.5 shrink-0" />
+              )}
+              {section.secondaryAction.shortLabel ? (
+                <>
+                  <span className="hidden @min-[440px]:inline">
+                    {section.secondaryAction.label}
+                  </span>
+                  <span className="@min-[440px]:hidden">{section.secondaryAction.shortLabel}</span>
+                </>
+              ) : (
+                <span>{section.secondaryAction.label}</span>
+              )}
+            </Link>
+          ))}
 
         <Link
           href={section.primaryAction.href}

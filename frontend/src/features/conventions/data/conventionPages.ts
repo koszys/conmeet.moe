@@ -1,5 +1,6 @@
 import { CalendarDays, Gift, Home, LucideIcon, Plus, Users } from 'lucide-react';
 import type { Convention, ConventionSectionConfig } from '../types';
+import { isFreebieMutationLocked, isMeetupMutationLocked } from '../utils/dates';
 
 export interface ConventionPageConfig {
   id: string;
@@ -49,6 +50,8 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
         shortLabel: 'Plan',
         href: `/conventions/${convention.slug}/meetups/new`,
         icon: Plus,
+        disabled: isMeetupMutationLocked(convention),
+        disabledReason: 'Meetups cannot be added more than one week after the convention has ended',
       },
       colSpan: 1,
     }),
@@ -81,6 +84,8 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
         shortLabel: 'Post',
         href: `/conventions/${convention.slug}/freebies/new`,
         icon: Plus,
+        disabled: isFreebieMutationLocked(convention),
+        disabledReason: 'Freebies cannot be added after the convention has ended',
       },
       colSpan: 1,
     }),

@@ -68,6 +68,8 @@ export interface ConventionSectionConfig {
     shortLabel?: string;
     href?: string;
     icon?: ComponentType<{ className?: string }>;
+    disabled?: boolean;
+    disabledReason?: string;
   };
   colSpan?: 1 | 2;
   customContent?: ReactNode;

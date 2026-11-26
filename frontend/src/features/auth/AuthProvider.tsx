@@ -8,7 +8,7 @@ import { oauthStartUrl } from './lib/oauth';
 interface AuthContextValue {
   user: MeUser | null;
   loading: boolean;
-  login: (provider: OAuthProvider) => void;
+  login: (provider: OAuthProvider, next?: string | null) => void;
   logout: () => void;
 }
 
@@ -53,8 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = useCallback((provider: OAuthProvider) => {
-    window.location.assign(oauthStartUrl(provider));
+  const login = useCallback((provider: OAuthProvider, next?: string | null) => {
+    window.location.assign(oauthStartUrl(provider, next));
   }, []);
 
   const logout = useCallback(() => {

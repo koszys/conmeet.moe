@@ -18,8 +18,34 @@ export default function AuthCallbackPage() {
     }
 
     setTokens(accessToken, refreshToken);
-    const next = new URLSearchParams(window.location.search).get('next');
-    router.replace(next && next.startsWith('/') ? next : '/settings');
+
+    const nextFromQuery = new URLSearchParams(window.location.search).get('next');
+
+    let storedRedirect: string | null = null;
+    try {
+      storedRedirect =
+        sessionStorage.getItem('auth_redirect') || localStorage.getItem('auth_redirect');
+      sessionStorage.removeItem('auth_redirect');
+      localStorage.removeItem('auth_redirect');
+    } catch {
+      // Ignore storage errors
+    }
+
+    if (!storedRedirect) {
+      const match = document.cookie.match(/(?:^|;\s*)auth_redirect=([^;]+)/);
+      if (match) {
+        storedRedirect = decodeURIComponent(match[1]);
+        document.cookie = 'auth_redirect=; path=/; max-age=0; SameSite=Lax';
+      }
+    }
+
+    const nextCandidate = nextFromQuery || storedRedirect;
+    const safeTarget =
+      nextCandidate && nextCandidate.startsWith('/') && !nextCandidate.startsWith('//')
+        ? nextCandidate
+        : '/settings';
+
+    router.replace(safeTarget);
   }, [router]);
 
   return (

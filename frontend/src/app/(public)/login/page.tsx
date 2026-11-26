@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { useAuth } from '@/features/auth';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { SpinBackdrop } from '@/shared/components/miku';
+import { BackLink } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import discordLogo from '@/assets/social/discordlogo.png';
 
@@ -67,6 +68,26 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
+  const rawRedirect = searchParams.get('redirect') || searchParams.get('next');
+  const hasReturnTarget = Boolean(
+    rawRedirect && rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
+  );
+  const safeReturnUrl = hasReturnTarget ? rawRedirect! : '/';
+  const returnLabel = hasReturnTarget ? 'Go back' : 'Back to home';
+
+  const handleProviderLogin = (provider: 'discord' | 'google') => {
+    if (hasReturnTarget) {
+      try {
+        localStorage.setItem('auth_redirect', safeReturnUrl);
+        sessionStorage.setItem('auth_redirect', safeReturnUrl);
+        document.cookie = `auth_redirect=${encodeURIComponent(safeReturnUrl)}; path=/; max-age=600; SameSite=Lax`;
+      } catch {
+        // Ignore storage errors
+      }
+    }
+    login(provider, hasReturnTarget ? safeReturnUrl : null);
+  };
+
   return (
     <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
       <SpinBackdrop />
@@ -92,12 +113,9 @@ function LoginContent() {
             >
               Go to Settings
             </Link>
-            <Link
-              href="/"
-              className="hover:text-accent-pop block text-center text-xs font-bold tracking-widest text-zinc-700 uppercase dark:text-zinc-200 dark:hover:text-white"
-            >
-              Back to home
-            </Link>
+            <div className="pt-1 text-center">
+              <BackLink href={safeReturnUrl}>{returnLabel}</BackLink>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">
@@ -109,7 +127,7 @@ function LoginContent() {
             <ProviderButton
               label="Discord"
               backgroundColor="#5865F2"
-              onClick={() => login('discord')}
+              onClick={() => handleProviderLogin('discord')}
             >
               <span className="flex h-5 w-5 items-center justify-center">
                 <Image
@@ -125,10 +143,14 @@ function LoginContent() {
               label="Google"
               backgroundColor="#ffffff"
               className="!text-ink"
-              onClick={() => login('google')}
+              onClick={() => handleProviderLogin('google')}
             >
               <GoogleLogo />
             </ProviderButton>
+
+            <div className="pt-2 text-center">
+              <BackLink href={safeReturnUrl}>{returnLabel}</BackLink>
+            </div>
           </div>
         )}
       </div>

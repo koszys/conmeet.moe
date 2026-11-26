@@ -128,6 +128,31 @@ def test_post_login_issues_jwt_and_redirects() -> None:
     assert _user_id(params["access_token"][0]) == user.pk
 
 
+def test_post_login_preserves_next_url_in_callback() -> None:
+    user = get_user_model().objects.create_user(username="cosmo", email="cosmo@example.com")
+    sociallogin = SocialLogin(user=user)
+    request = RequestFactory().get("/accounts/discord/login/callback/")
+
+    resp = CustomAccountAdapter().post_login(
+        request,
+        user,
+        email_verification="none",
+        signal_kwargs={"sociallogin": sociallogin, "email_verification": "none"},
+        email="cosmo@example.com",
+        signup=False,
+        redirect_url="/conventions/anime-expo/meetups/42",
+    )
+
+    assert resp.status_code == 302
+    parsed = urlparse(resp["Location"])
+    assert parsed.scheme == "http"
+    assert parsed.netloc == "localhost:3000"
+    assert parsed.path == "/auth/callback"
+    assert parse_qs(parsed.query)["next"][0] == "/conventions/anime-expo/meetups/42"
+    fragment_params = parse_qs(parsed.fragment)
+    assert "access_token" in fragment_params and "refresh_token" in fragment_params
+
+
 def test_post_login_non_social_delegates_to_base() -> None:
     user = get_user_model().objects.create_user(username="cosmo", email="cosmo@example.com")
     request = RequestFactory().get("/accounts/login/")

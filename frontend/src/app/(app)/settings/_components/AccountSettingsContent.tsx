@@ -1,8 +1,11 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useAuth } from '@/features/auth';
+import { AlertTriangle, AtSign, Camera, Check, RotateCw, UserRound } from 'lucide-react';
+import { useAuth, useUpdateProfile } from '@/features/auth';
 import { SpinBackdrop } from '@/shared/components/miku';
+import { Button, TextInput } from '@/shared/components/ui';
 import discordLogo from '@/assets/social/discordlogo.png';
 import { cn } from '@/shared/lib/utils';
 
@@ -48,13 +51,141 @@ const PROVIDERS: Record<
 };
 
 export function AccountSettingsContent() {
-  const { user } = useAuth();
+  const { user, usernameCollisionNotice, dismissUsernameCollisionNotice } = useAuth();
+  const updateMutation = useUpdateProfile();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const usernameInputRef = useRef<HTMLInputElement>(null);
+
+  const [username, setUsername] = useState(user?.username || '');
+  const [displayName, setDisplayName] = useState(user?.display_name || '');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const [isCollisionNotice, setIsCollisionNotice] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Sync initial user data
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username);
+      setDisplayName(user.display_name || '');
+    }
+  }, [user]);
+
+  // Check URL param or context for username collision warning
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('username_collision') === '1' || usernameCollisionNotice) {
+      setIsCollisionNotice(true);
+      usernameInputRef.current?.focus();
+    }
+  }, [usernameCollisionNotice]);
+
+  // Auto-dismiss success message after 5 seconds
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => {
+      setSuccessMessage(null);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFileError('Image file size must not exceed 5MB.');
+      return;
+    }
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setFileError('Please select a valid image file (PNG, JPG, or WEBP).');
+      return;
+    }
+
+    setFileError(null);
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setFormErrors({});
+    setSuccessMessage(null);
+
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
+      setFormErrors({ username: 'Username cannot be blank.' });
+      return;
+    }
+    if (trimmedUsername.length > 20) {
+      setFormErrors({ username: 'Username must be 20 characters or fewer.' });
+      return;
+    }
+
+    const trimmedDisplayName = displayName.trim();
+    if (trimmedDisplayName.length > 20) {
+      setFormErrors({ display_name: 'Display name must be 20 characters or fewer.' });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('username', trimmedUsername);
+    formData.append('display_name', trimmedDisplayName);
+
+    if (selectedFile) {
+      formData.append('avatar', selectedFile);
+    }
+
+    try {
+      await updateMutation.mutateAsync(formData);
+      setSuccessMessage('Account profile updated successfully!');
+      setSelectedFile(null);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      setIsCollisionNotice(false);
+      dismissUsernameCollisionNotice();
+
+      // Clean up URL parameter if present
+      if (window.location.search.includes('username_collision')) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        try {
+          const res = (err as { response: Response }).response;
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            const mapped: Record<string, string> = {};
+            for (const [key, val] of Object.entries(data)) {
+              mapped[key] = Array.isArray(val) ? val.join(' ') : String(val);
+            }
+            setFormErrors(mapped);
+            return;
+          }
+        } catch {
+          // fallback
+        }
+      }
+      setFormErrors({ non_field_errors: 'Failed to update account. Please try again.' });
+    }
+  }
 
   const providers = user?.providers ?? [];
+  const currentAvatarUrl = previewUrl || user?.avatar_url;
 
   return (
-    <main className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center overflow-hidden px-4 py-12 md:px-6">
+    <main className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center overflow-hidden px-4 py-12 md:px-6">
       <SpinBackdrop />
+
+      {/* Header */}
       <div className="relative">
         <h1 className="font-display text-3xl tracking-wide [text-shadow:2px_2px_0_color-mix(in_srgb,var(--ink)_22%,transparent)] md:text-4xl">
           Account Settings
@@ -63,9 +194,250 @@ export function AccountSettingsContent() {
           Welcome back{user ? `, ${user.display_name || user.username}` : ''}
         </p>
       </div>
-      <section className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-8 backdrop-blur-sm dark:bg-[#373b3e]/70">
+
+      {/* Username Collision Warning Notice */}
+      {isCollisionNotice && (
+        <div
+          role="alert"
+          className="border-ink mt-8 border-2 bg-amber-100 p-4 shadow-[3px_3px_0_var(--ink)] dark:bg-amber-950/40"
+        >
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-400" />
+            <div>
+              <h3 className="font-display text-xs font-bold tracking-wider text-amber-900 uppercase dark:text-amber-200">
+                Username Notice
+              </h3>
+              <p className="mt-1 text-xs leading-relaxed text-amber-900 dark:text-amber-300">
+                Your preferred username from your connected account was already in use by another
+                member, so we assigned you{' '}
+                <strong className="font-mono font-bold">@{user?.username}</strong>. You can choose a
+                unique handle of your choice below!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Edit Form Section */}
+      <form
+        onSubmit={handleSubmit}
+        className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-6 backdrop-blur-sm md:p-8 dark:bg-[#373b3e]/70"
+      >
+        <h2 className="font-display text-sm font-bold tracking-widest uppercase">
+          Profile Details
+        </h2>
+
+        {/* Success Alert */}
+        {successMessage && (
+          <div className="border-ink mt-4 flex items-center gap-2 border-2 bg-emerald-100 p-3 text-xs font-bold text-emerald-900 shadow-[2px_2px_0_var(--ink)] dark:bg-emerald-950/40 dark:text-emerald-200">
+            <Check className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        {/* Global Error Alert */}
+        {formErrors.non_field_errors && (
+          <div className="border-ink mt-4 flex items-center gap-2 border-2 bg-red-100 p-3 text-xs font-bold text-red-900 shadow-[2px_2px_0_var(--ink)] dark:bg-red-950/40 dark:text-red-200">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-red-700 dark:text-red-400" />
+            <span>{formErrors.non_field_errors}</span>
+          </div>
+        )}
+
+        {/* Avatar & Profile Identity */}
+        <div className="border-ink mt-6 border-b-2 border-dashed pb-6">
+          <label className="font-display block text-xs tracking-wider uppercase">
+            Profile Picture
+          </label>
+
+          <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
+            {/* Clickable Avatar Button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Upload profile picture"
+              className="group border-ink relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800"
+            >
+              {currentAvatarUrl ? (
+                <img
+                  src={currentAvatarUrl}
+                  alt="Profile Avatar"
+                  className="h-full w-full object-cover transition-opacity group-hover:opacity-60"
+                />
+              ) : (
+                <UserRound className="h-10 w-10 text-zinc-400 transition-opacity group-hover:opacity-60" />
+              )}
+
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                <Camera className="h-5 w-5 drop-shadow-sm" />
+                <span className="font-display text-[9px] font-bold tracking-wider uppercase drop-shadow-sm">
+                  Change
+                </span>
+              </div>
+            </button>
+
+            {/* Hidden File Input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
+            {/* Display Name and Username Info */}
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="truncate text-base font-bold text-zinc-900 sm:text-lg dark:text-white">
+                {displayName || user?.display_name || user?.username}
+              </p>
+              <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                @{username || user?.username}
+              </p>
+
+              <p className="pt-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                Click the avatar to upload a new picture (PNG, JPG, or WEBP, max 5MB).
+              </p>
+
+              {fileError && (
+                <p className="text-xs font-bold text-red-600 dark:text-red-400">{fileError}</p>
+              )}
+              {formErrors.avatar && (
+                <p className="text-xs font-bold text-red-600 dark:text-red-400">
+                  {formErrors.avatar}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Form Inputs Grid */}
+        <div className="mt-6 space-y-6">
+          {/* Username Input */}
+          <div>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="username"
+                className="font-display block text-xs tracking-wider uppercase"
+              >
+                Username
+              </label>
+              <span
+                className={cn(
+                  'font-mono text-[11px] font-bold',
+                  username.length > 20 ? 'text-red-600' : 'text-zinc-400'
+                )}
+              >
+                {username.length}/20
+              </span>
+            </div>
+
+            <TextInput
+              ref={usernameInputRef}
+              id="username"
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (formErrors.username) {
+                  setFormErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.username;
+                    return next;
+                  });
+                }
+              }}
+              icon={AtSign}
+              placeholder="username"
+              maxLength={20}
+              error={Boolean(formErrors.username)}
+              className="mt-1.5 font-mono"
+            />
+
+            {formErrors.username ? (
+              <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
+                {formErrors.username}
+              </p>
+            ) : (
+              <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+                Required. 20 characters or fewer. Letters, digits, and @/./+/-/_ only.
+              </p>
+            )}
+          </div>
+
+          {/* Display Name Input */}
+          <div>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="display_name"
+                className="font-display block text-xs tracking-wider uppercase"
+              >
+                Display Name
+              </label>
+              <span
+                className={cn(
+                  'font-mono text-[11px] font-bold',
+                  displayName.length > 20 ? 'text-red-600' : 'text-zinc-400'
+                )}
+              >
+                {displayName.length}/20
+              </span>
+            </div>
+
+            <TextInput
+              id="display_name"
+              value={displayName}
+              onChange={(e) => {
+                setDisplayName(e.target.value);
+                if (formErrors.display_name) {
+                  setFormErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.display_name;
+                    return next;
+                  });
+                }
+              }}
+              placeholder="Friendly Name"
+              maxLength={20}
+              error={Boolean(formErrors.display_name)}
+              className="mt-1.5"
+            />
+
+            {formErrors.display_name ? (
+              <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
+                {formErrors.display_name}
+              </p>
+            ) : (
+              <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+                20 characters or fewer. How your name is displayed on meetups, comments, and
+                galleries.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Submit Actions */}
+        <div className="border-ink mt-8 flex items-center justify-end border-t-2 border-dashed pt-6">
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={updateMutation.isPending}
+            className="flex items-center gap-2"
+          >
+            {updateMutation.isPending ? (
+              <>
+                <RotateCw className="h-4 w-4 animate-spin" />
+                <span>Saving…</span>
+              </>
+            ) : (
+              <span>Save Changes</span>
+            )}
+          </Button>
+        </div>
+      </form>
+
+      {/* Connected Accounts Section */}
+      <section className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-6 backdrop-blur-sm md:p-8 dark:bg-[#373b3e]/70">
         <h2 className="text-sm font-bold tracking-widest text-zinc-400 uppercase">
-          Connected accounts
+          Connected Accounts
         </h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {providers.length === 0 && (
@@ -100,7 +472,7 @@ export function AccountSettingsContent() {
             );
           })}
         </div>
-        <p className="mt-4 text-sm text-zinc-400 dark:text-zinc-300">
+        <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-300">
           Same-email logins are linked to this account automatically.
         </p>
       </section>

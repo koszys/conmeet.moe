@@ -9,6 +9,7 @@ export interface MeUser {
   email: string;
   display_name: string;
   avatar_url: string;
+  has_custom_avatar?: boolean;
   role: string;
   date_joined: string;
   last_login: string | null;

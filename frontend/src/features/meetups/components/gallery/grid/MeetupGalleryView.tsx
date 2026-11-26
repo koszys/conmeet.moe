@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import { Bookmark, Camera, Clock, Images, Plus, Sparkles } from 'lucide-react';
@@ -15,6 +15,7 @@ import {
   type RefreshStatus,
 } from '@/shared/components/ui';
 import { useHorizontalScrollAffordance } from '@/shared/hooks';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
 import { albumKeys, meetupKeys, useMeetup, useMeetupAlbums } from '../../../api';
@@ -41,7 +42,16 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
     data: albums,
     isLoading: isAlbumsLoading,
     refetch: refetchAlbums,
-  } = useMeetupAlbums(meetupId, activeSort);
+  } = useMeetupAlbums(meetupId, !user && activeSort === 'saved' ? 'all' : activeSort);
+  const { isGuestSaved } = useGuestSaves();
+
+  const displayedAlbums = useMemo(() => {
+    if (!albums) return [];
+    if (!user && activeSort === 'saved') {
+      return albums.filter((a) => isGuestSaved('albums', a.id));
+    }
+    return albums;
+  }, [albums, user, activeSort, isGuestSaved]);
 
   async function handleRefresh() {
     if (refreshStatus !== 'idle') return;
@@ -225,9 +235,9 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
             <AlbumCardSkeleton key={i} />
           ))}
         </div>
-      ) : albums && albums.length > 0 ? (
+      ) : displayedAlbums && displayedAlbums.length > 0 ? (
         <div className="grid grid-cols-1 gap-3.5 min-[380px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-          {albums.map((album) => (
+          {displayedAlbums.map((album) => (
             <AlbumCard
               key={album.id}
               album={album}
@@ -236,24 +246,6 @@ export function MeetupGalleryView({ conventionSlug, meetupId }: MeetupGalleryVie
             />
           ))}
         </div>
-      ) : activeSort === 'saved' && !user ? (
-        <EmptyState
-          mascot
-          mascotSpeech="Sign in to view saved albums!"
-          title="Sign In to View Saved Albums"
-          className="mt-6 border-zinc-300 dark:border-zinc-700"
-          action={
-            <Link
-              href={`/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}/gallery`}
-              className={cn(
-                CONBLOCK_PRIMARY,
-                'inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
-              )}
-            >
-              Sign In
-            </Link>
-          }
-        />
       ) : activeSort === 'saved' ? (
         <EmptyState
           mascot

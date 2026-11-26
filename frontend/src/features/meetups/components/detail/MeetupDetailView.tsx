@@ -19,6 +19,7 @@ import {
   ExpandableImage,
 } from '@/shared/components/ui';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import { useMeetup, useMeetupAlbums, useToggleSaveMeetup } from '../../api';
 import { AlbumCard, AlbumCardSkeleton } from '../gallery';
@@ -38,6 +39,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   const { data: meetup, isLoading, isError } = useMeetup(meetupId);
   const { data: albums, isLoading: isAlbumsLoading } = useMeetupAlbums(meetupId, 'popular');
   const toggleSave = useToggleSaveMeetup();
+  const { isGuestSaved, toggleGuestSave } = useGuestSaves();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -101,10 +103,11 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
   }
 
   const isOwnerOrAdmin = Boolean(user && (meetup.is_owner || user.role === 'admin'));
+  const isSaved = user ? meetup.is_saved : isGuestSaved('meetups', meetup.id);
 
   const handleToggleSave = () => {
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
+      toggleGuestSave('meetups', meetup.id);
       return;
     }
     toggleSave.mutate(meetup.id);
@@ -219,7 +222,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                   <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                     <BookmarkButton
                       variant="responsive"
-                      isSaved={meetup.is_saved}
+                      isSaved={isSaved}
                       onClick={handleToggleSave}
                       savedLabel="Saved"
                       unsavedLabel="Save Meetup"
@@ -305,7 +308,7 @@ export function MeetupDetailView({ conventionSlug, meetupId }: MeetupDetailViewP
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   <BookmarkButton
                     variant="responsive"
-                    isSaved={meetup.is_saved}
+                    isSaved={isSaved}
                     onClick={handleToggleSave}
                     savedLabel="Saved"
                     unsavedLabel="Save Meetup"

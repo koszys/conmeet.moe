@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
 import { Camera, ChevronDown, ChevronUp, Clock, MapPin } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import {
@@ -13,6 +12,7 @@ import {
   ExpandableImage,
 } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../../types';
 import { useToggleSaveFreebie } from '../../api/mutations';
@@ -42,8 +42,6 @@ export function FreebieCard({
   onEdit,
   onDelete,
 }: FreebieCardProps) {
-  const router = useRouter();
-  const pathname = usePathname();
   const { user } = useAuth();
 
   const [internalCondensed, setInternalCondensed] = useState(defaultCondensed);
@@ -57,21 +55,18 @@ export function FreebieCard({
   );
 
   const toggleSave = useToggleSaveFreebie();
-
-  function requireAuthAction(action: () => void) {
-    if (!user) {
-      router.push(`/login?next=${encodeURIComponent(pathname)}`);
-      return;
-    }
-    action();
-  }
+  const { isGuestSaved, isGuestClaimed, toggleGuestSave } = useGuestSaves();
+  const isSaved = user ? freebie.is_saved : isGuestSaved('freebies', freebie.id);
+  const isClaimed = user ? freebie.is_claimed : isGuestClaimed(freebie.id);
 
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    requireAuthAction(() => {
-      toggleSave.mutate(freebie.id);
-    });
+    if (!user) {
+      toggleGuestSave('freebies', freebie.id);
+      return;
+    }
+    toggleSave.mutate(freebie.id);
   }
 
   function handleToggleCondensed(e?: React.MouseEvent) {
@@ -106,7 +101,7 @@ export function FreebieCard({
     <article
       className={cn(
         'border-ink group flex w-full flex-col justify-between border-2 bg-white shadow-[4px_4px_0_var(--ink)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-900',
-        freebie.is_claimed && 'bg-zinc-50/60 opacity-95 dark:bg-zinc-900/60',
+        isClaimed && 'bg-zinc-50/60 opacity-95 dark:bg-zinc-900/60',
         className
       )}
     >
@@ -166,9 +161,7 @@ export function FreebieCard({
                   isCondensed
                     ? 'min-h-[2.5rem] text-sm leading-snug sm:min-h-[2.75rem] sm:text-base'
                     : 'min-h-[2.75rem] text-base leading-snug sm:min-h-[3rem] sm:text-lg',
-                  freebie.is_claimed
-                    ? 'text-zinc-600 dark:text-zinc-300'
-                    : 'text-zinc-900 dark:text-zinc-50'
+                  isClaimed ? 'text-zinc-600 dark:text-zinc-300' : 'text-zinc-900 dark:text-zinc-50'
                 )}
               >
                 {freebie.name}
@@ -266,6 +259,7 @@ export function FreebieCard({
           {/* Check off / Claim button */}
           <ClaimButton
             freebie={freebie}
+            isClaimed={isClaimed}
             conventionSlug={freebie.convention_slug || undefined}
             variant="button"
           />
@@ -273,11 +267,11 @@ export function FreebieCard({
           <div className="flex shrink-0 items-center gap-1.5">
             {/* Save / Bookmark button */}
             <BookmarkButton
-              isSaved={freebie.is_saved}
+              isSaved={isSaved}
               onClick={handleSave}
-              disabled={toggleSave.isPending}
-              ariaLabel={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
-              title={freebie.is_saved ? 'Saved' : 'Save'}
+              disabled={user ? toggleSave.isPending : false}
+              ariaLabel={isSaved ? 'Remove from saved' : 'Save freebie'}
+              title={isSaved ? 'Saved' : 'Save'}
             />
 
             {/* Owner Actions */}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Camera, User } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { Badge, BookmarkButton, LikeButton } from '@/shared/components/ui';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { useToggleFavoriteAlbum, useToggleLikeAlbum } from '../../../api';
 import type { MeetupAlbum } from '../../../types';
 
@@ -18,7 +19,9 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
   const { user } = useAuth();
   const toggleLike = useToggleLikeAlbum();
   const toggleFavorite = useToggleFavoriteAlbum();
+  const { isGuestSaved, toggleGuestSave } = useGuestSaves();
 
+  const isFavorited = user ? album.is_favorited : isGuestSaved('albums', album.id);
   const meetupSlugOrId = album.meetup_slug || meetupId;
 
   const handleToggleLike = (e: React.MouseEvent) => {
@@ -35,7 +38,7 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups/${meetupSlugOrId}`;
+      toggleGuestSave('albums', album.id);
       return;
     }
     toggleFavorite.mutate(album.id);
@@ -172,10 +175,10 @@ export function AlbumCard({ album, conventionSlug, meetupId }: AlbumCardProps) {
 
             <BookmarkButton
               variant="icon"
-              isSaved={album.is_favorited}
+              isSaved={isFavorited}
               onClick={handleToggleFavorite}
-              title={album.is_favorited ? 'Remove from favorites' : 'Favorite album'}
-              ariaLabel={album.is_favorited ? 'Remove from favorites' : 'Favorite album'}
+              title={isFavorited ? 'Remove from favorites' : 'Favorite album'}
+              ariaLabel={isFavorited ? 'Remove from favorites' : 'Favorite album'}
             />
           </div>
         </div>

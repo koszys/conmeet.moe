@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { api, type MeUser, type OAuthProvider } from '@/shared/lib/api';
+import { clearGuestSaves, getGuestSaves } from '@/shared/lib/guestSaves';
 import { clearTokens, getAccessToken } from '@/shared/lib/tokens';
 import { oauthStartUrl } from './lib/oauth';
 
@@ -48,6 +49,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           prevUserRef.current = me;
           setUser(me);
+
+          // Auto-sync guest saves if present upon login
+          const guest = getGuestSaves();
+          if (
+            guest.meetups.length > 0 ||
+            guest.freebies.length > 0 ||
+            guest.albums.length > 0 ||
+            guest.claimed_freebies.length > 0
+          ) {
+            try {
+              await api.post('api/v1/auth/sync-saves/', {
+                json: {
+                  meetup_ids: guest.meetups,
+                  freebie_ids: guest.freebies,
+                  claimed_freebie_ids: guest.claimed_freebies,
+                  album_ids: guest.albums,
+                },
+              });
+              clearGuestSaves();
+              queryClient.invalidateQueries();
+            } catch (syncErr) {
+              console.error('Failed to sync guest saves:', syncErr);
+            }
+          }
         }
       } catch {
         if (!cancelled) {
@@ -84,6 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     void api.post('api/v1/auth/logout/').catch(() => undefined);
     clearTokens();
+    clearGuestSaves();
     prevUserRef.current = null;
     setUser(null);
     queryClient.clear();

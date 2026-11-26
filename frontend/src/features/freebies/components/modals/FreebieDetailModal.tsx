@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
 import { Clock, MapPin, Check, Square } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { BookmarkButton, ExpandableImage, Modal, ModalHeader } from '@/shared/components/ui';
 import { formatDateTime } from '@/shared/lib/dates';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import type { Freebie } from '../../types';
 import { useToggleSaveFreebie } from '../../api/mutations';
@@ -18,29 +18,24 @@ export interface FreebieDetailModalProps {
 }
 
 export function FreebieDetailModal({ freebie, isOpen, onClose }: FreebieDetailModalProps) {
-  const router = useRouter();
-  const pathname = usePathname();
   const { user } = useAuth();
 
   const toggleSave = useToggleSaveFreebie();
+  const { isGuestSaved, isGuestClaimed, toggleGuestSave } = useGuestSaves();
+  const isSaved = user ? freebie.is_saved : isGuestSaved('freebies', freebie.id);
+  const isClaimed = user ? freebie.is_claimed : isGuestClaimed(freebie.id);
 
   const fullImageUrl = freebie.image || freebie.image_thumb;
   const uploadDateTime = formatDateTime(freebie.created_at);
 
-  function requireAuthAction(action: () => void) {
-    if (!user) {
-      router.push(`/login?next=${encodeURIComponent(pathname)}`);
-      return;
-    }
-    action();
-  }
-
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    requireAuthAction(() => {
-      toggleSave.mutate(freebie.id);
-    });
+    if (!user) {
+      toggleGuestSave('freebies', freebie.id);
+      return;
+    }
+    toggleSave.mutate(freebie.id);
   }
 
   return (
@@ -151,7 +146,7 @@ export function FreebieDetailModal({ freebie, isOpen, onClose }: FreebieDetailMo
         <div className="flex items-center justify-between gap-3">
           {/* Claim Status Pill on Left */}
           <div className="flex items-center gap-2">
-            {freebie.is_claimed ? (
+            {isClaimed ? (
               <span className="border-ink bg-accent inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-black tracking-wider text-white uppercase shadow-[1px_1px_0_var(--ink)] dark:text-zinc-950">
                 <Check className="h-3.5 w-3.5 stroke-3" />
                 <span>CLAIMED</span>
@@ -167,15 +162,15 @@ export function FreebieDetailModal({ freebie, isOpen, onClose }: FreebieDetailMo
           {/* Action Buttons */}
           <div className="flex shrink-0 items-center gap-2">
             {/* Check off / Claim button */}
-            <ClaimButton freebie={freebie} variant="icon" />
+            <ClaimButton freebie={freebie} isClaimed={isClaimed} variant="icon" />
 
             {/* Save / Bookmark button */}
             <BookmarkButton
-              isSaved={freebie.is_saved}
+              isSaved={isSaved}
               onClick={handleSave}
-              disabled={toggleSave.isPending}
-              ariaLabel={freebie.is_saved ? 'Remove from saved' : 'Save freebie'}
-              title={freebie.is_saved ? 'Saved' : 'Save'}
+              disabled={user ? toggleSave.isPending : false}
+              ariaLabel={isSaved ? 'Remove from saved' : 'Save freebie'}
+              title={isSaved ? 'Saved' : 'Save'}
             />
           </div>
         </div>

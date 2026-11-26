@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { RotateCw } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { useConvention } from '@/features/conventions/data/api';
 import { MikuLoader } from '@/shared/components/miku';
 import { type RefreshStatus } from '@/shared/components/ui';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { cn } from '@/shared/lib/utils';
 import { meetupKeys, useMeetups } from '../../api';
 import { MeetupCard } from './MeetupCard';
@@ -20,8 +20,6 @@ interface MeetupListProps {
 }
 
 export function MeetupList({ conventionSlug }: MeetupListProps) {
-  const router = useRouter();
-  const pathname = usePathname();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: convention } = useConvention(conventionSlug);
@@ -31,18 +29,9 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
   const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>('idle');
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (!user && activeTab === 'saved') {
-      setActiveTab('all');
-    }
-  }, [user, activeTab]);
+  const { isGuestSaved } = useGuestSaves();
 
   function handleTabChange(tab: TabType) {
-    if (tab === 'saved' && !user) {
-      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
-      return;
-    }
     setActiveTab(tab);
   }
 
@@ -52,12 +41,20 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
       conventionSlug,
       date: selectedDate,
       official: activeTab === 'official' ? true : activeTab === 'community' ? false : undefined,
-      saved: activeTab === 'saved' ? true : undefined,
+      saved: user && activeTab === 'saved' ? true : undefined,
       q: searchQuery.trim() || undefined,
     };
-  }, [conventionSlug, selectedDate, activeTab, searchQuery]);
+  }, [conventionSlug, selectedDate, activeTab, searchQuery, user]);
 
   const { data: meetups, isLoading, isError, refetch, isFetching } = useMeetups(queryFilters);
+
+  const displayedMeetups = useMemo(() => {
+    if (!meetups) return [];
+    if (!user && activeTab === 'saved') {
+      return meetups.filter((m) => isGuestSaved('meetups', m.id));
+    }
+    return meetups;
+  }, [meetups, user, activeTab, isGuestSaved]);
 
   async function handleRefresh() {
     if (refreshStatus !== 'idle') return;
@@ -129,9 +126,9 @@ export function MeetupList({ conventionSlug }: MeetupListProps) {
             <span>{isFetching ? 'Syncing…' : 'Try Refreshing'}</span>
           </button>
         </div>
-      ) : meetups && meetups.length > 0 ? (
+      ) : displayedMeetups.length > 0 ? (
         <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2">
-          {meetups.map((meetup) => (
+          {displayedMeetups.map((meetup) => (
             <MeetupCard key={meetup.id} meetup={meetup} conventionSlug={conventionSlug} />
           ))}
         </div>

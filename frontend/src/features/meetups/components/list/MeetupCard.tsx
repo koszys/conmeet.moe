@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Clock, MapPin, User, Users } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { Badge, BookmarkButton } from '@/shared/components/ui';
+import { useGuestSaves } from '@/shared/lib/guestSaves';
 import { formatMeetupTimeRange } from '@/shared/lib/dates';
 import { useToggleSaveMeetup } from '../../api';
 import { GoingButton } from '../GoingButton';
@@ -17,13 +18,16 @@ interface MeetupCardProps {
 
 export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
   const { user } = useAuth();
+  const { isGuestSaved, toggleGuestSave } = useGuestSaves();
   const toggleSave = useToggleSaveMeetup();
+
+  const isSaved = user ? meetup.is_saved : isGuestSaved('meetups', meetup.id);
 
   const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      window.location.href = `/login?redirect=/conventions/${conventionSlug}/meetups`;
+      toggleGuestSave('meetups', meetup.id);
       return;
     }
     toggleSave.mutate(meetup.id);
@@ -120,10 +124,10 @@ export function MeetupCard({ meetup, conventionSlug }: MeetupCardProps) {
 
             {/* Bookmark button */}
             <BookmarkButton
-              isSaved={meetup.is_saved}
+              isSaved={isSaved}
               onClick={handleToggleSave}
-              title={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
-              ariaLabel={meetup.is_saved ? 'Remove from saved' : 'Save meetup'}
+              title={isSaved ? 'Remove from saved' : 'Save meetup'}
+              ariaLabel={isSaved ? 'Remove from saved' : 'Save meetup'}
             />
           </div>
         </div>

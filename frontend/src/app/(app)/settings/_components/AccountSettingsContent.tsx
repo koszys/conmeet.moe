@@ -249,13 +249,13 @@ export function AccountSettingsContent() {
             Profile Picture
           </label>
 
-          <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
+          <div className="mt-4 flex items-center gap-4 sm:gap-5">
             {/* Clickable Avatar Button */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Upload profile picture"
-              className="group border-ink relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] dark:bg-zinc-800"
+              className="group border-ink relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] sm:h-24 sm:w-24 dark:bg-zinc-800"
             >
               {currentAvatarUrl ? (
                 <img
@@ -292,10 +292,6 @@ export function AccountSettingsContent() {
               </p>
               <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
                 @{username || user?.username}
-              </p>
-
-              <p className="pt-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                Click the avatar to upload a new picture (PNG, JPG, or WEBP, max 5MB).
               </p>
 
               {fileError && (

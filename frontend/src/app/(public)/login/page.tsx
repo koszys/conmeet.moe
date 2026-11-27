@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 import { useAuth } from '@/features/auth';
 import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { SpinBackdrop } from '@/shared/components/miku';
-import { BackLink } from '@/shared/components/ui';
+import { BackLink, StatusBanner } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import discordLogo from '@/assets/social/discordlogo.png';
 
@@ -119,11 +119,17 @@ function LoginContent() {
           </div>
         ) : (
           <div className="space-y-3">
-            {error && (
-              <p className="border-accent bg-accent/10 text-accent-pop rounded-none border-2 px-3 py-2 text-xs font-bold tracking-wide uppercase">
-                Sign-in failed. Please try again.
-              </p>
-            )}
+            <StatusBanner
+              variant="error"
+              message={
+                error
+                  ? error === 'cancelled'
+                    ? 'Sign-in was cancelled. You can try again below.'
+                    : 'Sign-in failed. Please try again.'
+                  : null
+              }
+              className="mt-0"
+            />
             <ProviderButton
               label="Discord"
               backgroundColor="#5865F2"

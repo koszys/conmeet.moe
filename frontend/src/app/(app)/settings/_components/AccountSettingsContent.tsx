@@ -130,7 +130,11 @@ export function AccountSettingsContent() {
       const errorText =
         linkError === 'already_linked'
           ? 'That external account is already linked to another conmeet.moe account.'
-          : 'Your account linking session expired. Please try again.';
+          : linkError === 'cancelled'
+            ? 'Account linking was cancelled.'
+            : linkError === 'oauth_error'
+              ? 'Account linking failed. Please try again.'
+              : 'Your account linking session expired. Please try again.';
       setProviderMessage({ type: 'error', text: errorText });
       params.delete('link_error');
       const nextSearch = params.toString();

@@ -7,6 +7,7 @@ from allauth.account.models import EmailAddress
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialAccount, SocialLogin
+from allauth.socialaccount.providers.base import AuthError
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import transaction
@@ -71,6 +72,35 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         ):
             params["prompt"] = "select_account"
         return params
+
+    def on_authentication_error(
+        self,
+        request: HttpRequest,
+        provider: Any,
+        error: str | None = None,
+        exception: Exception | None = None,
+        extra_context: dict[str, Any] | None = None,
+    ) -> None:
+        link_data = request.session.pop("pending_social_link", None)
+        error_code = "cancelled" if error == AuthError.CANCELLED else "oauth_error"
+
+        if link_data:
+            next_url = link_data.get("next") or "/settings"
+            raise ImmediateHttpResponse(
+                HttpResponseRedirect(
+                    f"{settings.FRONTEND_URL}{next_url}?link_error={error_code}"
+                )
+            )
+
+        state = (extra_context or {}).get("state") or {}
+        next_url = state.get("next")
+        params: dict[str, str] = {"error": error_code}
+        if isinstance(next_url, str) and next_url.startswith("/") and not next_url.startswith("//"):
+            params["next"] = next_url
+
+        raise ImmediateHttpResponse(
+            HttpResponseRedirect(f"{settings.FRONTEND_URL}/login?{urlencode(params)}")
+        )
 
     def pre_social_login(self, request: HttpRequest, sociallogin: SocialLogin) -> None:
         link_data = request.session.pop("pending_social_link", None)

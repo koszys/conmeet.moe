@@ -235,3 +235,50 @@ def test_mask_email_variants() -> None:
     assert mask_email("alice@gmail.com") == "al•••@gmail.com"
     assert mask_email("forzadriftergod@gmail.com") == "fo•••••@gmail.com"
     assert mask_email("") == ""
+
+
+def test_on_authentication_error_redirects_to_frontend() -> None:
+    from allauth.socialaccount.providers.base import AuthError
+
+    adapter = CustomSocialAccountAdapter()
+
+    # 1. Cancelled while linking -> /settings?link_error=cancelled and pops session key
+    req_link = RequestFactory().get("/accounts/google/login/callback/?error=access_denied")
+    req_link.session = SessionStore()
+    req_link.session["pending_social_link"] = {
+        "user_id": 1,
+        "provider": "google",
+        "mode": "connect",
+        "next": "/settings",
+    }
+    with pytest.raises(ImmediateHttpResponse) as exc_link:
+        adapter.on_authentication_error(req_link, "google", error=AuthError.CANCELLED)
+
+    assert exc_link.value.response["Location"].endswith("/settings?link_error=cancelled")
+    assert "pending_social_link" not in req_link.session
+
+    # 2. Cancelled while signing in -> /login?error=cancelled&next=...
+    req_login = RequestFactory().get("/accounts/discord/login/callback/?error=access_denied")
+    req_login.session = SessionStore()
+    with pytest.raises(ImmediateHttpResponse) as exc_login:
+        adapter.on_authentication_error(
+            req_login,
+            "discord",
+            error=AuthError.CANCELLED,
+            extra_context={"state": {"next": "/conventions/anime-expo/meetups"}},
+        )
+
+    loc = exc_login.value.response["Location"]
+    parsed = urlparse(loc)
+    qs = parse_qs(parsed.query)
+    assert parsed.path == "/login"
+    assert qs["error"] == ["cancelled"]
+    assert qs["next"] == ["/conventions/anime-expo/meetups"]
+
+    # 3. Unknown error -> oauth_error
+    req_err = RequestFactory().get("/accounts/google/login/callback/")
+    req_err.session = SessionStore()
+    with pytest.raises(ImmediateHttpResponse) as exc_err:
+        adapter.on_authentication_error(req_err, "google", error=AuthError.UNKNOWN)
+
+    assert "error=oauth_error" in exc_err.value.response["Location"]

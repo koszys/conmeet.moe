@@ -14,6 +14,7 @@ export interface MeUser {
   date_joined: string;
   last_login: string | null;
   providers: OAuthProvider[];
+  provider_emails?: Partial<Record<OAuthProvider, string>>;
 }
 
 export type OAuthProvider = 'discord' | 'google';

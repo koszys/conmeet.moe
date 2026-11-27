@@ -1,7 +1,9 @@
+import logging
 from typing import Any, cast
 from urllib.parse import urlencode
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.account.models import EmailAddress
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialAccount, SocialLogin
@@ -12,6 +14,8 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
+
+logger = logging.getLogger(__name__)
 
 
 def build_token_redirect_url(
@@ -75,24 +79,75 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
         target_user = User.objects.filter(id=link_data.get("user_id")).first()
         if not target_user:
+            logger.warning("pre_social_login: target_user not found for link_data=%s", link_data)
             return
+
+        existing_account = SocialAccount.objects.filter(
+            provider=sociallogin.account.provider,
+            uid=sociallogin.account.uid,
+        ).first()
+
+        logger.info(
+            "pre_social_login link: user_id=%s provider=%s mode=%s account_exists=%s",
+            target_user.id,
+            sociallogin.account.provider,
+            link_data.get("mode"),
+            bool(existing_account),
+        )
 
         next_url = link_data.get("next") or "/settings"
 
-        if sociallogin.is_existing and sociallogin.user and sociallogin.user.id != target_user.id:
+        if existing_account and existing_account.user_id != target_user.id:
             raise ImmediateHttpResponse(
                 HttpResponseRedirect(
                     f"{settings.FRONTEND_URL}{next_url}?link_error=already_linked"
                 )
             )
 
-        if not sociallogin.is_existing:
+        external_email = (
+            (getattr(sociallogin.user, "email", None) or "")
+            or ((sociallogin.account.extra_data or {}).get("email") or "")
+            or next((ea.email for ea in sociallogin.email_addresses if ea.email), "")
+        ).strip()
+
+        if not existing_account:
             with transaction.atomic():
                 if link_data.get("mode") == "relink":
-                    SocialAccount.objects.filter(
-                        user=target_user, provider=sociallogin.account.provider
-                    ).delete()
+                    old_accounts = list(
+                        SocialAccount.objects.filter(
+                            user=target_user, provider=sociallogin.account.provider
+                        )
+                    )
+                    for old_acc in old_accounts:
+                        old_email = ((old_acc.extra_data or {}).get("email") or "").strip()
+                        old_acc.delete()
+                        if old_email and old_email.lower() != (target_user.email or "").lower():
+                            EmailAddress.objects.filter(
+                                user=target_user, email__iexact=old_email, primary=False
+                            ).delete()
+
+                if external_email and not (sociallogin.account.extra_data or {}).get("email"):
+                    sociallogin.account.extra_data = {
+                        **(sociallogin.account.extra_data or {}),
+                        "email": external_email,
+                    }
                 sociallogin.connect(request, target_user)
+
+                if (
+                    external_email
+                    and not EmailAddress.objects.filter(email__iexact=external_email)
+                    .exclude(user=target_user)
+                    .exists()
+                    and not EmailAddress.objects.filter(
+                        user=target_user, email__iexact=external_email
+                    ).exists()
+                ):
+                    EmailAddress.objects.create(
+                        user=target_user,
+                        email=external_email,
+                        verified=True,
+                        primary=False,
+                    )
 
         redirect_url = build_token_redirect_url(
             target_user,

@@ -2,6 +2,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 from accounts.adapters import CustomSocialAccountAdapter
+from allauth.account.models import EmailAddress
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialLogin
 from django.contrib.auth import get_user_model
@@ -33,14 +34,23 @@ def test_unlink_requires_at_least_one_provider() -> None:
 
 
 def test_unlink_succeeds_when_multiple_providers_connected() -> None:
-    user = User.objects.create_user(username="dual", email="dual@example.com")
-    SocialAccount.objects.create(user=user, provider="discord", uid="disc-2")
-    SocialAccount.objects.create(user=user, provider="google", uid="goog-2")
+    user = User.objects.create_user(username="dual", email="dual@discord.com")
+    EmailAddress.objects.create(user=user, email="dual@discord.com", primary=True, verified=True)
+    EmailAddress.objects.create(user=user, email="dual@gmail.com", primary=False, verified=True)
+    SocialAccount.objects.create(
+        user=user, provider="discord", uid="disc-2", extra_data={"email": "dual@discord.com"}
+    )
+    SocialAccount.objects.create(
+        user=user, provider="google", uid="goog-2", extra_data={"email": "dual@gmail.com"}
+    )
 
     client = _authed_client(user)
     resp = client.delete("/api/v1/auth/providers/discord/")
     assert resp.status_code == status.HTTP_200_OK
-    assert resp.json()["providers"] == ["google"]
+    data = resp.json()
+    assert data["providers"] == ["google"]
+    assert data["email"] == "dual@gmail.com"
+    assert data["provider_emails"] == {"google": "dual@gmail.com"}
     assert not SocialAccount.objects.filter(user=user, provider="discord").exists()
     assert SocialAccount.objects.filter(user=user, provider="google").exists()
 
@@ -110,7 +120,7 @@ def test_pre_social_login_connect_and_relink() -> None:
 
     adapter = CustomSocialAccountAdapter()
 
-    # 1. Connect new Google account (different email)
+    # 1. Connect new Google account (with a different email)
     req1 = RequestFactory().get("/accounts/google/login/callback/")
     req1.session = SessionStore()
     req1.session["pending_social_link"] = {
@@ -130,8 +140,9 @@ def test_pre_social_login_connect_and_relink() -> None:
     parsed1 = urlparse(loc1)
     assert parse_qs(parsed1.query)["next"] == ["/settings?linked=google"]
     assert SocialAccount.objects.filter(user=user, provider="google", uid="new-goog-uid").exists()
+    assert EmailAddress.objects.filter(user=user, email="other@gmail.com").exists()
 
-    # 2. Relink Discord to a different Discord account
+    # 2. Relink Discord to a different Discord account (with a different email)
     req2 = RequestFactory().get("/accounts/discord/login/callback/")
     req2.session = SessionStore()
     req2.session["pending_social_link"] = {
@@ -179,3 +190,36 @@ def test_pre_social_login_prevents_stealing_other_user_account() -> None:
     assert "link_error=already_linked" in exc.value.response["Location"]
     assert not SocialAccount.objects.filter(user=user1, provider="google").exists()
     assert SocialAccount.objects.filter(user=user2, provider="google", uid="u2-goog").exists()
+
+
+def test_pre_social_login_connects_when_email_lookup_sets_user() -> None:
+    site = Site.objects.get_current()
+    app = SocialApp.objects.create(provider="google", name="google", client_id="g-id", secret="sec")
+    app.sites.add(site)
+
+    user = User.objects.create_user(username="sameemail", email="same@example.com")
+    SocialAccount.objects.create(user=user, provider="discord", uid="same-disc")
+
+    adapter = CustomSocialAccountAdapter()
+    req = RequestFactory().get("/accounts/google/login/callback/")
+    req.session = SessionStore()
+    req.session["pending_social_link"] = {
+        "user_id": user.id,
+        "provider": "google",
+        "mode": "connect",
+        "next": "/settings",
+    }
+
+    # Simulate allauth email-lookup setting sociallogin.user = user while account.pk is None
+    sl = SocialLogin(
+        user=user,
+        account=SocialAccount(provider="google", uid="same-goog", extra_data={"email": "same@example.com"}),
+    )
+    assert sl.is_existing is True
+    assert sl.account.pk is None
+
+    with pytest.raises(ImmediateHttpResponse) as exc:
+        adapter.pre_social_login(req, sl)
+
+    assert "linked%3Dgoogle" in exc.value.response["Location"]
+    assert SocialAccount.objects.filter(user=user, provider="google", uid="same-goog").exists()

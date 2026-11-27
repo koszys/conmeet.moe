@@ -15,6 +15,7 @@ RESERVED_USERNAMES = {
 
 class UserSerializer(serializers.ModelSerializer):
     providers = serializers.SerializerMethodField()
+    provider_emails = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
     has_custom_avatar = serializers.SerializerMethodField()
 
@@ -31,11 +32,20 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "last_login",
             "providers",
+            "provider_emails",
         ]
         read_only_fields = fields
 
     def get_providers(self, obj: User) -> list[str]:
         return sorted(SocialAccount.objects.filter(user=obj).values_list("provider", flat=True))
+
+    def get_provider_emails(self, obj: User) -> dict[str, str]:
+        emails: dict[str, str] = {}
+        for account in SocialAccount.objects.filter(user=obj):
+            email = (account.extra_data or {}).get("email")
+            if isinstance(email, str) and email:
+                emails[account.provider] = email
+        return emails
 
     def get_avatar_url(self, obj: User) -> str:
         if obj.avatar:

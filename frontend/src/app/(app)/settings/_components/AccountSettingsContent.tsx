@@ -70,7 +70,7 @@ const PROVIDERS: Record<
 };
 
 export function AccountSettingsContent() {
-  const { user, usernameCollisionNotice, dismissUsernameCollisionNotice } = useAuth();
+  const { user, refreshUser, usernameCollisionNotice, dismissUsernameCollisionNotice } = useAuth();
   const updateMutation = useUpdateProfile();
   const unlinkMutation = useUnlinkProvider();
   const startLinkMutation = useStartProviderLink();
@@ -114,6 +114,7 @@ export function AccountSettingsContent() {
     const linked = params.get('linked');
     const linkError = params.get('link_error');
     if (linked && PROVIDERS[linked]) {
+      void refreshUser();
       setProviderMessage({
         type: 'success',
         text: `${PROVIDERS[linked].label} account linked successfully!`,
@@ -139,7 +140,7 @@ export function AccountSettingsContent() {
         `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`
       );
     }
-  }, [usernameCollisionNotice]);
+  }, [usernameCollisionNotice, refreshUser]);
 
   // Auto-dismiss success message after 5 seconds
   useEffect(() => {
@@ -297,6 +298,10 @@ export function AccountSettingsContent() {
   }
 
   const providers = user?.providers ?? [];
+  const providerEmails = user?.provider_emails ?? {};
+  const uniqueEmails = Array.from(
+    new Set([user?.email, ...Object.values(providerEmails)].filter((e): e is string => Boolean(e)))
+  );
   const currentAvatarUrl = previewUrl || user?.avatar_url;
 
   return (
@@ -463,12 +468,15 @@ export function AccountSettingsContent() {
                     {user.role}
                   </span>
                 )}
-                {user.email && (
-                  <p className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-300">
+                {uniqueEmails.map((email) => (
+                  <p
+                    key={email}
+                    className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-300"
+                  >
                     <Mail className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-                    <span className="truncate">{user.email}</span>
+                    <span className="truncate">{email}</span>
                   </p>
-                )}
+                ))}
                 {user.date_joined && (
                   <p className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
                     <Calendar className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
@@ -662,8 +670,8 @@ export function AccountSettingsContent() {
                       <p className="font-display text-sm font-bold tracking-wide uppercase">
                         {config.label}
                       </p>
-                      <p className="mt-0.5 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
-                        {isConnected ? 'Connected' : 'Not linked'}
+                      <p className="mt-0.5 truncate text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                        {isConnected ? providerEmails[provider] || 'Connected' : 'Not linked'}
                       </p>
                     </div>
                   </div>
@@ -721,8 +729,8 @@ export function AccountSettingsContent() {
         </div>
 
         <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-300">
-          At least one connected account must remain linked. Same-email logins are linked
-          automatically.
+          At least one connected account must remain linked. You can connect accounts with different
+          email addresses here.
         </p>
       </section>
     </main>

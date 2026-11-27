@@ -1,13 +1,16 @@
 from urllib.parse import quote
 
+from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 from django.conf import settings
 from django.core import signing
-from django.http import HttpResponse, HttpResponseRedirect
+from django.db import transaction
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.views import View
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -61,12 +64,45 @@ class ProviderUnlinkView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        deleted_count, _ = accounts.filter(provider=provider).delete()
-        if deleted_count == 0:
+        target_accounts = list(accounts.filter(provider=provider))
+        if not target_accounts:
             return Response(
                 {"detail": "This provider is not linked to your account."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        with transaction.atomic():
+            removed_emails = [
+                ((acc.extra_data or {}).get("email") or "").strip()
+                for acc in target_accounts
+                if (acc.extra_data or {}).get("email")
+            ]
+            accounts.filter(provider=provider).delete()
+
+            remaining_accounts = list(SocialAccount.objects.filter(user=request.user))
+            remaining_emails = {
+                ((acc.extra_data or {}).get("email") or "").strip().lower(): (
+                    (acc.extra_data or {}).get("email") or ""
+                ).strip()
+                for acc in remaining_accounts
+                if (acc.extra_data or {}).get("email")
+            }
+
+            for removed_email in removed_emails:
+                if removed_email.lower() not in remaining_emails:
+                    EmailAddress.objects.filter(
+                        user=request.user, email__iexact=removed_email, primary=False
+                    ).delete()
+
+            current_email_lower = (request.user.email or "").strip().lower()
+            if current_email_lower not in remaining_emails and remaining_emails:
+                next_email = next(iter(remaining_emails.values()))
+                EmailAddress.objects.filter(user=request.user, primary=True).update(primary=False)
+                EmailAddress.objects.filter(
+                    user=request.user, email__iexact=next_email
+                ).update(primary=True)
+                request.user.email = next_email
+                request.user.save(update_fields=["email"])
 
         return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
 
@@ -111,11 +147,9 @@ class ProviderLinkStartView(APIView):
         )
 
 
-class ProviderConnectRedirectView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request: Request) -> HttpResponse:
-        token = request.query_params.get("token", "")
+class ProviderConnectRedirectView(View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        token = request.GET.get("token", "")
         try:
             payload = signing.loads(token, salt=LINK_TOKEN_SALT, max_age=LINK_TOKEN_MAX_AGE)
         except (signing.BadSignature, signing.SignatureExpired):
@@ -127,6 +161,7 @@ class ProviderConnectRedirectView(APIView):
 
         request.session["pending_social_link"] = payload
         request.session.modified = True
+        request.session.save()
 
         next_url = payload.get("next") or "/settings"
         return HttpResponseRedirect(f"/accounts/{provider}/login/?next={quote(next_url)}")

@@ -49,8 +49,10 @@ def test_unlink_succeeds_when_multiple_providers_connected() -> None:
     assert resp.status_code == status.HTTP_200_OK
     data = resp.json()
     assert data["providers"] == ["google"]
-    assert data["email"] == "dual@gmail.com"
-    assert data["provider_emails"] == {"google": "dual@gmail.com"}
+    assert data["email"] == "du•••@gmail.com"
+    assert data["provider_emails"] == {"google": "du•••@gmail.com"}
+    user.refresh_from_db()
+    assert user.email == "dual@gmail.com"
     assert not SocialAccount.objects.filter(user=user, provider="discord").exists()
     assert SocialAccount.objects.filter(user=user, provider="google").exists()
 
@@ -223,3 +225,13 @@ def test_pre_social_login_connects_when_email_lookup_sets_user() -> None:
 
     assert "linked%3Dgoogle" in exc.value.response["Location"]
     assert SocialAccount.objects.filter(user=user, provider="google", uid="same-goog").exists()
+
+
+def test_mask_email_variants() -> None:
+    from accounts.serializers import mask_email
+
+    assert mask_email("a@gmail.com") == "•@gmail.com"
+    assert mask_email("ab@gmail.com") == "a•••@gmail.com"
+    assert mask_email("alice@gmail.com") == "al•••@gmail.com"
+    assert mask_email("forzadriftergod@gmail.com") == "fo•••••@gmail.com"
+    assert mask_email("") == ""

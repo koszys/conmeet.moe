@@ -13,7 +13,21 @@ RESERVED_USERNAMES = {
 }
 
 
+def mask_email(email: str) -> str:
+    if not email or "@" not in email:
+        return email
+    local, domain = email.split("@", 1)
+    if not local:
+        return email
+    if len(local) == 1:
+        return f"•@{domain}"
+    visible_count = 1 if len(local) == 2 else 2
+    mask_len = min(max(len(local) - visible_count, 3), 5)
+    return f"{local[:visible_count]}{'•' * mask_len}@{domain}"
+
+
 class UserSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
     providers = serializers.SerializerMethodField()
     provider_emails = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
@@ -36,6 +50,9 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
+    def get_email(self, obj: User) -> str:
+        return mask_email(obj.email or "")
+
     def get_providers(self, obj: User) -> list[str]:
         return sorted(SocialAccount.objects.filter(user=obj).values_list("provider", flat=True))
 
@@ -44,7 +61,7 @@ class UserSerializer(serializers.ModelSerializer):
         for account in SocialAccount.objects.filter(user=obj):
             email = (account.extra_data or {}).get("email")
             if isinstance(email, str) and email:
-                emails[account.provider] = email
+                emails[account.provider] = mask_email(email)
         return emails
 
     def get_avatar_url(self, obj: User) -> str:

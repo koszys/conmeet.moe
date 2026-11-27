@@ -22,7 +22,7 @@ import {
   useUpdateProfile,
 } from '@/features/auth';
 import { SpinBackdrop } from '@/shared/components/miku';
-import { Button, EditButton, FormActions, TextInput } from '@/shared/components/ui';
+import { Button, EditButton, FormActions, StatusBanner, TextInput } from '@/shared/components/ui';
 import { type OAuthProvider } from '@/shared/lib/api';
 import { parseDate } from '@/shared/lib/dates';
 import discordLogo from '@/assets/social/discordlogo.png';
@@ -141,15 +141,6 @@ export function AccountSettingsContent() {
       );
     }
   }, [usernameCollisionNotice, refreshUser]);
-
-  // Auto-dismiss success message after 5 seconds
-  useEffect(() => {
-    if (!successMessage) return;
-    const timer = setTimeout(() => {
-      setSuccessMessage(null);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [successMessage]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -362,21 +353,14 @@ export function AccountSettingsContent() {
           )}
         </div>
 
-        {/* Success Alert */}
-        {successMessage && (
-          <div className="border-ink mt-4 flex items-center gap-2 border-2 bg-emerald-100 p-3 text-xs font-bold text-emerald-900 shadow-[2px_2px_0_var(--ink)] dark:bg-emerald-950/40 dark:text-emerald-200">
-            <Check className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
-            <span>{successMessage}</span>
-          </div>
-        )}
-
-        {/* Global Error Alert */}
-        {formErrors.non_field_errors && (
-          <div className="border-ink mt-4 flex items-center gap-2 border-2 bg-red-100 p-3 text-xs font-bold text-red-900 shadow-[2px_2px_0_var(--ink)] dark:bg-red-950/40 dark:text-red-200">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-red-700 dark:text-red-400" />
-            <span>{formErrors.non_field_errors}</span>
-          </div>
-        )}
+        {/* Success & Global Error Alerts */}
+        <StatusBanner
+          variant="success"
+          message={successMessage}
+          autoDismissMs={3000}
+          onDismiss={() => setSuccessMessage(null)}
+        />
+        <StatusBanner variant="error" message={formErrors.non_field_errors} />
 
         {/* Avatar & Profile Identity */}
         <div className={cn('mt-6', isEditing && 'border-ink border-b-2 border-dashed pb-6')}>
@@ -620,23 +604,12 @@ export function AccountSettingsContent() {
           Connected Accounts
         </h2>
 
-        {providerMessage && (
-          <div
-            className={cn(
-              'border-ink mt-4 flex items-center gap-2 border-2 p-3 text-xs font-bold shadow-[2px_2px_0_var(--ink)]',
-              providerMessage.type === 'success'
-                ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200'
-                : 'bg-red-100 text-red-900 dark:bg-red-950/40 dark:text-red-200'
-            )}
-          >
-            {providerMessage.type === 'success' ? (
-              <Check className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
-            ) : (
-              <AlertTriangle className="h-4 w-4 shrink-0 text-red-700 dark:text-red-400" />
-            )}
-            <span>{providerMessage.text}</span>
-          </div>
-        )}
+        <StatusBanner
+          variant={providerMessage?.type ?? 'success'}
+          message={providerMessage?.text}
+          autoDismissMs={providerMessage?.type === 'success' ? 3000 : undefined}
+          onDismiss={() => setProviderMessage(null)}
+        />
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {(['discord', 'google'] as OAuthProvider[]).map((provider) => {

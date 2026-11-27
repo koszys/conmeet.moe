@@ -35,7 +35,8 @@ export function EditButton({
         CONBLOCK_SECONDARY,
         'font-bold uppercase transition-all select-none',
         variant === 'icon' && 'inline-flex h-8 w-8 shrink-0 items-center justify-center',
-        variant === 'button' && 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs',
+        variant === 'button' &&
+          'inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs whitespace-nowrap',
         variant === 'responsive' &&
           'inline-flex h-8 w-8 shrink-0 items-center justify-center sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-xs',
         disabled && 'cursor-not-allowed opacity-50',

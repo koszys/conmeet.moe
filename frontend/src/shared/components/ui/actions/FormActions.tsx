@@ -46,7 +46,7 @@ export function FormActions({
           href={cancelHref}
           className={cn(
             CONBLOCK_SECONDARY,
-            'px-5 py-2.5 text-xs font-bold tracking-wider uppercase'
+            'shrink-0 px-5 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase'
           )}
         >
           {cancelLabel}
@@ -58,7 +58,7 @@ export function FormActions({
           disabled={isSubmitting}
           className={cn(
             CONBLOCK_SECONDARY,
-            'px-5 py-2.5 text-xs font-bold tracking-wider uppercase disabled:opacity-50'
+            'shrink-0 px-5 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase disabled:opacity-50'
           )}
         >
           {cancelLabel}
@@ -70,7 +70,7 @@ export function FormActions({
         disabled={isSubmitDisabled}
         className={cn(
           CONBLOCK_PRIMARY,
-          'inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold tracking-wider uppercase disabled:cursor-not-allowed disabled:opacity-50'
+          'inline-flex shrink-0 items-center gap-2 px-6 py-2.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase disabled:cursor-not-allowed disabled:opacity-50'
         )}
       >
         {isSubmitting ? (

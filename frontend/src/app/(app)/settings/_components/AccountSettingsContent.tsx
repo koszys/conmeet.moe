@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { AlertTriangle, AtSign, Camera, Check, RotateCw, UserRound } from 'lucide-react';
+import { format } from 'date-fns';
+import { AlertTriangle, AtSign, Camera, Check, Mail, Calendar, UserRound } from 'lucide-react';
 import { useAuth, useUpdateProfile } from '@/features/auth';
 import { SpinBackdrop } from '@/shared/components/miku';
-import { Button, TextInput } from '@/shared/components/ui';
+import { EditButton, FormActions, TextInput } from '@/shared/components/ui';
+import { parseDate } from '@/shared/lib/dates';
 import discordLogo from '@/assets/social/discordlogo.png';
 import { cn } from '@/shared/lib/utils';
 
@@ -62,6 +64,7 @@ export function AccountSettingsContent() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  const [isEditing, setIsEditing] = useState(false);
   const [isCollisionNotice, setIsCollisionNotice] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -80,7 +83,8 @@ export function AccountSettingsContent() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('username_collision') === '1' || usernameCollisionNotice) {
       setIsCollisionNotice(true);
-      usernameInputRef.current?.focus();
+      setIsEditing(true);
+      setTimeout(() => usernameInputRef.current?.focus(), 0);
     }
   }, [usernameCollisionNotice]);
 
@@ -145,6 +149,7 @@ export function AccountSettingsContent() {
     try {
       await updateMutation.mutateAsync(formData);
       setSuccessMessage('Account profile updated successfully!');
+      setIsEditing(false);
       setSelectedFile(null);
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -176,6 +181,21 @@ export function AccountSettingsContent() {
       }
       setFormErrors({ non_field_errors: 'Failed to update account. Please try again.' });
     }
+  }
+
+  function handleCancelEdit() {
+    if (user) {
+      setUsername(user.username);
+      setDisplayName(user.display_name || '');
+    }
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    setFileError(null);
+    setFormErrors({});
+    setIsEditing(false);
   }
 
   const providers = user?.providers ?? [];
@@ -218,14 +238,26 @@ export function AccountSettingsContent() {
         </div>
       )}
 
-      {/* Profile Edit Form Section */}
+      {/* Profile Details Section */}
       <form
         onSubmit={handleSubmit}
         className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-6 backdrop-blur-sm md:p-8 dark:bg-[#373b3e]/70"
       >
-        <h2 className="font-display text-sm font-bold tracking-widest uppercase">
-          Profile Details
-        </h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display text-sm font-bold tracking-widest uppercase">
+            Profile Details
+          </h2>
+          {!isEditing && (
+            <EditButton
+              variant="button"
+              label="Edit"
+              onClick={() => {
+                setSuccessMessage(null);
+                setIsEditing(true);
+              }}
+            />
+          )}
+        </div>
 
         {/* Success Alert */}
         {successMessage && (
@@ -244,190 +276,236 @@ export function AccountSettingsContent() {
         )}
 
         {/* Avatar & Profile Identity */}
-        <div className="border-ink mt-6 border-b-2 border-dashed pb-6">
-          <label className="font-display block text-xs tracking-wider uppercase">
-            Profile Picture
-          </label>
+        <div className={cn('mt-6', isEditing && 'border-ink border-b-2 border-dashed pb-6')}>
+          {isEditing && (
+            <label className="font-display block text-xs tracking-wider uppercase">
+              Profile Picture
+            </label>
+          )}
 
-          <div className="mt-4 flex items-center gap-4 sm:gap-5">
-            {/* Clickable Avatar Button */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Upload profile picture"
-              className="group border-ink relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] sm:h-24 sm:w-24 dark:bg-zinc-800"
-            >
-              {currentAvatarUrl ? (
-                <img
-                  src={currentAvatarUrl}
-                  alt="Profile Avatar"
-                  className="h-full w-full object-cover transition-opacity group-hover:opacity-60"
-                />
-              ) : (
-                <UserRound className="h-10 w-10 text-zinc-400 transition-opacity group-hover:opacity-60" />
-              )}
-
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                <Camera className="h-5 w-5 drop-shadow-sm" />
-                <span className="font-display text-[9px] font-bold tracking-wider uppercase drop-shadow-sm">
-                  Change
-                </span>
-              </div>
-            </button>
-
-            {/* Hidden File Input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-
-            {/* Display Name and Username Info */}
-            <div className="min-w-0 flex-1 space-y-1">
-              <p className="truncate text-base font-bold text-zinc-900 sm:text-lg dark:text-white">
-                {displayName || user?.display_name || user?.username}
-              </p>
-              <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
-                @{username || user?.username}
-              </p>
-
-              {fileError && (
-                <p className="text-xs font-bold text-red-600 dark:text-red-400">{fileError}</p>
-              )}
-              {formErrors.avatar && (
-                <p className="text-xs font-bold text-red-600 dark:text-red-400">
-                  {formErrors.avatar}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Form Inputs Grid */}
-        <div className="mt-6 space-y-6">
-          {/* Username Input */}
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="username"
-                className="font-display block text-xs tracking-wider uppercase"
-              >
-                Username
-              </label>
-              <span
-                className={cn(
-                  'font-mono text-[11px] font-bold',
-                  username.length > 20 ? 'text-red-600' : 'text-zinc-400'
-                )}
-              >
-                {username.length}/20
-              </span>
-            </div>
-
-            <TextInput
-              ref={usernameInputRef}
-              id="username"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                if (formErrors.username) {
-                  setFormErrors((prev) => {
-                    const next = { ...prev };
-                    delete next.username;
-                    return next;
-                  });
-                }
-              }}
-              icon={AtSign}
-              placeholder="username"
-              maxLength={20}
-              error={Boolean(formErrors.username)}
-              className="mt-1.5 font-mono"
-            />
-
-            {formErrors.username ? (
-              <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
-                {formErrors.username}
-              </p>
-            ) : (
-              <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-                Required. 20 characters or fewer. Letters, digits, and @/./+/-/_ only.
-              </p>
+          <div
+            className={cn(
+              'flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between',
+              isEditing && 'mt-4'
             )}
-          </div>
-
-          {/* Display Name Input */}
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="display_name"
-                className="font-display block text-xs tracking-wider uppercase"
-              >
-                Display Name
-              </label>
-              <span
-                className={cn(
-                  'font-mono text-[11px] font-bold',
-                  displayName.length > 20 ? 'text-red-600' : 'text-zinc-400'
-                )}
-              >
-                {displayName.length}/20
-              </span>
-            </div>
-
-            <TextInput
-              id="display_name"
-              value={displayName}
-              onChange={(e) => {
-                setDisplayName(e.target.value);
-                if (formErrors.display_name) {
-                  setFormErrors((prev) => {
-                    const next = { ...prev };
-                    delete next.display_name;
-                    return next;
-                  });
-                }
-              }}
-              placeholder="Friendly Name"
-              maxLength={20}
-              error={Boolean(formErrors.display_name)}
-              className="mt-1.5"
-            />
-
-            {formErrors.display_name ? (
-              <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
-                {formErrors.display_name}
-              </p>
-            ) : (
-              <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-                20 characters or fewer. How your name is displayed on meetups, comments, and
-                galleries.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Submit Actions */}
-        <div className="border-ink mt-8 flex items-center justify-end border-t-2 border-dashed pt-6">
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={updateMutation.isPending}
-            className="flex items-center gap-2"
           >
-            {updateMutation.isPending ? (
-              <>
-                <RotateCw className="h-4 w-4 animate-spin" />
-                <span>Saving…</span>
-              </>
-            ) : (
-              <span>Save Changes</span>
+            <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+              {isEditing ? (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="Upload profile picture"
+                  className="group border-ink relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] sm:h-24 sm:w-24 dark:bg-zinc-800"
+                >
+                  {currentAvatarUrl ? (
+                    <img
+                      src={currentAvatarUrl}
+                      alt="Profile Avatar"
+                      className="h-full w-full object-cover transition-opacity group-hover:opacity-60"
+                    />
+                  ) : (
+                    <UserRound className="h-10 w-10 text-zinc-400 transition-opacity group-hover:opacity-60" />
+                  )}
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                    <Camera className="h-5 w-5 drop-shadow-sm" />
+                    <span className="font-display text-[9px] font-bold tracking-wider uppercase drop-shadow-sm">
+                      Change
+                    </span>
+                  </div>
+                </button>
+              ) : (
+                <div className="border-ink relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] sm:h-24 sm:w-24 dark:bg-zinc-800">
+                  {currentAvatarUrl ? (
+                    <img
+                      src={currentAvatarUrl}
+                      alt="Profile Avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <UserRound className="h-10 w-10 text-zinc-400" />
+                  )}
+                </div>
+              )}
+
+              {/* Hidden File Input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              {/* Display Name and Username Info */}
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="truncate text-base font-bold text-zinc-900 sm:text-lg dark:text-white">
+                  {displayName || user?.display_name || user?.username}
+                </p>
+                <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                  @{username || user?.username}
+                </p>
+
+                {isEditing && fileError && (
+                  <p className="text-xs font-bold text-red-600 dark:text-red-400">{fileError}</p>
+                )}
+                {isEditing && formErrors.avatar && (
+                  <p className="text-xs font-bold text-red-600 dark:text-red-400">
+                    {formErrors.avatar}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {!isEditing && user && (
+              <div className="border-ink/20 flex flex-col gap-1.5 border-t-2 border-dashed pt-4 text-xs text-zinc-600 sm:shrink-0 sm:items-end sm:border-t-0 sm:pt-0 sm:text-right dark:text-zinc-300">
+                {user.role && user.role !== 'user' && (
+                  <span className="border-ink bg-accent-pop font-display inline-block self-start rounded-[2px] border-2 px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)] sm:self-end">
+                    {user.role}
+                  </span>
+                )}
+                {user.email && (
+                  <p className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-300">
+                    <Mail className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+                    <span className="truncate">{user.email}</span>
+                  </p>
+                )}
+                {user.date_joined && (
+                  <p className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
+                    <Calendar className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+                    <span>Member since {format(parseDate(user.date_joined), 'MMM d, yyyy')}</span>
+                  </p>
+                )}
+              </div>
             )}
-          </Button>
+          </div>
         </div>
+
+        {/* Form Inputs Grid & Submit Actions (Edit Mode Only) */}
+        {isEditing && (
+          <>
+            {/* Form Inputs Grid */}
+            <div className="mt-6 space-y-6">
+              {/* Username Input */}
+              <div>
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="username"
+                    className="font-display block text-xs tracking-wider uppercase"
+                  >
+                    Username
+                  </label>
+                  <span
+                    className={cn(
+                      'font-mono text-[11px] font-bold',
+                      username.length > 20 ? 'text-red-600' : 'text-zinc-400'
+                    )}
+                  >
+                    {username.length}/20
+                  </span>
+                </div>
+
+                <TextInput
+                  ref={usernameInputRef}
+                  id="username"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (formErrors.username) {
+                      setFormErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.username;
+                        return next;
+                      });
+                    }
+                  }}
+                  icon={AtSign}
+                  placeholder="username"
+                  maxLength={20}
+                  error={Boolean(formErrors.username)}
+                  wrapperClassName="mt-1.5"
+                  className="font-mono"
+                />
+
+                {formErrors.username ? (
+                  <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
+                    {formErrors.username}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+                    Required. 20 characters or fewer. Letters, digits, and @/./+/-/_ only.
+                  </p>
+                )}
+              </div>
+
+              {/* Display Name Input */}
+              <div>
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="display_name"
+                    className="font-display block text-xs tracking-wider uppercase"
+                  >
+                    Display Name
+                  </label>
+                  <span
+                    className={cn(
+                      'font-mono text-[11px] font-bold',
+                      displayName.length > 20 ? 'text-red-600' : 'text-zinc-400'
+                    )}
+                  >
+                    {displayName.length}/20
+                  </span>
+                </div>
+
+                <TextInput
+                  id="display_name"
+                  value={displayName}
+                  onChange={(e) => {
+                    setDisplayName(e.target.value);
+                    if (formErrors.display_name) {
+                      setFormErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.display_name;
+                        return next;
+                      });
+                    }
+                  }}
+                  placeholder="Friendly Name"
+                  maxLength={20}
+                  error={Boolean(formErrors.display_name)}
+                  wrapperClassName="mt-1.5"
+                />
+
+                {formErrors.display_name ? (
+                  <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
+                    {formErrors.display_name}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+                    20 characters or fewer. How your name is displayed on meetups, comments, and
+                    galleries.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Submit Actions */}
+            <FormActions
+              onCancel={handleCancelEdit}
+              isSubmitting={updateMutation.isPending}
+              submitIcon={<Check className="h-4 w-4 stroke-3" />}
+              submitLabel={
+                <>
+                  <span className="hidden sm:inline">Save Changes</span>
+                  <span className="sm:hidden">Save</span>
+                </>
+              }
+              submittingLabel="Saving…"
+              className="border-ink mt-8 border-t-2 border-dashed pt-6"
+            />
+          </>
+        )}
       </form>
 
       {/* Connected Accounts Section */}

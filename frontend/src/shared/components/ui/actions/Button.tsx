@@ -95,7 +95,7 @@ export function buttonClasses({
 } = {}) {
   return cn(
     CONBLOCK,
-    'inline-flex items-center justify-center gap-2 font-bold tracking-wider uppercase',
+    'inline-flex shrink-0 items-center justify-center gap-2 font-bold tracking-wider whitespace-nowrap uppercase',
     BUTTON_VARIANT_MAP[variant],
     BUTTON_SIZE_MAP[size],
     fullWidth && 'w-full',

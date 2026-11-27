@@ -16,6 +16,7 @@ export function useConvention(slug: string) {
   return useQuery({
     queryKey: apiTags.convention(slug),
     queryFn: async () => api.get(`api/v1/conventions/${slug}/`).json<Convention>(),
+    enabled: Boolean(slug),
   });
 }
 

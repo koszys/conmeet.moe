@@ -466,3 +466,49 @@ def test_freebie_is_owner_field() -> None:
     resp3 = client_anon.get(f"/api/v1/freebies/{freebie.id}/")
     assert resp3.status_code == status.HTTP_200_OK
     assert resp3.json()["is_owner"] is False
+
+
+def test_freebie_locked_after_convention_ends() -> None:
+    from datetime import timedelta
+    from django.utils import timezone
+
+    today = timezone.now().date()
+    ended_con = Convention.objects.create(
+        name="Ended Con",
+        slug="ended-con",
+        starts_at=today - timedelta(days=3),
+        ends_at=today - timedelta(days=1),
+    )
+    author = get_user_model().objects.create_user(username="ended_author")
+    staff = get_user_model().objects.create_user(username="ended_staff", is_staff=True)
+    vendor = Vendor.objects.create(name="Ended Vendor")
+    freebie = Freebie.objects.create(
+        name="Old Freebie",
+        vendor=vendor,
+        convention=ended_con,
+        created_by=author,
+    )
+
+    client_author = _authed_client(author)
+
+    # Cannot create after convention ends
+    resp_create = client_author.post(
+        "/api/v1/freebies/",
+        {"name": "Late Freebie", "vendor_name": "Late Vendor", "convention": ended_con.id},
+    )
+    assert resp_create.status_code == status.HTTP_403_FORBIDDEN
+
+    # Cannot edit after convention ends
+    resp_edit = client_author.patch(f"/api/v1/freebies/{freebie.id}/", {"name": "Edited"})
+    assert resp_edit.status_code == status.HTTP_403_FORBIDDEN
+
+    # Cannot delete after convention ends
+    resp_del = client_author.delete(f"/api/v1/freebies/{freebie.id}/")
+    assert resp_del.status_code == status.HTTP_403_FORBIDDEN
+    assert Freebie.objects.filter(id=freebie.id).exists()
+
+    # Staff can still delete
+    client_staff = _authed_client(staff)
+    resp_staff_del = client_staff.delete(f"/api/v1/freebies/{freebie.id}/")
+    assert resp_staff_del.status_code == status.HTTP_204_NO_CONTENT
+    assert not Freebie.objects.filter(id=freebie.id).exists()

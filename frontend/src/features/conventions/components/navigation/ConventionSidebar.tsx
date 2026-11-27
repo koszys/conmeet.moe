@@ -9,6 +9,7 @@ import { BrandMark } from '@/shared/components/brand/BrandMark';
 import { IconButton } from '@/shared/components/ui';
 
 import { useConvention } from '../../data/api';
+import { isPast } from '../../utils/dates';
 import { useConventionNav } from './ConventionNavContext';
 import { ConventionNavList } from './ConventionNavList';
 import { HeaderSearch } from '../search/HeaderSearch';
@@ -29,6 +30,7 @@ export function ConventionSidebar({
   if (!convention) return null;
 
   const month = format(parseDate(convention.starts_at), 'MMM').toUpperCase();
+  const ended = isPast(convention);
   const location = [convention.venue_name, convention.city, convention.country]
     .filter(Boolean)
     .join(', ');
@@ -59,10 +61,19 @@ export function ConventionSidebar({
           </div>
         </div>
 
-        {convention.is_featured && (
-          <span className="border-ink bg-accent-pop font-display mt-3 inline-block -rotate-2 rounded-[2px] border-2 px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)]">
-            featured
-          </span>
+        {(convention.is_featured || ended) && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {convention.is_featured && (
+              <span className="border-ink bg-accent-pop font-display inline-block -rotate-2 rounded-[2px] border-2 px-2 py-0.5 text-[10px] tracking-wide text-white uppercase shadow-[2px_2px_0_var(--ink)]">
+                featured
+              </span>
+            )}
+            {ended && (
+              <span className="border-ink font-display inline-block rounded-[2px] border-2 bg-zinc-200 px-2 py-0.5 text-[10px] tracking-wide text-zinc-700 uppercase shadow-[2px_2px_0_var(--ink)] dark:bg-zinc-800 dark:text-zinc-300">
+                ended
+              </span>
+            )}
+          </div>
         )}
 
         {location && (

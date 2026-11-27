@@ -6,6 +6,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
+import { isFreebieMutationLocked } from '@/features/conventions/utils/dates';
 import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useFreebieSettings } from '../../api';
@@ -25,6 +26,7 @@ export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps
   const { data: freebieSettings } = useFreebieSettings();
   const isFreebiesUnmounted =
     Boolean(convention?.unmount_freebies) || Boolean(freebieSettings?.unmount_all_freebies);
+  const isLocked = isFreebieMutationLocked(convention);
   const resolvedConventionName = conventionName || convention?.name;
   const router = useRouter();
   const createMutation = useCreateFreebie();
@@ -140,7 +142,7 @@ export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps
     }
   }
 
-  if (isFreebiesUnmounted) {
+  if (isFreebiesUnmounted || isLocked) {
     return (
       <div className="border-ink border-2 bg-white p-6 shadow-[6px_6px_0_var(--ink)] sm:p-8 dark:bg-zinc-900">
         <div className="mb-4">
@@ -148,10 +150,12 @@ export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps
         </div>
         <div className="py-8 text-center">
           <h2 className="font-display text-lg font-bold uppercase sm:text-xl">
-            Submissions Unavailable
+            {isFreebiesUnmounted ? 'Submissions Unavailable' : 'Submissions Closed'}
           </h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-            Freebie submissions are currently disabled for this convention.
+            {isFreebiesUnmounted
+              ? 'Freebie submissions are currently disabled for this convention.'
+              : 'Freebies cannot be added after the convention has ended.'}
           </p>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
+import { isMeetupMutationLocked } from '@/features/conventions/utils/dates';
 import { BackLink, CONBLOCK_PRIMARY, CopyLinkButton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 
@@ -13,6 +14,7 @@ interface MeetupHeaderProps {
 
 export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderProps) {
   const { data: convention } = useConvention(conventionSlug);
+  const isLocked = isMeetupMutationLocked(convention);
   const displayName =
     conventionName ||
     convention?.name ||
@@ -42,19 +44,36 @@ export function MeetupHeader({ conventionSlug, conventionName }: MeetupHeaderPro
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           <CopyLinkButton variant="responsive" />
-          <Link
-            href={`/conventions/${conventionSlug}/meetups/new`}
-            title="Post a Meetup"
-            aria-label="Post a Meetup"
-            className={cn(
-              CONBLOCK_PRIMARY,
-              'inline-flex h-10 items-center justify-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase @min-[680px]:gap-2 @min-[680px]:px-5'
-            )}
-          >
-            <Plus className="h-4 w-4 shrink-0 stroke-3" />
-            <span className="hidden @min-[680px]:inline">Post a Meetup</span>
-            <span className="@min-[680px]:hidden">Post</span>
-          </Link>
+          {isLocked ? (
+            <button
+              type="button"
+              disabled
+              title="Meetups cannot be added more than one week after the convention has ended"
+              aria-label="Meetups cannot be added more than one week after the convention has ended"
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex h-10 cursor-not-allowed items-center justify-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase opacity-50 hover:translate-x-0 hover:translate-y-0 hover:shadow-[2px_2px_0_var(--ink)] @min-[680px]:gap-2 @min-[680px]:px-5'
+              )}
+            >
+              <Plus className="h-4 w-4 shrink-0 stroke-3" />
+              <span className="hidden @min-[680px]:inline">Post a Meetup</span>
+              <span className="@min-[680px]:hidden">Post</span>
+            </button>
+          ) : (
+            <Link
+              href={`/conventions/${conventionSlug}/meetups/new`}
+              title="Post a Meetup"
+              aria-label="Post a Meetup"
+              className={cn(
+                CONBLOCK_PRIMARY,
+                'inline-flex h-10 items-center justify-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap uppercase @min-[680px]:gap-2 @min-[680px]:px-5'
+              )}
+            >
+              <Plus className="h-4 w-4 shrink-0 stroke-3" />
+              <span className="hidden @min-[680px]:inline">Post a Meetup</span>
+              <span className="@min-[680px]:hidden">Post</span>
+            </Link>
+          )}
         </div>
       </div>
     </div>

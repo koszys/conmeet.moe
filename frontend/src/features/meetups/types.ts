@@ -6,6 +6,7 @@ export interface Meetup {
   convention: number;
   convention_slug: string;
   convention_name: string;
+  convention_ends_at?: string | null;
   name: string;
   location: string | null;
   starts_at: string;

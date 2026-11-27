@@ -139,6 +139,7 @@ export interface LinkButtonProps extends ComponentProps<typeof Link> {
   variant?: ButtonVariant;
   size?: ButtonSizeVariant;
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 export function LinkButton({
@@ -147,10 +148,32 @@ export function LinkButton({
   fullWidth = false,
   className,
   children,
+  disabled,
+  title,
   ...props
 }: LinkButtonProps) {
+  if (disabled) {
+    return (
+      <button
+        type="button"
+        disabled
+        title={title}
+        aria-disabled="true"
+        className={cn(
+          buttonClasses({ variant, size, fullWidth, className }),
+          'cursor-not-allowed opacity-50 hover:translate-x-0 hover:translate-y-0 hover:shadow-[2px_2px_0_var(--ink)]'
+        )}
+      >
+        {children}
+      </button>
+    );
+  }
   return (
-    <Link className={buttonClasses({ variant, size, fullWidth, className })} {...props}>
+    <Link
+      className={buttonClasses({ variant, size, fullWidth, className })}
+      title={title}
+      {...props}
+    >
       {children}
     </Link>
   );

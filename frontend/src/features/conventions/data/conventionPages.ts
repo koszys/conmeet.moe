@@ -1,5 +1,6 @@
 import { CalendarDays, Gift, Home, LucideIcon, Plus, Users } from 'lucide-react';
 import type { Convention, ConventionSectionConfig } from '../types';
+import { isFreebieMutationLocked, isMeetupMutationLocked } from '../utils/dates';
 
 export interface ConventionPageConfig {
   id: string;
@@ -36,8 +37,6 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
       activities: [],
       emptyState: {
         message: 'No meetups scheduled yet. Organize a fan meetup or community meetup!',
-        actionLabel: 'Post a Meetup',
-        actionHref: `/conventions/${convention.slug}/meetups/new`,
       },
       primaryAction: {
         label: 'Browse Meetups',
@@ -49,6 +48,8 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
         shortLabel: 'Plan',
         href: `/conventions/${convention.slug}/meetups/new`,
         icon: Plus,
+        disabled: isMeetupMutationLocked(convention),
+        disabledReason: 'Meetups cannot be added more than one week after the convention has ended',
       },
       colSpan: 1,
     }),
@@ -68,8 +69,6 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
       activities: [],
       emptyState: {
         message: 'No freebies or booth drops shared yet for this convention.',
-        actionLabel: 'Submit First Freebie',
-        actionHref: `/conventions/${convention.slug}/freebies/new`,
       },
       primaryAction: {
         label: 'View Freebies',
@@ -81,6 +80,8 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
         shortLabel: 'Post',
         href: `/conventions/${convention.slug}/freebies/new`,
         icon: Plus,
+        disabled: isFreebieMutationLocked(convention),
+        disabledReason: 'Freebies cannot be added after the convention has ended',
       },
       colSpan: 1,
     }),
@@ -101,8 +102,6 @@ export const CONVENTION_PAGES: ConventionPageConfig[] = [
       activities: [],
       emptyState: {
         message: 'Official timetable has not been published yet.',
-        actionLabel: 'Open Timeline',
-        actionHref: `/conventions/${convention.slug}/schedule`,
       },
       primaryAction: {
         label: 'Full Schedule',

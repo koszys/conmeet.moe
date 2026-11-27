@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 from conventions.models import Convention
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
@@ -108,6 +111,11 @@ class ConventionMeetupListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         slug = self.kwargs.get("slug")
         convention = get_object_or_404(Convention, slug=slug)
+        if timezone.now().date() > convention.ends_at + timedelta(days=7):
+            if not (self.request.user.is_staff or getattr(self.request.user, "role", None) == "admin"):
+                raise PermissionDenied(
+                    "Meetups cannot be created more than one week after the convention has ended."
+                )
         serializer.save(convention=convention, created_by=self.request.user)
 
 
@@ -143,6 +151,22 @@ class MeetupDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method in ("PUT", "PATCH"):
             return MeetupUpdateSerializer
         return MeetupDetailSerializer
+
+    def _check_convention_lock(self, instance: Meetup, action: str) -> None:
+        if instance.convention and timezone.now().date() > instance.convention.ends_at + timedelta(days=7):
+            if not (self.request.user.is_staff or getattr(self.request.user, "role", None) == "admin"):
+                raise PermissionDenied(
+                    f"Meetups cannot be {action} more than one week after the convention has ended."
+                )
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self._check_convention_lock(instance, "edited")
+        return super().update(request, *args, **kwargs)
+
+    def perform_destroy(self, instance):
+        self._check_convention_lock(instance, "deleted")
+        instance.delete()
 
 
 class MeetupSaveToggleView(APIView):

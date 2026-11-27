@@ -534,3 +534,71 @@ def test_update_meetup_image_layout(convention: Convention, regular_user: User) 
 
     meetup.refresh_from_db()
     assert meetup.image_layout == "poster"
+
+
+def test_meetup_grace_period_and_lock(regular_user: User, staff_user: User) -> None:
+    from datetime import timedelta
+    from django.utils import timezone
+
+    today = timezone.now().date()
+
+    # 1. Within 7-day grace period (3 days after ends_at) -> allowed
+    grace_con = Convention.objects.create(
+        name="Grace Con",
+        slug="grace-con",
+        starts_at=today - timedelta(days=5),
+        ends_at=today - timedelta(days=3),
+    )
+    client = APIClient()
+    client.force_authenticate(user=regular_user)
+    resp_grace = client.post(
+        f"/api/v1/conventions/{grace_con.slug}/meetups/",
+        {
+            "name": "Grace Meetup",
+            "starts_at": (timezone.now() - timedelta(days=4)).isoformat(),
+            "ends_at": (timezone.now() - timedelta(days=4) + timedelta(hours=2)).isoformat(),
+        },
+    )
+    assert resp_grace.status_code == status.HTTP_201_CREATED
+    grace_meetup_id = resp_grace.json()["id"]
+    resp_grace_del = client.delete(f"/api/v1/meetups/{grace_meetup_id}/")
+    assert resp_grace_del.status_code == status.HTTP_204_NO_CONTENT
+
+    # 2. Past 7-day grace period (8 days after ends_at) -> blocked
+    locked_con = Convention.objects.create(
+        name="Locked Con",
+        slug="locked-con",
+        starts_at=today - timedelta(days=10),
+        ends_at=today - timedelta(days=8),
+    )
+    locked_meetup = Meetup.objects.create(
+        convention=locked_con,
+        name="Old Meetup",
+        starts_at=timezone.now() - timedelta(days=9),
+        ends_at=timezone.now() - timedelta(days=9) + timedelta(hours=2),
+        created_by=regular_user,
+    )
+
+    resp_create_locked = client.post(
+        f"/api/v1/conventions/{locked_con.slug}/meetups/",
+        {
+            "name": "Too Late Meetup",
+            "starts_at": (timezone.now() - timedelta(days=9)).isoformat(),
+            "ends_at": (timezone.now() - timedelta(days=9) + timedelta(hours=2)).isoformat(),
+        },
+    )
+    assert resp_create_locked.status_code == status.HTTP_403_FORBIDDEN
+
+    resp_edit_locked = client.patch(f"/api/v1/meetups/{locked_meetup.id}/", {"name": "New Name"})
+    assert resp_edit_locked.status_code == status.HTTP_403_FORBIDDEN
+
+    resp_del_locked = client.delete(f"/api/v1/meetups/{locked_meetup.id}/")
+    assert resp_del_locked.status_code == status.HTTP_403_FORBIDDEN
+    assert Meetup.objects.filter(id=locked_meetup.id).exists()
+
+    # Staff can still delete
+    staff_client = APIClient()
+    staff_client.force_authenticate(user=staff_user)
+    resp_staff_del = staff_client.delete(f"/api/v1/meetups/{locked_meetup.id}/")
+    assert resp_staff_del.status_code == status.HTTP_204_NO_CONTENT
+    assert not Meetup.objects.filter(id=locked_meetup.id).exists()

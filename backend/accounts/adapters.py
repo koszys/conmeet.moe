@@ -2,10 +2,12 @@ from typing import Any, cast
 from urllib.parse import urlencode
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.socialaccount.models import SocialLogin
+from allauth.socialaccount.models import SocialAccount, SocialLogin
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.db import transaction
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -54,6 +56,50 @@ def _discord_avatar_url(data: dict[str, Any]) -> str | None:
 
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
+    def get_auth_params(self, request: HttpRequest, app: Any) -> dict[str, Any]:
+        params = dict(super().get_auth_params(request, app))
+        link_data = request.session.get("pending_social_link")
+        if (
+            link_data
+            and link_data.get("mode") == "relink"
+            and link_data.get("provider") == app.provider
+            and app.provider == "google"
+        ):
+            params["prompt"] = "select_account"
+        return params
+
+    def pre_social_login(self, request: HttpRequest, sociallogin: SocialLogin) -> None:
+        link_data = request.session.pop("pending_social_link", None)
+        if not link_data or link_data.get("provider") != sociallogin.account.provider:
+            return
+
+        target_user = User.objects.filter(id=link_data.get("user_id")).first()
+        if not target_user:
+            return
+
+        next_url = link_data.get("next") or "/settings"
+
+        if sociallogin.is_existing and sociallogin.user and sociallogin.user.id != target_user.id:
+            raise ImmediateHttpResponse(
+                HttpResponseRedirect(
+                    f"{settings.FRONTEND_URL}{next_url}?link_error=already_linked"
+                )
+            )
+
+        if not sociallogin.is_existing:
+            with transaction.atomic():
+                if link_data.get("mode") == "relink":
+                    SocialAccount.objects.filter(
+                        user=target_user, provider=sociallogin.account.provider
+                    ).delete()
+                sociallogin.connect(request, target_user)
+
+        redirect_url = build_token_redirect_url(
+            target_user,
+            next_url=f"{next_url}?linked={sociallogin.account.provider}",
+        )
+        raise ImmediateHttpResponse(HttpResponseRedirect(redirect_url))
+
     def populate_user(
         self, request: HttpRequest, sociallogin: SocialLogin, data: dict[str, Any]
     ) -> User:

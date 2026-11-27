@@ -1,6 +1,13 @@
 """API v1 URL patterns (aggregated so config/urls.py stays tiny)."""
 
-from accounts.views import LogoutView, MeView, health
+from accounts.views import (
+    LogoutView,
+    MeView,
+    ProviderConnectRedirectView,
+    ProviderLinkStartView,
+    ProviderUnlinkView,
+    health,
+)
 from accounts.views_sync import SyncGuestSavesView
 from comments.views import (
     AlbumCommentListCreateView,
@@ -40,6 +47,13 @@ urlpatterns = [
     path("health/", health, name="health"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/me/", MeView.as_view(), name="me"),
+    path("auth/providers/link/", ProviderLinkStartView.as_view(), name="provider-link-start"),
+    path("auth/providers/connect/", ProviderConnectRedirectView.as_view(), name="provider-connect"),
+    path(
+        "auth/providers/<str:provider>/",
+        ProviderUnlinkView.as_view(),
+        name="provider-unlink",
+    ),
     path("auth/sync-saves/", SyncGuestSavesView.as_view(), name="sync-guest-saves"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("conventions/", ConventionListView.as_view(), name="convention-list"),

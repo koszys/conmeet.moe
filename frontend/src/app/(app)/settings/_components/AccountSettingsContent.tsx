@@ -3,10 +3,27 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { AlertTriangle, AtSign, Camera, Check, Mail, Calendar, UserRound } from 'lucide-react';
-import { useAuth, useUpdateProfile } from '@/features/auth';
+import {
+  AlertTriangle,
+  AtSign,
+  Calendar,
+  Camera,
+  Check,
+  Link2,
+  Mail,
+  RefreshCw,
+  Unlink,
+  UserRound,
+} from 'lucide-react';
+import {
+  useAuth,
+  useStartProviderLink,
+  useUnlinkProvider,
+  useUpdateProfile,
+} from '@/features/auth';
 import { SpinBackdrop } from '@/shared/components/miku';
-import { EditButton, FormActions, TextInput } from '@/shared/components/ui';
+import { Button, EditButton, FormActions, TextInput } from '@/shared/components/ui';
+import { type OAuthProvider } from '@/shared/lib/api';
 import { parseDate } from '@/shared/lib/dates';
 import discordLogo from '@/assets/social/discordlogo.png';
 import { cn } from '@/shared/lib/utils';
@@ -55,6 +72,8 @@ const PROVIDERS: Record<
 export function AccountSettingsContent() {
   const { user, usernameCollisionNotice, dismissUsernameCollisionNotice } = useAuth();
   const updateMutation = useUpdateProfile();
+  const unlinkMutation = useUnlinkProvider();
+  const startLinkMutation = useStartProviderLink();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const usernameInputRef = useRef<HTMLInputElement>(null);
@@ -69,6 +88,11 @@ export function AccountSettingsContent() {
   const [fileError, setFileError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [providerMessage, setProviderMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null);
 
   // Sync initial user data
   useEffect(() => {
@@ -78,13 +102,42 @@ export function AccountSettingsContent() {
     }
   }, [user]);
 
-  // Check URL param or context for username collision warning
+  // Check URL param or context for username collision warning or OAuth link results
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('username_collision') === '1' || usernameCollisionNotice) {
       setIsCollisionNotice(true);
       setIsEditing(true);
       setTimeout(() => usernameInputRef.current?.focus(), 0);
+    }
+
+    const linked = params.get('linked');
+    const linkError = params.get('link_error');
+    if (linked && PROVIDERS[linked]) {
+      setProviderMessage({
+        type: 'success',
+        text: `${PROVIDERS[linked].label} account linked successfully!`,
+      });
+      params.delete('linked');
+      const nextSearch = params.toString();
+      window.history.replaceState(
+        {},
+        '',
+        `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`
+      );
+    } else if (linkError) {
+      const errorText =
+        linkError === 'already_linked'
+          ? 'That external account is already linked to another conmeet.moe account.'
+          : 'Your account linking session expired. Please try again.';
+      setProviderMessage({ type: 'error', text: errorText });
+      params.delete('link_error');
+      const nextSearch = params.toString();
+      window.history.replaceState(
+        {},
+        '',
+        `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`
+      );
     }
   }, [usernameCollisionNotice]);
 
@@ -196,6 +249,51 @@ export function AccountSettingsContent() {
     setFileError(null);
     setFormErrors({});
     setIsEditing(false);
+  }
+
+  async function handleLinkProvider(provider: OAuthProvider, mode: 'connect' | 'relink') {
+    setProviderMessage(null);
+    setPendingProvider(provider);
+    try {
+      const redirectUrl = await startLinkMutation.mutateAsync({
+        provider,
+        mode,
+        next: '/settings',
+      });
+      window.location.assign(redirectUrl);
+    } catch {
+      setProviderMessage({
+        type: 'error',
+        text: `Failed to start ${PROVIDERS[provider]?.label ?? provider} linking. Please try again.`,
+      });
+      setPendingProvider(null);
+    }
+  }
+
+  async function handleUnlinkProvider(provider: OAuthProvider) {
+    setProviderMessage(null);
+    setPendingProvider(provider);
+    try {
+      await unlinkMutation.mutateAsync(provider);
+      setProviderMessage({
+        type: 'success',
+        text: `${PROVIDERS[provider]?.label ?? provider} account unlinked.`,
+      });
+    } catch (err: unknown) {
+      let detail = `Failed to unlink ${PROVIDERS[provider]?.label ?? provider}.`;
+      if (err && typeof err === 'object' && 'response' in err) {
+        try {
+          const res = (err as { response: Response }).response;
+          const data = await res.json();
+          if (data?.detail) detail = String(data.detail);
+        } catch {
+          // ignore
+        }
+      }
+      setProviderMessage({ type: 'error', text: detail });
+    } finally {
+      setPendingProvider(null);
+    }
   }
 
   const providers = user?.providers ?? [];
@@ -510,44 +608,121 @@ export function AccountSettingsContent() {
 
       {/* Connected Accounts Section */}
       <section className="border-ink mt-8 rounded-none border-2 border-dashed bg-white/70 p-6 backdrop-blur-sm md:p-8 dark:bg-[#373b3e]/70">
-        <h2 className="text-sm font-bold tracking-widest text-zinc-400 uppercase">
+        <h2 className="font-display text-sm font-bold tracking-widest uppercase">
           Connected Accounts
         </h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {providers.length === 0 && (
-            <span className="text-sm text-zinc-500 dark:text-zinc-300">
-              No social accounts linked.
-            </span>
-          )}
-          {providers.map((provider) => {
+
+        {providerMessage && (
+          <div
+            className={cn(
+              'border-ink mt-4 flex items-center gap-2 border-2 p-3 text-xs font-bold shadow-[2px_2px_0_var(--ink)]',
+              providerMessage.type === 'success'
+                ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200'
+                : 'bg-red-100 text-red-900 dark:bg-red-950/40 dark:text-red-200'
+            )}
+          >
+            {providerMessage.type === 'success' ? (
+              <Check className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 shrink-0 text-red-700 dark:text-red-400" />
+            )}
+            <span>{providerMessage.text}</span>
+          </div>
+        )}
+
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {(['discord', 'google'] as OAuthProvider[]).map((provider) => {
             const config = PROVIDERS[provider];
-            if (!config) {
-              return (
-                <span
-                  key={provider}
-                  className="rounded-none border-2 px-3 py-1 text-sm font-bold tracking-wide uppercase"
-                >
-                  {provider}
-                </span>
-              );
-            }
+            const isConnected = providers.includes(provider);
+            const isOnlyProvider = isConnected && providers.length <= 1;
+            const isBusy = pendingProvider === provider;
+
             return (
-              <span
+              <div
                 key={provider}
                 className={cn(
-                  'flex items-center gap-2 rounded-none border-2 px-3 py-1 text-sm font-bold tracking-wide uppercase shadow-[2px_2px_0_var(--ink)]',
-                  config.textClassName
+                  'border-ink flex flex-col justify-between border-2 p-4 transition-colors',
+                  isConnected
+                    ? 'bg-white shadow-[3px_3px_0_var(--ink)] dark:bg-zinc-900'
+                    : 'bg-zinc-50/70 dark:bg-zinc-900/40'
                 )}
-                style={{ backgroundColor: config.backgroundColor }}
               >
-                {config.icon}
-                {config.label}
-              </span>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        'border-ink flex h-10 w-10 shrink-0 items-center justify-center border-2 shadow-[2px_2px_0_var(--ink)]',
+                        config.textClassName
+                      )}
+                      style={{ backgroundColor: config.backgroundColor }}
+                    >
+                      {config.icon}
+                    </div>
+                    <div>
+                      <p className="font-display text-sm font-bold tracking-wide uppercase">
+                        {config.label}
+                      </p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                        {isConnected ? 'Connected' : 'Not linked'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-ink/20 mt-4 flex items-center gap-2 border-t-2 border-dashed pt-3">
+                  {isConnected ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={isBusy}
+                        onClick={() => handleLinkProvider(provider, 'relink')}
+                        title={`Switch to a different ${config.label} account`}
+                        className="flex-1"
+                      >
+                        <RefreshCw className={cn('h-3.5 w-3.5', isBusy && 'animate-spin')} />
+                        <span>Relink</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={isOnlyProvider || isBusy}
+                        onClick={() => handleUnlinkProvider(provider)}
+                        title={
+                          isOnlyProvider
+                            ? 'At least one connected account must remain linked'
+                            : `Unlink ${config.label}`
+                        }
+                        className="flex-1 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                      >
+                        <Unlink className="h-3.5 w-3.5" />
+                        <span>Unlink</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      fullWidth
+                      disabled={isBusy}
+                      onClick={() => handleLinkProvider(provider, 'connect')}
+                    >
+                      <Link2 className="h-3.5 w-3.5" />
+                      <span>Connect {config.label}</span>
+                    </Button>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
-        <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-300">
-          Same-email logins are linked to this account automatically.
+
+        <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-300">
+          At least one connected account must remain linked. Same-email logins are linked
+          automatically.
         </p>
       </section>
     </main>

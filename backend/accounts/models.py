@@ -60,6 +60,16 @@ class User(AbstractUser):
     )
     is_guest = models.BooleanField(default=False)
 
+    @property
+    def effective_avatar_url(self) -> str:
+        """Return custom uploaded avatar URL if set, falling back to social provider avatar_url."""
+        if self.avatar:
+            try:
+                return self.avatar.url
+            except Exception:
+                pass
+        return self.avatar_url or ""
+
     def __str__(self) -> str:
         return self.display_name or self.username or str(self.pk)
 

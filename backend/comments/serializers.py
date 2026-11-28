@@ -25,14 +25,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_avatar_url(self, obj: User) -> str | None:
-        if obj.avatar:
-            try:
-                return obj.avatar.url
-            except Exception:
-                pass
-        if obj.avatar_url:
-            return obj.avatar_url
-        return None
+        return obj.effective_avatar_url or None
 
     def get_display_name(self, obj: User) -> str:
         return obj.display_name or obj.username

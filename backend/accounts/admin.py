@@ -88,11 +88,7 @@ class UserAdmin(R2AdminMediaMixin, ModelAdmin, DjangoUserAdmin):
 
     @display(description="Avatar")
     def avatar_preview(self, obj: User):
-        url = None
-        if obj.avatar:
-            url = obj.avatar.url
-        elif obj.avatar_url:
-            url = obj.avatar_url
+        url = obj.effective_avatar_url
         if url:
             return format_html(
                 '<img src="{}" width="64" height="64" class="rounded-full" />',

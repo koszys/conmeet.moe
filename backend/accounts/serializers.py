@@ -65,12 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
         return emails
 
     def get_avatar_url(self, obj: User) -> str:
-        if obj.avatar:
-            try:
-                return obj.avatar.url
-            except Exception:
-                pass
-        return obj.avatar_url or ""
+        return obj.effective_avatar_url
 
     def get_has_custom_avatar(self, obj: User) -> bool:
         return bool(obj.avatar)

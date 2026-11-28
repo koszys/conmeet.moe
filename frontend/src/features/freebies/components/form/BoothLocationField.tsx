@@ -1,8 +1,7 @@
 'use client';
 
-import { TextInput } from '@/shared/components/ui';
+import { CharCounter, TextInput } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { CharCounter } from './CharCounter';
 
 export interface BoothLocationFieldProps {
   id?: string;

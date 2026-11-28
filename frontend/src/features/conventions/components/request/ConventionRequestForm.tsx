@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { CheckCircle2 } from 'lucide-react';
 import {
+  Alert,
   CONBLOCK,
   CONBLOCK_PRIMARY,
   FormActions,
@@ -14,6 +15,7 @@ import {
   TextArea,
   TextInput,
 } from '@/shared/components/ui';
+import { parseApiFieldErrors } from '@/shared/lib/errors';
 import { cn } from '@/shared/lib/utils';
 import { useAuth } from '@/features/auth';
 import { useSubmitConventionRequest } from '../../data/api';
@@ -151,20 +153,14 @@ export function ConventionRequestForm() {
       reset();
       removeBanner();
     } catch (err: unknown) {
-      let message = 'An error occurred while submitting your request. Please try again.';
-      if (err && typeof err === 'object' && 'response' in err) {
-        const httpErr = err as { response: Response };
-        try {
-          const data = await httpErr.response.json();
-          if (typeof data === 'object' && data !== null) {
-            const firstKey = Object.keys(data)[0];
-            const firstVal = data[firstKey];
-            message = Array.isArray(firstVal) ? `${firstKey}: ${firstVal[0]}` : String(firstVal);
-          }
-        } catch {
-          // ignore json parse error
-        }
-      }
+      const parsed = await parseApiFieldErrors(
+        err,
+        'An error occurred while submitting your request. Please try again.'
+      );
+      const firstEntry = Object.entries(parsed)[0];
+      const message =
+        parsed.non_field_errors ||
+        (firstEntry ? `${firstEntry[0]}: ${firstEntry[1]}` : 'An error occurred.');
       setServerError(message);
     }
   };
@@ -216,9 +212,9 @@ export function ConventionRequestForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {serverError && (
-        <div className="border-ink border-2 bg-red-100 p-4 text-xs font-semibold text-red-700 shadow-[3px_3px_0_var(--ink)] dark:bg-red-950/60 dark:text-red-300">
+        <Alert variant="error" className="p-4 shadow-[3px_3px_0_var(--ink)]">
           {serverError}
-        </div>
+        </Alert>
       )}
 
       {/* Submitter Context Banner */}

@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { Check, ChevronUp, Plus, RotateCw } from 'lucide-react';
-import { TextInput } from '@/shared/components/ui';
+import { CharCounter, TextInput } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { CharCounter } from './CharCounter';
 import { VendorSuggestDropdown } from './VendorSuggestDropdown';
 import type { useVendorSuggestions } from './useVendorSuggestions';
 

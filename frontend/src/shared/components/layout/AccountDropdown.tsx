@@ -3,7 +3,8 @@
 import type { RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { LogOut, Settings, UserRound } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
+import { UserAvatar } from '@/shared/components/ui';
 import type { MeUser } from '@/shared/lib/api';
 
 export interface AccountDropdownProps {
@@ -23,13 +24,7 @@ export function AccountDropdown({ user, popupRef, onClose, onLogout }: AccountDr
     >
       {/* User Header */}
       <div className="border-ink flex items-center gap-2.5 border-b-2 border-dashed px-3.5 py-3">
-        <div className="border-ink flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden border-2 bg-zinc-100 dark:bg-zinc-800">
-          {user.avatar_url ? (
-            <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <UserRound className="h-4 w-4 text-zinc-500" />
-          )}
-        </div>
+        <UserAvatar src={user.avatar_url} size="sm" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs leading-tight font-bold">
             {user.display_name || user.username}

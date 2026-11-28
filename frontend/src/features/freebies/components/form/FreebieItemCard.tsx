@@ -2,9 +2,8 @@
 
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Trash2 } from 'lucide-react';
-import { TextArea, TextInput } from '@/shared/components/ui';
+import { CharCounter, TextArea, TextInput } from '@/shared/components/ui';
 import type { FreebieItemFormValues, MultiFreebieFormValues } from './schema';
-import { CharCounter } from './CharCounter';
 import { BoothLocationField } from './BoothLocationField';
 import { ItemImageUpload } from './ItemImageUpload';
 

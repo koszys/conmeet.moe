@@ -3,10 +3,11 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { Calendar, Clock, HeartHandshake, MapPin, Sparkles, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, HeartHandshake, MapPin, Sparkles } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { isMeetupMutationLocked } from '@/features/conventions/utils/dates';
 import {
+  Alert,
   BackLink,
   FormActions,
   ImageUpload,
@@ -16,6 +17,7 @@ import {
   TextInput,
 } from '@/shared/components/ui';
 import { parseDate } from '@/shared/lib/dates';
+import { parseApiFieldErrors } from '@/shared/lib/errors';
 import { cn } from '@/shared/lib/utils';
 import { useCreateMeetup, useUpdateMeetup } from '../../api';
 import type { MeetupDetail } from '../../types';
@@ -249,20 +251,14 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
         }
       }
     } catch (err: unknown) {
-      let msg = 'Failed to save meetup. Please review your details and try again.';
-      if (err && typeof err === 'object' && 'response' in err) {
-        const httpErr = err as { response: Response };
-        try {
-          const data = await httpErr.response.json();
-          if (typeof data === 'object' && data !== null) {
-            const firstKey = Object.keys(data)[0];
-            const firstVal = data[firstKey];
-            msg = Array.isArray(firstVal) ? `${firstKey}: ${firstVal[0]}` : String(firstVal);
-          }
-        } catch {
-          // ignore parsing error
-        }
-      }
+      const parsed = await parseApiFieldErrors(
+        err,
+        'Failed to save meetup. Please review your details and try again.'
+      );
+      const firstEntry = Object.entries(parsed)[0];
+      const msg =
+        parsed.non_field_errors ||
+        (firstEntry ? `${firstEntry[0]}: ${firstEntry[1]}` : 'Failed to save meetup.');
       setServerError(msg);
     }
   };
@@ -324,10 +320,9 @@ export function MeetupForm({ conventionSlug, initialData, onSuccess, onCancel }:
       </div>
 
       {serverError && (
-        <div className="border-ink flex items-start gap-3 border-2 bg-red-50 p-4 text-sm font-semibold text-red-700 shadow-[4px_4px_0_var(--ink)] dark:bg-red-950/40 dark:text-red-300">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-          <span>{serverError}</span>
-        </div>
+        <Alert variant="error" className="p-4 text-sm shadow-[4px_4px_0_var(--ink)]">
+          {serverError}
+        </Alert>
       )}
 
       {/* Main Form Box */}

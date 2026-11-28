@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { UserRound } from 'lucide-react';
 import { useAuth } from '@/features/auth';
-import { IconButton, iconButtonClasses } from '@/shared/components/ui';
+import { IconButton, iconButtonClasses, UserAvatar } from '@/shared/components/ui';
 
 export function AccountButton({ onToggle }: { onToggle: () => void }) {
   const { user, loading } = useAuth();
@@ -20,11 +20,12 @@ export function AccountButton({ onToggle }: { onToggle: () => void }) {
 
   return (
     <IconButton onClick={onToggle} aria-label="Account menu" className="flex overflow-hidden">
-      {user.avatar_url ? (
-        <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
-      ) : (
-        <UserRound className="h-4 w-4" />
-      )}
+      <UserAvatar
+        src={user.avatar_url}
+        framed={false}
+        className="h-full w-full"
+        iconClassName="text-current"
+      />
     </IconButton>
   );
 }

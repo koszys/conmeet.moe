@@ -1,73 +1,30 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import { format } from 'date-fns';
-import {
-  AlertTriangle,
-  AtSign,
-  Calendar,
-  Camera,
-  Check,
-  Link2,
-  Mail,
-  RefreshCw,
-  Unlink,
-  UserRound,
-} from 'lucide-react';
+import { AtSign, Calendar, Camera, Check, Link2, Mail, RefreshCw, Unlink } from 'lucide-react';
 import {
   useAuth,
   useStartProviderLink,
   useUnlinkProvider,
   useUpdateProfile,
 } from '@/features/auth';
+import { OAUTH_PROVIDERS } from '@/shared/components/brand/OAuthProviders';
 import { SpinBackdrop } from '@/shared/components/miku';
-import { Button, EditButton, FormActions, StatusBanner, TextInput } from '@/shared/components/ui';
+import {
+  Alert,
+  Button,
+  EditButton,
+  FormActions,
+  FormField,
+  StatusBanner,
+  TextInput,
+  UserAvatar,
+} from '@/shared/components/ui';
 import { type OAuthProvider } from '@/shared/lib/api';
 import { parseDate } from '@/shared/lib/dates';
-import discordLogo from '@/assets/social/discordlogo.png';
+import { parseApiFieldErrors } from '@/shared/lib/errors';
 import { cn } from '@/shared/lib/utils';
-
-function GoogleLogo({ className = 'h-5 w-5' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" aria-hidden="true" className={className}>
-      <path
-        fill="#FFC107"
-        d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"
-      />
-      <path
-        fill="#FF3D00"
-        d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
-      />
-      <path
-        fill="#4CAF50"
-        d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44z"
-      />
-      <path
-        fill="#1976D2"
-        d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.2 4.3-4.1 5.7l6.2 5.2C36.9 39.3 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"
-      />
-    </svg>
-  );
-}
-
-const PROVIDERS: Record<
-  string,
-  { label: string; backgroundColor: string; textClassName: string; icon: React.ReactNode }
-> = {
-  discord: {
-    label: 'Discord',
-    backgroundColor: '#5865F2',
-    textClassName: '!text-white',
-    icon: <Image src={discordLogo} alt="" width={16} height={16} className="brightness-0 invert" />,
-  },
-  google: {
-    label: 'Google',
-    backgroundColor: '#ffffff',
-    textClassName: '!text-ink',
-    icon: <GoogleLogo className="h-4 w-4" />,
-  },
-};
 
 export function AccountSettingsContent() {
   const { user, refreshUser, usernameCollisionNotice, dismissUsernameCollisionNotice } = useAuth();
@@ -113,11 +70,11 @@ export function AccountSettingsContent() {
 
     const linked = params.get('linked');
     const linkError = params.get('link_error');
-    if (linked && PROVIDERS[linked]) {
+    if (linked && OAUTH_PROVIDERS[linked]) {
       void refreshUser();
       setProviderMessage({
         type: 'success',
-        text: `${PROVIDERS[linked].label} account linked successfully!`,
+        text: `${OAUTH_PROVIDERS[linked].label} account linked successfully!`,
       });
       params.delete('linked');
       const nextSearch = params.toString();
@@ -212,23 +169,7 @@ export function AccountSettingsContent() {
         window.history.replaceState({}, '', window.location.pathname);
       }
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        try {
-          const res = (err as { response: Response }).response;
-          const data = await res.json();
-          if (data && typeof data === 'object') {
-            const mapped: Record<string, string> = {};
-            for (const [key, val] of Object.entries(data)) {
-              mapped[key] = Array.isArray(val) ? val.join(' ') : String(val);
-            }
-            setFormErrors(mapped);
-            return;
-          }
-        } catch {
-          // fallback
-        }
-      }
-      setFormErrors({ non_field_errors: 'Failed to update account. Please try again.' });
+      setFormErrors(await parseApiFieldErrors(err, 'Failed to update account. Please try again.'));
     }
   }
 
@@ -260,7 +201,7 @@ export function AccountSettingsContent() {
     } catch {
       setProviderMessage({
         type: 'error',
-        text: `Failed to start ${PROVIDERS[provider]?.label ?? provider} linking. Please try again.`,
+        text: `Failed to start ${OAUTH_PROVIDERS[provider]?.label ?? provider} linking. Please try again.`,
       });
       setPendingProvider(null);
     }
@@ -273,20 +214,12 @@ export function AccountSettingsContent() {
       await unlinkMutation.mutateAsync(provider);
       setProviderMessage({
         type: 'success',
-        text: `${PROVIDERS[provider]?.label ?? provider} account unlinked.`,
+        text: `${OAUTH_PROVIDERS[provider]?.label ?? provider} account unlinked.`,
       });
     } catch (err: unknown) {
-      let detail = `Failed to unlink ${PROVIDERS[provider]?.label ?? provider}.`;
-      if (err && typeof err === 'object' && 'response' in err) {
-        try {
-          const res = (err as { response: Response }).response;
-          const data = await res.json();
-          if (data?.detail) detail = String(data.detail);
-        } catch {
-          // ignore
-        }
-      }
-      setProviderMessage({ type: 'error', text: detail });
+      const fallback = `Failed to unlink ${OAUTH_PROVIDERS[provider]?.label ?? provider}.`;
+      const parsed = await parseApiFieldErrors(err, fallback);
+      setProviderMessage({ type: 'error', text: parsed.non_field_errors || fallback });
     } finally {
       setPendingProvider(null);
     }
@@ -315,25 +248,15 @@ export function AccountSettingsContent() {
 
       {/* Username Collision Warning Notice */}
       {isCollisionNotice && (
-        <div
-          role="alert"
-          className="border-ink mt-8 border-2 bg-amber-100 p-4 shadow-[3px_3px_0_var(--ink)] dark:bg-amber-950/40"
+        <Alert
+          variant="warning"
+          title="Username Notice"
+          className="mt-8 p-4 shadow-[3px_3px_0_var(--ink)]"
         >
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-400" />
-            <div>
-              <h3 className="font-display text-xs font-bold tracking-wider text-amber-900 uppercase dark:text-amber-200">
-                Username Notice
-              </h3>
-              <p className="mt-1 text-xs leading-relaxed text-amber-900 dark:text-amber-300">
-                Your preferred username from your connected account was already in use by another
-                member, so we assigned you{' '}
-                <strong className="font-mono font-bold">@{user?.username}</strong>. You can choose a
-                unique handle of your choice below!
-              </p>
-            </div>
-          </div>
-        </div>
+          Your preferred username from your connected account was already in use by another member,
+          so we assigned you <strong className="font-mono font-bold">@{user?.username}</strong>. You
+          can choose a unique handle of your choice below!
+        </Alert>
       )}
 
       {/* Profile Details Section */}
@@ -388,15 +311,15 @@ export function AccountSettingsContent() {
                   aria-label="Upload profile picture"
                   className="group border-ink relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_var(--ink)] sm:h-24 sm:w-24 dark:bg-zinc-800"
                 >
-                  {currentAvatarUrl ? (
-                    <img
-                      src={currentAvatarUrl}
-                      alt="Profile Avatar"
-                      className="h-full w-full object-cover transition-opacity group-hover:opacity-60"
-                    />
-                  ) : (
-                    <UserRound className="h-10 w-10 text-zinc-400 transition-opacity group-hover:opacity-60" />
-                  )}
+                  <UserAvatar
+                    src={currentAvatarUrl}
+                    alt="Profile Avatar"
+                    size="xl"
+                    framed={false}
+                    className="h-full w-full"
+                    imgClassName="transition-opacity group-hover:opacity-60"
+                    iconClassName="transition-opacity group-hover:opacity-60"
+                  />
 
                   {/* Hover Overlay */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
@@ -407,17 +330,12 @@ export function AccountSettingsContent() {
                   </div>
                 </button>
               ) : (
-                <div className="border-ink relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border-2 bg-zinc-100 shadow-[3px_3px_0_var(--ink)] sm:h-24 sm:w-24 dark:bg-zinc-800">
-                  {currentAvatarUrl ? (
-                    <img
-                      src={currentAvatarUrl}
-                      alt="Profile Avatar"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <UserRound className="h-10 w-10 text-zinc-400" />
-                  )}
-                </div>
+                <UserAvatar
+                  src={currentAvatarUrl}
+                  alt="Profile Avatar"
+                  size="xl"
+                  className="h-20 w-20 shadow-[3px_3px_0_var(--ink)] sm:h-24 sm:w-24"
+                />
               )}
 
               {/* Hidden File Input */}
@@ -482,24 +400,14 @@ export function AccountSettingsContent() {
             {/* Form Inputs Grid */}
             <div className="mt-6 space-y-6">
               {/* Username Input */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="username"
-                    className="font-display block text-xs tracking-wider uppercase"
-                  >
-                    Username
-                  </label>
-                  <span
-                    className={cn(
-                      'font-mono text-[11px] font-bold',
-                      username.length > 20 ? 'text-red-600' : 'text-zinc-400'
-                    )}
-                  >
-                    {username.length}/20
-                  </span>
-                </div>
-
+              <FormField
+                label="Username"
+                htmlFor="username"
+                count={username.length}
+                maxCount={20}
+                error={formErrors.username}
+                hint="Required. 20 characters or fewer. Letters, digits, and @/./+/-/_ only."
+              >
                 <TextInput
                   ref={usernameInputRef}
                   id="username"
@@ -518,40 +426,19 @@ export function AccountSettingsContent() {
                   placeholder="username"
                   maxLength={20}
                   error={Boolean(formErrors.username)}
-                  wrapperClassName="mt-1.5"
                   className="font-mono"
                 />
-
-                {formErrors.username ? (
-                  <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
-                    {formErrors.username}
-                  </p>
-                ) : (
-                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-                    Required. 20 characters or fewer. Letters, digits, and @/./+/-/_ only.
-                  </p>
-                )}
-              </div>
+              </FormField>
 
               {/* Display Name Input */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="display_name"
-                    className="font-display block text-xs tracking-wider uppercase"
-                  >
-                    Display Name
-                  </label>
-                  <span
-                    className={cn(
-                      'font-mono text-[11px] font-bold',
-                      displayName.length > 20 ? 'text-red-600' : 'text-zinc-400'
-                    )}
-                  >
-                    {displayName.length}/20
-                  </span>
-                </div>
-
+              <FormField
+                label="Display Name"
+                htmlFor="display_name"
+                count={displayName.length}
+                maxCount={20}
+                error={formErrors.display_name}
+                hint="20 characters or fewer. How your name is displayed on meetups, comments, and galleries."
+              >
                 <TextInput
                   id="display_name"
                   value={displayName}
@@ -568,20 +455,8 @@ export function AccountSettingsContent() {
                   placeholder="Friendly Name"
                   maxLength={20}
                   error={Boolean(formErrors.display_name)}
-                  wrapperClassName="mt-1.5"
                 />
-
-                {formErrors.display_name ? (
-                  <p className="mt-1 text-xs font-bold text-red-600 dark:text-red-400">
-                    {formErrors.display_name}
-                  </p>
-                ) : (
-                  <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-                    20 characters or fewer. How your name is displayed on meetups, comments, and
-                    galleries.
-                  </p>
-                )}
-              </div>
+              </FormField>
             </div>
 
             {/* Submit Actions */}
@@ -617,7 +492,7 @@ export function AccountSettingsContent() {
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {(['discord', 'google'] as OAuthProvider[]).map((provider) => {
-            const config = PROVIDERS[provider];
+            const config = OAUTH_PROVIDERS[provider];
             const isConnected = providers.includes(provider);
             const isOnlyProvider = isConnected && providers.length <= 1;
             const isBusy = pendingProvider === provider;

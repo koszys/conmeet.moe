@@ -1,6 +1,5 @@
 export * from './FreebieForm';
 export * from './schema';
-export * from './CharCounter';
 export * from './ItemImageUpload';
 export * from './VendorSuggestDropdown';
 export * from './VendorPicker';

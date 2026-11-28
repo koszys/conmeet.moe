@@ -4,6 +4,8 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Loader2 } from 'lucide-react';
 import {
+  Alert,
+  CharCounter,
   CloseButton,
   CONBLOCK,
   CONBLOCK_PRIMARY,
@@ -14,13 +16,7 @@ import { cn } from '@/shared/lib/utils';
 import { lockBodyScroll } from '@/shared/lib/scrollLock';
 import type { Freebie } from '../../types';
 import { useUpdateFreebie } from '../../api/mutations';
-import {
-  BoothLocationField,
-  CharCounter,
-  ItemImageUpload,
-  useVendorSuggestions,
-  VendorPicker,
-} from '../form';
+import { BoothLocationField, ItemImageUpload, useVendorSuggestions, VendorPicker } from '../form';
 
 export interface EditFreebieModalProps {
   freebie: Freebie;
@@ -235,11 +231,7 @@ function EditFreebieModalDialog({ freebie, onClose }: { freebie: Freebie; onClos
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3.5 sm:p-6"
         >
           <div className="space-y-3 sm:space-y-4">
-            {serverError ? (
-              <div className="border-ink border-2 bg-rose-50 p-3 text-xs font-bold text-rose-600 dark:bg-rose-950/30 dark:text-rose-400">
-                {serverError}
-              </div>
-            ) : null}
+            {serverError ? <Alert variant="error">{serverError}</Alert> : null}
 
             {/* Vendor Name */}
             <VendorPicker

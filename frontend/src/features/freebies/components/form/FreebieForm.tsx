@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
 import { useConvention } from '@/features/conventions/data/api';
 import { isFreebieMutationLocked } from '@/features/conventions/utils/dates';
-import { BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
+import { Alert, BackLink, CONBLOCK, FormActions } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
 import { useFreebieSettings } from '../../api';
 import { useCreateFreebie } from '../../api/mutations';
@@ -183,9 +183,9 @@ export function FreebieForm({ conventionSlug, conventionName }: FreebieFormProps
       </div>
 
       {serverError ? (
-        <div className="border-ink border-2 bg-rose-50 p-4 text-xs font-bold text-rose-600 dark:bg-rose-950/30 dark:text-rose-400">
+        <Alert variant="error" className="p-4">
           {serverError}
-        </div>
+        </Alert>
       ) : null}
 
       {/* Form */}

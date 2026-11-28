@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Camera, Edit3, Images, Trash2, UploadCloud } from 'lucide-react';
+import { Camera, Edit3, Images, Trash2, UploadCloud } from 'lucide-react';
 import {
+  Alert,
   BackLink,
   CharCounter,
   CloseButton,
@@ -13,6 +14,7 @@ import {
   TextInput,
   UndoButton,
 } from '@/shared/components/ui';
+import { parseApiFieldErrors } from '@/shared/lib/errors';
 import { cn } from '@/shared/lib/utils';
 import { useCreateAlbum, useMeetup, useMeetupSettings, useUpdateAlbum } from '../../../api';
 import type { MeetupAlbumDetail, MeetupPhoto, SocialLinks } from '../../../types';
@@ -257,26 +259,12 @@ export function AlbumUploadForm({
       }
     } catch (err: unknown) {
       console.error('Failed to save album:', err);
-      let message = isEditMode
+      const fallback = isEditMode
         ? 'Failed to update album. Please try again.'
         : 'Failed to create album. Please verify your photo files and try again.';
-      if (err && typeof err === 'object' && 'response' in err) {
-        try {
-          const res = err as { response: Response };
-          const data = await res.response.json();
-          if (data && typeof data === 'object') {
-            const firstError = Object.values(data)[0];
-            if (Array.isArray(firstError)) {
-              message = firstError[0];
-            } else if (typeof firstError === 'string') {
-              message = firstError;
-            }
-          }
-        } catch {
-          // Fall back to default error message
-        }
-      }
-      setServerError(message);
+      const parsed = await parseApiFieldErrors(err, fallback);
+      const firstMessage = parsed.non_field_errors || Object.values(parsed)[0] || fallback;
+      setServerError(firstMessage);
     }
   };
 
@@ -343,10 +331,9 @@ export function AlbumUploadForm({
       </div>
 
       {serverError && (
-        <div className="border-ink flex items-start gap-3 border-2 bg-red-50 p-4 text-sm font-semibold text-red-700 shadow-[4px_4px_0_var(--ink)] dark:bg-red-950/40 dark:text-red-300">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-          <span>{serverError}</span>
-        </div>
+        <Alert variant="error" className="p-4 text-sm shadow-[4px_4px_0_var(--ink)]">
+          {serverError}
+        </Alert>
       )}
 
       {/* Form */}
